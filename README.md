@@ -22,5 +22,6 @@ make large-v2
 ## Run Autogen Script
 
 ```bash
-./scripts/autogen.sh "URL"
+# playlist with two short videos for testing
+./scripts/autogen.sh "https://www.youtube.com/playlist?list=PLCVnrVv4KhXMh4DQBigyvHSRTf2CSj129"
 ```

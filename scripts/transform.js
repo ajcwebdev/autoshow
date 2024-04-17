@@ -17,7 +17,7 @@ const videoID = process.argv[2]
 
 // Define the paths to the original LRC file and the final Markdown file
 const originalPath = path.join(__dirname, '..', 'content', `${videoID}.lrc`)
-const finalPath = path.join(__dirname, '..', 'content', `${videoID}.md`)
+const finalPath = path.join(__dirname, '..', 'content', `${videoID}.txt`)
 
 // Read the original LRC file
 const transformLRCFile = () => {
@@ -51,7 +51,7 @@ const transformLRCFile = () => {
         console.error('Error writing file:', err)
         return
       }
-      console.log(`Transformed Markdown file: content/${videoID}.md`)
+      console.log(`Transformed Markdown file: content/${videoID}.txt`)
     })
   })
 }

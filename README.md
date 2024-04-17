@@ -16,7 +16,6 @@ Run the following commands to clone `whisper.cpp` and build the `large-v2` model
 git clone https://github.com/ggerganov/whisper.cpp.git
 bash ./whisper.cpp/models/download-ggml-model.sh large-v2
 make -C whisper.cpp
-make large-v2
 ```
 
 ## Run Autogen Script

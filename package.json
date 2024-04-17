@@ -1,0 +1,7 @@
+{
+  "name": "autogen",
+  "description": "An example workflow for automatically creating a video transcript with show notes using ChatGPT and Whisper.",
+  "keywords": [ "ChatGPT", "Whisper" ],
+  "author": "Anthony Campolo",
+  "type": "module"
+}

@@ -8,16 +8,16 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 // Check if an input base name was provided as a command-line argument
 if (process.argv.length < 3) {
-  console.error('Usage: node transform.js <baseName>')
+  console.error('Usage: node transform.js <videoID>')
   process.exit(1)
 }
 
-// Get the base file name from the command line arguments
-const baseName = process.argv[2]
+// Get the video ID from the command line arguments
+const videoID = process.argv[2]
 
 // Define the paths to the original LRC file and the final Markdown file
-const originalPath = path.join(__dirname, '..', 'content', `${baseName}.lrc`)
-const finalPath = path.join(__dirname, '..', 'content', `${baseName}.md`)
+const originalPath = path.join(__dirname, '..', 'content', `${videoID}.lrc`)
+const finalPath = path.join(__dirname, '..', 'content', `${videoID}.md`)
 
 // Read the original LRC file
 const transformLRCFile = () => {
@@ -51,7 +51,7 @@ const transformLRCFile = () => {
         console.error('Error writing file:', err)
         return
       }
-      console.log(`Transformation complete. File saved to: ${finalPath}`)
+      console.log(`Transformed Markdown file: content/${videoID}.md`)
     })
   })
 }

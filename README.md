@@ -24,3 +24,8 @@ make -C whisper.cpp
 # playlist with two short videos for testing
 ./scripts/autogen.sh "https://www.youtube.com/playlist?list=PLCVnrVv4KhXMh4DQBigyvHSRTf2CSj129"
 ```
+
+```bash
+# single video
+./scripts/autogen_video.sh "https://www.youtube.com/watch?v=efioXgxMT6s"
+```

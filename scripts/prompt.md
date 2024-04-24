@@ -1,4 +1,4 @@
-This is a transcript with timestamps of a technical conversation.
+This is a transcript with timestamps.
 
 Write a one sentence summary of the transcript and a one paragraph summary.
   - The one sentence summary shouldn't exceed 180 characters (roughly 30 words).
@@ -22,9 +22,11 @@ Format the output like so:
     ## Chapters
 
     00:00 - Introduction and Beginning of Episode
+
     The episode starts with a discussion on the importance of creating and sharing projects.
 
     02:56 - Guest Introduction and Background
+
     Introduction of guests followed by host discussing the guests' background and journey.
 
     ## Transcript

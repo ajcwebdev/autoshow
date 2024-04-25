@@ -29,3 +29,8 @@ make -C whisper.cpp
 # single video
 ./scripts/autogen_video.sh "https://www.youtube.com/watch?v=efioXgxMT6s"
 ```
+
+```bash
+# Run on arbitrary list of URLs
+./scripts/autogen_urls.sh --urls-file content/urls.md
+```

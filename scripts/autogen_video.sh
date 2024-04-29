@@ -48,7 +48,7 @@ autogen() {
 
     node scripts/transform.js "${video_id}"
 
-    cat "content/${video_id}_temp.md" scripts/prompt.md "content/${video_id}.md" > "content/${video_upload_date}-${video_id}.md"
+    cat "content/${video_id}_temp.md" scripts/prompt.md "content/${video_id}.txt" > "content/${video_upload_date}-${video_id}.md"
     # rm "content/${video_id}.wav" "content/${video_id}.lrc" "content/${video_id}.md" "content/${video_id}_temp.md"
 
     echo "Process completed successfully."

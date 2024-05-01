@@ -22,12 +22,12 @@ make -C whisper.cpp
 
 ```bash
 # playlist with two short videos for testing
-./scripts/autogen.sh "https://www.youtube.com/playlist?list=PLCVnrVv4KhXMh4DQBigyvHSRTf2CSj129"
+./scripts/autogen_playlist.sh "https://www.youtube.com/playlist?list=PLCVnrVv4KhXMh4DQBigyvHSRTf2CSj129"
 ```
 
 ```bash
 # single video
-./scripts/autogen_video.sh "https://www.youtube.com/watch?v=efioXgxMT6s"
+./scripts/autogen_video.sh "https://www.youtube.com/watch?v=jKB0EltG9Jo"
 ```
 
 ```bash

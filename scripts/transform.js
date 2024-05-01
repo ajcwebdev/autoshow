@@ -51,7 +51,7 @@ const transformLRCFile = () => {
         console.error('Error writing file:', err)
         return
       }
-      console.log(`Transformed Markdown file: content/${videoID}.txt`)
+      console.log(`Transformation complete. File saved to: ${finalPath}`)
     })
   })
 }

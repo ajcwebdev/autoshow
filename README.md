@@ -27,7 +27,11 @@ make -C whisper.cpp
 Run on a single YouTube video.
 
 ```bash
+# short one minute video
 ./scripts/autogen.sh --video "https://www.youtube.com/watch?v=jKB0EltG9Jo"
+
+# longer 30 minute video
+./scripts/autogen.sh --video "https://www.youtube.com/watch?v=QhXc9rVLVUo"
 ```
 
 Run on multiple YouTube videos in a playlist.

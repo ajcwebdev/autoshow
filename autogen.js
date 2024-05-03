@@ -33,7 +33,7 @@ async function processVideo(url) {
     const uploadDate = execSync(`yt-dlp --print filename -o "%(upload_date>%Y-%m-%d)s" "${url}"`).toString().trim()
     const id = `content/${videoId}`
     const final = `content/${uploadDate}-${videoId}`
-    const baseModel = "whisper.cpp/models/ggml-base.bin"
+    const baseModel = "whisper.cpp/models/ggml-large-v2.bin"
 
     const mdContent = [
       "---",

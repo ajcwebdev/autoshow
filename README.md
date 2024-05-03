@@ -6,10 +6,11 @@ An example workflow for automatically creating a video transcript with show note
 
 ### Install Local Dependencies
 
-Install `yt-dlp` and `ffmpeg`.
+Install `yt-dlp`, `ffmpeg`, and run `npm i`.
 
 ```bash
 brew install yt-dlp ffmpeg
+npm i
 ```
 
 ### Clone Whisper.cpp Repo

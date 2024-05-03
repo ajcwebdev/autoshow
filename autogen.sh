@@ -10,9 +10,9 @@ process_video() {
     id="content/${video_id}"
     upload_date=$(yt-dlp --print filename -o "%(upload_date>%Y-%m-%d)s" "$url")
     final="content/${upload_date}-${video_id}"
-    base="whisper.cpp/models/ggml-base.bin"
+    # base="whisper.cpp/models/ggml-base.bin"
     # medium="whisper.cpp/models/ggml-medium.bin"
-    # large="whisper.cpp/models/ggml-large-v2.bin"
+    large="whisper.cpp/models/ggml-large-v2.bin"
 
     # Append each piece of metadata directly, and end markdown file with frontmatter delimiter
     echo "---" > "${id}.md"
@@ -28,7 +28,7 @@ process_video() {
     yt-dlp -x --audio-format wav --postprocessor-args "ffmpeg: -ar 16000" -o "${id}.wav" "$url"
 
     # Transcribe audio using the Whisper model
-    ./whisper.cpp/main -m "${base}" -f "${id}.wav" -of "${id}" --output-lrc
+    ./whisper.cpp/main -m "${large}" -f "${id}.wav" -of "${id}" --output-lrc
 
     # Transform the transcription output using grep and awk
     originalPath="${id}.lrc"

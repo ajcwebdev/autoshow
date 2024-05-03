@@ -11,8 +11,8 @@ process_video() {
     upload_date=$(yt-dlp --print filename -o "%(upload_date>%Y-%m-%d)s" "$url")
     final="content/${upload_date}-${video_id}"
     base="whisper.cpp/models/ggml-base.bin"
-    medium="whisper.cpp/models/ggml-medium.bin"
-    large-v2="whisper.cpp/models/ggml-large-v2.bin"
+    # medium="whisper.cpp/models/ggml-medium.bin"
+    # large="whisper.cpp/models/ggml-large-v2.bin"
 
     # Append each piece of metadata directly, and end markdown file with frontmatter delimiter
     echo "---" > "${id}.md"
@@ -30,8 +30,10 @@ process_video() {
     # Transcribe audio using the Whisper model
     ./whisper.cpp/main -m "${base}" -f "${id}.wav" -of "${id}" --output-lrc
 
-    # Transform the transcription output using a Node.js script
-    node scripts/transform.js "${video_id}"
+    # Transform the transcription output using grep and awk
+    originalPath="${id}.lrc"
+    finalPath="${id}.txt"
+    grep -v '^\[by:whisper\.cpp\]$' "$originalPath" | awk '{ gsub(/\.[0-9]+/, "", $1); print }' > "$finalPath"
 
     # Combine files to form the final output and clean up intermediate files
     cat "${id}.md" scripts/prompt.md "${id}.txt" > "${final}.md"
@@ -46,11 +48,7 @@ process_playlist() {
     playlist_url="$1"
 
     # Retrieve all video URLs from the playlist and write them to urls.md
-    yt-dlp \
-      --flat-playlist \
-      -s \
-      --print "url" \
-      "$playlist_url" > content/urls.md
+    yt-dlp --flat-playlist -s --print "url" "$playlist_url" > content/urls.md
 
     # Process each video URL from urls.md
     while IFS= read -r url; do

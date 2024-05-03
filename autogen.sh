@@ -36,7 +36,7 @@ process_video() {
     grep -v '^\[by:whisper\.cpp\]$' "$originalPath" | awk '{ gsub(/\.[0-9]+/, "", $1); print }' > "$finalPath"
 
     # Combine files to form the final output and clean up intermediate files
-    cat "${id}.md" scripts/prompt.md "${id}.txt" > "${final}.md"
+    cat "${id}.md" prompt.md "${id}.txt" > "${final}.md"
     rm "${id}.wav" "${id}.lrc" "${id}.txt" "${id}.md"
 
     echo "Process completed successfully for URL: $url"

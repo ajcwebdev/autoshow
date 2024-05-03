@@ -22,26 +22,46 @@ bash ./whisper.cpp/models/download-ggml-model.sh large-v2
 make -C whisper.cpp
 ```
 
-## Run Autogen Script
+## Run Autogen Bash Scripts
 
 Run on a single YouTube video.
 
 ```bash
 # short one minute video
-./scripts/autogen.sh --video "https://www.youtube.com/watch?v=jKB0EltG9Jo"
+./autogen.sh --video "https://www.youtube.com/watch?v=jKB0EltG9Jo"
 
 # longer 30 minute video
-./scripts/autogen.sh --video "https://www.youtube.com/watch?v=QhXc9rVLVUo"
+./autogen.sh --video "https://www.youtube.com/watch?v=QhXc9rVLVUo"
 ```
 
 Run on multiple YouTube videos in a playlist.
 
 ```bash
-./scripts/autogen.sh --playlist "https://www.youtube.com/playlist?list=PLCVnrVv4KhXMh4DQBigyvHSRTf2CSj129"
+./autogen.sh --playlist "https://www.youtube.com/playlist?list=PLCVnrVv4KhXMh4DQBigyvHSRTf2CSj129"
+```
+
+Run on an arbitrary list of URLs in `urls.md`.
+
+```bash
+./autogen.sh --urls urls.md
+```
+
+## Run Autogen Node Scripts
+
+Run on a single YouTube video.
+
+```bash
+node autogen.js video "https://www.youtube.com/watch?v=jKB0EltG9Jo"
+```
+
+Run on multiple YouTube videos in a playlist.
+
+```bash
+node autogen.js playlist "https://www.youtube.com/playlist?list=PLCVnrVv4KhXMh4DQBigyvHSRTf2CSj129"
 ```
 
 Run on an arbitrary list of URLs in `content/urls.md`.
 
 ```bash
-./scripts/autogen.sh --urls content/urls.md
+node autogen.js urls content/urls.md
 ```

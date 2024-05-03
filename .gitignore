@@ -1,5 +1,5 @@
 node_modules
 .DS_Store
 content
-save
 whisper.cpp
+package-lock.json

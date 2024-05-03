@@ -61,8 +61,8 @@ Run on multiple YouTube videos in a playlist.
 node autogen.js playlist "https://www.youtube.com/playlist?list=PLCVnrVv4KhXMh4DQBigyvHSRTf2CSj129"
 ```
 
-Run on an arbitrary list of URLs in `content/urls.md`.
+Run on an arbitrary list of URLs in `urls.md`.
 
 ```bash
-node autogen.js urls content/urls.md
+node autogen.js urls urls.md
 ```

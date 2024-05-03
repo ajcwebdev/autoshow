@@ -5,31 +5,20 @@ process_video() {
     # Variable to hold the URL of the video
     url="$1"
 
-    # Extract video metadata using yt-dlp
+    # Extract video metadata using yt-dlp and construct an identifier for output files
     video_id=$(yt-dlp --print id "$url")
-
-    # Construct an identifier for output files
     id="content/${video_id}"
-
-    duration_hours=$(yt-dlp --print filename -o "%(duration>%H)s" "$url")
-    duration_minutes=$(yt-dlp --print filename -o "%(duration>%M)s" "$url")
-    duration_seconds=$(yt-dlp --print filename -o "%(duration>%S)s" "$url")
-
-    webpage_url=$(yt-dlp --print webpage_url "$url")
-    uploader=$(yt-dlp --print uploader "$url")
-    uploader_url=$(yt-dlp --print uploader_url "$url")
-    title=$(yt-dlp --print title "$url")
     upload_date=$(yt-dlp --print filename -o "%(upload_date>%Y-%m-%d)s" "$url")
-    thumbnail=$(yt-dlp --print thumbnail "$url")
+    final="content/${upload_date}-${video_id}"
 
-    # Write metadata to a markdown file as frontmatter
-    echo -e "---" > "${id}.md"
-    echo -e "showLink: \"${webpage_url}\"" >> "${id}.md"
-    echo -e "channel: \"${uploader}\"" >> "${id}.md"
-    echo -e "channelURL: \"${uploader_url}\"" >> "${id}.md"
-    echo -e "title: \"${title}\"" >> "${id}.md"
-    echo -e "publishDate: \"${upload_date}\"" >> "${id}.md"
-    echo -e "coverImage: \"${thumbnail}\"" >> "${id}.md"
+    # Append each piece of metadata directly, and end markdown file with frontmatter delimiter
+    echo "---" > "${id}.md"
+    echo "showLink: \"$(yt-dlp --print webpage_url "$url")\"" >> "${id}.md"
+    echo "channel: \"$(yt-dlp --print uploader "$url")\"" >> "${id}.md"
+    echo "channelURL: \"$(yt-dlp --print uploader_url "$url")\"" >> "${id}.md"
+    echo "title: \"$(yt-dlp --print title "$url")\"" >> "${id}.md"
+    echo "publishDate: \"$(yt-dlp --print filename -o "%(upload_date>%Y-%m-%d)s" "$url")\"" >> "${id}.md"
+    echo "coverImage: \"$(yt-dlp --print thumbnail "$url")\"" >> "${id}.md"
     echo -e "---\n" >> "${id}.md"
 
     # Download audio and convert to WAV format
@@ -51,7 +40,7 @@ process_video() {
     node scripts/transform.js "${video_id}"
 
     # Combine files to form the final output and clean up intermediate files
-    cat "${id}.md" scripts/prompt.md "${id}.txt" > "content/${upload_date}-${video_id}.md"
+    cat "${id}.md" scripts/prompt.md "${id}.txt" > "${final}.md"
     rm "${id}.wav" "${id}.lrc" "${id}.txt" "${id}.md"
 
     echo "Process completed successfully for URL: $url"
@@ -77,30 +66,52 @@ process_playlist() {
     done < content/urls.md
 }
 
-# Main function to decide whether to process a video or a playlist
+# Define function to process URLs from a file
+process_urls_file() {
+    # Variable for the file path
+    file_path="$1"
+
+    # Check if the file exists
+    if [[ ! -f "$file_path" ]]; then
+        echo "File not found: $file_path"
+        return 1
+    fi
+
+    # Process each URL from the file
+    while IFS= read -r url; do
+        if [[ -n "$url" ]]; then
+            process_video "$url"
+        fi
+    done < "$file_path"
+}
+
+# Main function to decide whether to process a video, playlist, or URLs file
 main() {
-    # First argument: either --video or --playlist
+    # First argument: either --video, --playlist, or --urls
     mode="$1"
 
-    # Second argument: the URL of the video or playlist
-    url="$2"
+    # Second argument: the URL of the video, playlist, or the file path
+    input="$2"
 
     # Validate input arguments
     if [[ "$#" -ne 2 ]]; then
-        echo "Usage: $0 --video <video_url> | --playlist <playlist_url>"
+        echo "Usage: $0 --video <video_url> | --playlist <playlist_url> | --urls <file_path>"
         return 1
     fi
 
     # Determine the operation mode based on the first argument
     case "$mode" in
         --video)
-            process_video "$url"  # Process a single video
+            process_video "$input"  # Process a single video
             ;;
         --playlist)
-            process_playlist "$url"  # Process a playlist
+            process_playlist "$input"  # Process a playlist
+            ;;
+        --urls)
+            process_urls_file "$input"  # Process URLs from a file
             ;;
         *)
-            echo "Invalid option. Use --video or --playlist"
+            echo "Invalid option. Use --video, --playlist, or --urls"
             return 1
             ;;
     esac

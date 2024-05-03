@@ -39,5 +39,5 @@ Run on multiple YouTube videos in a playlist.
 Run on an arbitrary list of URLs in `content/urls.md`.
 
 ```bash
-./scripts/autogen_urls.sh --urls-file content/urls.md
+./scripts/autogen.sh --urls content/urls.md
 ```

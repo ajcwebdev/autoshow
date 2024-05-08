@@ -3,3 +3,4 @@ node_modules
 content
 whisper.cpp
 package-lock.json
+.env

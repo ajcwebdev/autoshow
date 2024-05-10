@@ -1,3 +1,5 @@
+export const PROMPT = `
+
 This is a transcript with timestamps. Write 3 potential titles for the video.
 
 Write a one sentence summary of the transcript, a one paragraph summary, and a two paragraph summary.
@@ -12,7 +14,6 @@ Create chapters based on the topics discussed throughout.
 
 Format the output like so:
 
-    ```md
     ## Potential Titles
 
     1. Title I - Title Hard
@@ -35,8 +36,6 @@ Format the output like so:
 
     Introduction of guests followed by host discussing the guests' background and journey.
 
-    ## Transcript
-    ```
-
 TRANSCRIPT ATTACHED
 
+`

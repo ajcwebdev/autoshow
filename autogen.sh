@@ -42,6 +42,27 @@ process_video() {
     echo "Process completed successfully for URL: $url"
 }
 
+process_video_file() {
+    file_path="$1"
+    base_name=$(basename "$file_path" .mkv)
+    id="content/${base_name}"
+    final="content/${base_name}"
+    large="whisper.cpp/models/ggml-large-v2.bin"
+
+    echo "---" > "${id}.md"
+    echo "showLink: local_file" >> "${id}.md"
+    echo "title: ${base_name}" >> "${id}.md"
+    echo -e "---\n" >> "${id}.md"
+    ffmpeg -i "$file_path" -acodec pcm_s16le -ac 1 -ar 16000 "${id}.wav"
+    ./whisper.cpp/main -m "${large}" -f "${id}.wav" -of "${id}" --output-lrc
+    originalPath="${id}.lrc"
+    finalPath="${id}.txt"
+    grep -v '^\[by:whisper\.cpp\]$' "$originalPath" | awk '{ gsub(/\.[0-9]+/, "", $1); print }' > "$finalPath"
+    cat "${id}.md" prompt.md "${id}.txt" > "${final}.md"
+    rm "${id}.wav" "${id}.lrc" "${id}.txt"
+    echo "Process completed successfully for file: $file_path"
+}
+
 # Define function to process a YouTube playlist
 process_playlist() {
     # Variable for the playlist URL
@@ -77,39 +98,53 @@ process_urls_file() {
     done < "$file_path"
 }
 
+process_rss() {
+    # Variable for the RSS feed URL
+    rss_url="$1"
+
+    # Use curl to download the RSS feed and grep to extract audio file URLs
+    # Extracting URLs from the <source> tag in your provided RSS format
+    curl -s "$rss_url" | grep -oP '<source src="\K[^"]+' > rss_urls.md
+
+    # Process each audio URL from rss_urls.md
+    while IFS= read -r url; do
+        if [[ -n "$url" ]]; then
+            process_video "$url"
+        fi
+    done < rss_urls.md
+}
+
 # Main function to decide whether to process a video, playlist, or URLs file
 main() {
-    # First argument: either --video, --playlist, or --urls
     mode="$1"
-
-    # Second argument: the URL of the video, playlist, or the file path
     input="$2"
-
-    # Validate input arguments
     if [[ "$#" -ne 2 ]]; then
-        echo "Usage: $0 --video <video_url> | --playlist <playlist_url> | --urls <file_path>"
+        echo "Usage: $0 --video <video_url> | --playlist <playlist_url> | --urls <file_path> | --rss <rss_url> | --file <video_path>"
         return 1
     fi
-
-    # Determine the operation mode based on the first argument
     case "$mode" in
         --video)
-            process_video "$input"  # Process a single video
+            process_video "$input"
             ;;
         --playlist)
-            process_playlist "$input"  # Process a playlist
+            process_playlist "$input"
             ;;
         --urls)
-            process_urls_file "$input"  # Process URLs from a file
+            process_urls_file "$input"
+            ;;
+        --rss)
+            process_rss "$input"
+            ;;
+        --file)
+            process_video_file "$input"
             ;;
         *)
-            echo "Invalid option. Use --video, --playlist, or --urls"
+            echo "Invalid option. Use --video, --playlist, --urls, --rss, or --file"
             return 1
             ;;
     esac
 }
 
-# Ensure the script is not being sourced and call main with all passed arguments
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     main "$@"
 fi

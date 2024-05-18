@@ -1,4 +1,4 @@
-This is a transcript with timestamps. Write 3 potential titles for the video.
+This is a transcript with timestamps.
 
 Write a one sentence summary of the transcript, a one paragraph summary, and a two paragraph summary.
   - The one sentence summary shouldn't exceed 180 characters (roughly 30 words).
@@ -13,12 +13,6 @@ Create chapters based on the topics discussed throughout.
 Format the output like so:
 
     ```md
-    ## Potential Titles
-
-    1. Title I - Title Hard
-    2. Title II - Title Harder
-    3. Title II - Title Hard with a Vengeance
-
     ## Episode Summary
 
     One sentence summary which doesn't exceed 180 characters (or roughly 30 words).

@@ -4,6 +4,8 @@ import fs from 'fs'
 
 const program = new Command()
 
+const ytAlias = `yt-dlp --extractor-args "youtube:player_client=ios,web"`
+
 program
   .name("autogen")
   .description("Automated processing of YouTube videos and playlists")
@@ -29,25 +31,25 @@ program.command('urls <filePath>')
 
 async function processVideo(url) {
   try {
-    const videoId = execSync(`yt-dlp --print id "${url}"`).toString().trim()
-    const uploadDate = execSync(`yt-dlp --print filename -o "%(upload_date>%Y-%m-%d)s" "${url}"`).toString().trim()
+    const videoId = execSync(`${ytAlias} --print id "${url}"`).toString().trim()
+    const uploadDate = execSync(`${ytAlias} --print filename -o "%(upload_date>%Y-%m-%d)s" "${url}"`).toString().trim()
     const id = `content/${videoId}`
     const final = `content/${uploadDate}-${videoId}`
     const baseModel = "whisper.cpp/models/ggml-large-v2.bin"
 
     const mdContent = [
       "---",
-      `showLink: "${execSync(`yt-dlp --print webpage_url "${url}"`).toString().trim()}"`,
-      `channel: "${execSync(`yt-dlp --print uploader "${url}"`).toString().trim()}"`,
-      `channelURL: "${execSync(`yt-dlp --print uploader_url "${url}"`).toString().trim()}"`,
-      `title: "${execSync(`yt-dlp --print title "${url}"`).toString().trim()}"`,
+      `showLink: "${execSync(`${ytAlias} --print webpage_url "${url}"`).toString().trim()}"`,
+      `channel: "${execSync(`${ytAlias} --print uploader "${url}"`).toString().trim()}"`,
+      `channelURL: "${execSync(`${ytAlias} --print uploader_url "${url}"`).toString().trim()}"`,
+      `title: "${execSync(`${ytAlias} --print title "${url}"`).toString().trim()}"`,
       `publishDate: "${uploadDate}"`,
-      `coverImage: "${execSync(`yt-dlp --print thumbnail "${url}"`).toString().trim()}"`,
+      `coverImage: "${execSync(`${ytAlias} --print thumbnail "${url}"`).toString().trim()}"`,
       "---\n"
     ].join('\n')
 
     fs.writeFileSync(`${id}.md`, mdContent)
-    execSync(`yt-dlp -x --audio-format wav --postprocessor-args "ffmpeg: -ar 16000" -o "${id}.wav" "${url}"`)
+    execSync(`${ytAlias} -x --audio-format wav --postprocessor-args "ffmpeg: -ar 16000" -o "${id}.wav" "${url}"`)
     execSync(`./whisper.cpp/main -m "${baseModel}" -f "${id}.wav" -of "${id}" --output-lrc`)
 
     const lrcPath = `${id}.lrc`
@@ -79,7 +81,7 @@ async function processVideo(url) {
 }
 
 function processPlaylist(playlistUrl) {
-  const urls = execSync(`yt-dlp --flat-playlist -s --print "url" "${playlistUrl}"`).toString().split('\n').filter(Boolean)
+  const urls = execSync(`${ytAlias} --flat-playlist -s --print "url" "${playlistUrl}"`).toString().split('\n').filter(Boolean)
   urls.forEach(url => {
     processVideo(url)
   })

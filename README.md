@@ -47,6 +47,12 @@ Run on an arbitrary list of URLs in `urls.md`.
 ./autogen.sh --urls urls.md
 ```
 
+Run on a local video file.
+
+```bash
+./autogen.sh --file content/video.mkv
+```
+
 ## Run Autogen Node Scripts
 
 Run on a single YouTube video.

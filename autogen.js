@@ -1,3 +1,5 @@
+// autogen.js
+
 import { Command } from 'commander'
 import { execSync } from 'child_process'
 import fs from 'fs'
@@ -10,24 +12,25 @@ program
   .name("autogen")
   .description("Automated processing of YouTube videos and playlists")
   .version("1.0.0")
+  .option('-v, --video <url>', 'Process a single YouTube video')
+  .option('-p, --playlist <playlistUrl>', 'Process all videos in a YouTube playlist')
+  .option('-u, --urls <filePath>', 'Process YouTube videos from a list of URLs in a file')
 
-program.command('video <url>')
-  .description('Process a single YouTube video')
-  .action((url) => {
-    processVideo(url)
-  })
+program.action((options) => {
+  if (options.video) {
+    processVideo(options.video)
+  }
+  if (options.playlist) {
+    processPlaylist(options.playlist)
+  }
+  if (options.urls) {
+    processUrlsFile(options.urls)
+  }
+})
 
-program.command('playlist <playlistUrl>')
-  .description('Process all videos in a YouTube playlist')
-  .action((playlistUrl) => {
-    processPlaylist(playlistUrl)
-  })
-
-program.command('urls <filePath>')
-  .description('Process YouTube videos from a list of URLs in a file')
-  .action((filePath) => {
-    processUrlsFile(filePath)
-  })
+const baseModel = "whisper.cpp/models/ggml-base.bin"
+// const mediumModel = "whisper.cpp/models/ggml-medium.bin"
+// const largeV2Model = "whisper.cpp/models/ggml-large-v2.bin"
 
 async function processVideo(url) {
   try {
@@ -35,7 +38,6 @@ async function processVideo(url) {
     const uploadDate = execSync(`${ytAlias} --print filename -o "%(upload_date>%Y-%m-%d)s" "${url}"`).toString().trim()
     const id = `content/${videoId}`
     const final = `content/${uploadDate}-${videoId}`
-    const baseModel = "whisper.cpp/models/ggml-large-v2.bin"
 
     const mdContent = [
       "---",
@@ -81,7 +83,9 @@ async function processVideo(url) {
 }
 
 function processPlaylist(playlistUrl) {
-  const urls = execSync(`${ytAlias} --flat-playlist -s --print "url" "${playlistUrl}"`).toString().split('\n').filter(Boolean)
+  const episodeUrls = execSync(`${ytAlias} --flat-playlist -s --print "url" "${playlistUrl}"`)
+  const urls = episodeUrls.toString().split('\n').filter(Boolean)
+  fs.writeFileSync(`content/urls.md`, `${episodeUrls}`)
   urls.forEach(url => {
     processVideo(url)
   })

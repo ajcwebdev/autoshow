@@ -23,6 +23,8 @@ bash ./whisper.cpp/models/download-ggml-model.sh large-v2
 make -C whisper.cpp
 ```
 
+> Replace `large-v2` with `base` for the smallest model or `medium` for a middle sized model.
+
 ## Run Autogen Bash Scripts
 
 Run on a single YouTube video.
@@ -33,6 +35,12 @@ Run on a single YouTube video.
 
 # longer 30 minute video
 ./autogen.sh --video "https://www.youtube.com/watch?v=QhXc9rVLVUo"
+```
+
+Run on a single audio file.
+
+```bash
+./autogen.sh --audio "https://media.transistor.fm/d1d18d2d/449ace19.mp3"
 ```
 
 Run on multiple YouTube videos in a playlist.
@@ -58,17 +66,23 @@ Run on a local video file.
 Run on a single YouTube video.
 
 ```bash
-node autogen.js video "https://www.youtube.com/watch?v=jKB0EltG9Jo"
+node autogen.js --video "https://www.youtube.com/watch?v=jKB0EltG9Jo"
 ```
 
 Run on multiple YouTube videos in a playlist.
 
 ```bash
-node autogen.js playlist "https://www.youtube.com/playlist?list=PLCVnrVv4KhXMh4DQBigyvHSRTf2CSj129"
+node autogen.js --playlist "https://www.youtube.com/playlist?list=PLCVnrVv4KhXMh4DQBigyvHSRTf2CSj129"
 ```
 
 Run on an arbitrary list of URLs in `urls.md`.
 
 ```bash
-node autogen.js urls urls.md
+node autogen.js --urls urls.md
+```
+
+Run on an RSS podcast feed.
+
+```bash
+node autogen.js --rss "https://feeds.transistor.fm/fsjam-podcast/"
 ```

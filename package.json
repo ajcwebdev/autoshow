@@ -12,6 +12,7 @@
     "@deepgram/sdk": "^3.3.1",
     "assemblyai": "^4.4.2",
     "commander": "^12.0.0",
+    "fast-xml-parser": "^4.4.0",
     "openai": "^4.43.0"
   }
 }

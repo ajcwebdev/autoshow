@@ -29,15 +29,13 @@ Run the following commands to clone `whisper.cpp` and build the `large-v2` model
 
 ```bash
 git clone https://github.com/ggerganov/whisper.cpp.git
-bash ./whisper.cpp/models/download-ggml-model.sh large-v2
+bash ./whisper.cpp/models/download-ggml-model.sh base
 make -C whisper.cpp
 ```
 
-> Replace `large-v2` with `base` for the smallest model or `medium` for a middle sized model.
+> Replace `base` with `large-v2` for the largest model or `medium` for a middle sized model.
 
 ## Run Autogen Bash Scripts
-
-
 
 ```bash
 # Run on a single YouTube video (short one minute video)

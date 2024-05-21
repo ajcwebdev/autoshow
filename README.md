@@ -2,6 +2,14 @@
 
 An example workflow for automatically creating a video transcript with show notes using ChatGPT and Whisper.
 
+## Outline
+
+- [Project Structure](#project-structure)
+- [Setup](#setup)
+  - [Install Local Dependencies](#install-local-dependencies)
+  - [Clone Whisper Repo](#clone-whisper-repo)
+- [Run Autogen Node Scripts](#run-autogen-node-scripts)
+
 ## Project Structure
 
 - `autogen.js` - Main entry point for the CLI
@@ -23,7 +31,7 @@ brew install yt-dlp ffmpeg
 npm i
 ```
 
-### Clone Whisper.cpp Repo
+### Clone Whisper Repo
 
 Run the following commands to clone `whisper.cpp` and build the `large-v2` model:
 

@@ -26,7 +26,7 @@ program
   )
   .option('-m, --model <type>',
     'Select model to use: base, medium, or large',
-    'base'
+    'large'
   )
 
 program.action(async (options) => {

@@ -2,11 +2,11 @@
 
 import { execSync } from 'child_process'
 import fs from 'fs'
-import { processLrcToTxt, concatenateFinalContent, cleanUpFiles, callChatGPT } from '../utils/index.js'
+import { processLrcToTxt, concatenateFinalContent, cleanUpFiles, callChatGPT, callClaude } from '../utils/index.js'
 
 const ytAlias = `yt-dlp --no-warnings --extractor-args "youtube:player_client=ios,web"`
 
-export async function processVideo(url, model, chatgpt) {
+export async function processVideo(url, model, chatgpt, claude) {
   try {
     const videoId = execSync(`${ytAlias} --print id "${url}"`).toString().trim()
     const uploadDate = execSync(`${ytAlias} --print filename -o "%(upload_date>%Y-%m-%d)s" "${url}"`).toString().trim()
@@ -20,7 +20,7 @@ export async function processVideo(url, model, chatgpt) {
       `channelURL: "${execSync(`${ytAlias} --print uploader_url "${url}"`).toString().trim()}"`,
       `title: "${execSync(`${ytAlias} --print title "${url}"`).toString().trim()}"`,
       `publishDate: "${uploadDate}"`,
-      `coverImage: "${execSync(`${ytAlias} --print thumbnail "${url}"`).toString().trim()}"`,
+      `coverImage: "${execSync(`${ytAlias} --print thumbnail "${url}"}`).toString().trim()}"`,
       "---\n"
     ].join('\n')
 
@@ -42,6 +42,11 @@ export async function processVideo(url, model, chatgpt) {
     if (chatgpt) {
       await callChatGPT(finalContent, `${final}_chatgpt_shownotes.md`)
       console.log(`ChatGPT show notes generated successfully: ${final}_chatgpt_shownotes.md`)
+    }
+
+    if (claude) {
+      await callClaude(finalContent, `${final}_claude_shownotes.md`)
+      console.log(`Claude show notes generated successfully: ${final}_claude_shownotes.md`)
     }
 
     cleanUpFiles(id)

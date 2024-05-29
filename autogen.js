@@ -19,20 +19,21 @@ program
   .option('-m, --model <type>', 'Select model to use: base, medium, or large', 'large')
   .option('--chatgpt', 'Generate show notes with ChatGPT')
   .option('--claude', 'Generate show notes with Claude')
+  .option('--deepgram', 'Use Deepgram for transcription instead of Whisper.cpp')
 
 program.action(async (options) => {
   const model = getModel(options.model)
   if (options.video) {
-    await processVideo(options.video, model, options.chatgpt, options.claude)
+    await processVideo(options.video, model, options.chatgpt, options.claude, options.deepgram)
   }
   if (options.playlist) {
-    await processPlaylist(options.playlist, model, options.chatgpt, options.claude)
+    await processPlaylist(options.playlist, model, options.chatgpt, options.claude, options.deepgram)
   }
   if (options.urls) {
-    await processUrlsFile(options.urls, model, options.chatgpt, options.claude)
+    await processUrlsFile(options.urls, model, options.chatgpt, options.claude, options.deepgram)
   }
   if (options.rss) {
-    await processRssFeed(options.rss, model, options.chatgpt, options.claude)
+    await processRssFeed(options.rss, model, options.chatgpt, options.claude, options.deepgram)
   }
 })
 

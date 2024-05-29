@@ -3,10 +3,11 @@
 import { execSync } from 'child_process'
 import fs from 'fs'
 import { processLrcToTxt, concatenateFinalContent, cleanUpFiles, callChatGPT, callClaude } from '../utils/index.js'
+import { transcribe as deepgramTranscribe } from '../transcription/deepgram.js'
 
 const ytAlias = `yt-dlp --no-warnings --extractor-args "youtube:player_client=ios,web"`
 
-export async function processVideo(url, model, chatgpt, claude) {
+export async function processVideo(url, model, chatgpt, claude, deepgram) {
   try {
     const videoId = execSync(`${ytAlias} --print id "${url}"`).toString().trim()
     const uploadDate = execSync(`${ytAlias} --print filename -o "%(upload_date>%Y-%m-%d)s" "${url}"`).toString().trim()
@@ -30,10 +31,15 @@ export async function processVideo(url, model, chatgpt, claude) {
     execSync(`${ytAlias} -x --audio-format wav --postprocessor-args "ffmpeg: -ar 16000" -o "${id}.wav" "${url}"`)
     console.log(`WAV file completed successfully: ${id}.wav`)
 
-    execSync(`./whisper.cpp/main -m "${model}" -f "${id}.wav" -of "${id}" --output-lrc`)
-    console.log(`Transcript file completed successfully: ${id}.lrc`)
-
-    const txtContent = processLrcToTxt(id)
+    let txtContent
+    if (deepgram) {
+      await deepgramTranscribe(`${id}.wav`, id)
+      txtContent = fs.readFileSync(`${id}.txt`, 'utf8')
+    } else {
+      execSync(`./whisper.cpp/main -m "${model}" -f "${id}.wav" -of "${id}" --output-lrc`)
+      console.log(`Transcript file completed successfully: ${id}.lrc`)
+      txtContent = processLrcToTxt(id)
+    }
 
     const finalContent = concatenateFinalContent(id, txtContent)
     fs.writeFileSync(`${final}.md`, finalContent)

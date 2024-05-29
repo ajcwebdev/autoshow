@@ -10,7 +10,8 @@ An example workflow for automatically creating a video transcript with show note
   - [Clone Whisper Repo](#clone-whisper-repo)
 - [Run Autogen Node Scripts](#run-autogen-node-scripts)
   - [Chose Model Size](#choose-model-size)
-  - [Use LLM](#use-llm)
+  - [Use LLM Service](#use-llm-service)
+  - [Use Transcription Service](#use-transcription-service)
 
 ## Project Structure
 
@@ -79,7 +80,7 @@ Use `base`, `medium`, or `large` to select Whisper model size. Make sure you bui
 node autogen.js --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --model base
 ```
 
-### Use LLM
+### Use LLM Service
 
 Feed prompt and transcript to OpenAI or Anthropic API. Create a `.env` file and set API key as demonstrated in `.env.example`.
 
@@ -89,4 +90,10 @@ node --env-file=.env autogen.js --chatgpt --video "https://www.youtube.com/watch
 
 ```bash
 node --env-file=.env autogen.js --claude --video "https://www.youtube.com/watch?v=jKB0EltG9Jo"
+```
+
+### Use Transcription Service
+
+```bash
+node --env-file=.env autogen.js --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --deepgram
 ```

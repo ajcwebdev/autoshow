@@ -18,20 +18,21 @@ program
   .option('-r, --rss <rssUrl>', 'Process podcast episodes from an RSS feed')
   .option('-m, --model <type>', 'Select model to use: base, medium, or large', 'large')
   .option('--chatgpt', 'Generate show notes with ChatGPT')
+  .option('--claude', 'Generate show notes with Claude')
 
 program.action(async (options) => {
   const model = getModel(options.model)
   if (options.video) {
-    await processVideo(options.video, model, options.chatgpt)
+    await processVideo(options.video, model, options.chatgpt, options.claude)
   }
   if (options.playlist) {
-    await processPlaylist(options.playlist, model, options.chatgpt)
+    await processPlaylist(options.playlist, model, options.chatgpt, options.claude)
   }
   if (options.urls) {
-    await processUrlsFile(options.urls, model, options.chatgpt)
+    await processUrlsFile(options.urls, model, options.chatgpt, options.claude)
   }
   if (options.rss) {
-    await processRssFeed(options.rss, model, options.chatgpt)
+    await processRssFeed(options.rss, model, options.chatgpt, options.claude)
   }
 })
 

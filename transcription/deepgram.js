@@ -9,7 +9,7 @@ const formatTimestamp = (timestamp) => {
   return `${minutes}:${seconds}`
 }
 
-const transcribe = async (input) => {
+export const transcribe = async (input, id) => {
   const deepgram = createClient(process.env.DEEPGRAM_API_KEY)
   const options = { model: "nova-2", smart_format: true }
   const method = input.startsWith('http://') || input.startsWith('https://') ? 'transcribeUrl' : 'transcribeFile'
@@ -24,18 +24,9 @@ const transcribe = async (input) => {
       .map(sentence => `[${formatTimestamp(sentence.start)}] ${sentence.text}`)
       .join('\n')
 
-    await fs.promises.writeFile('content/deepgram_transcript.md', formattedTranscript)
-    await fs.promises.writeFile('content/deepgram_output.json', JSON.stringify(result, null, 2))
-    console.log('Transcript and full output saved.')
+    await fs.promises.writeFile(`${id}.txt`, formattedTranscript)
+    console.log('Transcript saved.')
   } catch (err) {
     console.error('Error processing the transcription:', err)
   }
 }
-
-const input = process.argv[2]
-if (!input) {
-  console.error('No input provided. Please provide a file path or URL.')
-  process.exit(1)
-}
-
-transcribe(input)

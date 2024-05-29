@@ -2,11 +2,11 @@
 
 import { execSync } from 'child_process'
 import fs from 'fs'
-import { processLrcToTxt, concatenateFinalContent, cleanUpFiles } from '../utils/index.js'
+import { processLrcToTxt, concatenateFinalContent, cleanUpFiles, callChatGPT } from '../utils/index.js'
 
 const ytAlias = `yt-dlp --no-warnings --extractor-args "youtube:player_client=ios,web"`
 
-export async function processVideo(url, model) {
+export async function processVideo(url, model, chatgpt) {
   try {
     const videoId = execSync(`${ytAlias} --print id "${url}"`).toString().trim()
     const uploadDate = execSync(`${ytAlias} --print filename -o "%(upload_date>%Y-%m-%d)s" "${url}"`).toString().trim()
@@ -38,6 +38,11 @@ export async function processVideo(url, model) {
     const finalContent = concatenateFinalContent(id, txtContent)
     fs.writeFileSync(`${final}.md`, finalContent)
     console.log(`Prompt concatenated to transformed transcript successfully: ${final}.md`)
+
+    if (chatgpt) {
+      await callChatGPT(finalContent, `${final}_chatgpt_shownotes.md`)
+      console.log(`ChatGPT show notes generated successfully: ${final}_chatgpt_shownotes.md`)
+    }
 
     cleanUpFiles(id)
     console.log(`Process completed successfully for URL: ${url}`)

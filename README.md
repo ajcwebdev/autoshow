@@ -68,3 +68,9 @@ Run on an RSS podcast feed.
 ```bash
 node autogen.js --rss "https://feeds.transistor.fm/fsjam-podcast/"
 ```
+
+Feed prompt and transcript to OpenAI API. Create a `.env` file and set OpenAI API key as demonstrated in `.env.example`.
+
+```bash
+node --env-file=.env autogen.js --chatgpt --video "https://www.youtube.com/watch?v=jKB0EltG9Jo"
+```

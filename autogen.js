@@ -12,36 +12,26 @@ const program = new Command()
 program
   .name('autogen')
   .description('Automated processing of YouTube videos, playlists, and podcast RSS feeds')
-  .option('-v, --video <url>',
-    'Process a single YouTube video'
-  )
-  .option('-p, --playlist <playlistUrl>',
-    'Process all videos in a YouTube playlist'
-  )
-  .option('-u, --urls <filePath>',
-    'Process YouTube videos from a list of URLs in a file'
-  )
-  .option('-r, --rss <rssUrl>',
-    'Process podcast episodes from an RSS feed'
-  )
-  .option('-m, --model <type>',
-    'Select model to use: base, medium, or large',
-    'large'
-  )
+  .option('-v, --video <url>', 'Process a single YouTube video')
+  .option('-p, --playlist <playlistUrl>', 'Process all videos in a YouTube playlist')
+  .option('-u, --urls <filePath>', 'Process YouTube videos from a list of URLs in a file')
+  .option('-r, --rss <rssUrl>', 'Process podcast episodes from an RSS feed')
+  .option('-m, --model <type>', 'Select model to use: base, medium, or large', 'large')
+  .option('--chatgpt', 'Generate show notes with ChatGPT')
 
 program.action(async (options) => {
   const model = getModel(options.model)
   if (options.video) {
-    await processVideo(options.video, model)
+    await processVideo(options.video, model, options.chatgpt)
   }
   if (options.playlist) {
-    await processPlaylist(options.playlist, model)
+    await processPlaylist(options.playlist, model, options.chatgpt)
   }
   if (options.urls) {
-    await processUrlsFile(options.urls, model)
+    await processUrlsFile(options.urls, model, options.chatgpt)
   }
   if (options.rss) {
-    await processRssFeed(options.rss, model)
+    await processRssFeed(options.rss, model, options.chatgpt)
   }
 })
 

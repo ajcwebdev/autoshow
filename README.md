@@ -9,6 +9,8 @@ An example workflow for automatically creating a video transcript with show note
   - [Install Local Dependencies](#install-local-dependencies)
   - [Clone Whisper Repo](#clone-whisper-repo)
 - [Run Autogen Node Scripts](#run-autogen-node-scripts)
+  - [Chose Model Size](#choose-model-size)
+  - [Use LLM](#use-llm)
 
 ## Project Structure
 
@@ -68,6 +70,16 @@ Run on an RSS podcast feed.
 ```bash
 node autogen.js --rss "https://feeds.transistor.fm/fsjam-podcast/"
 ```
+
+### Chose Model Size
+
+Use `base`, `medium`, or `large` to select Whisper model size. Make sure you built the correct model you want to call in the [Clone Whisper Repo](#clone-whisper-repo) step.
+
+```bash
+node autogen.js --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --model base
+```
+
+### Use LLM
 
 Feed prompt and transcript to OpenAI or Anthropic API. Create a `.env` file and set API key as demonstrated in `.env.example`.
 

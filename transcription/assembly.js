@@ -10,9 +10,9 @@ function formatTimestamp(timestamp) {
   return `${Math.floor(totalSeconds / 60).toString().padStart(2, '0')}:${Math.floor(totalSeconds % 60).toString().padStart(2, '0')}`
 }
 
-const runTranscription = async (audioInput, useSpeakerLabels = false, speakersExpected = 1) => {
+export const transcribe = async (input, id, useSpeakerLabels = false, speakersExpected = 1) => {
   let transcriptionConfig = {
-    audio: audioInput,
+    audio: input,
     speech_model: 'nano'
   }
 
@@ -30,24 +30,29 @@ const runTranscription = async (audioInput, useSpeakerLabels = false, speakersEx
         const speakerPrefix = useSpeakerLabels ? `Speaker ${utt.speaker} ` : ''
         output += `${speakerPrefix}(${formatTimestamp(utt.start)}): ${utt.text}\n`
       })
+    } else if (transcript.words) {
+      let currentLine = ''
+      let currentTimestamp = formatTimestamp(transcript.words[0].start)
+
+      transcript.words.forEach(word => {
+        if (currentLine.length + word.text.length > 80) { // Arbitrary length to break lines
+          output += `[${currentTimestamp}] ${currentLine.trim()}\n`
+          currentLine = ''
+          currentTimestamp = formatTimestamp(word.start)
+        }
+        currentLine += `${word.text} `
+      })
+
+      if (currentLine.length > 0) {
+        output += `[${currentTimestamp}] ${currentLine.trim()}\n`
+      }
     } else {
       output = transcript.text ? transcript.text : 'No transcription available.'
     }
 
-    fs.writeFileSync('assembly_transcript.md', output)
+    await fs.promises.writeFile(`${id}.txt`, output)
     console.log('Transcript saved.')
   } catch (error) {
     console.error('Error processing the transcription:', error)
   }
 }
-
-const audioInput = process.argv[2]
-if (!audioInput) {
-  console.error('No audio input provided. Please provide a file URL or local path.')
-  process.exit(1)
-}
-
-const useSpeakerLabels = process.argv[3] === 'true'
-const speakersExpected = parseInt(process.argv[4], 10) || 1
-
-runTranscription(audioInput, useSpeakerLabels, speakersExpected)

@@ -20,20 +20,21 @@ program
   .option('--chatgpt', 'Generate show notes with ChatGPT')
   .option('--claude', 'Generate show notes with Claude')
   .option('--deepgram', 'Use Deepgram for transcription instead of Whisper.cpp')
+  .option('--assembly', 'Use AssemblyAI for transcription instead of Whisper.cpp')
 
 program.action(async (options) => {
   const model = getModel(options.model)
   if (options.video) {
-    await processVideo(options.video, model, options.chatgpt, options.claude, options.deepgram)
+    await processVideo(options.video, model, options.chatgpt, options.claude, options.deepgram, options.assembly)
   }
   if (options.playlist) {
-    await processPlaylist(options.playlist, model, options.chatgpt, options.claude, options.deepgram)
+    await processPlaylist(options.playlist, model, options.chatgpt, options.claude, options.deepgram, options.assembly)
   }
   if (options.urls) {
-    await processUrlsFile(options.urls, model, options.chatgpt, options.claude, options.deepgram)
+    await processUrlsFile(options.urls, model, options.chatgpt, options.claude, options.deepgram, options.assembly)
   }
   if (options.rss) {
-    await processRssFeed(options.rss, model, options.chatgpt, options.claude, options.deepgram)
+    await processRssFeed(options.rss, model, options.chatgpt, options.claude, options.deepgram, options.assembly)
   }
 })
 

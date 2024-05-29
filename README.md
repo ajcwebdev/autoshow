@@ -84,9 +84,13 @@ node autogen.js --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --model ba
 
 Feed prompt and transcript to OpenAI or Anthropic API. Create a `.env` file and set API key as demonstrated in `.env.example`.
 
+OpenAI
+
 ```bash
 node --env-file=.env autogen.js --chatgpt --video "https://www.youtube.com/watch?v=jKB0EltG9Jo"
 ```
+
+Claude
 
 ```bash
 node --env-file=.env autogen.js --claude --video "https://www.youtube.com/watch?v=jKB0EltG9Jo"
@@ -94,6 +98,14 @@ node --env-file=.env autogen.js --claude --video "https://www.youtube.com/watch?
 
 ### Use Transcription Service
 
+Deepgram
+
 ```bash
 node --env-file=.env autogen.js --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --deepgram
+```
+
+Assembly
+
+```bash
+node --env-file=.env autogen.js --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --assembly
 ```

@@ -4,10 +4,11 @@ import { execSync } from 'child_process'
 import fs from 'fs'
 import { processLrcToTxt, concatenateFinalContent, cleanUpFiles, callChatGPT, callClaude } from '../utils/index.js'
 import { transcribe as deepgramTranscribe } from '../transcription/deepgram.js'
+import { transcribe as assemblyTranscribe } from '../transcription/assembly.js'
 
 const ytAlias = `yt-dlp --no-warnings --extractor-args "youtube:player_client=ios,web"`
 
-export async function processVideo(url, model, chatgpt, claude, deepgram) {
+export async function processVideo(url, model, chatgpt, claude, deepgram, assembly) {
   try {
     const videoId = execSync(`${ytAlias} --print id "${url}"`).toString().trim()
     const uploadDate = execSync(`${ytAlias} --print filename -o "%(upload_date>%Y-%m-%d)s" "${url}"`).toString().trim()
@@ -34,6 +35,9 @@ export async function processVideo(url, model, chatgpt, claude, deepgram) {
     let txtContent
     if (deepgram) {
       await deepgramTranscribe(`${id}.wav`, id)
+      txtContent = fs.readFileSync(`${id}.txt`, 'utf8')
+    } else if (assembly) {
+      await assemblyTranscribe(`${id}.wav`, id)
       txtContent = fs.readFileSync(`${id}.txt`, 'utf8')
     } else {
       execSync(`./whisper.cpp/main -m "${model}" -f "${id}.wav" -of "${id}" --output-lrc`)

@@ -24,17 +24,20 @@ program
 
 program.action(async (options) => {
   const model = getModel(options.model)
-  if (options.video) {
-    await processVideo(options.video, model, options.chatgpt, options.claude, options.deepgram, options.assembly)
+  const { chatgpt, claude, deepgram, assembly } = options
+  const commonArgs = [model, chatgpt, claude, deepgram, assembly]
+
+  const handlers = {
+    video: processVideo,
+    playlist: processPlaylist,
+    urls: processUrlsFile,
+    rss: processRssFeed,
   }
-  if (options.playlist) {
-    await processPlaylist(options.playlist, model, options.chatgpt, options.claude, options.deepgram, options.assembly)
-  }
-  if (options.urls) {
-    await processUrlsFile(options.urls, model, options.chatgpt, options.claude, options.deepgram, options.assembly)
-  }
-  if (options.rss) {
-    await processRssFeed(options.rss, model, options.chatgpt, options.claude, options.deepgram, options.assembly)
+
+  for (const [key, handler] of Object.entries(handlers)) {
+    if (options[key]) {
+      await handler(options[key], ...commonArgs)
+    }
   }
 })
 

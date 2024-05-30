@@ -3,7 +3,7 @@
 import { XMLParser } from 'fast-xml-parser'
 import { execSync } from 'child_process'
 import fs from 'fs'
-import { processLrcToTxt, concatenateFinalContent } from '../utils/index.js'
+import { processLrcToTxt, concatenateFinalContent, cleanUpFiles } from '../utils/index.js'
 
 const parser = new XMLParser({
   ignoreAttributes: false,
@@ -37,10 +37,10 @@ async function processRssItem(item, model) {
     const txtContent = processLrcToTxt(id)
 
     const finalContent = concatenateFinalContent(id, txtContent)
-    fs.writeFileSync(`${id}.md`, finalContent)
+    fs.writeFileSync(`${id}-final.md`, finalContent)
     console.log(`Prompt concatenated to transformed transcript successfully: ${id}.md`)
 
-    // cleanUpFiles(id)
+    cleanUpFiles(id)
     console.log(`Process completed successfully for RSS item: ${item.title}`)
   } catch (error) {
     console.error(`Error processing RSS item: ${item.title}`, error)

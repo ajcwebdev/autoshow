@@ -3,8 +3,7 @@
 import { execSync } from 'child_process'
 import fs from 'fs'
 import { processVideo } from './processVideo.js'
-
-const ytAlias = `yt-dlp --no-warnings --extractor-args "youtube:player_client=ios,web"`
+import { ytAlias } from '../utils/index.js'
 
 export async function processPlaylist(playlistUrl, model) {
   const episodeUrls = execSync(`${ytAlias} --flat-playlist -s --print "url" "${playlistUrl}"`)

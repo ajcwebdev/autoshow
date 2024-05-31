@@ -2,11 +2,9 @@
 
 import { execSync } from 'child_process'
 import fs from 'fs'
-import { processLrcToTxt, concatenateFinalContent, cleanUpFiles, callChatGPT, callClaude } from '../utils/index.js'
+import { ytAlias, processLrcToTxt, concatenateFinalContent, cleanUpFiles, callChatGPT, callClaude } from '../utils/index.js'
 import { transcribe as deepgramTranscribe } from '../transcription/deepgram.js'
 import { transcribe as assemblyTranscribe } from '../transcription/assembly.js'
-
-const ytAlias = `yt-dlp --no-warnings --extractor-args "youtube:player_client=ios,web"`
 
 export async function processVideo(url, model, chatgpt, claude, deepgram, assembly) {
   try {

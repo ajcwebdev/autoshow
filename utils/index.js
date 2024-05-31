@@ -4,7 +4,8 @@ import fs from 'fs'
 import { OpenAI } from 'openai'
 import { Anthropic } from '@anthropic-ai/sdk'
 
-const promptPath = `./utils/prompt.md`
+export const ytAlias = `yt-dlp --no-warnings --extractor-args "youtube:player_client=ios,web"`
+export const promptPath = `./utils/prompt.md`
 
 export function getModel(modelType) {
   switch (modelType) {

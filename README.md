@@ -9,9 +9,8 @@ An example workflow for automatically creating a video transcript with show note
   - [Install Local Dependencies](#install-local-dependencies)
   - [Clone Whisper Repo](#clone-whisper-repo)
 - [Run Autogen Node Scripts](#run-autogen-node-scripts)
-  - [Chose Model Size](#choose-model-size)
-  - [Use LLM Service](#use-llm-service)
-  - [Use Transcription Service](#use-transcription-service)
+
+See [`docs/roadmap.md`](/docs/roadmap.md) for details about current development work and future potential capabilities.
 
 ## Project Structure
 
@@ -54,58 +53,4 @@ Run on a single YouTube video.
 node autogen.js --video "https://www.youtube.com/watch?v=jKB0EltG9Jo"
 ```
 
-Run on multiple YouTube videos in a playlist.
-
-```bash
-node autogen.js --playlist "https://www.youtube.com/playlist?list=PLCVnrVv4KhXMh4DQBigyvHSRTf2CSj129"
-```
-
-Run on an arbitrary list of URLs in `urls.md`.
-
-```bash
-node autogen.js --urls urls.md
-```
-
-Run on an RSS podcast feed.
-
-```bash
-node autogen.js --rss "https://feeds.transistor.fm/fsjam-podcast/"
-```
-
-### Chose Model Size
-
-Use `base`, `medium`, or `large` to select Whisper model size. Make sure you built the correct model you want to call in the [Clone Whisper Repo](#clone-whisper-repo) step.
-
-```bash
-node autogen.js --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --model base
-```
-
-### Use LLM Service
-
-Feed prompt and transcript to OpenAI or Anthropic API. Create a `.env` file and set API key as demonstrated in `.env.example`.
-
-OpenAI
-
-```bash
-node --env-file=.env autogen.js --chatgpt --video "https://www.youtube.com/watch?v=jKB0EltG9Jo"
-```
-
-Claude
-
-```bash
-node --env-file=.env autogen.js --claude --video "https://www.youtube.com/watch?v=jKB0EltG9Jo"
-```
-
-### Use Transcription Service
-
-Deepgram
-
-```bash
-node --env-file=.env autogen.js --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --deepgram
-```
-
-Assembly
-
-```bash
-node --env-file=.env autogen.js --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --assembly
-```
+Example commands for all available CLI options can be found in [`docs/examples.md`](/docs/examples.md).

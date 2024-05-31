@@ -9,7 +9,7 @@ export async function generateShowNotes(transcriptContent, outputFilePath) {
   })
 
   const MESSAGE = [
-    { role: 'system', content: fs.readFileSync('prompt.md', 'utf8') },
+    { role: 'system', content: fs.readFileSync('./utils/prompt.md', 'utf8') },
     { role: 'user', content: transcriptContent }
   ]
 

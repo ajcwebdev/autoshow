@@ -4,6 +4,8 @@ import fs from 'fs'
 import { OpenAI } from 'openai'
 import { Anthropic } from '@anthropic-ai/sdk'
 
+const promptPath = `./utils/prompt.md`
+
 export function getModel(modelType) {
   switch (modelType) {
     case 'base':
@@ -34,7 +36,7 @@ export function processLrcToTxt(id) {
 export function concatenateFinalContent(id, txtContent) {
   return [
     fs.readFileSync(`${id}.md`, 'utf8'),
-    fs.readFileSync('prompt.md', 'utf8'),
+    fs.readFileSync(`${promptPath}`, 'utf8'),
     txtContent
   ].join('\n')
 }
@@ -54,7 +56,7 @@ export async function callChatGPT(transcriptContent, outputFilePath) {
   })
 
   const MESSAGE = [
-    { role: 'system', content: fs.readFileSync('prompt.md', 'utf8') },
+    { role: 'system', content: fs.readFileSync(`${promptPath}`, 'utf8') },
     { role: 'user', content: transcriptContent }
   ]
 
@@ -86,7 +88,7 @@ export async function callClaude(transcriptContent, outputFilePath) {
     model: HAIKU, // You can change this to the desired model
     max_tokens: 2000,
     temperature: 0,
-    system: fs.readFileSync('prompt.md', 'utf8'),
+    system: fs.readFileSync(`${promptPath}`, 'utf8'),
     messages: [
       { role: 'user', content: transcriptContent }
     ]

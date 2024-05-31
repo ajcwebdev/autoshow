@@ -1,8 +1,6 @@
-export const PROMPT = `
+This is a transcript with timestamps.
 
-This is a transcript with timestamps. Write 3 potential titles for the video.
-
-Write a one sentence summary of the transcript, a one paragraph summary, and a two paragraph summary.
+Write a one sentence summary of the transcript and a one paragraph summary.
   - The one sentence summary shouldn't exceed 180 characters (roughly 30 words).
   - The one paragraph summary should be approximately 600-1200 characters (roughly 100-200 words).
 
@@ -14,12 +12,7 @@ Create chapters based on the topics discussed throughout.
 
 Format the output like so:
 
-    ## Potential Titles
-
-    1. Title I - Title Hard
-    2. Title II - Title Harder
-    3. Title II - Title Hard with a Vengeance
-
+    ```md
     ## Episode Summary
 
     One sentence summary which doesn't exceed 180 characters (or roughly 30 words).
@@ -36,6 +29,8 @@ Format the output like so:
 
     Introduction of guests followed by host discussing the guests' background and journey.
 
+    ## Transcript
+    ```
+
 TRANSCRIPT ATTACHED
 
-`

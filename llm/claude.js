@@ -17,7 +17,7 @@ export async function generateClaudeShowNotes(transcriptContent, outputFilePath)
     max_tokens: 2000,
     temperature: 0,
     messages: [
-      { role: 'system', content: fs.readFileSync('prompt.md', 'utf8') },
+      { role: 'system', content: fs.readFileSync('./utils/prompt.md', 'utf8') },
       { role: 'user', content: transcriptContent }
     ]
   })

@@ -10,7 +10,7 @@ function formatTimestamp(timestamp) {
   return `${Math.floor(totalSeconds / 60).toString().padStart(2, '0')}:${Math.floor(totalSeconds % 60).toString().padStart(2, '0')}`
 }
 
-export const transcribe = async (input, id, useSpeakerLabels = false, speakersExpected = 1) => {
+export const assemblyTranscribe = async (input, id, useSpeakerLabels = false, speakersExpected = 1) => {
   let transcriptionConfig = {
     audio: input,
     speech_model: 'nano'

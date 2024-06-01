@@ -9,7 +9,7 @@ const formatTimestamp = (timestamp) => {
   return `${minutes}:${seconds}`
 }
 
-export const transcribe = async (input, id) => {
+export const deepgramTranscribe = async (input, id) => {
   const deepgram = createClient(process.env.DEEPGRAM_API_KEY)
   const options = { model: "nova-2", smart_format: true }
   const method = input.startsWith('http://') || input.startsWith('https://') ? 'transcribeUrl' : 'transcribeFile'

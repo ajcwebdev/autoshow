@@ -1,10 +1,11 @@
 // commands/processVideo.js
 
-import { execSync } from 'child_process'
 import fs from 'fs'
-import { ytAlias, processLrcToTxt, concatenateFinalContent, cleanUpFiles, callChatGPT, callClaude } from '../utils/index.js'
-import { transcribe as deepgramTranscribe } from '../transcription/deepgram.js'
-import { transcribe as assemblyTranscribe } from '../transcription/assembly.js'
+import { execSync } from 'child_process'
+import { ytAlias, processLrcToTxt, concatenateFinalContent, cleanUpFiles } from '../utils/index.js'
+import { callChatGPT, callClaude } from '../utils/llms.js'
+import { deepgramTranscribe } from '../utils/transcription/deepgram.js'
+import { assemblyTranscribe } from '../utils/transcription/assembly.js'
 
 export async function processVideo(url, model, chatgpt, claude, deepgram, assembly) {
   try {

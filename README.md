@@ -1,4 +1,8 @@
-# autoshow
+<div align="center">
+  <img alt="autoshow logo" src="https://ajc.pics/autoshow/autoshow-cover-01.webp" width="300" />
+</div>
+
+# Autoshow
 
 An example workflow for automatically creating a video transcript with show notes using ChatGPT and Whisper.
 
@@ -11,16 +15,6 @@ An example workflow for automatically creating a video transcript with show note
 - [Run Autogen Node Scripts](#run-autogen-node-scripts)
 
 See [`docs/roadmap.md`](/docs/roadmap.md) for details about current development work and future potential capabilities.
-
-## Project Structure
-
-- `autogen.js` - Main entry point for the CLI
-- `utils/index.js` - Utility functions to get the model and run common file operations
-- `commands` - Directory for commands
-  - `commands/processVideo.js` - Handles processing of a single video
-  - `commands/processPlaylist.js` - Handles processing of a playlist
-  - `commands/processUrlsFile.js` - Handles processing of a file with URLs
-  - `commands/processRssFeed.js` - Handles processing of an RSS feed
 
 ## Setup
 

@@ -39,7 +39,7 @@ export async function processVideo(url, model, chatgpt, claude, deepgram, assemb
       await assemblyTranscribe(`${id}.wav`, id)
       txtContent = fs.readFileSync(`${id}.txt`, 'utf8')
     } else {
-      execSync(`./whisper.cpp/main -m "${model}" -f "${id}.wav" -of "${id}" --output-lrc`)
+      execSync(`./whisper.cpp/main -m "${model}" -f "${id}.wav" -of "${id}" --output-lrc`, { stdio: 'ignore' })
       console.log(`Transcript file completed successfully: ${id}.lrc`)
       txtContent = processLrcToTxt(id)
     }

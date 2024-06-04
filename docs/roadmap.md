@@ -11,35 +11,79 @@ My current plan is to implement the majority of the functionality outlined here 
   - Until that time, I'll do my best to push changes through clearly documented PRs.
   - In the meantime, this repo will be changing rapidly and breaking changes should be expected.
 
-### Local LLMs
-
-Integrate options for local LLMs.
-
-- Llama.cpp
-  - [`node-llama-cpp`](https://withcatai.github.io/node-llama-cpp/)
-  - [`node-llama-cpp` v3](https://github.com/withcatai/node-llama-cpp/pull/105)
-  - [`node-llama-cpp` GitHub repo](https://github.com/withcatai/node-llama-cpp)
-  - [`llama.cpp`](https://github.com/ggerganov/llama.cpp)
-
-- LM Studio
-  - [LM Studio GitHub](https://github.com/lmstudio-ai)
-  - [LM Studio Local Server](https://lmstudio.ai/docs/local-server)
-  - [`lmstudio.js` Quick Start Guide](https://lmstudio.ai/docs/lmstudio-sdk/quick-start)
-  - [`lmstudio.js` Code Examples](https://lmstudio.ai/docs/lmstudio-sdk/examples)
-
-- [Jan](https://jan.ai/)
-  - [`jan`](https://github.com/janhq/jan)
-  - [Jan Local API Server](https://jan.ai/docs/local-api)
-
 ### Greater Configurability
 
-- Allow configuring whether to delete or keep intermediary files.
+<details>
+  <summary>Enable downloading and passing any Whisper.cpp model size.</summary>
+
+| Model         | Disk    | SHA                                        |
+| ------------- | ------- | ------------------------------------------ |
+| tiny          | 75 MiB  | `bd577a113a864445d4c299885e0cb97d4ba92b5f` |
+| tiny.en       | 75 MiB  | `c78c86eb1a8faa21b369bcd33207cc90d64ae9df` |
+| base          | 142 MiB | `465707469ff3a37a2b9b8d8f89f2f99de7299dac` |
+| base.en       | 142 MiB | `137c40403d78fd54d454da0f9bd998f78703390c` |
+| small         | 466 MiB | `55356645c2b361a969dfd0ef2c5a50d530afd8d5` |
+| small.en      | 466 MiB | `db8a495a91d927739e50b3fc1cc4c6b8f6c2d022` |
+| small.en-tdrz | 465 MiB | `b6c6e7e89af1a35c08e6de56b66ca6a02a2fdfa1` |
+| medium        | 1.5 GiB | `fd9727b6e1217c2f614f9b698455c4ffd82463b4` |
+| medium.en     | 1.5 GiB | `8c30f0e44ce9560643ebd10bbe50cd20eafd3723` |
+| large-v1      | 2.9 GiB | `b1caaf735c4cc1429223d5a74f0f4d0b9b59a299` |
+| large-v2      | 2.9 GiB | `0f4c8e34f21cf1a914c59d8b3ce882345ad349d6` |
+| large-v2-q5_0 | 1.1 GiB | `00e39f2196344e901b3a2bd5814807a769bd1630` |
+| large-v3      | 2.9 GiB | `ad82bf6a9043ceed055076d0fd39f5f186ff8062` |
+| large-v3-q5_0 | 1.1 GiB | `e6e2ed78495d403bef4b7cff42ef4aaadcfea8de` |
+
+</details>
+
+<details>
+  <summary>Set default behavior to automatically download and use smallest Whisper model if none is available.</summary>
+
+- [Whisper model files](https://github.com/ggerganov/whisper.cpp/blob/master/models/README.md)
+
+</details>
+
+<details>
+  <summary>Allow configuring prompt.</summary>
+
+  - `titles`
+  - `summary`
+  - `chapters`
+
+</details>
+
+<details>
+  <summary>Allow configuring temperature and max token output for LLMs.</summary>
+
+- [OpenAI `max_tokens`](https://platform.openai.com/docs/api-reference/chat/create#chat-create-max_tokens)
+- [OpenAI `temperature`](https://platform.openai.com/docs/api-reference/chat/create#chat-create-temperature)
+- [Claude Messages API](https://docs.anthropic.com/en/api/messages)
+
+</details>
+
+<details>
+  <summary>Include the ability to run multiple transcription services and LLMs on a given video URL.</summary>
+
+For example, the following would output four show note files for each combination of transcription and LLM services:
+
+```bash
+node --env-file=.env autogen.js --deepgram --assembly --chatgpt --claude --video "https://www.youtube.com/watch?v=-jF0g_YGPdI"
+```
+
+</details>
+
+<details>
+  <summary>Allow configuring whether to delete or keep intermediary files.</summary>
+
   - Follow example for an [option that may be a boolean or an option-argument declared with square brackets like `--optional [value]`](https://github.com/tj/commander.js/blob/master/examples/options-boolean-or-value.js):
   - `--cleanUp` can be set to `true` or `false`.
   - File clean up will be set to `false` by default.
   - Decide between `--noCleanUp` and `--cleanUpOff` for option-argument that sets clean up to `false`.
 
-- Allow configuring different models for LLM and transcription providers with option-arguments to `--chatgpt`, `--claude`, `--deepgram`, and `--assembly` options.
+</details>
+
+<details>
+  <summary>Allow configuring different models for LLM and transcription providers with option-arguments.</summary>
+
   - ChatGPT option-arguments
     - `gpt4o` for `gpt-4o`
     - `gpt4t` for `gpt-4-turbo`
@@ -58,12 +102,7 @@ Integrate options for local LLMs.
     - `best`
     - `nano`
 
-- Include the ability to run multiple transcription services and LLMs on a given video URL.
-  - For example, the following would output four show note files for each combination of transcription and LLM services:
-
-```bash
-node --env-file=.env autogen.js --deepgram --assembly --chatgpt --claude --video "https://www.youtube.com/watch?v=-jF0g_YGPdI"
-```
+</details>
 
 ### Examples
 
@@ -73,7 +112,9 @@ Update `examples.md` file with runnable examples of all possible CLI options and
 
 Document the following for each third party service:
 
-- ChatGPT
+<details>
+  <summary>ChatGPT</summary>
+
   - Pricing
     - [OpenAI Platform API Pricing](https://openai.com/api/pricing/)
     - [ChatGPT Subscription Pricing](https://openai.com/chatgpt/pricing/)
@@ -83,7 +124,12 @@ Document the following for each third party service:
   - Usage
     - [Usage Dashboard Page](https://platform.openai.com/usage)
     - [Usage Tiers](https://platform.openai.com/docs/guides/rate-limits/usage-tiers)
-- Claude
+
+</details>
+
+<details>
+  <summary>Claude</summary>
+
   - Pricing
     - [API Pricing](https://www.anthropic.com/api)
     - [Subscription Pricing](https://www.anthropic.com/claude)
@@ -94,7 +140,12 @@ Document the following for each third party service:
   - Usage
     - [Usage Dashboard Page](https://console.anthropic.com/settings/usage)
     - [Rate and Usage Limits Docs](https://docs.anthropic.com/en/api/rate-limits)
-- Deepgram
+
+</details>
+
+<details>
+  <summary>Deepgram</summary>
+
   - Pricing
     - [API and Subscription Pricing](https://deepgram.com/pricing)
     - [Model and Feature Overview](https://developers.deepgram.com/docs/stt-streaming-feature-overview)
@@ -105,7 +156,12 @@ Document the following for each third party service:
   - Usage
     - [Summarize Usage Endpoint](https://developers.deepgram.com/reference/summarize-usage)
     - [Usage Docs](https://developers.deepgram.com/docs/using-logs-usage)
-- Assembly
+
+</details>
+
+<details>
+  <summary>Assembly</summary>
+
   - Pricing
     - [Subscription and API Pricing](https://www.assemblyai.com/pricing)
     - [Select speech model](https://www.assemblyai.com/docs/speech-to-text/speech-recognition#select-the-speech-model-with-best-and-nano)
@@ -114,6 +170,8 @@ Document the following for each third party service:
   - Usage
     - [Usage Dashboard Page](https://www.assemblyai.com/app/usage)
     - [Quotas and Limits Docs](https://www.assemblyai.com/docs/guides/real-time-streaming-transcription#quotas-and-limits)
+
+</details>
 
 ## Version 1.0
 

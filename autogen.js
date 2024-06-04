@@ -6,6 +6,7 @@ import { processPlaylist } from './commands/processPlaylist.js'
 import { processUrlsFile } from './commands/processUrlsFile.js'
 import { processRssFeed } from './commands/processRssFeed.js'
 import { getModel } from './utils/index.js'
+import { performance } from 'perf_hooks'
 
 const program = new Command()
 
@@ -21,10 +22,11 @@ program
   .option('--claude', 'Generate show notes with Claude')
   .option('--deepgram', 'Use Deepgram for transcription instead of Whisper.cpp')
   .option('--assembly', 'Use AssemblyAI for transcription instead of Whisper.cpp')
+  .option('--profile', 'Log detailed performance metrics for each step')
 
 program.action(async (options) => {
   const model = getModel(options.model)
-  const { chatgpt, claude, deepgram, assembly } = options
+  const { chatgpt, claude, deepgram, assembly, profile } = options
   const commonArgs = [model, chatgpt, claude, deepgram, assembly]
 
   const handlers = {
@@ -36,7 +38,17 @@ program.action(async (options) => {
 
   for (const [key, handler] of Object.entries(handlers)) {
     if (options[key]) {
-      await handler(options[key], ...commonArgs)
+      const start = performance.now()
+      try {
+        await handler(options[key], ...commonArgs)
+        const end = performance.now()
+        if (profile) {
+          const duration = ((end - start) / 1000).toFixed(2)
+          console.log(`Processed ${key} in ${duration} seconds`)
+        }
+      } catch (error) {
+        console.error(`Error processing ${key}:`, error)
+      }
     }
   }
 })

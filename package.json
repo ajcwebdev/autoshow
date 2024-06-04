@@ -8,12 +8,14 @@
   "author": "Anthony Campolo",
   "type": "module",
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.20.9",
-    "@deepgram/sdk": "^3.3.1",
-    "assemblyai": "^4.4.2",
-    "commander": "^12.0.0",
+    "@anthropic-ai/sdk": "^0.22.0",
+    "@deepgram/sdk": "^3.3.3",
+    "assemblyai": "^4.4.5",
+    "commander": "^12.1.0",
     "fast-xml-parser": "^4.4.0",
-    "node-llama-cpp": "^2.8.10",
-    "openai": "^4.43.0"
+    "ffmpeg-static": "^5.2.0",
+    "node-llama-cpp": "^2.8.11",
+    "openai": "^4.47.3",
+    "youtube-dl-exec": "^3.0.2"
   }
 }

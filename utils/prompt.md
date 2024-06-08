@@ -33,4 +33,3 @@ Format the output like so:
     ```
 
 TRANSCRIPT ATTACHED
-

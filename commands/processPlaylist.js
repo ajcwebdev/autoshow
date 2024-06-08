@@ -20,7 +20,7 @@ export async function processPlaylist(playlistUrl, model, chatgpt, claude, deepg
     }
 
     // Save the playlist information to a file
-    fs.writeFileSync('content/playlist-info.md', JSON.stringify(playlistInfo, null, 2))
+    fs.writeFileSync('content/playlist-info.json', JSON.stringify(playlistInfo, null, 2))
     console.log('Playlist information saved to content/playlist-info.json')
 
     // Extract URLs from the playlist data

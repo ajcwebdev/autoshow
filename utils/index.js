@@ -2,7 +2,37 @@
 
 import fs from 'fs'
 
-export const ytAlias = `yt-dlp --no-warnings --extractor-args "youtube:player_client=ios,web"`
+export const formatDate = dateStr => {
+  if (dateStr.length === 8) {
+    return `${dateStr.slice(0, 4)}-${dateStr.slice(4, 6)}-${dateStr.slice(6)}`
+  }
+  return dateStr
+}
+
+export const generateMarkdown = metadata => {
+  const {
+    id,
+    uploader,
+    uploader_url: uploaderURL,
+    title,
+    upload_date: uploadDate,
+    webpage_url: showLink,
+    thumbnail: coverImage
+  } = metadata
+
+  const formattedDate = formatDate(uploadDate)
+
+  return [
+    "---",
+    `showLink: "${showLink}"`,
+    `channel: "${uploader}"`,
+    `channelURL: "${uploaderURL}"`,
+    `title: "${title}"`,
+    `publishDate: "${formattedDate}"`,
+    `coverImage: "${coverImage}"`,
+    "---\n"
+  ].join('\n')
+}
 
 export function getModel(modelType) {
   switch (modelType) {

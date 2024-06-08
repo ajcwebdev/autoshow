@@ -31,7 +31,7 @@ async function processRssItem(item, model) {
     execSync(`ffmpeg -i "${item.showLink}" -ar 16000 "${id}.wav"`)
     console.log(`WAV file completed successfully: ${id}.wav`)
 
-    execSync(`./whisper.cpp/main -m "${model}" -f "${id}.wav" -of "${id}" --output-lrc`)
+    execSync(`./whisper.cpp/main -m "${model}" -f "${id}.wav" -of "${id}" --output-lrc`, { stdio: 'ignore' })
     console.log(`Transcript file completed successfully: ${id}.lrc`)
 
     const txtContent = processLrcToTxt(id)

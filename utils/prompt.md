@@ -12,12 +12,13 @@ Create chapters based on the topics discussed throughout.
 
 Format the output like so:
 
-    ```md
-    ## Episode Summary
+    ## Episode Description
 
     One sentence summary which doesn't exceed 180 characters (or roughly 30 words).
+    
+    ## Episode Summary
 
-    tl;dr: One paragraph summary which doesn't exceed approximately 600-1200 characters (or roughly 100-200 words)
+    One paragraph summary which doesn't exceed approximately 600-1200 characters (or roughly 100-200 words).
 
     ## Chapters
 
@@ -28,8 +29,5 @@ Format the output like so:
     02:56 - Guest Introduction and Background
 
     Introduction of guests followed by host discussing the guests' background and journey.
-
-    ## Transcript
-    ```
 
 TRANSCRIPT ATTACHED

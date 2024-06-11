@@ -1,8 +1,9 @@
 // commands/processRssFeed.js
 
+import fs from 'fs'
+import ffmpegPath from 'ffmpeg-static'
 import { XMLParser } from 'fast-xml-parser'
 import { execSync } from 'child_process'
-import fs from 'fs'
 import { processLrcToTxt, concatenateFinalContent, cleanUpFiles } from '../utils/index.js'
 
 const parser = new XMLParser({
@@ -28,7 +29,7 @@ async function processRssItem(item, model) {
     fs.writeFileSync(`${id}.md`, mdContent)
     console.log(`Markdown file completed successfully: ${id}.md`)
 
-    execSync(`ffmpeg -i "${item.showLink}" -ar 16000 "${id}.wav"`)
+    execSync(`${ffmpegPath} -i "${item.showLink}" -ar 16000 "${id}.wav"`, { stdio: 'ignore' })
     console.log(`WAV file completed successfully: ${id}.wav`)
 
     execSync(`./whisper.cpp/main -m "${model}" -f "${id}.wav" -of "${id}" --output-lrc`, { stdio: 'ignore' })
@@ -81,7 +82,7 @@ export async function processRssFeed(rssUrl, model) {
       title: item.title,
       publishDate: dateFormatter.format(new Date(item.pubDate)),
       coverImage: item['itunes:image']?.href || channelImage,
-    }))
+    })).reverse()
 
     for (const item of items) {
       await processRssItem(item, model)

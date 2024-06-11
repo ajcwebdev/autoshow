@@ -7,10 +7,16 @@
   ],
   "author": "Anthony Campolo",
   "type": "module",
+  "scripts": {
+    "autoshow": "node --env-file=.env autogen.js --profile"
+  },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.22.0",
     "@deepgram/sdk": "^3.3.3",
+    "@mistralai/mistralai": "^0.5.0",
+    "@octoai/sdk": "^1.1.4",
     "assemblyai": "^4.4.5",
+    "cohere-ai": "^7.10.2",
     "commander": "^12.1.0",
     "fast-xml-parser": "^4.4.0",
     "ffmpeg-static": "^5.2.0",

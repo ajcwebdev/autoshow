@@ -20,14 +20,17 @@ program
   .option('-m, --model <type>', 'Select model to use: base, medium, or large', 'large')
   .option('--chatgpt', 'Generate show notes with ChatGPT')
   .option('--claude', 'Generate show notes with Claude')
+  .option('--cohere', 'Generate show notes with Cohere')
+  .option('--mistral', 'Generate show notes with Mistral')
+  .option('--octo', 'Generate show notes with Octo')
   .option('--deepgram', 'Use Deepgram for transcription instead of Whisper.cpp')
   .option('--assembly', 'Use AssemblyAI for transcription instead of Whisper.cpp')
   .option('--profile', 'Log detailed performance metrics for each step')
 
 program.action(async (options) => {
   const model = getModel(options.model)
-  const { chatgpt, claude, deepgram, assembly, profile } = options
-  const commonArgs = [model, chatgpt, claude, deepgram, assembly]
+  const { chatgpt, claude, cohere, mistral, octo, deepgram, assembly, profile } = options
+  const commonArgs = [ model, chatgpt, claude, cohere, mistral, octo, deepgram, assembly ]
 
   const handlers = {
     video: processVideo,

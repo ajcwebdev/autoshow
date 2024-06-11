@@ -6,11 +6,11 @@ import ffmpegPath from 'ffmpeg-static'
 import { exec, execSync } from 'child_process'
 import { unlink } from 'fs/promises'
 import { formatDate, generateMarkdown, processLrcToTxt, concatenateFinalContent, cleanUpFiles } from '../utils/index.js'
-import { callChatGPT, callClaude } from '../utils/llms.js'
+import { callChatGPT, callClaude, callCohere, callMistral, callOcto } from '../utils/llms.js'
 import { deepgramTranscribe } from '../utils/transcription/deepgram.js'
 import { assemblyTranscribe } from '../utils/transcription/assembly.js'
 
-export async function processVideo(url, model, chatgpt, claude, deepgram, assembly) {
+export async function processVideo(url, model, chatgpt, claude, cohere, mistral, octo, deepgram, assembly) {
   try {
     const metadata = await youtubedl(url, {
       dumpSingleJson: true,
@@ -75,6 +75,21 @@ export async function processVideo(url, model, chatgpt, claude, deepgram, assemb
       if (claude) {
         await callClaude(finalContent, `${final}_claude_shownotes.md`)
         console.log(`Claude show notes generated successfully:\n  - ${final}_claude_shownotes.md`)
+      }
+
+      if (cohere) {
+        await callCohere(finalContent, `${final}_cohere_shownotes.md`)
+        console.log(`Cohere show notes generated successfully:\n  - ${final}_cohere_shownotes.md`)
+      }
+
+      if (mistral) {
+        await callMistral(finalContent, `${final}_mistral_shownotes.md`)
+        console.log(`Mistral show notes generated successfully:\n  - ${final}_mistral_shownotes.md`)
+      }
+
+      if (octo) {
+        await callOcto(finalContent, `${final}_octo_shownotes.md`);
+        console.log(`Octo show notes generated successfully:\n  - ${final}_octo_shownotes.md`);
       }
 
       cleanUpFiles(id)

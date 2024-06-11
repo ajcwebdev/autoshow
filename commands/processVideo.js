@@ -23,14 +23,14 @@ export async function processVideo(url, model, chatgpt, claude, deepgram, assemb
     const final = `content/${formattedDate}-${metadata.id}`
     const mdContent = generateMarkdown(metadata)
     fs.writeFileSync(`${id}.md`, mdContent)
-    console.log(`Markdown file completed successfully: ${id}.md`)
+    console.log(`\nMarkdown file completed successfully:\n  - ${id}.md`)
 
     // Download and convert audio
     await youtubedl(url, {
       format: 'bestaudio',
       output: `${id}.webm`
     })
-    console.log(`Audio downloaded successfully: ${id}.webm`)
+    console.log(`\nAudio downloaded successfully:\n  - ${id}.webm`)
 
     const wavFilePath = `${id}.wav`
     const command = `${ffmpegPath} -i ${id}.webm -ar 16000 ${wavFilePath}`
@@ -40,12 +40,12 @@ export async function processVideo(url, model, chatgpt, claude, deepgram, assemb
         console.error(`Error converting to WAV: ${error.message}`)
         return
       }
-      console.log(`WAV file completed successfully: ${wavFilePath}`)
+      console.log(`WAV file completed successfully:\n  - ${wavFilePath}`)
 
       // Ensuring that the conversion is complete before removing the .webm file
       try {
         await unlink(`${id}.webm`)
-        console.log(`Intermediate webm file removed: ${id}.webm`)
+        console.log(`Intermediate webm file removed:\n  - ${id}.webm`)
       } catch (unlinkError) {
         console.error('Error removing intermediate webm file:', unlinkError)
       }
@@ -59,26 +59,26 @@ export async function processVideo(url, model, chatgpt, claude, deepgram, assemb
         txtContent = fs.readFileSync(`${id}.txt`, 'utf8')
       } else {
         execSync(`./whisper.cpp/main -m "${model}" -f "${wavFilePath}" -of "${id}" --output-lrc`, { stdio: 'ignore' })
-        console.log(`Transcript file completed successfully: ${id}.lrc`)
+        console.log(`\nTranscript file completed successfully:\n  - ${id}.lrc`)
         txtContent = processLrcToTxt(id)
       }
 
       const finalContent = concatenateFinalContent(id, txtContent)
       fs.writeFileSync(`${final}.md`, finalContent)
-      console.log(`Prompt concatenated to transformed transcript successfully: ${final}.md`)
+      console.log(`Prompt concatenated to transformed transcript successfully:\n  - ${final}.md`)
 
       if (chatgpt) {
         await callChatGPT(finalContent, `${final}_chatgpt_shownotes.md`)
-        console.log(`ChatGPT show notes generated successfully: ${final}_chatgpt_shownotes.md`)
+        console.log(`ChatGPT show notes generated successfully:\n  - ${final}_chatgpt_shownotes.md`)
       }
 
       if (claude) {
         await callClaude(finalContent, `${final}_claude_shownotes.md`)
-        console.log(`Claude show notes generated successfully: ${final}_claude_shownotes.md`)
+        console.log(`Claude show notes generated successfully:\n  - ${final}_claude_shownotes.md`)
       }
 
       cleanUpFiles(id)
-      console.log(`Process completed successfully for URL: ${url}`)
+      console.log(`Process completed successfully for URL:\n  - ${url}`)
     })
   } catch (error) {
     console.error(`Error processing video: ${url}`, error)

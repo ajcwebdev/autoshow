@@ -57,7 +57,7 @@ export function processLrcToTxt(id) {
     .map(line => line.replace(/\[\d{2}:\d{2}\.\d{2}\]/g, match => match.slice(0, -4) + ']'))
     .join('\n')
   fs.writeFileSync(txtPath, txtContent)
-  console.log(`Transcript file transformed successfully: ${id}.txt`)
+  console.log(`Transcript file transformed successfully:\n  - ${id}.txt`)
   return txtContent
 }
 

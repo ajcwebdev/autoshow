@@ -50,7 +50,14 @@ npm run autoshow -- --urls urls.md
 Run on an RSS podcast feed.
 
 ```bash
+# Process RSS feed from oldest to newest (default behavior)
 npm run autoshow -- --rss "https://feeds.transistor.fm/fsjam-podcast/"
+
+# Explicitly process RSS feed from oldest to newest
+npm run autoshow -- --rss "https://feeds.transistor.fm/fsjam-podcast/" --oldest
+
+# Process RSS feed from newest to oldest
+npm run autoshow -- --rss "https://feeds.transistor.fm/fsjam-podcast/" --newest
 ```
 
 ## Language Model (LLM) Options

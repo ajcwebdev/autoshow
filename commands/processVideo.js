@@ -93,7 +93,7 @@ export async function processVideo(url, model, chatgpt, claude, cohere, mistral,
       }
 
       cleanUpFiles(id)
-      console.log(`Process completed successfully for URL:\n  - ${url}`)
+      console.log(`\n\nProcess completed successfully for URL: ${url}\n`)
     })
   } catch (error) {
     console.error(`Error processing video: ${url}`, error)

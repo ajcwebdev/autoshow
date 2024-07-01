@@ -17,6 +17,8 @@ program
   .option('-p, --playlist <playlistUrl>', 'Process all videos in a YouTube playlist')
   .option('-u, --urls <filePath>', 'Process YouTube videos from a list of URLs in a file')
   .option('-r, --rss <rssUrl>', 'Process podcast episodes from an RSS feed')
+  .option('--oldest', 'Process items from oldest to newest (default)')
+  .option('--newest', 'Process items from newest to oldest')
   .option('-m, --model <type>', 'Select model to use: base, medium, or large', 'large')
   .option('--chatgpt', 'Generate show notes with ChatGPT')
   .option('--claude', 'Generate show notes with Claude')
@@ -29,14 +31,21 @@ program
 
 program.action(async (options) => {
   const model = getModel(options.model)
-  const { chatgpt, claude, cohere, mistral, octo, deepgram, assembly, profile } = options
+  const { chatgpt, claude, cohere, mistral, octo, deepgram, assembly, profile, oldest, newest } = options
   const commonArgs = [ model, chatgpt, claude, cohere, mistral, octo, deepgram, assembly ]
+
+  let order = 'oldest' // Default order
+  if (newest) {
+    order = 'newest'
+  } else if (oldest) {
+    order = 'oldest'
+  }
 
   const handlers = {
     video: processVideo,
     playlist: processPlaylist,
     urls: processUrlsFile,
-    rss: processRssFeed,
+    rss: (url, model) => processRssFeed(url, model, order),
   }
 
   for (const [key, handler] of Object.entries(handlers)) {

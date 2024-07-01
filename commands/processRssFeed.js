@@ -27,7 +27,7 @@ async function processRssItem(item, model) {
     ].join('\n')
 
     fs.writeFileSync(`${id}.md`, mdContent)
-    console.log(`Markdown file completed successfully: ${id}.md`)
+    console.log(`\n\nMarkdown file completed successfully: ${id}.md`)
 
     execSync(`${ffmpegPath} -i "${item.showLink}" -ar 16000 "${id}.wav"`, { stdio: 'ignore' })
     console.log(`WAV file completed successfully: ${id}.wav`)
@@ -42,13 +42,13 @@ async function processRssItem(item, model) {
     console.log(`Prompt concatenated to transformed transcript successfully: ${id}.md`)
 
     cleanUpFiles(id)
-    console.log(`Process completed successfully for RSS item: ${item.title}`)
+    console.log(`\n\nProcess completed successfully for RSS item: ${item.title}`)
   } catch (error) {
     console.error(`Error processing RSS item: ${item.title}`, error)
   }
 }
 
-export async function processRssFeed(rssUrl, model) {
+export async function processRssFeed(rssUrl, model, order) {
   try {
     const response = await fetch(rssUrl, {
       method: 'GET',
@@ -82,9 +82,11 @@ export async function processRssFeed(rssUrl, model) {
       title: item.title,
       publishDate: dateFormatter.format(new Date(item.pubDate)),
       coverImage: item['itunes:image']?.href || channelImage,
-    })).reverse()
+    }))
 
-    for (const item of items) {
+    const sortedItems = order === 'newest' ? items : [...items].reverse()
+
+    for (const item of sortedItems) {
       await processRssItem(item, model)
     }
   } catch (error) {

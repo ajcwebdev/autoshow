@@ -131,7 +131,7 @@ export async function callMistral(transcriptContent, outputFilePath) {
 
 export async function callOcto(transcriptContent, outputFilePath) {
   const octoai = new OctoAIClient({
-      apiKey: process.env.OCTOAI_TOKEN,
+      apiKey: process.env.OCTOAI_API_KEY,
   })
 
   const messages = [

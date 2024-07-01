@@ -3,6 +3,10 @@
 ## Outline
 
 - [Content and Feed Inputs](#content-and-feed-inputs)
+  - [Process Single Video or Audio File](#process-single-video-or-audio-file)
+  - [Process Multiple Videos in YouTube Playlist](#process-multiple-videos-in-youtube-playlist)
+  - [Process Multiple Videos Specified in a URLs File](#process-multiple-videos-specified-in-a-urls-file)
+  - [Process Podcast RSS Feed](#process-podcast-rss-feed)
 - [Language Model (LLM) Options](#language-model-llm-options)
   - [OpenAI's ChatGPT Models](#openais-chatgpt-models)
   - [Anthropic's Claude Models](#anthropics-claude-models)
@@ -17,11 +21,15 @@
 
 ## Content and Feed Inputs
 
+### Process Single Video or Audio File
+
 Run on a single YouTube video.
 
 ```bash
 npm run autoshow -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo"
 ```
+
+### Process Multiple Videos in YouTube Playlist
 
 Run on multiple YouTube videos in a playlist.
 
@@ -29,11 +37,15 @@ Run on multiple YouTube videos in a playlist.
 npm run autoshow -- --playlist "https://www.youtube.com/playlist?list=PLCVnrVv4KhXMh4DQBigyvHSRTf2CSj129"
 ```
 
+### Process Multiple Videos Specified in a URLs File
+
 Run on an arbitrary list of URLs in `urls.md`.
 
 ```bash
 npm run autoshow -- --urls urls.md
 ```
+
+### Process Podcast RSS Feed
 
 Run on an RSS podcast feed.
 
@@ -43,7 +55,7 @@ npm run autoshow -- --rss "https://feeds.transistor.fm/fsjam-podcast/"
 
 ## Language Model (LLM) Options
 
-Create a `.env` file and set API key as demonstrated in `.env.example` for `OPENAI_API_KEY` or `ANTHROPIC_API_KEY`.
+Create a `.env` file and set API key as demonstrated in `.env.example` for `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `COHERE_API_KEY`, `MISTRAL_API_KEY`, or `OCTOAI_API_KEY`.
 
 ### OpenAI's ChatGPT Models
 

@@ -42,6 +42,8 @@ export function getModel(modelType) {
       return "whisper.cpp/models/ggml-medium.bin"
     case 'large':
       return "whisper.cpp/models/ggml-large-v2.bin"
+    // case 'custom':
+    //   return "whisper.cpp/models/ggml-base.en.bin"
     default:
       console.error(`Unknown model type: ${modelType}`)
       process.exit(1)

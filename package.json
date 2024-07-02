@@ -8,7 +8,8 @@
   "author": "Anthony Campolo",
   "type": "module",
   "scripts": {
-    "autoshow": "node --env-file=.env autogen.js --profile"
+    "autoshow": "node --env-file=.env autogen.js --profile",
+    "serve": "node --env-file=.env --watch server/index.js"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.22.0",

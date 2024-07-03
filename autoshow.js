@@ -1,4 +1,4 @@
-// autogen.js
+// autoshow.js
 
 import { Command } from 'commander'
 import { processVideo } from './commands/processVideo.js'
@@ -11,7 +11,7 @@ import { performance } from 'perf_hooks'
 const program = new Command()
 
 program
-  .name('autogen')
+  .name('autoshow')
   .description('Automated processing of YouTube videos, playlists, and podcast RSS feeds')
   .option('-v, --video <url>', 'Process a single YouTube video')
   .option('-p, --playlist <playlistUrl>', 'Process all videos in a YouTube playlist')

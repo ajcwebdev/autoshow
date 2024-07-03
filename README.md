@@ -12,7 +12,7 @@ An example workflow for automatically creating a video transcript with show note
 - [Setup](#setup)
   - [Install Local Dependencies](#install-local-dependencies)
   - [Clone Whisper Repo](#clone-whisper-repo)
-- [Run Autogen Node Scripts](#run-autogen-node-scripts)
+- [Run Autoshow Node Scripts](#run-autoshow-node-scripts)
 
 See [`docs/roadmap.md`](/docs/roadmap.md) for details about current development work and future potential capabilities.
 
@@ -39,12 +39,12 @@ make -C whisper.cpp
 
 > Replace `base` with `large-v2` for the largest model or `medium` for a middle sized model. See the [Greater Configurability section of the Roadmap](/docs/roadmap.md#greater-configurability) for information about using other Whisper model versions.
 
-## Run Autogen Node Scripts
+## Run Autoshow Node Scripts
 
 Run on a single YouTube video.
 
 ```bash
-node autogen.js --video "https://www.youtube.com/watch?v=jKB0EltG9Jo"
+node autoshow.js --video "https://www.youtube.com/watch?v=jKB0EltG9Jo"
 ```
 
 Example commands for all available CLI options can be found in [`docs/examples.md`](/docs/examples.md).

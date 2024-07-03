@@ -251,7 +251,7 @@ export function getModel(modelType) {
 For example, the following would output four show note files for each combination of transcription and LLM services:
 
 ```bash
-node --env-file=.env autogen.js --deepgram --assembly --chatgpt --claude --video "https://www.youtube.com/watch?v=-jF0g_YGPdI"
+node --env-file=.env autoshow.js --deepgram --assembly --chatgpt --claude --video "https://www.youtube.com/watch?v=-jF0g_YGPdI"
 ```
 
 </details>

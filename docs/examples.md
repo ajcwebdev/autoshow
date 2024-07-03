@@ -17,7 +17,7 @@
   - [Deepgram](#deepgram)
   - [Assembly](#assembly)
   - [Whisper.cpp](#whispercpp)
-- [Run Autogen Bash Scripts](#run-autogen-bash-scripts)
+- [Run Autoshow Bash Scripts](#run-autoshow-bash-scripts)
 
 ## Content and Feed Inputs
 
@@ -98,6 +98,18 @@ npm run autoshow -- --mistral --video "https://www.youtube.com/watch?v=jKB0EltG9
 npm run autoshow -- --octo --video "https://www.youtube.com/watch?v=jKB0EltG9Jo"
 ```
 
+### Temporary Hacky Way to Run All Five LLMs at Once
+
+This will be improved soon to allow generating multiple show notes with different LLMs after running the transcription step only once. But for now this will get the job done (just very, very slowly):
+
+```bash
+npm run autoshow -- --chatgpt --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" && rm content/2023-09-10-jKB0EltG9Jo.md && \
+  npm run autoshow -- --claude --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" && rm content/2023-09-10-jKB0EltG9Jo.md && \
+  npm run autoshow -- --cohere --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" && rm content/2023-09-10-jKB0EltG9Jo.md && \
+  npm run autoshow -- --mistral --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" && rm content/2023-09-10-jKB0EltG9Jo.md && \
+  npm run autoshow -- --octo --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" && rm content/2023-09-10-jKB0EltG9Jo.md
+```
+
 ## Transcription Options
 
 Create a `.env` file and set API key as demonstrated in `.env.example` for `DEEPGRAM_API_KEY` or `ASSEMBLY_API_KEY`.
@@ -128,24 +140,24 @@ npm run autoshow -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --mode
 
 > _Note: Make sure the model you select is the same model you built in the [Clone Whisper Repo](#clone-whisper-repo) step._
 
-## Run Autogen Bash Scripts
+## Run Autoshow Bash Scripts
 
 ```bash
 # Run on a single YouTube video (short one minute video)
-./autogen.sh --video "https://www.youtube.com/watch?v=jKB0EltG9Jo"
+./autoshow.sh --video "https://www.youtube.com/watch?v=jKB0EltG9Jo"
 
 # Run on a single YouTube video (longer 30 minute video)
-./autogen.sh --video "https://www.youtube.com/watch?v=QhXc9rVLVUo"
+./autoshow.sh --video "https://www.youtube.com/watch?v=QhXc9rVLVUo"
 
 # Run on a single audio file
-./autogen.sh --audio "https://media.transistor.fm/d1d18d2d/449ace19.mp3"
+./autoshow.sh --audio "https://media.transistor.fm/d1d18d2d/449ace19.mp3"
 
 # Run on multiple YouTube videos in a playlist
-./autogen.sh --playlist "https://www.youtube.com/playlist?list=PLCVnrVv4KhXMh4DQBigyvHSRTf2CSj129"
+./autoshow.sh --playlist "https://www.youtube.com/playlist?list=PLCVnrVv4KhXMh4DQBigyvHSRTf2CSj129"
 
 # Run on an arbitrary list of URLs in `urls.md`
-./autogen.sh --urls urls.md
+./autoshow.sh --urls urls.md
 
 # Run on a local video file
-./autogen.sh --file content/video.mkv
+./autoshow.sh --file content/video.mkv
 ```

@@ -15,11 +15,11 @@ const videoURL = args[0]
 
 const timestamp = new Date().toISOString().replace(/[:.]/g, '-')
 const commands = [
-  { cmd: `node autogen.js --profile -m large --video "${videoURL}"`, suffix: 'large' },
-  { cmd: `node autogen.js --profile -m medium --video "${videoURL}"`, suffix: 'medium' },
-  { cmd: `node autogen.js --profile -m base --video "${videoURL}"`, suffix: 'base' },
-  { cmd: `node --env-file=.env autogen.js --profile --deepgram --video "${videoURL}"`, suffix: 'deepgram' },
-  { cmd: `node --env-file=.env autogen.js --profile --assembly --video "${videoURL}"`, suffix: 'assembly' }
+  { cmd: `node autoshow.js --profile -m large --video "${videoURL}"`, suffix: 'large' },
+  { cmd: `node autoshow.js --profile -m medium --video "${videoURL}"`, suffix: 'medium' },
+  { cmd: `node autoshow.js --profile -m base --video "${videoURL}"`, suffix: 'base' },
+  { cmd: `node --env-file=.env autoshow.js --profile --deepgram --video "${videoURL}"`, suffix: 'deepgram' },
+  { cmd: `node --env-file=.env autoshow.js --profile --assembly --video "${videoURL}"`, suffix: 'assembly' }
 ]
 
 commands.forEach((commandObj, index) => {

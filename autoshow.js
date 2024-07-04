@@ -5,6 +5,7 @@ import { processVideo } from './commands/processVideo.js'
 import { processPlaylist } from './commands/processPlaylist.js'
 import { processUrlsFile } from './commands/processUrlsFile.js'
 import { processRssFeed } from './commands/processRssFeed.js'
+import { processAudioFile } from './commands/processAudioFile.js'
 import { getModel } from './utils/index.js'
 import { performance } from 'perf_hooks'
 
@@ -17,6 +18,7 @@ program
   .option('-p, --playlist <playlistUrl>', 'Process all videos in a YouTube playlist')
   .option('-u, --urls <filePath>', 'Process YouTube videos from a list of URLs in a file')
   .option('-r, --rss <rssUrl>', 'Process podcast episodes from an RSS feed')
+  .option('-a, --audio <filePath>', 'Process a local audio file')
   .option('--oldest', 'Process items from oldest to newest (default)')
   .option('--newest', 'Process items from newest to oldest')
   .option('-m, --model <type>', 'Select model to use: base, medium, or large', 'large')
@@ -37,8 +39,6 @@ program.action(async (options) => {
   let order = 'oldest' // Default order
   if (newest) {
     order = 'newest'
-  } else if (oldest) {
-    order = 'oldest'
   }
 
   const handlers = {
@@ -46,6 +46,7 @@ program.action(async (options) => {
     playlist: processPlaylist,
     urls: processUrlsFile,
     rss: (url, model) => processRssFeed(url, model, order),
+    audio: processAudioFile
   }
 
   for (const [key, handler] of Object.entries(handlers)) {

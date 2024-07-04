@@ -3,9 +3,11 @@
 ## Outline
 
 - [Content and Feed Inputs](#content-and-feed-inputs)
-  - [Process Single Video or Audio File](#process-single-video-or-audio-file)
+  - [Process Single Video File](#process-single-video-file)
   - [Process Multiple Videos in YouTube Playlist](#process-multiple-videos-in-youtube-playlist)
   - [Process Multiple Videos Specified in a URLs File](#process-multiple-videos-specified-in-a-urls-file)
+  - [Process Single Audio File](#process-single-audio-file)
+  - [Process Single Audio URL](#process-single-audio-url)
   - [Process Podcast RSS Feed](#process-podcast-rss-feed)
 - [Language Model (LLM) Options](#language-model-llm-options)
   - [OpenAI's ChatGPT Models](#openais-chatgpt-models)
@@ -21,7 +23,7 @@
 
 ## Content and Feed Inputs
 
-### Process Single Video or Audio File
+### Process Single Video File
 
 Run on a single YouTube video.
 
@@ -43,6 +45,22 @@ Run on an arbitrary list of URLs in `urls.md`.
 
 ```bash
 npm run autoshow -- --urls urls.md
+```
+
+### Process Single Audio File
+
+```bash
+node --env-file=.env autoshow.js --audio "audio.mp3"
+npm run autoshow -- --audio "audio.mp3"
+```
+
+### Process Single Audio URL
+
+_Not implemented yet, this is just a placeholder._
+
+```bash
+# node --env-file=.env autoshow.js --audioUrl "https://media.transistor.fm/ade4ec38/cdf2e8ef.mp3"
+# npm run autoshow -- --audioUrl "https://media.transistor.fm/ade4ec38/cdf2e8ef.mp3"
 ```
 
 ### Process Podcast RSS Feed

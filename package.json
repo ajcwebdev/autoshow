@@ -8,7 +8,7 @@
   "author": "Anthony Campolo",
   "type": "module",
   "scripts": {
-    "autoshow": "node --env-file=.env autoshow.js --profile",
+    "autoshow": "node --env-file=.env autoshow.js",
     "serve": "node --env-file=.env --watch server/index.js"
   },
   "dependencies": {

@@ -44,7 +44,9 @@ make -C whisper.cpp
 Run on a single YouTube video.
 
 ```bash
-node autoshow.js --video "https://www.youtube.com/watch?v=jKB0EltG9Jo"
+npm run autoshow -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo"
+
+# node autoshow.js --video "https://www.youtube.com/watch?v=jKB0EltG9Jo"
 ```
 
 Example commands for all available CLI options can be found in [`docs/examples.md`](/docs/examples.md).

@@ -1,15 +1,21 @@
 {
   "name": "autoshow",
-  "description": "An example workflow for automatically creating a video transcript with show notes using ChatGPT and Whisper.",
-  "keywords": [
-    "ChatGPT",
-    "Whisper"
-  ],
   "author": "Anthony Campolo",
+  "description": "An example workflow for automatically generating customizable show notes for audio and video files.",
+  "keywords": [ "Claude", "ChatGPT", "Cohere", "Mistral", "OctoAI", "Whisper", "Deepgram", "AssemblyAI" ],
+  "main": "autoshow.js",
   "type": "module",
+  "bin": {
+    "autoshow": "./autoshow.js"
+  },
   "scripts": {
-    "autoshow": "node --env-file=.env autoshow.js",
-    "serve": "node --env-file=.env --watch server/index.js"
+    "autoshow": "node --env-file=.env --no-warnings autoshow.js",
+    "serve": "node --env-file=.env --watch server/index.js",
+    "video": "npm run autoshow -- --video",
+    "playlist": "npm run autoshow -- --playlist",
+    "urls": "npm run autoshow -- --urls",
+    "audio": "npm run autoshow -- --audio",
+    "rss": "npm run autoshow -- --rss"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.22.0",

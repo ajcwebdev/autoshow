@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 // autoshow.js
 
 import { Command } from 'commander'

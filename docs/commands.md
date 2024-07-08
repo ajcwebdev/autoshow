@@ -1,13 +1,13 @@
 # Commands
 
-The files in the `commands` folder are the key components of Autoshow. Each file handles different aspects of processing various types of content including:
+The files in the `commands` folder are the key components of Autoshow that enable choosing which type of content to process and with what options. Different language models can be used for show notes and different transcription services can be used for transcripts. Each file handles different aspects of processing various types of content including:
 
 - Single videos (`processVideo.js`)
 - YouTube playlists (`processPlaylist.js`)
 - Podcast RSS feeds (`processRssFeed.js`)
 - Lists of video URLs (`processUrlsFile.js`)
 
-They work together to offer flexibility in handling different content sources while maintaining a consistent approach to generating transcripts and show notes. The main `autoshow.js` file uses these modules to provide a unified command-line interface for the user, allowing them to choose which type of content to process and with what options including which language model to use for show notes and which transcription service to use for transcripts.
+They work together to offer flexibility in handling different content sources while maintaining a consistent approach to generating transcripts and show notes. The main `autoshow.js` file uses these modules to provide a unified command-line interface for the user.
 
 ## processVideo
 

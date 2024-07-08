@@ -10,25 +10,20 @@
   },
   "scripts": {
     "autoshow": "node --env-file=.env --no-warnings autoshow.js",
-    "serve": "node --env-file=.env --watch server/index.js",
-    "video": "npm run autoshow -- --video",
-    "playlist": "npm run autoshow -- --playlist",
-    "urls": "npm run autoshow -- --urls",
-    "audio": "npm run autoshow -- --audio",
-    "rss": "npm run autoshow -- --rss"
+    "serve": "node --env-file=.env --watch server/index.js"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.22.0",
-    "@deepgram/sdk": "^3.3.3",
+    "@anthropic-ai/sdk": "^0.24.3",
+    "@deepgram/sdk": "^3.4.1",
     "@mistralai/mistralai": "^0.5.0",
-    "@octoai/sdk": "^1.1.4",
-    "assemblyai": "^4.4.5",
-    "cohere-ai": "^7.10.2",
+    "@octoai/sdk": "^1.4.0",
+    "assemblyai": "^4.5.0",
+    "cohere-ai": "^7.10.6",
     "commander": "^12.1.0",
     "fast-xml-parser": "^4.4.0",
     "ffmpeg-static": "^5.2.0",
-    "node-llama-cpp": "^2.8.11",
-    "openai": "^4.47.3",
-    "youtube-dl-exec": "^3.0.2"
+    "node-llama-cpp": "^2.8.12",
+    "openai": "^4.52.3",
+    "youtube-dl-exec": "^3.0.6"
   }
 }

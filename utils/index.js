@@ -10,28 +10,18 @@ export const formatDate = dateStr => {
 }
 
 export const generateMarkdown = metadata => {
-  const {
-    id,
-    uploader,
-    uploader_url: uploaderURL,
-    title,
-    upload_date: uploadDate,
-    webpage_url: showLink,
-    thumbnail: coverImage
-  } = metadata
-
-  const formattedDate = formatDate(uploadDate)
-
-  return [
-    "---",
-    `showLink: "${showLink}"`,
+  const { uploader, uploader_url, title, upload_date, webpage_url, thumbnail } = metadata
+  const formatted_date = formatDate(upload_date)
+  const frontMatter = [
+    `showLink: "${webpage_url}"`,
     `channel: "${uploader}"`,
-    `channelURL: "${uploaderURL}"`,
+    `channelURL: "${uploader_url}"`,
     `title: "${title}"`,
-    `publishDate: "${formattedDate}"`,
-    `coverImage: "${coverImage}"`,
-    "---\n"
-  ].join('\n')
+    `publishDate: "${formatted_date}"`,
+    `coverImage: "${thumbnail}"`
+  ]
+  console.log(frontMatter)
+  return frontMatter.join('\n')
 }
 
 export function getModel(modelType) {
@@ -73,9 +63,11 @@ export function concatenateFinalContent(id, txtContent) {
 
 export function cleanUpFiles(id) {
   const files = [`${id}.wav`, `${id}.lrc`, `${id}.txt`, `${id}.md`]
+  console.log(`\nIntermediate files deleted:`)
   for (const file of files) {
     if (fs.existsSync(file)) {
       fs.unlinkSync(file)
+      console.log(`  - ${file}`)
     }
   }
 }

@@ -5,7 +5,7 @@ import path from 'path'
 import ffmpegPath from 'ffmpeg-static'
 import { exec, execSync } from 'child_process'
 import { processLrcToTxt, concatenateFinalContent, cleanUpFiles } from '../utils/index.js'
-import { callChatGPT, callClaude, callCohere, callMistral, callOcto } from '../utils/llms.js'
+import { callChatGPT, callClaude, callCohere, callMistral, callOcto } from '../utils/llms/index.js'
 import { deepgramTranscribe } from '../utils/transcription/deepgram.js'
 import { assemblyTranscribe } from '../utils/transcription/assembly.js'
 

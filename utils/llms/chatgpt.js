@@ -2,6 +2,7 @@ import fs from 'fs'
 import { OpenAI } from 'openai'
 
 const gptModel = {
+  GPT_4o_MINI: "gpt-4o-mini",
   GPT_4o: "gpt-4o",
   GPT_4_TURBO: "gpt-4-turbo",
   GPT_4: "gpt-4",
@@ -14,7 +15,7 @@ export async function callChatGPT(transcriptContent, outputFilePath) {
     })
   
     const response = await openai.chat.completions.create({
-      model: gptModel.GPT_3_TURBO,
+      model: gptModel.GPT_4o_MINI,
       max_tokens: 4000,
       messages: [{ role: 'user', content: transcriptContent }],
     })

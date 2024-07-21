@@ -51,13 +51,12 @@ const handleVideoRequest = async (req, res) => {
         false  // assembly
       ]
 
-      await processVideo(youtubeUrl, ...commonArgs)
+      const finalContent = await processVideo(youtubeUrl, ...commonArgs)
 
       res.writeHead(200, { 'Content-Type': 'application/json' })
       res.end(JSON.stringify({ 
-        message: 'Video processing started.',
-        model: requestedModel,
-        llm: llm || 'None'
+        message: 'Video processed successfully.',
+        content: finalContent
       }))
     } catch (error) {
       console.error('Error processing video:', error)

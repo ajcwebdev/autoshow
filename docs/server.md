@@ -32,5 +32,30 @@ Once the server is running, send a `POST` request to `http://localhost:3000/vide
 ```bash
 curl -X POST http://localhost:3000/video \
   -H "Content-Type: application/json" \
-  -d '{"youtubeUrl": "https://www.youtube.com/watch?v=jKB0EltG9Jo"}'
+  -d '{
+    "youtubeUrl": "https://www.youtube.com/watch?v=jKB0EltG9Jo"
+  }'
+```
+
+Configure `model`.
+
+```bash
+curl -X POST http://localhost:3000/video \
+  -H "Content-Type: application/json" \
+  -d '{
+    "youtubeUrl": "https://www.youtube.com/watch?v=jKB0EltG9Jo",
+    "model": "medium"
+  }'
+```
+
+Use LLM.
+
+```bash
+curl -X POST http://localhost:3000/video \
+  -H "Content-Type: application/json" \
+  -d '{
+    "youtubeUrl": "https://www.youtube.com/watch?v=jKB0EltG9Jo",
+    "model": "large",
+    "llm": "chatgpt"
+  }'
 ```

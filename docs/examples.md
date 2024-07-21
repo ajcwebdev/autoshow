@@ -50,7 +50,7 @@ npm run autoshow -- --urls "content/examples/urls.md"
 ### Process Single Audio File
 
 ```bash
-npm run autoshow -- --audio "content/examples/lambda.mp3"
+npm run autoshow -- --audio "content/examples/example.mp3"
 ```
 
 ### Process Single Audio URL

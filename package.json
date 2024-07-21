@@ -10,7 +10,8 @@
   },
   "scripts": {
     "autoshow": "node --env-file=.env --no-warnings autoshow.js",
-    "serve": "node --env-file=.env --watch server/index.js"
+    "serve": "node --env-file=.env --no-warnings --watch server/index.js",
+    "fetch": "node --env-file=.env --no-warnings server/fetch.js"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.24.3",

@@ -1,3 +1,5 @@
+// web/src/Form.jsx
+
 import React, { useState } from 'react'
 
 const Alert = ({ message, variant }) => (
@@ -7,9 +9,8 @@ const Alert = ({ message, variant }) => (
 )
 
 const Form = () => {
-  const [youtubeUrl, setYoutubeUrl] = useState('')
+  const [youtubeUrl, setYoutubeUrl] = useState('https://www.youtube.com/watch?v=jKB0EltG9Jo')
   const [model, setModel] = useState('base')
-  const [llm, setLlm] = useState('chatgpt')
   const [result, setResult] = useState(null)
   const [error, setError] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
@@ -26,7 +27,7 @@ const Form = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ youtubeUrl, model, llm }),
+        body: JSON.stringify({ youtubeUrl, model }),
       })
 
       if (!response.ok) {
@@ -34,13 +35,22 @@ const Form = () => {
       }
 
       const data = await response.json()
-      setResult(data)
+      setResult(data) // Set result with the response data
     } catch (err) {
       setError(err.message)
     } finally {
       setIsLoading(false)
     }
   }
+
+  const formatContent = (text) => {
+    return text.split('\n').map((line, index) => (
+      <React.Fragment key={index}>
+        {line}
+        <br />
+      </React.Fragment>
+    ));
+  };
 
   return (
     <>
@@ -67,20 +77,6 @@ const Form = () => {
             <option value="large">Large</option>
           </select>
         </div>
-        <div className="form-group">
-          <label htmlFor="llm">LLM</label>
-          <select
-            id="llm"
-            value={llm}
-            onChange={(e) => setLlm(e.target.value)}
-          >
-            <option value="chatgpt">ChatGPT</option>
-            <option value="claude">Claude</option>
-            <option value="cohere">Cohere</option>
-            <option value="mistral">Mistral</option>
-            <option value="octo">Octo</option>
-          </select>
-        </div>
         <button type="submit" disabled={isLoading}>
           {isLoading ? 'Processing...' : 'Submit'}
         </button>
@@ -89,7 +85,7 @@ const Form = () => {
       {result && (
         <div className="result">
           <h2>Result:</h2>
-          <pre>{JSON.stringify(result, null, 2)}</pre>
+          <div>{formatContent(result.content)}</div>
         </div>
       )}
     </>

@@ -15,11 +15,13 @@
   - [Cohere's Command Models](#coheres-command-models)
   - [Mistral's Mixtral Models](#mistrals-mixtral-models)
   - [OctoAI's Models](#octoais-models)
+  - [node-llama-cpp](#node-llama-cpp)
+  - [Ollama](#ollama)
 - [Transcription Options](#transcription-options)
   - [Deepgram](#deepgram)
   - [Assembly](#assembly)
   - [Whisper.cpp](#whispercpp)
-- [Run Autoshow Bash Scripts](#run-autoshow-bash-scripts)
+  - [Whisper.cpp Docker](#whispercpp-docker)
 
 ## Content and Feed Inputs
 
@@ -120,6 +122,8 @@ npm run autoshow -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --octo
 
 ### node-llama-cpp
 
+_Not implemented yet, this is just a placeholder._
+
 Download Llama3-8B instruct model.
 
 ```bash
@@ -133,7 +137,27 @@ echo '\nLLAMA_MODEL="Meta-Llama-3-8B-Instruct.Q8_0.gguf"' >> .env
 ```
 
 ```bash
-npm run autoshow -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --llama
+# npm run autoshow -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --llama
+```
+
+### Ollama
+
+_Not implemented yet, this is just a placeholder._
+
+```bash
+brew install ollama
+ollama pull phi3
+```
+
+```bash
+# npm run autoshow -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --ollama
+```
+
+Ollama Docker.
+
+```bash
+docker run -d -v ollama:/root/.ollama -p 11434:11434 --name ollama ollama/ollama
+docker exec -it ollama ollama run phi3
 ```
 
 ### Temporary Hacky Way to Run All Five LLMs at Once

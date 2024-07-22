@@ -29,7 +29,8 @@ program
   .option('--cohere', 'Generate show notes with Cohere')
   .option('--mistral', 'Generate show notes with Mistral')
   .option('--octo', 'Generate show notes with Octo')
-  .option('--llama', 'Generate show notes with Llama')
+  // .option('--llama', 'Generate show notes with Llama')
+  // .option('--ollama', 'Generate show notes with Ollama')
   .option('--deepgram', 'Use Deepgram for transcription instead of Whisper.cpp')
   .option('--assembly', 'Use AssemblyAI for transcription instead of Whisper.cpp')
   .option('--docker', 'Use Docker for Whisper.cpp')
@@ -37,8 +38,8 @@ program
 
 program.action(async (options) => {
   const model = getModel(options.model)
-  const { chatgpt, claude, cohere, mistral, octo, llama, deepgram, assembly, docker, profile, oldest, newest } = options
-  const commonArgs = [ model, chatgpt, claude, cohere, mistral, octo, llama, deepgram, assembly, docker ]
+  const { chatgpt, claude, cohere, mistral, octo, deepgram, assembly, docker, profile, oldest, newest } = options
+  const commonArgs = [ model, chatgpt, claude, cohere, mistral, octo, deepgram, assembly, docker ]
 
   let order = 'oldest' // Default order
   if (newest) {

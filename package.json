@@ -2,7 +2,16 @@
   "name": "autoshow",
   "author": "Anthony Campolo",
   "description": "An example workflow for automatically generating customizable show notes for audio and video files.",
-  "keywords": [ "Claude", "ChatGPT", "Cohere", "Mistral", "OctoAI", "Whisper", "Deepgram", "AssemblyAI" ],
+  "keywords": [
+    "Claude",
+    "ChatGPT",
+    "Cohere",
+    "Mistral",
+    "OctoAI",
+    "Whisper",
+    "Deepgram",
+    "AssemblyAI"
+  ],
   "main": "autoshow.js",
   "type": "module",
   "bin": {
@@ -24,6 +33,7 @@
     "fast-xml-parser": "^4.4.0",
     "ffmpeg-static": "^5.2.0",
     "node-llama-cpp": "^3.0.0-beta.38",
+    "ollama": "^0.5.6",
     "openai": "^4.52.3",
     "youtube-dl-exec": "^3.0.6"
   }

@@ -6,11 +6,11 @@ import ffmpegPath from 'ffmpeg-static'
 import { exec, execSync } from 'child_process'
 import { unlink } from 'fs/promises'
 import { formatDate, generateMarkdown, processLrcToTxt, concatenateFinalContent, cleanUpFiles } from '../utils/index.js'
-import { callChatGPT, callClaude, callCohere, callMistral, callOcto, callLlama } from '../utils/llms/index.js'
+import { callChatGPT, callClaude, callCohere, callMistral, callOcto } from '../utils/llms/index.js'
 import { deepgramTranscribe } from '../utils/transcription/deepgram.js'
 import { assemblyTranscribe } from '../utils/transcription/assembly.js'
 
-export async function processVideo(url, model, chatgpt, claude, cohere, mistral, octo, llama, deepgram, assembly, docker) {
+export async function processVideo(url, model, chatgpt, claude, cohere, mistral, octo, deepgram, assembly, docker) {
   try {
     const metadata = await youtubedl(url, {
       dumpSingleJson: true,
@@ -80,11 +80,12 @@ export async function processVideo(url, model, chatgpt, claude, cohere, mistral,
           claude: callClaude,
           cohere: callCohere,
           mistral: callMistral,
-          octo: callOcto,
-          llama: callLlama
+          octo: callOcto
+          // llama: callLlama,
+          // ollama: callOllama
         }
 
-        const llmFlags = { chatgpt, claude, cohere, mistral, octo, llama }
+        const llmFlags = { chatgpt, claude, cohere, mistral, octo }
 
         for (const [llm, callFunction] of Object.entries(llmCalls)) {
           if (llmFlags[llm]) {

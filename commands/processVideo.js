@@ -6,11 +6,11 @@ import ffmpegPath from 'ffmpeg-static'
 import { exec, execSync } from 'child_process'
 import { unlink } from 'fs/promises'
 import { formatDate, generateMarkdown, processLrcToTxt, concatenateFinalContent, cleanUpFiles } from '../utils/index.js'
-import { callChatGPT, callClaude, callCohere, callMistral, callOcto } from '../utils/llms/index.js'
+import { callChatGPT, callClaude, callCohere, callMistral, callOcto, callLlama } from '../utils/llms/index.js'
 import { deepgramTranscribe } from '../utils/transcription/deepgram.js'
 import { assemblyTranscribe } from '../utils/transcription/assembly.js'
 
-export async function processVideo(url, model, chatgpt, claude, cohere, mistral, octo, deepgram, assembly) {
+export async function processVideo(url, model, chatgpt, claude, cohere, mistral, octo, llama, deepgram, assembly, docker) {
   try {
     const metadata = await youtubedl(url, {
       dumpSingleJson: true,
@@ -61,8 +61,12 @@ export async function processVideo(url, model, chatgpt, claude, cohere, mistral,
         } else if (assembly) {
           await assemblyTranscribe(wav, video_id)
           txtContent = fs.readFileSync(`${video_id}.txt`, 'utf8')
+        } else if (docker) {
+          execSync(`docker run --rm -v ${process.cwd()}:/app/workspace whisper-image "/app/main -m /app/models/${model} -f /app/workspace/${wav} -of /app/workspace/${video_id} --output-lrc"`)
+          console.log(`\nTranscript file completed successfully:\n  - ${video_id}.lrc`)
+          txtContent = processLrcToTxt(video_id)
         } else {
-          execSync(`./whisper.cpp/main -m "${model}" -f "${wav}" -of "${video_id}" --output-lrc`, { stdio: 'ignore' })
+          execSync(`./whisper.cpp/main -m "whisper.cpp/models/${model}" -f "${wav}" -of "${video_id}" --output-lrc`, { stdio: 'ignore' })
           console.log(`\nTranscript file completed successfully:\n  - ${video_id}.lrc`)
           txtContent = processLrcToTxt(video_id)
         }
@@ -76,10 +80,11 @@ export async function processVideo(url, model, chatgpt, claude, cohere, mistral,
           claude: callClaude,
           cohere: callCohere,
           mistral: callMistral,
-          octo: callOcto
+          octo: callOcto,
+          llama: callLlama
         }
 
-        const llmFlags = { chatgpt, claude, cohere, mistral, octo }
+        const llmFlags = { chatgpt, claude, cohere, mistral, octo, llama }
 
         for (const [llm, callFunction] of Object.entries(llmCalls)) {
           if (llmFlags[llm]) {

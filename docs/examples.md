@@ -118,6 +118,24 @@ npm run autoshow -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --mist
 npm run autoshow -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --octo
 ```
 
+### node-llama-cpp
+
+Download Llama3-8B instruct model.
+
+```bash
+npx node-llama-cpp pull --dir ./utils/llms/models "https://huggingface.co/mradermacher/Meta-Llama-3-8B-Instruct-GGUF/resolve/main/Meta-Llama-3-8B-Instruct.Q8_0.gguf"
+```
+
+Set model in `.env` file.
+
+```bash
+echo '\nLLAMA_MODEL="Meta-Llama-3-8B-Instruct.Q8_0.gguf"' >> .env
+```
+
+```bash
+npm run autoshow -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --llama
+```
+
 ### Temporary Hacky Way to Run All Five LLMs at Once
 
 This will be improved soon to allow generating multiple show notes with different LLMs after running the transcription step only once. But for now this will get the job done (just very, very slowly):
@@ -163,24 +181,16 @@ npm run autoshow -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" -m lar
 
 > _Note: Make sure the model you select is the same model you built in the [Clone Whisper Repo](#clone-whisper-repo) step._
 
-## Run Autoshow Bash Scripts
+### Whisper.cpp Docker
 
 ```bash
-# Run on a single YouTube video (short one minute video)
-./autoshow.sh --video "https://www.youtube.com/watch?v=jKB0EltG9Jo"
+cp Dockerfile whisper.cpp
+cd whisper.cpp
+docker build -f Dockerfile -t whisper-image .
+# docker buildx build --platform=linux/arm64 -f Dockerfile -t whisper-image .
+cd ..
+```
 
-# Run on a single YouTube video (longer 30 minute video)
-./autoshow.sh --video "https://www.youtube.com/watch?v=QhXc9rVLVUo"
-
-# Run on a single audio file
-./autoshow.sh --audio "https://media.transistor.fm/d1d18d2d/449ace19.mp3"
-
-# Run on multiple YouTube videos in a playlist
-./autoshow.sh --playlist "https://www.youtube.com/playlist?list=PLCVnrVv4KhXMh4DQBigyvHSRTf2CSj129"
-
-# Run on an arbitrary list of URLs in `urls.md`
-./autoshow.sh --urls urls.md
-
-# Run on a local video file
-./autoshow.sh --file content/video.mkv
+```bash
+npm run autoshow -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --docker
 ```

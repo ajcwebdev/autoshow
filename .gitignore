@@ -4,3 +4,4 @@ content
 whisper.cpp
 package-lock.json
 .env
+utils/llms/models

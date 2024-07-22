@@ -27,13 +27,13 @@ export const generateMarkdown = metadata => {
 export function getModel(modelType) {
   switch (modelType) {
     case 'base':
-      return "whisper.cpp/models/ggml-base.bin"
+      return "ggml-base.bin"
     case 'medium':
-      return "whisper.cpp/models/ggml-medium.bin"
+      return "ggml-medium.bin"
     case 'large':
-      return "whisper.cpp/models/ggml-large-v2.bin"
+      return "ggml-large-v2.bin"
     // case 'custom':
-    //   return "whisper.cpp/models/ggml-base.en.bin"
+    //   return "ggml-base.en.bin"
     default:
       console.error(`Unknown model type: ${modelType}`)
       process.exit(1)

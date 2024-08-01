@@ -45,7 +45,7 @@ export async function processAudioFile(filePath, model, chatgpt, claude, cohere,
         await assemblyTranscribe(wavFilePath, id)
         txtContent = fs.readFileSync(`${id}.txt`, 'utf8')
       } else {
-        execSync(`./whisper.cpp/main -m "${model}" -f "${wavFilePath}" -of "${id}" --output-lrc`, { stdio: 'ignore' })
+        execSync(`./whisper.cpp/main -m "whisper.cpp/models/${model}" -f "${wavFilePath}" -of "${id}" --output-lrc`, { stdio: 'ignore' })
         console.log(`\nTranscript file completed successfully:\n  - ${id}.lrc`)
         txtContent = processLrcToTxt(id)
       }

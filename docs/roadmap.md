@@ -180,6 +180,13 @@ The framework I'll pick for building the final app will need to include authenti
 Click any of the following to expand.
 
 <details>
+  <summary>Set better defaults for context limit, entropy threshold, and max temperature to improve transcript output.</summary>
+
+[Improving hallucinations and repetitions](https://github.com/ggerganov/whisper.cpp/discussions/2286)
+
+</details>
+
+<details>
   <summary>Enable downloading and passing any Whisper.cpp model size.</summary>
 
 Currently, the only model versions supported by the CLI are `base`, `medium`, and `large-v2`. Eventually you will be able to use any of the following:

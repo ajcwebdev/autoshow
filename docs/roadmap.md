@@ -180,6 +180,15 @@ The framework I'll pick for building the final app will need to include authenti
 Click any of the following to expand.
 
 <details>
+  <summary>Explore whether to integrate other Whisper-enabled open source tools</summary>
+
+[mlx-whisper](https://github.com/ml-explore/mlx-examples/tree/main/whisper)
+[WhisperKit](https://github.com/argmaxinc/WhisperKit)
+[whisperkittools](https://github.com/argmaxinc/whisperkittools)
+
+</details>
+
+<details>
   <summary>Set better defaults for context limit, entropy threshold, and max temperature to improve transcript output.</summary>
 
 [Improving hallucinations and repetitions](https://github.com/ggerganov/whisper.cpp/discussions/2286)

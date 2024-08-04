@@ -22,23 +22,23 @@ export async function processVideo(url, model, chatgpt, claude, cohere, mistral,
       ? metadata.upload_date.replace(/(\d{4})(\d{2})(\d{2})/, '$1-$2-$3')
       : metadata.upload_date
 
-    const video_id = `content/${metadata.id}`
+    const videoId = `content/${metadata.id}`
     const final = `content/${formattedDate}-${metadata.id}`
 
     const frontMatter = generateMarkdown(metadata)
-    const mdContent = `---\n${frontMatter}\n---\n`
-    fs.writeFileSync(`${video_id}.md`, mdContent)
-    console.log(`\nMarkdown file completed successfully:\n  - ${video_id}.md`)
+    const mdContent = `${frontMatter}`
+    fs.writeFileSync(`${videoId}.md`, mdContent)
+    console.log(`\nMarkdown file completed successfully:\n  - ${videoId}.md`)
 
     // Download and convert audio
     await youtubedl(url, {
       format: 'bestaudio',
-      output: `${video_id}.webm`
+      output: `${videoId}.webm`
     })
-    console.log(`\nAudio downloaded successfully:\n  - ${video_id}.webm`)
+    console.log(`\nAudio downloaded successfully:\n  - ${videoId}.webm`)
 
-    const wav = `${video_id}.wav`
-    const command = `${ffmpegPath} -i ${video_id}.webm -ar 16000 ${wav}`
+    const wav = `${videoId}.wav`
+    const command = `${ffmpegPath} -i ${videoId}.webm -ar 16000 ${wav}`
 
     return new Promise((resolve, reject) => {
       exec(command, async (error) => {
@@ -51,30 +51,30 @@ export async function processVideo(url, model, chatgpt, claude, cohere, mistral,
 
         // Ensuring that the conversion is complete before removing the .webm file
         try {
-          await unlink(`${video_id}.webm`)
-          console.log(`Intermediate webm file removed:\n  - ${video_id}.webm`)
+          await unlink(`${videoId}.webm`)
+          console.log(`Intermediate webm file removed:\n  - ${videoId}.webm`)
         } catch (unlinkError) {
           console.error('Error removing intermediate webm file:', unlinkError)
         }
 
         let txtContent
         if (deepgram) {
-          await deepgramTranscribe(wav, video_id)
-          txtContent = fs.readFileSync(`${video_id}.txt`, 'utf8')
+          await deepgramTranscribe(wav, videoId)
+          txtContent = fs.readFileSync(`${videoId}.txt`, 'utf8')
         } else if (assembly) {
-          await assemblyTranscribe(wav, video_id)
-          txtContent = fs.readFileSync(`${video_id}.txt`, 'utf8')
+          await assemblyTranscribe(wav, videoId)
+          txtContent = fs.readFileSync(`${videoId}.txt`, 'utf8')
         } else if (docker) {
-          execSync(`docker run --rm -v ${process.cwd()}:/app/workspace whisper-image "/app/main -m /app/models/${model} -f /app/workspace/${wav} -of /app/workspace/${video_id} --output-lrc"`)
-          console.log(`\nTranscript file completed successfully:\n  - ${video_id}.lrc`)
-          txtContent = processLrcToTxt(video_id)
+          execSync(`docker run --rm -v ${process.cwd()}:/app/workspace whisper-image "/app/main -m /app/models/${model} -f /app/workspace/${wav} -of /app/workspace/${videoId} --output-lrc"`)
+          console.log(`\nTranscript file completed successfully:\n  - ${videoId}.lrc`)
+          txtContent = processLrcToTxt(videoId)
         } else {
-          execSync(`./whisper.cpp/main -m "whisper.cpp/models/${model}" -f "${wav}" -of "${video_id}" --output-lrc`, { stdio: 'ignore' })
-          console.log(`\nTranscript file completed successfully:\n  - ${video_id}.lrc`)
-          txtContent = processLrcToTxt(video_id)
+          execSync(`./whisper.cpp/main -m "whisper.cpp/models/${model}" -f "${wav}" -of "${videoId}" --output-lrc`, { stdio: 'ignore' })
+          console.log(`\nTranscript file completed successfully:\n  - ${videoId}.lrc`)
+          txtContent = processLrcToTxt(videoId)
         }
 
-        const finalContent = concatenateFinalContent(video_id, txtContent)
+        const finalContent = concatenateFinalContent(videoId, txtContent)
         fs.writeFileSync(`${final}.md`, finalContent)
         console.log(`Prompt concatenated to transformed transcript successfully:\n  - ${final}.md`)
 
@@ -98,7 +98,7 @@ export async function processVideo(url, model, chatgpt, claude, cohere, mistral,
           }
         }
 
-        cleanUpFiles(video_id)
+        cleanUpFiles(videoId)
         console.log(`\nProcess completed successfully for URL:\n  - ${url}\n`)
         resolve(finalContent) // Return the final content
       })

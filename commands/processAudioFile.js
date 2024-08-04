@@ -18,9 +18,13 @@ export async function processAudioFile(filePath, model, chatgpt, claude, cohere,
     // Generate basic metadata
     const mdContent = [
       "---",
+      `showLink: "${filePath}"`,
+      `channel: ""`,
+      `channelURL: ""`,
       `title: "${fileName}"`,
-      `sourceFile: "${filePath}"`,
-      `processDate: "${new Date().toISOString()}"`,
+      `description: ""`,
+      `publishDate: ""`,
+      `coverImage: ""`,
       "---\n"
     ].join('\n')
     fs.writeFileSync(`${id}.md`, mdContent)

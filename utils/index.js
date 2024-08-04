@@ -17,6 +17,7 @@ export const generateMarkdown = metadata => {
     `channel: "${uploader}"`,
     `channelURL: "${uploader_url}"`,
     `title: "${title}"`,
+    `description: ""`,
     `publishDate: "${formatted_date}"`,
     `coverImage: "${thumbnail}"`
   ]

@@ -2,27 +2,22 @@
 
 import fs from 'fs'
 
-export const formatDate = dateStr => {
-  if (dateStr.length === 8) {
-    return `${dateStr.slice(0, 4)}-${dateStr.slice(4, 6)}-${dateStr.slice(6)}`
-  }
-  return dateStr
-}
-
 export const generateMarkdown = metadata => {
-  const { uploader, uploader_url, title, upload_date, webpage_url, thumbnail } = metadata
-  const formatted_date = formatDate(upload_date)
+  const { id: videoId, title, thumbnail, webpage_url, channel, uploader_url, upload_date } = metadata
+  const formatted_date = upload_date.length === 8
+    ? upload_date.replace(/(\d{4})(\d{2})(\d{2})/, '$1-$2-$3')
+    : upload_date
   const frontMatter = [
     `showLink: "${webpage_url}"`,
-    `channel: "${uploader}"`,
+    `channel: "${channel}"`,
     `channelURL: "${uploader_url}"`,
     `title: "${title}"`,
     `description: ""`,
     `publishDate: "${formatted_date}"`,
     `coverImage: "${thumbnail}"`
-  ]
+  ].join('\n')
   console.log(frontMatter)
-  return frontMatter.join('\n')
+  return frontMatter
 }
 
 export function getModel(modelType) {

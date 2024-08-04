@@ -5,7 +5,7 @@ import youtubedl from 'youtube-dl-exec'
 import ffmpegPath from 'ffmpeg-static'
 import { exec, execSync } from 'child_process'
 import { unlink } from 'fs/promises'
-import { formatDate, generateMarkdown, processLrcToTxt, concatenateFinalContent, cleanUpFiles } from '../utils/index.js'
+import { generateMarkdown, processLrcToTxt, concatenateFinalContent, cleanUpFiles } from '../utils/index.js'
 import { callChatGPT, callClaude, callCohere, callMistral, callOcto } from '../utils/llms/index.js'
 import { deepgramTranscribe } from '../utils/transcription/deepgram.js'
 import { assemblyTranscribe } from '../utils/transcription/assembly.js'
@@ -18,7 +18,10 @@ export async function processVideo(url, model, chatgpt, claude, cohere, mistral,
       noWarnings: true
     })
 
-    const formattedDate = formatDate(metadata.upload_date)
+    const formattedDate = metadata.upload_date.length === 8
+      ? metadata.upload_date.replace(/(\d{4})(\d{2})(\d{2})/, '$1-$2-$3')
+      : metadata.upload_date
+
     const video_id = `content/${metadata.id}`
     const final = `content/${formattedDate}-${metadata.id}`
 

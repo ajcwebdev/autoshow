@@ -10,10 +10,10 @@ const { LLAMA_MODEL } = process.env
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 const llama = await getLlama()
-const model = await llama.loadModel({
+const llamaModel = await llama.loadModel({
   modelPath: path.join(__dirname, "models", LLAMA_MODEL)
 })
-const context = await model.createContext()
+const context = await llamaModel.createContext()
 const session = new LlamaChatSession({
   contextSequence: context.getSequence()
 })

@@ -1,9 +1,6 @@
 <div align="center">
-  <img alt="autoshow logo" src="https://ajc.pics/autoshow/autoshow-cover-01.webp" width="300" />
-</div>
-
-<div align="center">
   <h1>Autoshow</h1>
+  <img alt="autoshow logo" src="https://ajc.pics/autoshow/autoshow-cover-01.webp" width="300" />
 </div>
 
 ## Outline

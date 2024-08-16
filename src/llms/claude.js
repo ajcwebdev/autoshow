@@ -1,6 +1,6 @@
 // src/llms/claude.js
 
-import fs from 'fs'
+import { writeFile } from 'fs/promises'
 import { Anthropic } from '@anthropic-ai/sdk'
 
 const claudeModel = {
@@ -11,27 +11,25 @@ const claudeModel = {
 }
 
 export async function callClaude(transcriptContent, outputFilePath) {
-  const anthropic = new Anthropic({
-    apiKey: process.env.ANTHROPIC_API_KEY,
-  })
-
-  const response = await anthropic.messages.create({
-    model: claudeModel.CLAUDE_3_HAIKU,
-    max_tokens: 4000,
-    messages: [{ role: 'user', content: transcriptContent }]
-  })
-
-  const { content: [{ text }], model, usage, stop_reason } = response
-
-  fs.writeFileSync(outputFilePath, text, err => {
-    if (err) {
-      console.error('Error writing to file', err)
-    } else {
-      console.log(`Transcript saved to ${outputFilePath}`)
-    }
-  })
-
-  console.log(`\nClaude response:\n\n${JSON.stringify(response, null, 2)}`)
-  console.log(`\nStop Reason: ${stop_reason}\nModel: ${model}`)
-  console.log(`Token Usage:\n  - ${usage.input_tokens} input tokens\n  - ${usage.output_tokens} output tokens\n`)
+  const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+  try {
+    const response = await anthropic.messages.create({
+      model: claudeModel.CLAUDE_3_HAIKU,
+      max_tokens: 4000,
+      messages: [{ role: 'user', content: transcriptContent }]
+    })
+    const {
+      content: [{ text }],
+      model,
+      usage: { input_tokens, output_tokens },
+      stop_reason
+    } = response
+    await writeFile(outputFilePath, text)
+    console.log(`Transcript saved to ${outputFilePath}`)
+    console.log(`\nClaude response:\n\n${JSON.stringify(response, null, 2)}`)
+    console.log(`\nStop Reason: ${stop_reason}\nModel: ${model}`)
+    console.log(`Token Usage:\n  - ${input_tokens} input tokens\n  - ${output_tokens} output tokens\n`)
+  } catch (error) {
+    console.error('Error:', error)
+  }
 }

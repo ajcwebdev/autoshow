@@ -1,92 +1,58 @@
 // src/commands/processFile.js
 
-import fs from 'fs'
-import path from 'path'
-import ffmpegPath from 'ffmpeg-static'
-import { exec, execSync } from 'child_process'
-import { processLrcToTxt, concatenateFinalContent, cleanUpFiles } from '../utils/exports.js'
-import { callChatGPT, callClaude, callCohere, callMistral, callOcto } from '../llms/index.js'
-import { deepgramTranscribe } from '../transcription/deepgram.js'
-import { assemblyTranscribe } from '../transcription/assembly.js'
+import { readFile } from 'node:fs/promises'
+import { exec } from 'node:child_process'
+import { promisify } from 'node:util'
+import { fileTypeFromBuffer } from 'file-type'
+import ffmpeg from 'ffmpeg-static'
+import { runTranscription, runLLM, cleanUpFiles } from '../utils/exports.js'
 
-export async function processFile(filePath, model, chatgpt, claude, cohere, mistral, octo, deepgram, assembly) {
+const execPromise = promisify(exec)
+
+async function convertFile(filePath) {
   try {
-    const fileName = path.basename(filePath, path.extname(filePath))
-    const id = `content/${fileName}`
-    const final = `content/${fileName}`
+    const buffer = await readFile(filePath)
+    const fileType = await fileTypeFromBuffer(buffer)
+    if (!fileType) {
+      throw new Error('Unable to determine file type')
+    }
+    console.log(`Detected file type: ${fileType.ext}`)
 
-    // Generate basic metadata
-    const mdContent = [
-      "---",
-      `showLink: "${filePath}"`,
-      `channel: ""`,
-      `channelURL: ""`,
-      `title: "${fileName}"`,
-      `description: ""`,
-      `publishDate: ""`,
-      `coverImage: ""`,
-      "---\n"
-    ].join('\n')
-    fs.writeFileSync(`${id}.md`, mdContent)
-    console.log(`\nMetadata file created successfully:\n  - ${id}.md`)
+    const formats = ['wav', 'mp3', 'm4a', 'aac', 'ogg', 'flac', 'mp4', 'mkv', 'avi', 'mov', 'webm']
+    if (!formats.includes(fileType.ext)) {
+      throw new Error(`Unsupported file type: ${fileType.ext}`)
+    }
 
-    // Convert audio to WAV format
-    const wavFilePath = `${id}.wav`
-    const command = `${ffmpegPath} -i "${filePath}" -ar 16000 "${wavFilePath}"`
-
-    exec(command, async error => {
-      if (error) {
-        console.error(`Error converting to WAV: ${error.message}`)
-        return
+    if (fileType.ext !== 'wav') {
+      try {
+        await execPromise(`${ffmpeg} -i "${filePath}" -acodec pcm_s16le -ar 16000 -ac 1 "${filePath}.wav"`)
+        console.log(`Converted ${filePath} to ${filePath}.wav`)
+      } catch (error) {
+        console.error('Error converting file:', error)
+        throw error
       }
-      console.log(`WAV file completed successfully:\n  - ${wavFilePath}`)
-
-      let txtContent
-      if (deepgram) {
-        await deepgramTranscribe(wavFilePath, id)
-        txtContent = fs.readFileSync(`${id}.txt`, 'utf8')
-      } else if (assembly) {
-        await assemblyTranscribe(wavFilePath, id)
-        txtContent = fs.readFileSync(`${id}.txt`, 'utf8')
-      } else {
-        execSync(`./whisper.cpp/main -m "whisper.cpp/models/${model}" -f "${wavFilePath}" -of "${id}" --output-lrc`, { stdio: 'ignore' })
-        console.log(`\nTranscript file completed successfully:\n  - ${id}.lrc`)
-        txtContent = processLrcToTxt(id)
-      }
-
-      const finalContent = concatenateFinalContent(id, txtContent)
-      fs.writeFileSync(`${final}-final.md`, finalContent)
-      console.log(`Prompt concatenated to transformed transcript successfully:\n  - ${final}-final.md`)
-
-      if (chatgpt) {
-        await callChatGPT(finalContent, `${final}_chatgpt_shownotes.md`)
-        console.log(`ChatGPT show notes generated successfully:\n  - ${final}_chatgpt_shownotes.md`)
-      }
-
-      if (claude) {
-        await callClaude(finalContent, `${final}_claude_shownotes.md`)
-        console.log(`Claude show notes generated successfully:\n  - ${final}_claude_shownotes.md`)
-      }
-
-      if (cohere) {
-        await callCohere(finalContent, `${final}_cohere_shownotes.md`)
-        console.log(`Cohere show notes generated successfully:\n  - ${final}_cohere_shownotes.md`)
-      }
-
-      if (mistral) {
-        await callMistral(finalContent, `${final}_mistral_shownotes.md`)
-        console.log(`Mistral show notes generated successfully:\n  - ${final}_mistral_shownotes.md`)
-      }
-
-      if (octo) {
-        await callOcto(finalContent, `${final}_octo_shownotes.md`)
-        console.log(`Octo show notes generated successfully:\n  - ${final}_octo_shownotes.md`)
-      }
-
-      cleanUpFiles(id)
-      console.log(`\n\nProcess completed successfully for file: ${filePath}\n`)
-    })
+    } else {
+      await execPromise(`cp "${filePath}" "${filePath}.wav"`)
+    }
+    return filePath
   } catch (error) {
-    console.error(`Error processing audio file: ${filePath}`, error)
+    console.error('Error in convertFile:', error)
+    throw error
+  }
+}
+
+export async function processFile(filePath, llmOption, whisperModelType) {
+  try {
+    const finalPath = await convertFile(filePath)
+    const frontMatter = `---
+title: "${filePath}"
+---\n`
+    await runTranscription(finalPath, whisperModelType, frontMatter)
+    await runLLM(finalPath, frontMatter, llmOption)
+    await cleanUpFiles(finalPath)
+    console.log('File processing completed')
+  } catch (error) {
+    console.error('Error processing file:', error)
+    throw error
   }
 }

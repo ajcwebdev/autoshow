@@ -1,46 +1,35 @@
 // src/commands/processPlaylist.js
 
-import fs from 'fs'
-import youtubedl from 'youtube-dl-exec'
+import { writeFile } from 'node:fs/promises'
 import { processVideo } from './processVideo.js'
+import { execFile } from 'node:child_process'
+import { promisify } from 'node:util'
 
-export async function processPlaylist(playlistUrl, model, chatgpt, claude, deepgram, assembly) {
+const execFilePromise = promisify(execFile)
+
+export async function processPlaylist(playlistUrl, llmOption, whisperModelType) {
   try {
-    // Fetch playlist information including episode URLs
-    const playlistInfo = await youtubedl(playlistUrl, {
-      dumpSingleJson: true,
-      flatPlaylist: true,
-      noWarnings: true,
-      noCheckCertificates: true
-    })
-
-    if (!playlistInfo || !playlistInfo.entries) {
-      console.error('Failed to retrieve any entries from the playlist.')
-      return
+    console.log(`Processing playlist: ${playlistUrl}`)
+    const { stdout } = await execFilePromise('yt-dlp', [
+      '--flat-playlist',
+      '--print', 'url',
+      '--no-warnings',
+      playlistUrl
+    ])
+    const urls = stdout.trim().split('\n').filter(Boolean)
+    console.log(`Found ${urls.length} videos in the playlist`)
+    await writeFile('content/urls.md', urls.join('\n'))
+    for (const [index, url] of urls.entries()) {
+      console.log(`Processing video ${index + 1}/${urls.length}: ${url}`)
+      try {
+        await processVideo(url, llmOption, whisperModelType)
+      } catch (error) {
+        console.error(`Error processing video ${url}:`, error)
+      }
     }
-
-    // Save the playlist information to a file
-    fs.writeFileSync('content/playlist-info.json', JSON.stringify(playlistInfo, null, 2))
-    console.log('Playlist information saved to content/playlist-info.json')
-
-    // Extract URLs from the playlist data
-    const urls = playlistInfo.entries
-      .filter(entry => entry && entry.url)  // Ensure entry and entry.url are not null
-      .map(entry => entry.url)
-
-    if (urls.length === 0) {
-      console.error('No valid URLs found in the playlist.')
-      return
-    }
-
-    // Write URLs to a markdown file
-    fs.writeFileSync(`content/urls.md`, urls.join('\n'))
-
-    // Process each video URL in the playlist
-    for (const url of urls) {
-      await processVideo(url, model, chatgpt, claude, deepgram, assembly)
-    }
+    console.log('Playlist processing completed')
   } catch (error) {
     console.error('Error processing playlist:', error)
+    throw error
   }
 }

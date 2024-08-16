@@ -1,10 +1,13 @@
 // src/commands/processRSS.js
 
-import fs from 'fs'
-import ffmpegPath from 'ffmpeg-static'
+import { writeFile } from 'node:fs/promises'
 import { XMLParser } from 'fast-xml-parser'
-import { execSync } from 'child_process'
-import { processLrcToTxt, concatenateFinalContent, cleanUpFiles } from '../utils/exports.js'
+import {
+  downloadAudio,
+  runTranscription,
+  runLLM,
+  cleanUpFiles
+} from '../utils/exports.js'
 
 const parser = new XMLParser({
   ignoreAttributes: false,
@@ -12,44 +15,39 @@ const parser = new XMLParser({
   allowBooleanAttributes: true,
 })
 
-async function processRssItem(item, model) {
+async function processItem(item, llmOption, whisperModelType) {
+  const { showLink, channel, channelURL, title, publishDate, coverImage } = item
   try {
-    const id = `content/${item.publishDate}-${item.title.replace(/[^a-zA-Z0-9]/g, '_')}`
-    const mdContent = [
+    const filename = `${publishDate}-${title.replace(/[^a-zA-Z0-9]/g, '_')}`
+    const finalPath = `content/${filename}`
+    const frontMatter = [
       "---",
-      `showLink: "${item.showLink}"`,
-      `channel: "${item.channel}"`,
-      `channelURL: "${item.channelURL}"`,
-      `title: "${item.title}"`,
-      `publishDate: "${item.publishDate}"`,
-      `coverImage: "${item.coverImage}"`,
+      `showLink: "${showLink}"`,
+      `channel: "${channel}"`,
+      `channelURL: "${channelURL}"`,
+      `title: "${title}"`,
+      `publishDate: "${publishDate}"`,
+      `coverImage: "${coverImage}"`,
       "---\n"
     ].join('\n')
 
-    fs.writeFileSync(`${id}.md`, mdContent)
-    console.log(`\n\nMarkdown file completed successfully: ${id}.md`)
+    await writeFile(`${finalPath}.md`, frontMatter)
+    console.log(`\nInitial markdown file created:\n  - ${finalPath}.md`)
 
-    execSync(`${ffmpegPath} -i "${item.showLink}" -ar 16000 "${id}.wav"`, { stdio: 'ignore' })
-    console.log(`WAV file completed successfully: ${id}.wav`)
+    await downloadAudio(showLink, filename)
+    await runTranscription(finalPath, whisperModelType, frontMatter)
+    await runLLM(finalPath, frontMatter, llmOption)
+    await cleanUpFiles(finalPath)
 
-    execSync(`./whisper.cpp/main -m "whisper.cpp/models/${model}" -f "${id}.wav" -of "${id}" --output-lrc`, { stdio: 'ignore' })
-    console.log(`Transcript file completed successfully: ${id}.lrc`)
-
-    const txtContent = processLrcToTxt(id)
-
-    const finalContent = concatenateFinalContent(id, txtContent)
-    fs.writeFileSync(`${id}-final.md`, finalContent)
-    console.log(`Prompt concatenated to transformed transcript successfully: ${id}.md`)
-
-    cleanUpFiles(id)
-    console.log(`\n\nProcess completed successfully for RSS item: ${item.title}`)
+    console.log(`\nProcess completed successfully for item: ${title}`)
   } catch (error) {
-    console.error(`Error processing RSS item: ${item.title}`, error)
+    console.error(`Error processing item: ${title}`, error)
   }
 }
 
-export async function processRSS(rssUrl, model, order) {
+export async function processRSS(rssUrl, llmOption, whisperModelType, order = 'newest') {
   try {
+    console.log(`Processing RSS feed: ${rssUrl}`)
     const response = await fetch(rssUrl, {
       method: 'GET',
       headers: {
@@ -86,10 +84,15 @@ export async function processRSS(rssUrl, model, order) {
 
     const sortedItems = order === 'newest' ? items : [...items].reverse()
 
-    for (const item of sortedItems) {
-      await processRssItem(item, model)
+    console.log(`Found ${sortedItems.length} items in the RSS feed`)
+    for (const [index, item] of sortedItems.entries()) {
+      console.log(`Processing item ${index + 1}/${sortedItems.length}: ${item.title}`)
+      await processItem(item, llmOption, whisperModelType)
     }
+
+    console.log('RSS feed processing completed')
   } catch (error) {
     console.error('Error fetching or parsing feed:', error)
+    throw error
   }
 }

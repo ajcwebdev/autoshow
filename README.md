@@ -2,7 +2,9 @@
   <img alt="autoshow logo" src="https://ajc.pics/autoshow/autoshow-cover-01.webp" width="300" />
 </div>
 
-# Autoshow
+<div align="center">
+  <h1>Autoshow</h1>
+</div>
 
 ## Outline
 
@@ -69,7 +71,7 @@ git clone https://github.com/ggerganov/whisper.cpp.git && \
   make -C whisper.cpp
 ```
 
-> Replace `base` with `large-v2` for the largest model or `medium` for a middle sized model. See the [Greater Configurability section of the Roadmap](/docs/roadmap.md#greater-configurability) for information about using other Whisper model versions.
+> Replace `base` with `large-v2` for the largest model, `medium` for a middle sized model, or `tiny` for the smallest model.
 
 ## Run Autoshow Node Scripts
 
@@ -88,26 +90,26 @@ Example commands for all available CLI options can be found in [`docs/examples.m
   - Handles various input options (video, playlist, URLs, file, RSS)
   - Manages LLM and transcription options
 
-- Command Processors (`src/commands/`)
+- Command Processors (`src/commands`)
   - `processVideo.js`: Handles single YouTube video processing
   - `processPlaylist.js`: Processes all videos in a YouTube playlist
   - `processURLs.js`: Processes videos from a list of URLs in a file
   - `processFile.js`: Handles local audio/video file processing
   - `processRSS.js`: Processes podcast RSS feeds
 
-- Utility Functions (`src/utils/`)
+- Utility Functions (`src/utils`)
   - `downloadAudio.js`: Downloads audio from YouTube videos
   - `runTranscription.js`: Manages the transcription process
   - `runLLM.js`: Handles LLM processing for summarization and chapter generation
   - `generateMarkdown.js`: Creates initial markdown files with metadata
   - `cleanUpFiles.js`: Removes temporary files after processing
 
-- Transcription Services (`src/transcription/`)
+- Transcription Services (`src/transcription`)
   - `whisper.js`: Uses Whisper.cpp for transcription
   - `deepgram.js`: Integrates Deepgram transcription service
   - `assembly.js`: Integrates AssemblyAI transcription service
 
-- Language Models (`src/llms/`)
+- Language Models (`src/llms`)
   - `chatgpt.js`: Integrates OpenAI's GPT models
   - `claude.js`: Integrates Anthropic's Claude models
   - `cohere.js`: Integrates Cohere's language models
@@ -117,7 +119,7 @@ Example commands for all available CLI options can be found in [`docs/examples.m
   - `ollama.js`: Integrates Ollama for local model inference
   - `prompt.js`: Defines the prompt structure for summarization and chapter generation
 
-- Web Interface (`web/`) and Server (`server/`)
+- Web Interface (`web`) and Server (`server`)
   - Web interface built with React and Vite
   - Node.js server that handles backend operations for the web interface
   - *Note: Just a proof of concept, very little functionality built at this point. Expect these to catch up with the CLI starting in Q4 2024*

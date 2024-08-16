@@ -136,8 +136,8 @@ The server will eventually replicate all functionality implemented by the CLI.
 This will include additional endpoints beyond `/video` such as:
 
 - `/playlist` for the `processPlaylist.js` command
-- `/urls` for the `processUrlsFile.js` command
-- `/rss` for the `processRssFeed.js` command
+- `/urls` for the `processURLs.js` command
+- `/rss` for the `processRSS.js` command
 
 I'm starting with a plain Node.js server instead of using a framework like Express. In the future, I would like to also have adapters for Deno and Bun. Once those are all stable, I will try out some of the higher level frameworks. I intend to experiment a bit with each of the following and pick one or two to support long term:
 
@@ -214,7 +214,7 @@ Currently, the only model versions supported by the CLI are `base`, `medium`, an
 | large-v2      | 2.9 GiB | `0f4c8e34f21cf1a914c59d8b3ce882345ad349d6` |
 | large-v3      | 2.9 GiB | `ad82bf6a9043ceed055076d0fd39f5f186ff8062` |
 
-To use these models today, you can modify the `getModel` function yourself in `utils/index.js` by uncommenting and adding a `custom` case:
+To use these models today, you can modify the `getModel` function yourself in `utils/exports.js` by uncommenting and adding a `custom` case:
 
 ```js
 export function getModel(modelType) {

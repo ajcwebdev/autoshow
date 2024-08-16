@@ -1,4 +1,4 @@
-// utils/index.js
+// src/utils/exports.js
 
 import { generateMarkdown } from "./generateMarkdown.js"
 import { getModel } from "./getModel.js"

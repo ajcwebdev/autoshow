@@ -1,3 +1,5 @@
+// src/utils/prompt.js
+
 const titles = {
   prompt: "Write 3 potential titles for the video.\n",
   example: "## Potential Titles\n\n1. Title I - Title Hard\n\n2. Title II - Title Harder\n\n3. Title II - Title Hard with a Vengeance\n",

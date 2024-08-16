@@ -1,4 +1,4 @@
-// utils/cleanUpFiles.js
+// src/utils/cleanUpFiles.js
 
 import fs from 'fs'
 

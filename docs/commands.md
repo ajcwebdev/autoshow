@@ -4,8 +4,8 @@ The files in the `commands` folder are the key components of Autoshow that enabl
 
 - Single videos (`processVideo.js`)
 - YouTube playlists (`processPlaylist.js`)
-- Podcast RSS feeds (`processRssFeed.js`)
-- Lists of video URLs (`processUrlsFile.js`)
+- Podcast RSS feeds (`processRSS.js`)
+- Lists of video URLs (`processURLs.js`)
 
 They work together to offer flexibility in handling different content sources while maintaining a consistent approach to generating transcripts and show notes. The main `autoshow.js` file uses these modules to provide a unified command-line interface for the user.
 
@@ -33,7 +33,7 @@ This file is responsible for handling YouTube playlists. It:
 
 This allows Autoshow to process entire YouTube playlists, generating show notes for each video in the playlist.
 
-## processRssFeed
+## processRSS
 
 This file deals with podcast RSS feeds. It:
 
@@ -44,7 +44,7 @@ This file deals with podcast RSS feeds. It:
 
 This enables Autoshow to handle podcast episodes from RSS feeds, expanding its capabilities beyond YouTube content.
 
-## processUrlsFile
+## processURLs
 
 This file processes multiple videos from a list of URLs stored in a file. It:
 
@@ -53,6 +53,6 @@ This file processes multiple videos from a list of URLs stored in a file. It:
 
 This allows for batch processing of multiple videos that aren't necessarily part of a YouTube playlist or RSS feed.
 
-## processAudioFile
+## processFile
 
 TODO

@@ -1,4 +1,4 @@
-// utils/processLrcToTxt.js
+// src/utils/processLrcToTxt.js
 
 import fs from 'fs'
 

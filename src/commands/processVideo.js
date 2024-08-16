@@ -1,14 +1,14 @@
-// commands/processVideo.js
+// src/commands/processVideo.js
 
 import fs from 'fs'
 import youtubedl from 'youtube-dl-exec'
 import ffmpegPath from 'ffmpeg-static'
 import { exec, execSync } from 'child_process'
 import { unlink } from 'fs/promises'
-import { generateMarkdown, processLrcToTxt, concatenateFinalContent, cleanUpFiles } from '../utils/index.js'
-import { callChatGPT, callClaude, callCohere, callMistral, callOcto } from '../utils/llms/index.js'
-import { deepgramTranscribe } from '../utils/transcription/deepgram.js'
-import { assemblyTranscribe } from '../utils/transcription/assembly.js'
+import { generateMarkdown, processLrcToTxt, concatenateFinalContent, cleanUpFiles } from '../utils/exports.js'
+import { callChatGPT, callClaude, callCohere, callMistral, callOcto } from '../llms/index.js'
+import { deepgramTranscribe } from '../transcription/deepgram.js'
+import { assemblyTranscribe } from '../transcription/assembly.js'
 
 export async function processVideo(url, model, chatgpt, claude, cohere, mistral, octo, deepgram, assembly, docker) {
   try {

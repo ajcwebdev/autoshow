@@ -1,14 +1,14 @@
 #!/usr/bin/env node
 
-// autoshow.js
+// src/autoshow.js
 
 import { Command } from 'commander'
 import { processVideo } from './commands/processVideo.js'
 import { processPlaylist } from './commands/processPlaylist.js'
-import { processUrlsFile } from './commands/processUrlsFile.js'
-import { processRssFeed } from './commands/processRssFeed.js'
-import { processAudioFile } from './commands/processAudioFile.js'
-import { getModel } from './utils/index.js'
+import { processURLs } from './commands/processURLs.js'
+import { processRSS } from './commands/processRSS.js'
+import { processFile } from './commands/processFile.js'
+import { getModel } from './utils/exports.js'
 import { performance } from 'perf_hooks'
 
 const program = new Command()
@@ -23,7 +23,7 @@ program
   .option('-a, --audio <filePath>', 'Process a local audio file')
   .option('--oldest', 'Process items from oldest to newest (default)')
   .option('--newest', 'Process items from newest to oldest')
-  .option('-m, --model <type>', 'Select model to use: base, medium, or large', 'large')
+  .option('-m, --model <type>', 'Select model to use: base, medium, or large', 'base')
   .option('--chatgpt', 'Generate show notes with ChatGPT')
   .option('--claude', 'Generate show notes with Claude')
   .option('--cohere', 'Generate show notes with Cohere')
@@ -49,9 +49,9 @@ program.action(async (options) => {
   const handlers = {
     video: processVideo,
     playlist: processPlaylist,
-    urls: processUrlsFile,
-    rss: (url, model) => processRssFeed(url, model, order),
-    audio: processAudioFile
+    urls: processURLs,
+    rss: (url, model) => processRSS(url, model, order),
+    audio: processFile
   }
 
   for (const [key, handler] of Object.entries(handlers)) {

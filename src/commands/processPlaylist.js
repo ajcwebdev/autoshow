@@ -1,4 +1,4 @@
-// commands/processPlaylist.js
+// src/commands/processPlaylist.js
 
 import fs from 'fs'
 import youtubedl from 'youtube-dl-exec'

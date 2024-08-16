@@ -1,4 +1,4 @@
-// transcription/assembly.js
+// src/transcription/assembly.js
 
 import { AssemblyAI } from 'assemblyai'
 import fs from 'fs'

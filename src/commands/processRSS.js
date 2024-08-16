@@ -1,10 +1,10 @@
-// commands/processRssFeed.js
+// src/commands/processRSS.js
 
 import fs from 'fs'
 import ffmpegPath from 'ffmpeg-static'
 import { XMLParser } from 'fast-xml-parser'
 import { execSync } from 'child_process'
-import { processLrcToTxt, concatenateFinalContent, cleanUpFiles } from '../utils/index.js'
+import { processLrcToTxt, concatenateFinalContent, cleanUpFiles } from '../utils/exports.js'
 
 const parser = new XMLParser({
   ignoreAttributes: false,
@@ -48,7 +48,7 @@ async function processRssItem(item, model) {
   }
 }
 
-export async function processRssFeed(rssUrl, model, order) {
+export async function processRSS(rssUrl, model, order) {
   try {
     const response = await fetch(rssUrl, {
       method: 'GET',

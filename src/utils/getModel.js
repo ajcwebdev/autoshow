@@ -1,4 +1,4 @@
-// utils/getModel.js
+// src/utils/getModel.js
 
 export function getModel(modelType) {
   switch (modelType) {

@@ -1,9 +1,9 @@
-// commands/processUrlsFile.js
+// src/commands/processURLs.js
 
 import fs from 'fs'
 import { processVideo } from './processVideo.js'
 
-export async function processUrlsFile(filePath, model) {
+export async function processURLs(filePath, model) {
   if (!fs.existsSync(filePath)) {
     console.error(`File not found: ${filePath}`)
     return

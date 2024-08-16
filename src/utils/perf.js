@@ -1,4 +1,4 @@
-// utils/perf.js
+// src/utils/perf.js
 
 import { execSync } from 'child_process'
 import { writeFileSync, appendFileSync, renameSync } from 'fs'

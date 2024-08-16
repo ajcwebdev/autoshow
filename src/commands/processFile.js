@@ -1,15 +1,15 @@
-// commands/processAudioFile.js
+// src/commands/processFile.js
 
 import fs from 'fs'
 import path from 'path'
 import ffmpegPath from 'ffmpeg-static'
 import { exec, execSync } from 'child_process'
-import { processLrcToTxt, concatenateFinalContent, cleanUpFiles } from '../utils/index.js'
-import { callChatGPT, callClaude, callCohere, callMistral, callOcto } from '../utils/llms/index.js'
-import { deepgramTranscribe } from '../utils/transcription/deepgram.js'
-import { assemblyTranscribe } from '../utils/transcription/assembly.js'
+import { processLrcToTxt, concatenateFinalContent, cleanUpFiles } from '../utils/exports.js'
+import { callChatGPT, callClaude, callCohere, callMistral, callOcto } from '../llms/index.js'
+import { deepgramTranscribe } from '../transcription/deepgram.js'
+import { assemblyTranscribe } from '../transcription/assembly.js'
 
-export async function processAudioFile(filePath, model, chatgpt, claude, cohere, mistral, octo, deepgram, assembly) {
+export async function processFile(filePath, model, chatgpt, claude, cohere, mistral, octo, deepgram, assembly) {
   try {
     const fileName = path.basename(filePath, path.extname(filePath))
     const id = `content/${fileName}`

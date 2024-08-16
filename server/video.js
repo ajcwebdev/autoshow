@@ -1,7 +1,7 @@
 // server/video.js
 
 import { processVideo } from '../commands/processVideo.js'
-import { getModel } from '../utils/index.js'
+import { getModel } from '../utils/exports.js'
 
 const handleVideoRequest = async (req, res) => {
   let body = ''

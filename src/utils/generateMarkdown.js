@@ -1,4 +1,4 @@
-// utils/generateMarkdown.js
+// src/utils/generateMarkdown.js
 
 import youtubedl from 'youtube-dl-exec'
 

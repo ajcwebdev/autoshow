@@ -1,4 +1,4 @@
-// transcription/deepgram.js
+// src/transcription/deepgram.js
 
 import { createClient } from "@deepgram/sdk"
 import fs from 'fs'

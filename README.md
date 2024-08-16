@@ -23,7 +23,7 @@ See [`docs/roadmap.md`](/docs/roadmap.md) for details about current development 
 Install `yt-dlp`, `ffmpeg`, and run `npm i`.
 
 ```bash
-brew install yt-dlp ffmpeg
+brew install yt-dlp ffmpeg llama.cpp
 npm i
 ```
 
@@ -32,9 +32,9 @@ npm i
 Run the following commands to clone `whisper.cpp` and build the `base` model:
 
 ```bash
-git clone https://github.com/ggerganov/whisper.cpp.git
-bash ./whisper.cpp/models/download-ggml-model.sh base
-make -C whisper.cpp
+git clone https://github.com/ggerganov/whisper.cpp.git && \
+  bash ./whisper.cpp/models/download-ggml-model.sh base && \
+  make -C whisper.cpp
 ```
 
 > Replace `base` with `large-v2` for the largest model or `medium` for a middle sized model. See the [Greater Configurability section of the Roadmap](/docs/roadmap.md#greater-configurability) for information about using other Whisper model versions.

@@ -1,4 +1,4 @@
-// utils/llms.js
+// src/llms/index.js
 
 import { callChatGPT } from './chatgpt.js'
 import { callClaude } from './claude.js'

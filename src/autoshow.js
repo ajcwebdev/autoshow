@@ -9,7 +9,6 @@ import { processURLs } from './commands/processURLs.js'
 import { processRSS } from './commands/processRSS.js'
 import { processFile } from './commands/processFile.js'
 import { getModel } from './utils/exports.js'
-import { performance } from 'perf_hooks'
 
 const program = new Command()
 
@@ -34,11 +33,10 @@ program
   .option('--deepgram', 'Use Deepgram for transcription instead of Whisper.cpp')
   .option('--assembly', 'Use AssemblyAI for transcription instead of Whisper.cpp')
   .option('--docker', 'Use Docker for Whisper.cpp')
-  .option('--profile', 'Log detailed performance metrics for each step')
 
 program.action(async (options) => {
   const model = getModel(options.model)
-  const { chatgpt, claude, cohere, mistral, octo, deepgram, assembly, docker, profile, oldest, newest } = options
+  const { chatgpt, claude, cohere, mistral, octo, deepgram, assembly, docker, oldest, newest } = options
   const commonArgs = [ model, chatgpt, claude, cohere, mistral, octo, deepgram, assembly, docker ]
 
   let order = 'oldest' // Default order
@@ -56,14 +54,8 @@ program.action(async (options) => {
 
   for (const [key, handler] of Object.entries(handlers)) {
     if (options[key]) {
-      const start = performance.now()
       try {
         await handler(options[key], ...commonArgs)
-        const end = performance.now()
-        if (profile) {
-          const duration = ((end - start) / 1000).toFixed(2)
-          console.log(`Processed ${key} in ${duration} seconds`)
-        }
       } catch (error) {
         console.error(`Error processing ${key}:`, error)
       }

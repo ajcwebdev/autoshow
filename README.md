@@ -11,6 +11,7 @@
 - [Project Overview](#project-overview)
   - [Key Features](#key-features)
 - [Setup](#setup)
+  - [Copy Environment Variable File](#copy-environment-variable-file)
   - [Install Local Dependencies](#install-local-dependencies)
   - [Clone Whisper Repo](#clone-whisper-repo)
 - [Run Autoshow Node Scripts](#run-autoshow-node-scripts)

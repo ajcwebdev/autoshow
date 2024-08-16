@@ -1,6 +1,7 @@
 // src/llms/cohere.js
 
-import { writeFile } from 'fs/promises'
+import { writeFile } from 'node:fs/promises'
+import { env } from 'node:process'
 import { CohereClient } from 'cohere-ai'
 
 const cohereModel = {
@@ -9,7 +10,7 @@ const cohereModel = {
 }
 
 export async function callCohere(transcriptContent, outputFilePath) {
-  const cohere = new CohereClient({ token: process.env.COHERE_API_KEY })
+  const cohere = new CohereClient({ token: env.COHERE_API_KEY })
   try {
     const response = await cohere.chat({
       model: cohereModel.COMMAND_R,

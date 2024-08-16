@@ -2,8 +2,9 @@
 
 import http from 'http'
 import { handleVideoRequest } from './video.js'
+import { env } from 'node:process'
 
-const port = process.env.PORT || 3000
+const port = env.PORT || 3000
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': 'http://localhost:5173',

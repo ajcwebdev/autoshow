@@ -1,6 +1,7 @@
 // src/llms/claude.js
 
-import { writeFile } from 'fs/promises'
+import { writeFile } from 'node:fs/promises'
+import { env } from 'node:process'
 import { Anthropic } from '@anthropic-ai/sdk'
 
 const claudeModel = {
@@ -11,7 +12,7 @@ const claudeModel = {
 }
 
 export async function callClaude(transcriptContent, outputFilePath) {
-  const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+  const anthropic = new Anthropic({ apiKey: env.ANTHROPIC_API_KEY })
   try {
     const response = await anthropic.messages.create({
       model: claudeModel.CLAUDE_3_HAIKU,

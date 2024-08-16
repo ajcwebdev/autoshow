@@ -8,6 +8,7 @@ import { processPlaylist } from './commands/processPlaylist.js'
 import { processURLs } from './commands/processURLs.js'
 import { processRSS } from './commands/processRSS.js'
 import { processFile } from './commands/processFile.js'
+import { env } from 'node:process'
 
 const program = new Command()
 
@@ -56,4 +57,4 @@ program.action(async (options) => {
   }
 })
 
-program.parse(process.argv)
+program.parse(env.argv)

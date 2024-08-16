@@ -1,6 +1,7 @@
 // src/llms/mistral.js
 
-import { writeFile } from 'fs/promises'
+import { writeFile } from 'node:fs/promises'
+import { env } from 'node:process'
 import { Mistral } from '@mistralai/mistralai'
 
 const mistralModel = {
@@ -11,7 +12,7 @@ const mistralModel = {
 }
 
 export async function callMistral(transcriptContent, outputFilePath) {
-  const mistral = new Mistral(process.env.MISTRAL_API_KEY)
+  const mistral = new Mistral(env.MISTRAL_API_KEY)
   try {
     const response = await mistral.chat.complete({
       model: mistralModel.MISTRAL_NEMO,

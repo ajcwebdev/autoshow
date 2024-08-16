@@ -20,6 +20,9 @@
   - [Deepgram](#deepgram)
   - [Assembly](#assembly)
   - [Whisper.cpp](#whispercpp)
+- [Alternative JavaScript Runtimes](#alternative-javascript-runtimes)
+  - [Deno](#deno)
+  - [Bun](#bun)
 
 ## Content and Feed Inputs
 
@@ -188,4 +191,27 @@ _TODO: Rethink Docker integrations, probably want some kind of Compose setup tha
 
 ```bash
 # npm run autoshow -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --docker
+```
+
+## Alternative JavaScript Runtimes
+
+### Bun
+
+```bash
+bun --env-file=.env src/autoshow.js \
+  --video "https://www.youtube.com/watch?v=jKB0EltG9Jo"
+```
+
+### Deno
+
+```bash
+LLAMA_MODEL="Meta-Llama-3.1-8B-Instruct.Q2_K.gguf" HUGGING_FACE_URL="https://huggingface.co/mradermacher/Meta-Llama-3.1-8B-Instruct-GGUF" \
+  deno run \
+  --allow-sys \
+  --allow-read \
+  --allow-run \
+  --allow-write \
+  --allow-env \
+  src/autoshow.js \
+  --video "https://www.youtube.com/watch?v=jKB0EltG9Jo"
 ```

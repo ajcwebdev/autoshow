@@ -1,6 +1,7 @@
 // src/llms/chatgpt.js
 
-import { writeFile } from 'fs/promises'
+import { writeFile } from 'node:fs/promises'
+import { env } from 'node:process'
 import { OpenAI } from 'openai'
 
 const gptModel = {
@@ -11,7 +12,7 @@ const gptModel = {
 }
 
 export async function callChatGPT(transcriptContent, outputFilePath) {
-  const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
+  const openai = new OpenAI({ apiKey: env.OPENAI_API_KEY })
   try {
     const response = await openai.chat.completions.create({
       model: gptModel.GPT_4o_MINI,

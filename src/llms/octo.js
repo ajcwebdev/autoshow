@@ -1,6 +1,7 @@
 // src/llms/octo.js
 
-import { writeFile } from 'fs/promises'
+import { writeFile } from 'node:fs/promises'
+import { env } from 'node:process'
 import { OctoAIClient } from '@octoai/sdk'
 
 const octoModel = {
@@ -14,7 +15,7 @@ const octoModel = {
 }
 
 export async function callOcto(transcriptContent, outputFilePath) {
-  const octoai = new OctoAIClient({ apiKey: process.env.OCTOAI_API_KEY })
+  const octoai = new OctoAIClient({ apiKey: env.OCTOAI_API_KEY })
   try {
     const response = await octoai.textGen.createChatCompletion({
       model: octoModel.LLAMA_3_1_70B,

@@ -5,10 +5,11 @@ import { getLlama, LlamaChatSession } from "node-llama-cpp"
 import { existsSync } from 'node:fs'
 import { exec } from 'node:child_process'
 import { promisify } from 'node:util'
+import { env } from 'node:process'
 
 const execAsync = promisify(exec)
 
-const { LLAMA_MODEL, HUGGING_FACE_URL } = process.env
+const { LLAMA_MODEL, HUGGING_FACE_URL } = env
 
 if (!LLAMA_MODEL || !HUGGING_FACE_URL) {
   console.error('Environment variables LLAMA_MODEL and HUGGING_FACE_URL must be set')

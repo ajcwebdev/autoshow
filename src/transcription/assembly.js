@@ -1,9 +1,10 @@
-// transcription/assembly.js
+// src/transcription/assembly.js
 
+import { writeFile } from 'node:fs/promises'
+import { env } from 'node:process'
 import { AssemblyAI } from 'assemblyai'
-import fs from 'fs'
 
-const client = new AssemblyAI({ apiKey: process.env.ASSEMBLY_API_KEY })
+const client = new AssemblyAI({ apiKey: env.ASSEMBLY_API_KEY })
 
 function formatTimestamp(timestamp) {
   let totalSeconds = Math.floor(timestamp / 1000)
@@ -50,7 +51,7 @@ export const assemblyTranscribe = async (input, id, useSpeakerLabels = false, sp
       output = transcript.text ? transcript.text : 'No transcription available.'
     }
 
-    await fs.promises.writeFile(`${id}.txt`, output)
+    await writeFile(`${id}.txt`, output)
     console.log('Transcript saved.')
   } catch (error) {
     console.error('Error processing the transcription:', error)

@@ -18,23 +18,24 @@
     "autoshow": "./autoshow.js"
   },
   "scripts": {
-    "autoshow": "node --env-file=.env --no-warnings autoshow.js",
+    "autoshow": "node --env-file=.env src/autoshow.js",
+    "as": "node --env-file=.env src/autoshow.js",
     "serve": "node --env-file=.env --no-warnings --watch server/index.js",
     "fetch": "node --env-file=.env --no-warnings server/fetch.js"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.24.3",
-    "@deepgram/sdk": "^3.4.1",
-    "@mistralai/mistralai": "^0.5.0",
-    "@octoai/sdk": "^1.4.0",
-    "assemblyai": "^4.5.0",
-    "cohere-ai": "^7.10.6",
+    "@anthropic-ai/sdk": "^0.26.0",
+    "@deepgram/sdk": "^3.5.1",
+    "@mistralai/mistralai": "^1.0.2",
+    "@octoai/sdk": "^1.5.1",
+    "assemblyai": "^4.6.1",
+    "cohere-ai": "^7.12.0",
     "commander": "^12.1.0",
-    "fast-xml-parser": "^4.4.0",
+    "fast-xml-parser": "^4.4.1",
     "ffmpeg-static": "^5.2.0",
-    "node-llama-cpp": "^3.0.0-beta.38",
-    "ollama": "^0.5.6",
-    "openai": "^4.52.3",
-    "youtube-dl-exec": "^3.0.6"
+    "file-type": "^19.4.1",
+    "node-llama-cpp": "^3.0.0-beta.44",
+    "ollama": "^0.5.8",
+    "openai": "^4.55.7"
   }
 }

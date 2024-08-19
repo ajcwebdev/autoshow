@@ -1,13 +1,14 @@
-// utils/llms/ollama.js
+// src/llms/ollama.js
 
-import fs from 'fs'
+import fs from 'node:fs'
+import { env } from 'node:process'
 // import ollama from 'ollama'
 
 import { Ollama } from 'ollama'
 
 const ollama = new Ollama({ host: 'http://127.0.0.1:11434' })
 
-const OLLAMA_MODEL = process.env.OLLAMA_MODEL || 'phi3'
+const OLLAMA_MODEL = env.OLLAMA_MODEL || 'phi3'
 
 export async function callOllama(transcriptContent, outputFilePath) {
   try {

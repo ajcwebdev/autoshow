@@ -136,8 +136,8 @@ The server will eventually replicate all functionality implemented by the CLI.
 This will include additional endpoints beyond `/video` such as:
 
 - `/playlist` for the `processPlaylist.js` command
-- `/urls` for the `processUrlsFile.js` command
-- `/rss` for the `processRssFeed.js` command
+- `/urls` for the `processURLs.js` command
+- `/rss` for the `processRSS.js` command
 
 I'm starting with a plain Node.js server instead of using a framework like Express. In the future, I would like to also have adapters for Deno and Bun. Once those are all stable, I will try out some of the higher level frameworks. I intend to experiment a bit with each of the following and pick one or two to support long term:
 
@@ -192,47 +192,6 @@ Click any of the following to expand.
   <summary>Set better defaults for context limit, entropy threshold, and max temperature to improve transcript output.</summary>
 
 [Improving hallucinations and repetitions](https://github.com/ggerganov/whisper.cpp/discussions/2286)
-
-</details>
-
-<details>
-  <summary>Enable downloading and passing any Whisper.cpp model size.</summary>
-
-Currently, the only model versions supported by the CLI are `base`, `medium`, and `large-v2`. Eventually you will be able to use any of the following:
-
-| Model         | Disk    | SHA                                        |
-| ------------- | ------- | ------------------------------------------ |
-| tiny          | 75 MiB  | `bd577a113a864445d4c299885e0cb97d4ba92b5f` |
-| tiny.en       | 75 MiB  | `c78c86eb1a8faa21b369bcd33207cc90d64ae9df` |
-| base          | 142 MiB | `465707469ff3a37a2b9b8d8f89f2f99de7299dac` |
-| base.en       | 142 MiB | `137c40403d78fd54d454da0f9bd998f78703390c` |
-| small         | 466 MiB | `55356645c2b361a969dfd0ef2c5a50d530afd8d5` |
-| small.en      | 466 MiB | `db8a495a91d927739e50b3fc1cc4c6b8f6c2d022` |
-| medium        | 1.5 GiB | `fd9727b6e1217c2f614f9b698455c4ffd82463b4` |
-| medium.en     | 1.5 GiB | `8c30f0e44ce9560643ebd10bbe50cd20eafd3723` |
-| large-v1      | 2.9 GiB | `b1caaf735c4cc1429223d5a74f0f4d0b9b59a299` |
-| large-v2      | 2.9 GiB | `0f4c8e34f21cf1a914c59d8b3ce882345ad349d6` |
-| large-v3      | 2.9 GiB | `ad82bf6a9043ceed055076d0fd39f5f186ff8062` |
-
-To use these models today, you can modify the `getModel` function yourself in `utils/index.js` by uncommenting and adding a `custom` case:
-
-```js
-export function getModel(modelType) {
-  switch (modelType) {
-    case 'base':
-      return "whisper.cpp/models/ggml-base.bin"
-    case 'medium':
-      return "whisper.cpp/models/ggml-medium.bin"
-    case 'large':
-      return "whisper.cpp/models/ggml-large-v2.bin"
-    case 'custom':
-      return "whisper.cpp/models/ggml-base.en.bin"
-    default:
-      console.error(`Unknown model type: ${modelType}`)
-      process.exit(1)
-  }
-}
-```
 
 </details>
 

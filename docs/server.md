@@ -92,3 +92,16 @@ curl -X POST http://localhost:3000/file \
     "model": "base"
   }'
 ```
+
+## RSS Endpoint
+
+```bash
+curl -X POST http://localhost:3000/rss \
+  -H "Content-Type: application/json" \
+  -d '{
+    "rssUrl": "https://feeds.transistor.fm/fsjam-podcast/",
+    "model": "base",
+    "order": "newest",
+    "skip": 0
+  }'
+```

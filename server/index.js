@@ -5,6 +5,7 @@ import { handleVideoRequest } from './video.js'
 import { handlePlaylistRequest } from './playlist.js'
 import { handleURLsRequest } from './urls.js'
 import { handleFileRequest } from './file.js'
+import { handleRSSRequest } from './rss.js'
 import { env } from 'node:process'
 
 const port = env.PORT || 3000
@@ -39,6 +40,9 @@ const server = http.createServer(async (req, res) => {
         break
       case '/file':
         await handleFileRequest(req, res)
+        break
+      case '/rss':
+        await handleRSSRequest(req, res)
         break
       default:
         res.writeHead(404, { 'Content-Type': 'application/json' })

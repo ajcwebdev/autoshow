@@ -1,7 +1,6 @@
 // server/video.js
 
-import { processVideo } from '../commands/processVideo.js'
-import { getModel } from '../utils/exports.js'
+import { processVideo } from '../src/commands/processVideo.js'
 
 const handleVideoRequest = async (req, res) => {
   let body = ''
@@ -12,47 +11,16 @@ const handleVideoRequest = async (req, res) => {
 
   req.on('end', async () => {
     try {
-      const { youtubeUrl, model: requestedModel = 'base', llm } = JSON.parse(body)
-
+      const { youtubeUrl, model = 'base', llm } = JSON.parse(body)
       if (!youtubeUrl) {
         res.writeHead(400, { 'Content-Type': 'application/json' })
         res.end(JSON.stringify({ error: 'YouTube URL is required' }))
         return
       }
-
-      const model = getModel(requestedModel)
-      
-      // Initialize LLM flags
-      const llmFlags = {
-        chatgpt: false,
-        claude: false,
-        cohere: false,
-        mistral: false,
-        octo: false
-      }
-
-      // Set the selected LLM flag to true
-      if (llm && llm in llmFlags) {
-        llmFlags[llm] = true
-      } else if (llm) {
-        res.writeHead(400, { 'Content-Type': 'application/json' })
-        res.end(JSON.stringify({ error: 'Invalid LLM option' }))
-        return
-      }
-
-      const commonArgs = [
-        model,
-        llmFlags.chatgpt,
-        llmFlags.claude,
-        llmFlags.cohere,
-        llmFlags.mistral,
-        llmFlags.octo,
-        false, // deepgram
-        false  // assembly
-      ]
-
-      const finalContent = await processVideo(youtubeUrl, ...commonArgs)
-
+      const llmOption = llm || null
+      const transcriptionOption = model || 'base'
+      const options = {}
+      const finalContent = await processVideo(youtubeUrl, llmOption, transcriptionOption, options)
       res.writeHead(200, { 'Content-Type': 'application/json' })
       res.end(JSON.stringify({ 
         message: 'Video processed successfully.',

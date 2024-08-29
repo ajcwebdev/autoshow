@@ -44,7 +44,7 @@ curl -X POST http://localhost:3000/video \
   -H "Content-Type: application/json" \
   -d '{
     "youtubeUrl": "https://www.youtube.com/watch?v=jKB0EltG9Jo",
-    "model": "medium"
+    "model": "tiny"
   }'
 ```
 
@@ -55,7 +55,7 @@ curl -X POST http://localhost:3000/video \
   -H "Content-Type: application/json" \
   -d '{
     "youtubeUrl": "https://www.youtube.com/watch?v=jKB0EltG9Jo",
-    "model": "large",
+    "model": "tiny",
     "llm": "chatgpt"
   }'
 ```

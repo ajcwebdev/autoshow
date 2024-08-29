@@ -25,7 +25,7 @@ Version 20 enters its maintenance period in October 2024 and end-of-life in Apri
 
 </details>
 
-## Send Request with YouTube URL
+## Video Endpoint
 
 Once the server is running, send a `POST` request to `http://localhost:3000/video` containing a JSON object with the YouTube URL:
 
@@ -57,5 +57,16 @@ curl -X POST http://localhost:3000/video \
     "youtubeUrl": "https://www.youtube.com/watch?v=jKB0EltG9Jo",
     "model": "tiny",
     "llm": "chatgpt"
+  }'
+```
+
+## Playlist Endpoint
+
+```bash
+curl -X POST http://localhost:3000/playlist \
+  -H "Content-Type: application/json" \
+  -d '{
+    "playlistUrl": "https://www.youtube.com/playlist?list=PLCVnrVv4KhXMh4DQBigyvHSRTf2CSj129",
+    "model": "base"
   }'
 ```

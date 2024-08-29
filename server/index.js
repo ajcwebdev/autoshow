@@ -2,6 +2,7 @@
 
 import http from 'http'
 import { handleVideoRequest } from './video.js'
+import { handlePlaylistRequest } from './playlist.js'
 import { env } from 'node:process'
 
 const port = env.PORT || 3000
@@ -23,8 +24,15 @@ const server = http.createServer(async (req, res) => {
     res.setHeader(key, value)
   })
 
-  if (req.method === 'POST' && req.url === '/video') {
-    await handleVideoRequest(req, res)
+  if (req.method === 'POST') {
+    if (req.url === '/video') {
+      await handleVideoRequest(req, res)
+    } else if (req.url === '/playlist') {
+      await handlePlaylistRequest(req, res)
+    } else {
+      res.writeHead(404, { 'Content-Type': 'application/json' })
+      res.end(JSON.stringify({ error: 'Not Found' }))
+    }
   } else {
     res.writeHead(404, { 'Content-Type': 'application/json' })
     res.end(JSON.stringify({ error: 'Not Found' }))

@@ -1,11 +1,11 @@
 // server/index.js
 
 import http from 'http'
-import { handleVideoRequest } from './video.js'
-import { handlePlaylistRequest } from './playlist.js'
-import { handleURLsRequest } from './urls.js'
-import { handleFileRequest } from './file.js'
-import { handleRSSRequest } from './rss.js'
+import { handleVideoRequest } from './routes/video.js'
+import { handlePlaylistRequest } from './routes/playlist.js'
+import { handleURLsRequest } from './routes/urls.js'
+import { handleFileRequest } from './routes/file.js'
+import { handleRSSRequest } from './routes/rss.js'
 import { env } from 'node:process'
 
 const port = env.PORT || 3000

@@ -1,6 +1,6 @@
 // server/urls.js
 
-import { processURLs } from '../src/commands/processURLs.js'
+import { processURLs } from '../../src/commands/processURLs.js'
 
 const handleURLsRequest = async (req, res) => {
   let body = ''

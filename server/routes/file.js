@@ -1,6 +1,6 @@
 // server/file.js
 
-import { processFile } from '../src/commands/processFile.js'
+import { processFile } from '../../src/commands/processFile.js'
 
 const handleFileRequest = async (req, res) => {
   let body = ''

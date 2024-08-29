@@ -1,6 +1,6 @@
 // server/playlist.js
 
-import { processPlaylist } from '../src/commands/processPlaylist.js'
+import { processPlaylist } from '../../src/commands/processPlaylist.js'
 
 const handlePlaylistRequest = async (req, res) => {
   let body = ''

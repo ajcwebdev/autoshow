@@ -1,6 +1,6 @@
 // server/rss.js
 
-import { processRSS } from '../src/commands/processRSS.js'
+import { processRSS } from '../../src/commands/processRSS.js'
 
 const handleRSSRequest = async (req, res) => {
   let body = ''

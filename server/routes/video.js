@@ -1,6 +1,6 @@
 // server/video.js
 
-import { processVideo } from '../src/commands/processVideo.js'
+import { processVideo } from '../../src/commands/processVideo.js'
 
 const handleVideoRequest = async (req, res) => {
   let body = ''

@@ -6,8 +6,8 @@ import { Command } from 'commander'
 import { processVideo } from './commands/processVideo.js'
 import { processPlaylist } from './commands/processPlaylist.js'
 import { processURLs } from './commands/processURLs.js'
-import { processRSS } from './commands/processRSS.js'
 import { processFile } from './commands/processFile.js'
+import { processRSS } from './commands/processRSS.js'
 import { env } from 'node:process'
 
 const program = new Command()
@@ -21,6 +21,7 @@ program
   .option('-f, --file <filePath>', 'Process a local audio or video file')
   .option('-r, --rss <rssURL>', 'Process a podcast RSS feed')
   .option('--order <order>', 'Specify the order for RSS feed processing (newest or oldest)', 'newest')
+  .option('--skip <number>', 'Number of items to skip when processing RSS feed', parseInt, 0)
   .option('--whisper <modelType>', 'Specify the Whisper model type', 'base')
   .option('--chatgpt', 'Use ChatGPT for processing')
   .option('--claude', 'Use Claude for processing')
@@ -49,7 +50,7 @@ program.action(async (options) => {
   for (const [key, handler] of Object.entries(handlers)) {
     if (options[key]) {
       if (key === 'rss') {
-        await handler(options[key], llmOption, transcriptionOption, options.order)
+        await handler(options[key], llmOption, transcriptionOption, options.order, options.skip)
       } else {
         await handler(options[key], llmOption, transcriptionOption)
       }

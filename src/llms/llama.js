@@ -1,4 +1,4 @@
-// src/llms/llamaModule.js
+// src/llms/llama.js
 
 import { writeFile, mkdir } from 'node:fs/promises'
 import { getLlama, LlamaChatSession } from "node-llama-cpp"
@@ -62,10 +62,3 @@ export async function callLlama(transcriptContent, outputFilePath) {
     throw error
   }
 }
-
-// if (require.main === module) {
-//   downloadModel().catch(err => {
-//     console.error('Failed to download model:', err)
-//     process.exit(1)
-//   })
-// }

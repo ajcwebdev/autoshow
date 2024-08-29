@@ -36,22 +36,7 @@ function getWhisperModel(modelType) {
   }
 }
 
-async function processLrcToTxt(finalPath) {
-  try {
-    const lrcContent = await readFile(`${finalPath}.lrc`, 'utf8')
-    const txtContent = lrcContent.split('\n')
-      .filter(line => !line.startsWith('[by:whisper.cpp]'))
-      .map(line => line.replace(/\[\d{2}:\d{2}\.\d{2}\]/g, match => match.slice(0, -4) + ']'))
-      .join('\n')
-    await writeFile(`${finalPath}.txt`, txtContent)
-    return txtContent
-  } catch (error) {
-    console.error('Error processing LRC to TXT:', error)
-    throw new Error('Failed to process LRC to TXT due to an internal error.')
-  }
-}
-
-export const callWhisper = async (finalPath, whisperModelType) => {
+export async function callWhisper(finalPath, whisperModelType) {
   try {
     const whisperModel = getWhisperModel(whisperModelType)
     await execPromise(`./whisper.cpp/main \
@@ -62,7 +47,12 @@ export const callWhisper = async (finalPath, whisperModelType) => {
     )
     console.log(`Whisper.cpp Model Selected:\n  - whisper.cpp/models/${whisperModel}`)
     console.log(`Transcript LRC file completed:\n  - ${finalPath}.lrc`)
-    const txtContent = await processLrcToTxt(finalPath)
+    const lrcContent = await readFile(`${finalPath}.lrc`, 'utf8')
+    const txtContent = lrcContent.split('\n')
+      .filter(line => !line.startsWith('[by:whisper.cpp]'))
+      .map(line => line.replace(/\[\d{2}:\d{2}\.\d{2}\]/g, match => match.slice(0, -4) + ']'))
+      .join('\n')
+    await writeFile(`${finalPath}.txt`, txtContent)
     console.log(`Transcript transformation completed:\n  - ${finalPath}.txt`)
     return txtContent
   } catch (error) {

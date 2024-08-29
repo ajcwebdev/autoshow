@@ -70,3 +70,25 @@ curl -X POST http://localhost:3000/playlist \
     "model": "base"
   }'
 ```
+
+## URLs Endpoint
+
+```bash
+curl -X POST http://localhost:3000/urls \
+  -H "Content-Type: application/json" \
+  -d '{
+    "filePath": "content/urls.md",
+    "model": "base"
+  }'
+```
+
+## File Endpoint
+
+```bash
+curl -X POST http://localhost:3000/file \
+  -H "Content-Type: application/json" \
+  -d '{
+    "filePath": "content/audio.mp3",
+    "model": "base"
+  }'
+```

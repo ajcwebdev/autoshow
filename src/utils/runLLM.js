@@ -9,10 +9,9 @@ import { callOcto } from '../llms/octo.js'
 import { callLlama } from '../llms/llama.js'
 import { PROMPT } from '../llms/prompt.js'
 
-export const runLLM = async (finalPath, frontMatter, llmOption) => {
+export async function runLLM(finalPath, frontMatter, llmOption) {
   try {
     const transcriptContent = await readFile(`${finalPath}.txt`, 'utf8')
-
     const llmFunctions = {
       chatgpt: callChatGPT,
       claude: callClaude,

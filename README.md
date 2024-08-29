@@ -55,7 +55,7 @@ This sets a default model for Llama.cpp which ensures `--llama` doesn't fail if 
 Install `yt-dlp`, `ffmpeg`, and run `npm i`.
 
 ```bash
-brew install yt-dlp ffmpeg llama.cpp
+brew install yt-dlp ffmpeg
 npm i
 ```
 

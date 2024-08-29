@@ -53,7 +53,7 @@ npm run autoshow -- --urls "content/examples/urls.md"
 ### Process Single Audio or Video File
 
 ```bash
-npm run autoshow -- --file "content/examples/example.mp3"
+npm run autoshow -- --file "content/examples/audio.mp3"
 ```
 
 ### Process Podcast RSS Feed

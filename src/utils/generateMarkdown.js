@@ -2,48 +2,33 @@
 
 import { execFile } from 'node:child_process'
 import { promisify } from 'node:util'
+import { join } from 'node:path'
 
 const execFilePromise = promisify(execFile)
 
-const generateFilename = async (url) => {
+export async function generateMarkdown(url) {
   try {
     const { stdout } = await execFilePromise('yt-dlp', [
       '--restrict-filenames',
       '--print', '%(upload_date>%Y-%m-%d)s',
       '--print', '%(title)s',
+      '--print', '%(thumbnail)s',
+      '--print', '%(webpage_url)s',
+      '--print', '%(channel)s',
+      '--print', '%(uploader_url)s',
       url
     ])
-    const [formattedDate, title] = stdout.trim().split('\n')
+    const [
+      formattedDate, title, thumbnail, webpage_url, channel, uploader_url
+    ] = stdout.trim().split('\n')
     const sanitizedTitle = title
       .replace(/[^\w\s-]/g, '')
       .trim()
       .replace(/\s+/g, '-')
       .toLowerCase()
       .slice(0, 200)
-    return `${formattedDate}-${sanitizedTitle}`
-  } catch (error) {
-    console.error('Error generating filename:', error)
-    throw error
-  }
-}
-
-export const generateMarkdown = async (url) => {
-  try {
-    const filename = await generateFilename(url)
-    const { stdout } = await execFilePromise('yt-dlp', [
-      '--restrict-filenames',
-      '--print', '%(title)s',
-      '--print', '%(thumbnail)s',
-      '--print', '%(webpage_url)s',
-      '--print', '%(channel)s',
-      '--print', '%(uploader_url)s',
-      '--print', '%(upload_date>%Y-%m-%d)s',
-      url
-    ])
-    const [
-      title, thumbnail, webpage_url, channel, uploader_url, formattedDate
-    ] = stdout.trim().split('\n')
-    const finalPath = `content/${filename}`
+    const filename = `${formattedDate}-${sanitizedTitle}`
+    const finalPath = join('content', filename)
     const frontMatter = [
       "---",
       `showLink: "${webpage_url}"`,

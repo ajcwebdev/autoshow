@@ -5,7 +5,7 @@ import { promisify } from 'node:util'
 
 const execFilePromise = promisify(execFile)
 
-export const downloadAudio = async (url, filename) => {
+export async function downloadAudio(url, filename) {
   try {
     const finalPath = `content/${filename}`
     const { stdout, stderr } = await execFilePromise('yt-dlp', [

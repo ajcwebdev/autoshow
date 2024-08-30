@@ -15,7 +15,6 @@
   - [Mistral's Mixtral Models](#mistrals-mixtral-models)
   - [OctoAI's Models](#octoais-models)
   - [Llama.cpp](#llamacpp)
-  - [Ollama](#ollama)
 - [Transcription Options](#transcription-options)
   - [Deepgram](#deepgram)
   - [Assembly](#assembly)
@@ -31,7 +30,7 @@
 Run on a single YouTube video.
 
 ```bash
-npm run autoshow -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo"
+npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo"
 ```
 
 ### Process Multiple Videos in YouTube Playlist
@@ -39,7 +38,7 @@ npm run autoshow -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo"
 Run on multiple YouTube videos in a playlist.
 
 ```bash
-npm run autoshow -- --playlist "https://www.youtube.com/playlist?list=PLCVnrVv4KhXMh4DQBigyvHSRTf2CSj129"
+npm run as -- --playlist "https://www.youtube.com/playlist?list=PLCVnrVv4KhXMh4DQBigyvHSRTf2CSj129"
 ```
 
 ### Process Multiple Videos Specified in a URLs File
@@ -47,28 +46,41 @@ npm run autoshow -- --playlist "https://www.youtube.com/playlist?list=PLCVnrVv4K
 Run on an arbitrary list of URLs in `urls.md`.
 
 ```bash
-npm run autoshow -- --urls "content/examples/urls.md"
+npm run as -- --urls "content/examples/urls.md"
 ```
 
 ### Process Single Audio or Video File
 
+Download MP3 file for testing:
+
 ```bash
-npm run autoshow -- --file "content/examples/audio.mp3"
+curl -L https://ajc.pics/audio/fsjam-short.mp3 -o ./content/audio.mp3
+```
+
+Run on `audio.mp3` on the `content` directory:
+
+```bash
+npm run as -- --file "content/audio.mp3"
 ```
 
 ### Process Podcast RSS Feed
 
-Run on an RSS podcast feed.
+Process RSS feed from newest to oldest (default behavior):
 
 ```bash
-# Process RSS feed from oldest to newest (default behavior)
-npm run autoshow -- --rss "https://feeds.transistor.fm/fsjam-podcast/"
+npm run as -- --rss "https://feeds.transistor.fm/fsjam-podcast/"
+```
 
-# Explicitly process RSS feed from oldest to newest
-npm run autoshow -- --rss "https://feeds.transistor.fm/fsjam-podcast/" --order oldest
+Process RSS feed from oldest to newest:
 
-# Process RSS feed from newest to oldest
-npm run autoshow -- --rss "https://feeds.transistor.fm/fsjam-podcast/" --order newest
+```bash
+npm run as -- --rss "https://feeds.transistor.fm/fsjam-podcast/" --order oldest
+```
+
+Start processing a different episode by selecting a number of episodes to skip:
+
+```bash
+npm run as -- --rss "https://feeds.transistor.fm/fsjam-podcast/" --skip 1
 ```
 
 ## Language Model (LLM) Options
@@ -78,31 +90,31 @@ Create a `.env` file and set API key as demonstrated in `.env.example` for `OPEN
 ### OpenAI's ChatGPT Models
 
 ```bash
-npm run autoshow -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --chatgpt
+npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --chatgpt
 ```
 
 ### Anthropic's Claude Models
 
 ```bash
-npm run autoshow -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --claude
+npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --claude
 ```
 
 ### Cohere's Command Models
 
 ```bash
-npm run autoshow -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --cohere
+npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --cohere
 ```
 
 ### Mistral's Mistral Models
 
 ```bash
-npm run autoshow -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --mistral
+npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --mistral
 ```
 
 ### OctoAI's Models
 
 ```bash
-npm run autoshow -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --octo
+npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --octo
 ```
 
 ### Llama.cpp
@@ -125,19 +137,7 @@ echo '\nHUGGING_FACE_URL="https://huggingface.co/mradermacher/Meta-Llama-3.1-8B-
 ```
 
 ```bash
-npm run autoshow -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --llama
-```
-
-### Ollama
-
-_Not implemented yet, this is just a placeholder._
-
-```bash
-# brew install ollama
-# ollama pull phi3
-# npm run autoshow -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --ollama
-# docker run -d -v ollama:/root/.ollama -p 11434:11434 --name ollama ollama/ollama
-# docker exec -it ollama ollama run phi3
+npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --llama
 ```
 
 ## Transcription Options
@@ -147,13 +147,19 @@ Create a `.env` file and set API key as demonstrated in `.env.example` for `DEEP
 ### Deepgram
 
 ```bash
-npm run autoshow -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --deepgram
+npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --deepgram
 ```
 
 ### Assembly
 
 ```bash
-npm run autoshow -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --assembly
+npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --assembly
+```
+
+Include speaker labels and number of speakers:
+
+```bash
+npm run as -- --video "https://ajc.pics/audio/fsjam-short.mp3" --assembly --speaker-labels --speakers-expected 2
 ```
 
 ### Whisper.cpp
@@ -162,19 +168,19 @@ If neither the `--deepgram` or `--assembly` option is included for transcription
 
 ```bash
 # tiny model
-npm run autoshow -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --whisper tiny
+npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --whisper tiny
 
 # base model
-npm run autoshow -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --whisper base
+npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --whisper base
 
 # small model
-npm run autoshow -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --whisper small
+npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --whisper small
 
 # medium model
-npm run autoshow -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --whisper medium
+npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --whisper medium
 
 # large-v2 model
-npm run autoshow -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --whisper large
+npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --whisper large
 ```
 
 > _Note: Make sure the model you select is the same model you built in the [Clone Whisper Repo](#clone-whisper-repo) step._
@@ -190,7 +196,7 @@ _TODO: Rethink Docker integrations, probably want some kind of Compose setup tha
 ```
 
 ```bash
-# npm run autoshow -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --docker
+# npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --docker
 ```
 
 ## Alternative JavaScript Runtimes

@@ -7,12 +7,12 @@ import { runTranscription } from '../utils/runTranscription.js'
 import { runLLM } from '../utils/runLLM.js'
 import { cleanUpFiles } from '../utils/cleanUpFiles.js'
 
-export async function processVideo(url, llmOption, transcriptionOption) {
+export async function processVideo(url, llmOption, transcriptionOption, options) {
   try {
     const { frontMatter, finalPath, filename } = await generateMarkdown(url)
     await writeFile(`${finalPath}.md`, frontMatter)
     await downloadAudio(url, filename)
-    await runTranscription(finalPath, transcriptionOption)
+    await runTranscription(finalPath, transcriptionOption, options)
     await runLLM(finalPath, frontMatter, llmOption)
     await cleanUpFiles(finalPath)
   } catch (error) {

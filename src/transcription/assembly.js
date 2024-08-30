@@ -11,21 +11,15 @@ function formatTimestamp(timestamp) {
   return `${Math.floor(totalSeconds / 60).toString().padStart(2, '0')}:${Math.floor(totalSeconds % 60).toString().padStart(2, '0')}`
 }
 
-export const assemblyTranscribe = async (input, id, useSpeakerLabels = false, speakersExpected = 1) => {
-  let transcriptionConfig = {
-    audio: input,
-    speech_model: 'nano'
-  }
-
+export async function callAssembly(input, id, useSpeakerLabels = false, speakersExpected = 1) {
+  let transcriptionConfig = { audio: input, speech_model: 'nano' }
   if (useSpeakerLabels) {
     transcriptionConfig.speaker_labels = true
     transcriptionConfig.speakers_expected = Math.max(1, Math.min(speakersExpected, 25))
   }
-
   try {
     const transcript = await client.transcripts.transcribe(transcriptionConfig)
     let output = ''
-
     if (transcript.utterances) {
       transcript.utterances.forEach(utt => {
         const speakerPrefix = useSpeakerLabels ? `Speaker ${utt.speaker} ` : ''
@@ -34,7 +28,6 @@ export const assemblyTranscribe = async (input, id, useSpeakerLabels = false, sp
     } else if (transcript.words) {
       let currentLine = ''
       let currentTimestamp = formatTimestamp(transcript.words[0].start)
-
       transcript.words.forEach(word => {
         if (currentLine.length + word.text.length > 80) { // Arbitrary length to break lines
           output += `[${currentTimestamp}] ${currentLine.trim()}\n`
@@ -43,14 +36,12 @@ export const assemblyTranscribe = async (input, id, useSpeakerLabels = false, sp
         }
         currentLine += `${word.text} `
       })
-
       if (currentLine.length > 0) {
         output += `[${currentTimestamp}] ${currentLine.trim()}\n`
       }
     } else {
       output = transcript.text ? transcript.text : 'No transcription available.'
     }
-
     await writeFile(`${id}.txt`, output)
     console.log('Transcript saved.')
   } catch (error) {

@@ -35,7 +35,6 @@
     "ffmpeg-static": "^5.2.0",
     "file-type": "^19.4.1",
     "node-llama-cpp": "^3.0.0-beta.44",
-    "ollama": "^0.5.8",
     "openai": "^4.55.7"
   }
 }

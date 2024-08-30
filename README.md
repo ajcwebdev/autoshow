@@ -114,7 +114,6 @@ Example commands for all available CLI options can be found in [`docs/examples.m
   - `mistral.js`: Integrates Mistral AI's language models
   - `octo.js`: Integrates OctoAI's language models
   - `llama.js`: Integrates Llama models (local inference)
-  - `ollama.js`: Integrates Ollama for local model inference
   - `prompt.js`: Defines the prompt structure for summarization and chapter generation
 
 - Web Interface (`web`) and Server (`server`)

@@ -29,9 +29,10 @@ program
   .option('--mistral', 'Use Mistral for processing')
   .option('--octo', 'Use Octo for processing')
   .option('--llama', 'Use Llama for processing')
-  .option('--deepgram', 'Use Deepgram for transcription instead of Whisper.cpp')
-  .option('--assembly', 'Use AssemblyAI for transcription instead of Whisper.cpp')
-  .option('--docker', 'Use Docker for Whisper.cpp')
+  .option('--deepgram', 'Use Deepgram for transcription')
+  .option('--assembly', 'Use AssemblyAI for transcription')
+  .option('--speaker-labels', 'Use speaker labels for AssemblyAI transcription')
+  .option('--speakers-expected <number>', 'Number of expected speakers for AssemblyAI transcription', parseInt, 1)
 
 program.action(async (options) => {
   const handlers = {
@@ -45,14 +46,14 @@ program.action(async (options) => {
   const llmOption = [
     'chatgpt', 'claude', 'cohere', 'mistral', 'octo', 'llama'
   ].find(option => options[option])
-  const transcriptionOption = options.whisper
+  const transcriptionOption = options.deepgram ? 'deepgram' : options.assembly ? 'assembly' : options.whisper
 
   for (const [key, handler] of Object.entries(handlers)) {
     if (options[key]) {
       if (key === 'rss') {
-        await handler(options[key], llmOption, transcriptionOption, options.order, options.skip)
+        await handler(options[key], llmOption, transcriptionOption, options.order, options.skip, options)
       } else {
-        await handler(options[key], llmOption, transcriptionOption)
+        await handler(options[key], llmOption, transcriptionOption, options)
       }
     }
   }

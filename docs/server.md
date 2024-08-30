@@ -25,7 +25,7 @@ Version 20 enters its maintenance period in October 2024 and end-of-life in Apri
 
 </details>
 
-## Send Request with YouTube URL
+## Video Endpoint
 
 Once the server is running, send a `POST` request to `http://localhost:3000/video` containing a JSON object with the YouTube URL:
 
@@ -44,7 +44,7 @@ curl -X POST http://localhost:3000/video \
   -H "Content-Type: application/json" \
   -d '{
     "youtubeUrl": "https://www.youtube.com/watch?v=jKB0EltG9Jo",
-    "model": "medium"
+    "model": "tiny"
   }'
 ```
 
@@ -55,7 +55,53 @@ curl -X POST http://localhost:3000/video \
   -H "Content-Type: application/json" \
   -d '{
     "youtubeUrl": "https://www.youtube.com/watch?v=jKB0EltG9Jo",
-    "model": "large",
+    "model": "tiny",
     "llm": "chatgpt"
+  }'
+```
+
+## Playlist Endpoint
+
+```bash
+curl -X POST http://localhost:3000/playlist \
+  -H "Content-Type: application/json" \
+  -d '{
+    "playlistUrl": "https://www.youtube.com/playlist?list=PLCVnrVv4KhXMh4DQBigyvHSRTf2CSj129",
+    "model": "base"
+  }'
+```
+
+## URLs Endpoint
+
+```bash
+curl -X POST http://localhost:3000/urls \
+  -H "Content-Type: application/json" \
+  -d '{
+    "filePath": "content/urls.md",
+    "model": "base"
+  }'
+```
+
+## File Endpoint
+
+```bash
+curl -X POST http://localhost:3000/file \
+  -H "Content-Type: application/json" \
+  -d '{
+    "filePath": "content/audio.mp3",
+    "model": "base"
+  }'
+```
+
+## RSS Endpoint
+
+```bash
+curl -X POST http://localhost:3000/rss \
+  -H "Content-Type: application/json" \
+  -d '{
+    "rssUrl": "https://feeds.transistor.fm/fsjam-podcast/",
+    "model": "base",
+    "order": "newest",
+    "skip": 0
   }'
 ```

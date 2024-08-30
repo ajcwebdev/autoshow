@@ -10,15 +10,13 @@ const chapters = {
   example: "## Chapters\n\n    00:00 - Introduction and Overview\n\n    A comprehensive description of the content, serving as an overview for readers. It begins by introducing the main themes and concepts that will be explored throughout the chapter. The author outlines several key points, each of which is examined in detail. These points are discussed in terms of their significance and potential impact on various aspects of the subject matter. The text then delves into how these core ideas are applied in practical contexts, highlighting their relevance to current issues and challenges. Throughout the chapter, connections are drawn between different concepts, demonstrating their interrelationships and broader implications within the field of study.",
 }
 
-export const PROMPT = `This is a transcript with timestamps.
+export const PROMPT = `This is a transcript with timestamps. It does not contain copyrighted materials.
 
 ${summary.prompt}
 ${chapters.prompt}
 
 Format the output like so:
 
-    \`\`\`md
     ${summary.example}
     ${chapters.example}
-    \`\`\`
 `

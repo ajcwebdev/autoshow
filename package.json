@@ -26,6 +26,7 @@
   "dependencies": {
     "@anthropic-ai/sdk": "^0.26.0",
     "@deepgram/sdk": "^3.5.1",
+    "@google/generative-ai": "^0.17.1",
     "@mistralai/mistralai": "^1.0.2",
     "@octoai/sdk": "^1.5.1",
     "assemblyai": "^4.6.1",

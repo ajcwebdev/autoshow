@@ -76,7 +76,48 @@ git clone https://github.com/ggerganov/whisper.cpp.git && \
 Run on a single YouTube video.
 
 ```bash
-npm run autoshow -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo"
+npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --whisper large
+```
+
+Run on a YouTube playlist.
+
+```bash
+npm run as -- --playlist "https://www.youtube.com/playlist?list=PLCVnrVv4KhXMh4DQBigyvHSRTf2CSj129"
+```
+
+Run on a list of arbitrary URLs.
+
+```bash
+npm run as -- --urls "content/examples/urls.md"
+```
+
+Run on a local audio or video file.
+
+```bash
+npm run as -- --file "content/audio.mp3"
+```
+
+Run on a podcast RSS feed.
+
+```bash
+npm run as -- --rss "https://www.spreaker.com/show/4895847/episodes/feed"
+```
+
+Use local LLM.
+
+```bash
+npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --llama
+```
+
+Use 3rd party LLM providers.
+
+```bash
+npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --chatgpt GPT_4o_MINI
+npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --claude CLAUDE_3_5_SONNET
+npm run as -- --video "https://www.youtube.com/watch?v=h41DF9GUqx4" --gemini GEMINI_1_5_PRO
+npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --cohere COMMAND_R_PLUS
+npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --mistral MISTRAL_LARGE
+npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --octo LLAMA_3_1_405B
 ```
 
 Example commands for all available CLI options can be found in [`docs/examples.md`](/docs/examples.md).

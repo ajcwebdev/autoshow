@@ -163,10 +163,31 @@ npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --cohere COM
 npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --mistral
 ```
 
+Select Mistral model:
+
+```bash
+npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --mistral MIXTRAL_8x7b
+npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --mistral MIXTRAL_8x22b
+npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --mistral MISTRAL_LARGE
+npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --mistral MISTRAL_NEMO
+```
+
 ### OctoAI's Models
 
 ```bash
 npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --octo
+```
+
+Select Octo model:
+
+```bash
+npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --octo LLAMA_3_1_8B
+npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --octo LLAMA_3_1_70B
+npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --octo LLAMA_3_1_405B
+npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --octo MISTRAL_7B
+npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --octo MIXTRAL_8X_7B
+npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --octo NOUS_HERMES_MIXTRAL_8X_7B
+npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --octo WIZARD_2_8X_22B
 ```
 
 ### Llama.cpp

@@ -135,10 +135,26 @@ npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --chatgpt GP
 npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --claude
 ```
 
+Select Claude model:
+
+```bash
+npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --claude CLAUDE_3_5_SONNET
+npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --claude CLAUDE_3_OPUS
+npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --claude CLAUDE_3_SONNET
+npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --claude CLAUDE_3_HAIKU
+```
+
 ### Cohere's Command Models
 
 ```bash
 npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --cohere
+```
+
+Select Cohere model:
+
+```bash
+npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --cohere COMMAND_R
+npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --cohere COMMAND_R_PLUS
 ```
 
 ### Mistral's Mistral Models

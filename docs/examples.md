@@ -144,6 +144,19 @@ npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --claude CLA
 npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --claude CLAUDE_3_HAIKU
 ```
 
+### Gemini Models
+
+```bash
+npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --gemini
+```
+
+Select Gemini model:
+
+```bash
+npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --gemini GEMINI_1_5_FLASH
+npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --gemini GEMINI_1_5_PRO
+```
+
 ### Cohere's Command Models
 
 ```bash

@@ -20,6 +20,7 @@ function generateRSSMarkdown(item) {
     `channel: "${item.channel}"`,
     `channelURL: "${item.channelURL}"`,
     `title: "${item.title}"`,
+    `description: ""`,
     `publishDate: "${item.publishDate}"`,
     `coverImage: "${item.coverImage}"`,
     "---\n"

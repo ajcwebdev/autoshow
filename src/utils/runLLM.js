@@ -7,6 +7,7 @@ import { callCohere } from '../llms/cohere.js'
 import { callMistral } from '../llms/mistral.js'
 import { callOcto } from '../llms/octo.js'
 import { callLlama } from '../llms/llama.js'
+import { callGemini } from '../llms/gemini.js'
 import { PROMPT } from '../llms/prompt.js'
 
 export async function runLLM(finalPath, frontMatter, llmOption, options) {
@@ -19,6 +20,7 @@ export async function runLLM(finalPath, frontMatter, llmOption, options) {
       mistral: callMistral,
       octo: callOcto,
       llama: callLlama,
+      gemini: callGemini,
     }
     if (llmOption && llmFunctions[llmOption]) {
       await llmFunctions[llmOption](

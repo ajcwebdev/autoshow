@@ -29,6 +29,7 @@ program
   .option('--mistral [model]', 'Use Mistral for processing')
   .option('--octo [model]', 'Use Octo for processing')
   .option('--llama', 'Use Llama for processing')
+  .option('--gemini [model]', 'Use Gemini for processing with optional model specification')
   .option('--deepgram', 'Use Deepgram for transcription')
   .option('--assembly', 'Use AssemblyAI for transcription')
   .option('--speaker-labels', 'Use speaker labels for AssemblyAI transcription')
@@ -44,7 +45,7 @@ program.action(async (options) => {
   }
 
   const llmOption = [
-    'chatgpt', 'claude', 'cohere', 'mistral', 'octo', 'llama'
+    'chatgpt', 'claude', 'cohere', 'mistral', 'octo', 'llama', 'gemini'
   ].find(option => options[option])
   const transcriptionOption = options.deepgram ? 'deepgram' : options.assembly ? 'assembly' : options.whisper
 

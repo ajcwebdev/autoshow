@@ -17,7 +17,7 @@ export async function downloadAudio(url, filename) {
       '-o', `${finalPath}.%(ext)s`,
       url
     ])
-    console.log('yt-dlp output:\n  -', stdout)
+    // console.log('yt-dlp output:\n  -', stdout)
     if (stderr) console.error('yt-dlp errors:', stderr)
     const downloadedFile = `${finalPath}.wav`
     console.log(`WAV file downloaded:\n  - ${downloadedFile}`)

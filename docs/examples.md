@@ -85,13 +85,49 @@ npm run as -- --rss "https://feeds.transistor.fm/fsjam-podcast/" --skip 1
 
 ## Language Model (LLM) Options
 
-Create a `.env` file and set API key as demonstrated in `.env.example` for `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `COHERE_API_KEY`, `MISTRAL_API_KEY`, or `OCTOAI_API_KEY`.
+Create a `.env` file and set API key as demonstrated in `.env.example` for either:
+
+- `OPENAI_API_KEY`
+- `ANTHROPIC_API_KEY`
+- `COHERE_API_KEY`
+- `MISTRAL_API_KEY`
+- `OCTOAI_API_KEY`
+
+For each model available for each provider, I have collected the following details:
+
+- Context Window, the limit of tokens a model can process at once.
+- Max Output, the upper limit of tokens a model can generate in a response, influencing response length and detail.
+- Cost of input and output tokens per million tokens.
+  - Some model providers also offer a Batch API with input/output tokens at half the price.
 
 ### OpenAI's ChatGPT Models
 
 ```bash
 npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --chatgpt
 ```
+
+Select ChatGPT model:
+
+```bash
+# Select GPT-4o mini model - https://platform.openai.com/docs/models/gpt-4o-mini
+npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --chatgpt GPT_4o_MINI
+
+# Select GPT-4o model - https://platform.openai.com/docs/models/gpt-4o
+npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --chatgpt GPT_4o
+
+# Select GPT-4 Turbo model - https://platform.openai.com/docs/models/gpt-4-turbo-and-gpt-4
+npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --chatgpt GPT_4_TURBO
+
+# Select GPT-4 model - https://platform.openai.com/docs/models/gpt-4-turbo-and-gpt-4
+npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --chatgpt GPT_4
+```
+
+| Model        | Context Window | Max Output | Input Tokens | Output Tokens | Batch Input | Batch Output |
+|--------------|----------------|------------|--------------|---------------|-------------|--------------|
+| GPT-4o mini  | 128,000        | 16,384     | $0.15        | $0.60         | $0.075      | $0.30        |
+| GPT-4o       | 128,000        | 4,096      | $5           | $15           | $2.50       | $7.50        |
+| GPT-4 Turbo  | 128,000        | 4,096      | $10          | $30           | $5          | $15          |
+| GPT-4        | 8,192          | 8,192      | $30          | $60           | $15         | $30          |
 
 ### Anthropic's Claude Models
 

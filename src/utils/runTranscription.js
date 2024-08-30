@@ -30,8 +30,8 @@ export async function runTranscription(finalPath, transcriptionOption, options =
       }
     }
     const finalContent = `${mdContent}\n${PROMPT}\n## Transcript\n\n${txtContent}`
-    await writeFile(`${finalPath}-with-prompt.md`, finalContent)
-    console.log(`\nMarkdown file with frontmatter, prompt, and transcript:\n  - ${finalPath}-with-prompt.md`)
+    await writeFile(`${finalPath}-prompt.md`, finalContent)
+    console.log(`\nMarkdown file with frontmatter, prompt, and transcript:\n  - ${finalPath}-prompt.md`)
     return finalContent
   } catch (error) {
     console.error('Error in runTranscription:', error)

@@ -11,26 +11,29 @@ const claudeModel = {
   CLAUDE_3_HAIKU: "claude-3-haiku-20240307",
 }
 
-export async function callClaude(transcriptContent, outputFilePath) {
+export async function callClaude(transcriptContent, outputFilePath, model = 'CLAUDE_3_HAIKU') {
   const anthropic = new Anthropic({ apiKey: env.ANTHROPIC_API_KEY })
   try {
+    const actualModel = claudeModel[model] || claudeModel.CLAUDE_3_HAIKU
     const response = await anthropic.messages.create({
-      model: claudeModel.CLAUDE_3_HAIKU,
+      model: actualModel,
       max_tokens: 4000,
       messages: [{ role: 'user', content: transcriptContent }]
     })
     const {
       content: [{ text }],
-      model,
+      model: usedModel,
       usage: { input_tokens, output_tokens },
       stop_reason
     } = response
     await writeFile(outputFilePath, text)
     console.log(`Transcript saved to ${outputFilePath}`)
-    console.log(`\nClaude response:\n\n${JSON.stringify(response, null, 2)}`)
-    console.log(`\nStop Reason: ${stop_reason}\nModel: ${model}`)
+    // console.log(`\nClaude response:\n\n${JSON.stringify(response, null, 2)}`)
+    console.log(`\nStop Reason: ${stop_reason}\nModel: ${usedModel}`)
     console.log(`Token Usage:\n  - ${input_tokens} input tokens\n  - ${output_tokens} output tokens\n`)
+    return Object.keys(claudeModel).find(key => claudeModel[key] === usedModel) || model
   } catch (error) {
     console.error('Error:', error)
+    throw error
   }
 }

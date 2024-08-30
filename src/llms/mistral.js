@@ -11,25 +11,28 @@ const mistralModel = {
   MISTRAL_NEMO: "open-mistral-nemo"
 }
 
-export async function callMistral(transcriptContent, outputFilePath) {
+export async function callMistral(transcriptContent, outputFilePath, model = 'MISTRAL_NEMO') {
   const mistral = new Mistral(env.MISTRAL_API_KEY)
   try {
+    const actualModel = mistralModel[model] || mistralModel.MISTRAL_NEMO
     const response = await mistral.chat.complete({
-      model: mistralModel.MISTRAL_NEMO,
+      model: actualModel,
       // max_tokens: ?,
       messages: [{ role: 'user', content: transcriptContent }],
     })
     const {
       choices: [{ message: { content }, finish_reason }],
-      model,
+      model: usedModel,
       usage: { prompt_tokens, completion_tokens, total_tokens }
     } = response
     await writeFile(outputFilePath, content)
     console.log(`Transcript saved to ${outputFilePath}`)
-    console.log(`\nMistral response:\n\n${JSON.stringify(response, null, 2)}`)
-    console.log(`\nFinish Reason: ${finish_reason}\nModel: ${model}`)
+    // console.log(`\nMistral response:\n\n${JSON.stringify(response, null, 2)}`)
+    console.log(`\nFinish Reason: ${finish_reason}\nModel: ${usedModel}`)
     console.log(`Token Usage:\n  - ${prompt_tokens} prompt tokens\n  - ${completion_tokens} completion tokens\n  - ${total_tokens} total tokens\n`)
+    return Object.keys(mistralModel).find(key => mistralModel[key] === usedModel) || model
   } catch (error) {
     console.error('Error:', error)
+    throw error
   }
 }

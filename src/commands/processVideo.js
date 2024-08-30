@@ -13,7 +13,7 @@ export async function processVideo(url, llmOption, transcriptionOption, options)
     await writeFile(`${finalPath}.md`, frontMatter)
     await downloadAudio(url, filename)
     await runTranscription(finalPath, transcriptionOption, options)
-    await runLLM(finalPath, frontMatter, llmOption)
+    await runLLM(finalPath, frontMatter, llmOption, options)
     await cleanUpFiles(finalPath)
   } catch (error) {
     console.error('Error processing video:', error)

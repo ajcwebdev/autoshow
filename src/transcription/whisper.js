@@ -6,72 +6,54 @@ import { promisify } from 'node:util'
 
 const execPromise = promisify(exec)
 
-function getWhisperModel(modelType) {
-  switch (modelType) {
-    case 'tiny':
-      return "ggml-tiny.bin"
-    case 'tiny.en':
-      return "ggml-tiny.en.bin"
-    case 'base':
-      return "ggml-base.bin"
-    case 'base.en':
-      return "ggml-base.en.bin"
-    case 'small':
-      return "ggml-small.bin"
-    case 'small.en':
-      return "ggml-small.en.bin"
-    case 'medium':
-      return "ggml-medium.bin"
-    case 'medium.en':
-      return "ggml-medium.en.bin"
-    case 'large-v1':
-      return "ggml-large-v1.bin"
-    case 'large-v2':
-      return "ggml-large-v2.bin"
-    case 'large':
-      return "ggml-large-v2.bin"
-    default:
-      console.error(`Unknown model type: ${modelType}`)
-      process.exit(1)
-  }
-}
-
-async function checkAndDownloadModel(modelType) {
-  const modelName = getWhisperModel(modelType)
-  const modelPath = `./whisper.cpp/models/${modelName}`
+export async function callWhisper(finalPath, whisperModelType) {                                // Main function to process audio files with Whisper
   try {
-    await access(modelPath)
-    console.log(`Whisper model found: ${modelName}`)
-  } catch (error) {
-    console.log(`Whisper model not found: ${modelName}`)
-    console.log(`Downloading model: ${modelType}`)
-    await execPromise(`bash ./whisper.cpp/models/download-ggml-model.sh ${modelType}`)
-    console.log(`Model downloaded: ${modelType}`)
-  }
-}
-
-export async function callWhisper(finalPath, whisperModelType) {
-  try {
-    await checkAndDownloadModel(whisperModelType)
-    const whisperModel = getWhisperModel(whisperModelType)
+    const models = {                                                                            // Object mapping model types to their corresponding file names
+      'tiny': "ggml-tiny.bin",
+      'tiny.en': "ggml-tiny.en.bin",
+      'base': "ggml-base.bin",
+      'base.en': "ggml-base.en.bin",
+      'small': "ggml-small.bin",
+      'small.en': "ggml-small.en.bin",
+      'medium': "ggml-medium.bin",
+      'medium.en': "ggml-medium.en.bin",
+      'large-v1': "ggml-large-v1.bin",
+      'large-v2': "ggml-large-v2.bin",
+      'large': "ggml-large-v2.bin"
+    }
+    if (!(whisperModelType in models)) {                                                        // Check if the provided model type is valid
+      console.error(`Unknown model type: ${whisperModelType}`)                                  // Log error for unknown model type
+      process.exit(1)                                                                           // Exit the process with an error code
+    }
+    const modelName = models[whisperModelType]                                                  // Get the file name for the selected model
+    const modelPath = `./whisper.cpp/models/${modelName}`                                       // Construct the full path to the model file
+    try {
+      await access(modelPath)                                                                   // Check if the model file exists
+      console.log(`Whisper model found: ${modelName}`)                                          // Log that the model was found
+    } catch (error) {
+      console.log(`Whisper model not found: ${modelName}`)                                      // If the model file doesn't exist, log it
+      console.log(`Downloading model: ${whisperModelType}`)                                     // Log the start of the download process
+      await execPromise(`bash ./whisper.cpp/models/download-ggml-model.sh ${whisperModelType}`) // Execute the download script
+      console.log(`Model downloaded: ${whisperModelType}`)                                      // Log successful download
+    }
     await execPromise(`./whisper.cpp/main \
-      -m "whisper.cpp/models/${whisperModel}" \
+      -m "whisper.cpp/models/${modelName}" \
       -f "${finalPath}.wav" \
       -of "${finalPath}" \
       --output-lrc`
-    )
-    console.log(`Whisper.cpp Model Selected:\n  - whisper.cpp/models/${whisperModel}`)
-    console.log(`Transcript LRC file completed:\n  - ${finalPath}.lrc`)
-    const lrcContent = await readFile(`${finalPath}.lrc`, 'utf8')
-    const txtContent = lrcContent.split('\n')
-      .filter(line => !line.startsWith('[by:whisper.cpp]'))
-      .map(line => line.replace(/\[\d{2}:\d{2}\.\d{2}\]/g, match => match.slice(0, -4) + ']'))
-      .join('\n')
-    await writeFile(`${finalPath}.txt`, txtContent)
-    console.log(`Transcript transformation completed:\n  - ${finalPath}.txt`)
-    return txtContent
+    )                                                                                           // Execute the Whisper command-line tool
+    console.log(`Whisper.cpp Model Selected:\n  - whisper.cpp/models/${modelName}`)             // Log the selected model
+    console.log(`Transcript LRC file completed:\n  - ${finalPath}.lrc`)                         // Log the completion of the transcript
+    const lrcContent = await readFile(`${finalPath}.lrc`, 'utf8')                               // Read the contents of the generated LRC file
+    const txtContent = lrcContent.split('\n')                                                   // Split the content into lines
+      .filter(line => !line.startsWith('[by:whisper.cpp]'))                                     // Remove the Whisper.cpp attribution line
+      .map(line => line.replace(/\[\d{2}:\d{2}\.\d{2}\]/g, match => match.slice(0, -4) + ']'))  // Modify time stamps
+      .join('\n')                                                                               // Join the lines back together
+    await writeFile(`${finalPath}.txt`, txtContent)                                             // Write the transformed content to a new text file
+    console.log(`Transcript transformation completed:\n  - ${finalPath}.txt`)                   // Log the completion of the transformation
+    return txtContent                                                                           // Return the transformed text content
   } catch (error) {
-    console.error('Error in callWhisper:', error)
-    throw error
+    console.error('Error in callWhisper:', error)                                               // Log any errors that occur during the process
+    throw error                                                                                 // Re-throw the error for handling by the caller
   }
 }

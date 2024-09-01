@@ -1,6 +1,6 @@
 // src/transcription/whisper.js
 
-import { readFile, writeFile } from 'node:fs/promises'
+import { readFile, writeFile, access } from 'node:fs/promises'
 import { exec } from 'node:child_process'
 import { promisify } from 'node:util'
 
@@ -36,8 +36,23 @@ function getWhisperModel(modelType) {
   }
 }
 
+async function checkAndDownloadModel(modelType) {
+  const modelName = getWhisperModel(modelType)
+  const modelPath = `./whisper.cpp/models/${modelName}`
+  try {
+    await access(modelPath)
+    console.log(`Whisper model found: ${modelName}`)
+  } catch (error) {
+    console.log(`Whisper model not found: ${modelName}`)
+    console.log(`Downloading model: ${modelType}`)
+    await execPromise(`bash ./whisper.cpp/models/download-ggml-model.sh ${modelType}`)
+    console.log(`Model downloaded: ${modelType}`)
+  }
+}
+
 export async function callWhisper(finalPath, whisperModelType) {
   try {
+    await checkAndDownloadModel(whisperModelType)
     const whisperModel = getWhisperModel(whisperModelType)
     await execPromise(`./whisper.cpp/main \
       -m "whisper.cpp/models/${whisperModel}" \

@@ -285,6 +285,62 @@ _TODO: Rethink Docker integrations, probably want some kind of Compose setup tha
 # npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --docker
 ```
 
+## Prompt Options
+
+Default includes summary and long chapters, equivalent to running this:
+
+```bash
+npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --prompt summary longChapters
+```
+
+Create five title ideas:
+
+```bash
+npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --prompt titles
+```
+
+Create a one sentence and one paragraph summary:
+
+```bash
+npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --prompt summary
+```
+
+Create a short, one sentence description for each chapter that's 25 words or shorter.
+
+```bash
+npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --prompt shortChapters
+```
+
+Create a one paragraph description for each chapter that's around 50 words.
+
+```bash
+npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --prompt mediumChapters
+```
+
+Create a two paragraph description for each chapter that's over 75 words.
+
+```bash
+npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --prompt longChapters
+```
+
+Create three key takeaways about the content:
+
+```bash
+npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --prompt takeaways
+```
+
+Create ten questions about the content to check for comprehension:
+
+```bash
+npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --prompt questions
+```
+
+Include all prompt options:
+
+```bash
+npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --prompt titles summary longChapters takeaways questions
+```
+
 ## Alternative JavaScript Runtimes
 
 ### Bun

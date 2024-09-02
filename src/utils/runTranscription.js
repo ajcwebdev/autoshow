@@ -4,7 +4,6 @@ import { readFile, writeFile } from 'node:fs/promises'
 import { callWhisper } from '../transcription/whisper.js'
 import { callDeepgram } from '../transcription/deepgram.js'
 import { callAssembly } from '../transcription/assembly.js'
-import { PROMPT } from '../llms/prompt.js'
 
 export async function runTranscription(finalPath, transcriptionOption, options = {}) {
   try {
@@ -29,9 +28,9 @@ export async function runTranscription(finalPath, transcriptionOption, options =
         throw error
       }
     }
-    const finalContent = `${mdContent}\n${PROMPT}\n## Transcript\n\n${txtContent}`
-    await writeFile(`${finalPath}-prompt.md`, finalContent)
-    console.log(`\nMarkdown file with frontmatter, prompt, and transcript:\n  - ${finalPath}-prompt.md`)
+    const finalContent = `${mdContent}\n## Transcript\n\n${txtContent}`
+    await writeFile(`${finalPath}.md`, finalContent)
+    console.log(`\nMarkdown file with frontmatter and transcript:\n  - ${finalPath}.md`)
     return finalContent
   } catch (error) {
     console.error('Error in runTranscription:', error)

@@ -8,7 +8,7 @@ import { callMistral } from '../llms/mistral.js'
 import { callOcto } from '../llms/octo.js'
 import { callLlama } from '../llms/llama.js'
 import { callGemini } from '../llms/gemini.js'
-import { PROMPT } from '../llms/prompt.js'
+import { generatePrompt } from '../llms/prompt.js'
 
 export async function runLLM(finalPath, frontMatter, llmOption, options) {
   try {
@@ -22,20 +22,23 @@ export async function runLLM(finalPath, frontMatter, llmOption, options) {
       llama: callLlama,
       gemini: callGemini,
     }
+    const prompt = generatePrompt(options.prompt)
+    const fullPrompt = `${prompt}\n${transcriptContent}`
     if (llmOption && llmFunctions[llmOption]) {
+      const tempOutputPath = `${finalPath}-${llmOption}-temp-shownotes.md`
       await llmFunctions[llmOption](
-        `${PROMPT}\n${transcriptContent}`,
-        `${finalPath}-${llmOption}-temp-shownotes.md`,
+        fullPrompt,
+        tempOutputPath,
         options[llmOption] || undefined
       )
-      const generatedShowNotes = await readFile(`${finalPath}-${llmOption}-temp-shownotes.md`, 'utf8')
+      const generatedShowNotes = await readFile(tempOutputPath, 'utf8')
       const finalContent = `${frontMatter}\n${generatedShowNotes}\n\n## Transcript\n\n${transcriptContent}`
       const finalOutputPath = `${finalPath}-${llmOption}-shownotes.md`
       await writeFile(finalOutputPath, finalContent)
-      await unlink(`${finalPath}-${llmOption}-temp-shownotes.md`)
+      await unlink(tempOutputPath)
       console.log(`Updated markdown file with generated show notes:\n  - ${finalOutputPath}`)
     } else {
-      const finalContent = `${frontMatter}\n${PROMPT}\n## Transcript\n\n${transcriptContent}`
+      const finalContent = `${frontMatter}\n${prompt}## Transcript\n\n${transcriptContent}`
       await writeFile(`${finalPath}-prompt.md`, finalContent)
       console.log(`No LLM specified. Created markdown file with original structure:\n  - ${finalPath}-prompt.md`)
     }

@@ -15,6 +15,7 @@ const program = new Command()
 program
   .name('autoshow')
   .description('Automated processing of YouTube videos, playlists, podcast RSS feeds, and local audio/video files')
+  .option('--prompt <sections...>', 'Specify prompt sections to include')
   .option('-v, --video <url>', 'Process a single YouTube video')
   .option('-p, --playlist <playlistUrl>', 'Process all videos in a YouTube playlist')
   .option('-u, --urls <filePath>', 'Process YouTube videos from a list of URLs in a file')
@@ -51,11 +52,7 @@ program.action(async (options) => {
 
   for (const [key, handler] of Object.entries(handlers)) {
     if (options[key]) {
-      if (key === 'rss') {
-        await handler(options[key], llmOption, transcriptionOption, options.order, options.skip, options)
-      } else {
-        await handler(options[key], llmOption, transcriptionOption, options)
-      }
+      await handler(options[key], llmOption, transcriptionOption, options.order, options.skip, options)
     }
   }
 })

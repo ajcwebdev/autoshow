@@ -3,6 +3,7 @@
 import { execFile } from 'node:child_process'
 import { promisify } from 'node:util'
 import { join } from 'node:path'
+import { writeFile } from 'node:fs/promises'
 
 const execFilePromise = promisify(execFile)
 
@@ -40,6 +41,7 @@ export async function generateMarkdown(url) {
       `coverImage: "${thumbnail}"`,
       "---\n"
     ].join('\n')
+    await writeFile(`${finalPath}.md`, frontMatter)
     console.log(`\nInitial markdown file created:\n  - ${finalPath}.md\n\n${frontMatter}`)
     return { frontMatter, finalPath, filename }
   } catch (error) {

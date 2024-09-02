@@ -47,7 +47,9 @@ export async function callWhisper(finalPath, whisperModelType) {                
     const lrcContent = await readFile(`${finalPath}.lrc`, 'utf8')                               // Read the contents of the generated LRC file
     const txtContent = lrcContent.split('\n')                                                   // Split the content into lines
       .filter(line => !line.startsWith('[by:whisper.cpp]'))                                     // Remove the Whisper.cpp attribution line
-      .map(line => line.replace(/\[\d{2}:\d{2}\.\d{2}\]/g, match => match.slice(0, -4) + ']'))  // Modify time stamps
+      .map(line => line.replace(                                                                // Modify time stamps
+        /\[(\d{2,3}):(\d{2})\.(\d{2})\]/g, (match, p1, p2) => `[${p1}:${p2}]`
+      ))
       .join('\n')                                                                               // Join the lines back together
     await writeFile(`${finalPath}.txt`, txtContent)                                             // Write the transformed content to a new text file
     console.log(`Transcript transformation completed:\n  - ${finalPath}.txt`)                   // Log the completion of the transformation

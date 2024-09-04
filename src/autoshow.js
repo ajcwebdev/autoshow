@@ -52,7 +52,7 @@ program.action(async (options) => {
 
   for (const [key, handler] of Object.entries(handlers)) {
     if (options[key]) {
-      await handler(options[key], llmOption, transcriptionOption, options.order, options.skip, options)
+      await handler(options[key], llmOption, transcriptionOption, options)
     }
   }
 })

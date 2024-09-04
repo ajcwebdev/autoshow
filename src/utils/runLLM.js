@@ -12,6 +12,7 @@ import { generatePrompt } from '../llms/prompt.js'
 
 export async function runLLM(finalPath, frontMatter, llmOption, options) {
   try {
+    console.log('Debug: options received in runLLM:', options)
     const transcriptContent = await readFile(`${finalPath}.txt`, 'utf8')
     const llmFunctions = {
       chatgpt: callChatGPT,
@@ -22,7 +23,9 @@ export async function runLLM(finalPath, frontMatter, llmOption, options) {
       llama: callLlama,
       gemini: callGemini,
     }
-    const prompt = generatePrompt(options.prompt)
+    const promptSections = options.prompt || ['summary', 'longChapters']
+    console.log('Debug: promptSections:', promptSections)
+    const prompt = generatePrompt(promptSections)
     const fullPrompt = `${prompt}\n${transcriptContent}`
     if (llmOption && llmFunctions[llmOption]) {
       const tempOutputPath = `${finalPath}-${llmOption}-temp-shownotes.md`
@@ -45,6 +48,8 @@ export async function runLLM(finalPath, frontMatter, llmOption, options) {
     try {
       await unlink(`${finalPath}.md`)
       console.log(`Temporary file removed:\n  - ${finalPath}.md`)
+      await unlink(`${finalPath}.txt`)
+      console.log(`Temporary file removed:\n  - ${finalPath}.txt`)
     } catch (error) {
       if (error.code !== 'ENOENT') {
         console.error('Error removing temporary file:', error)

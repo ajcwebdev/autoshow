@@ -21,15 +21,15 @@ export async function callMistral(transcriptContent, outputFilePath, model = 'MI
       messages: [{ role: 'user', content: transcriptContent }],
     })
     const {
-      choices: [{ message: { content }, finish_reason }],
+      choices: [{ message: { content }, finishReason }],
       model: usedModel,
-      usage: { prompt_tokens, completion_tokens, total_tokens }
+      usage: { promptTokens, completionTokens, totalTokens }
     } = response
     await writeFile(outputFilePath, content)
     console.log(`Transcript saved to ${outputFilePath}`)
     // console.log(`\nMistral response:\n\n${JSON.stringify(response, null, 2)}`)
-    console.log(`\nFinish Reason: ${finish_reason}\nModel: ${usedModel}`)
-    console.log(`Token Usage:\n  - ${prompt_tokens} prompt tokens\n  - ${completion_tokens} completion tokens\n  - ${total_tokens} total tokens\n`)
+    console.log(`\nFinish Reason: ${finishReason}\nModel: ${usedModel}`)
+    console.log(`Token Usage:\n  - ${promptTokens} prompt tokens\n  - ${completionTokens} completion tokens\n  - ${totalTokens} total tokens\n`)
     return Object.keys(mistralModel).find(key => mistralModel[key] === usedModel) || model
   } catch (error) {
     console.error('Error:', error)

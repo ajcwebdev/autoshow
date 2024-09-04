@@ -36,12 +36,12 @@ async function downloadFileAudio(filePath) {
   }
 }
 
-export async function processFile(filePath, llmOption, whisperModelType) {
+export async function processFile(filePath, llmOption, transcriptionOption, options) {
   try {
     const finalPath = await downloadFileAudio(filePath)
     const frontMatter = `---\ntitle: "${basename(filePath)}"\n---\n`
-    await runTranscription(finalPath, whisperModelType, frontMatter)
-    await runLLM(finalPath, frontMatter, llmOption)
+    await runTranscription(finalPath, transcriptionOption, options, frontMatter)
+    await runLLM(finalPath, frontMatter, llmOption, options)
     await cleanUpFiles(finalPath)
     console.log('File processing completed')
   } catch (error) {

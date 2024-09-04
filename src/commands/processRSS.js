@@ -1,7 +1,7 @@
 // src/commands/processRSS.js
 
-import { writeFile } from 'node:fs/promises'
 import { XMLParser } from 'fast-xml-parser'
+import { generateRSSMarkdown } from '../utils/generateMarkdown.js'
 import { downloadAudio } from '../utils/downloadAudio.js'
 import { runTranscription } from '../utils/runTranscription.js'
 import { runLLM } from '../utils/runLLM.js'
@@ -13,25 +13,10 @@ const parser = new XMLParser({
   allowBooleanAttributes: true,
 })
 
-function generateRSSMarkdown(item) {
-  const frontMatter = [
-    "---",
-    `showLink: "${item.showLink}"`,
-    `channel: "${item.channel}"`,
-    `channelURL: "${item.channelURL}"`,
-    `title: "${item.title}"`,
-    `description: ""`,
-    `publishDate: "${item.publishDate}"`,
-    `coverImage: "${item.coverImage}"`,
-    "---\n"
-  ].join('\n')
-  return frontMatter
-}
-
-export async function processRSS(rssUrl, llmOption, whisperModelType, order = 'newest', skip = 0) {
+export async function processRSS(rssUrl, llmOption, transcriptionOption, options) {
   try {
     console.log(`Processing RSS feed: ${rssUrl}`)
-    console.log(`Skipping first ${skip} items`)
+    console.log(`Skipping first ${options.skip} items`)
     const response = await fetch(rssUrl, {
       method: 'GET',
       headers: {
@@ -56,29 +41,31 @@ export async function processRSS(rssUrl, llmOption, whisperModelType, order = 'n
       month: '2-digit',
       day: '2-digit',
     })
-    const items = feedItems.map(item => ({
-      showLink: item.enclosure.url,
-      channel: channelTitle,
-      channelURL: channelLink,
-      title: item.title,
-      publishDate: dateFormatter.format(new Date(item.pubDate)),
-      coverImage: item['itunes:image']?.href || channelImage,
-    }))
-    const sortedItems = order === 'newest' ? items : [...items].reverse()
-    const skippedItems = sortedItems.slice(skip)
-    console.log(`Found ${sortedItems.length} items in the RSS feed`)
-    console.log(`Processing ${skippedItems.length} items after skipping ${skip}`)
+    const items = feedItems
+      .filter(item => {
+        if (!item.enclosure || !item.enclosure.type) return false
+        const audioVideoTypes = ['audio/', 'video/']
+        return audioVideoTypes.some(type => item.enclosure.type.startsWith(type))
+      })
+      .map(item => ({
+        showLink: item.enclosure.url,
+        channel: channelTitle,
+        channelURL: channelLink,
+        title: item.title,
+        publishDate: dateFormatter.format(new Date(item.pubDate)),
+        coverImage: item['itunes:image']?.href || channelImage,
+      }))
+    const sortedItems = options.order === 'newest' ? items : [...items].reverse()
+    const skippedItems = sortedItems.slice(options.skip)
+    console.log(`Found ${sortedItems.length} audio/video items in the RSS feed`)
+    console.log(`Processing ${skippedItems.length} items after skipping ${options.skip}`)
     for (const [index, item] of skippedItems.entries()) {
-      console.log(`Processing item ${index + skip + 1}/${sortedItems.length}: ${item.title}`)
+      console.log(`Processing item ${index + options.skip + 1}/${sortedItems.length}: ${item.title}`)
       try {
-        const filename = `${item.publishDate}-${item.title.replace(/[^a-zA-Z0-9]/g, '_')}`
-        const finalPath = `content/${filename}`
-        const frontMatter = generateRSSMarkdown(item)
-        await writeFile(`${finalPath}.md`, frontMatter)
-        console.log(`\nInitial markdown file created:\n  - ${finalPath}.md`)
+        const { frontMatter, finalPath, filename } = await generateRSSMarkdown(item)
         await downloadAudio(item.showLink, filename)
-        await runTranscription(finalPath, whisperModelType, frontMatter)
-        await runLLM(finalPath, frontMatter, llmOption)
+        await runTranscription(finalPath, transcriptionOption, options, frontMatter)
+        await runLLM(finalPath, frontMatter, llmOption, options)
         await cleanUpFiles(finalPath)
         console.log(`\nProcess completed successfully for item: ${item.title}`)
       } catch (error) {

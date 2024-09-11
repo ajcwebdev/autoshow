@@ -276,7 +276,7 @@ _TODO: Rethink Docker integrations, probably want some kind of Compose setup tha
 ```bash
 cp whisper.Dockerfile whisper.cpp
 mv whisper.cpp/whisper.Dockerfile whisper.cpp/Dockerfile
-docker-compose up --build
+docker-compose up --build -d
 docker-compose run autoshow --video "https://www.youtube.com/watch?v=jKB0EltG9Jo"
 ```
 

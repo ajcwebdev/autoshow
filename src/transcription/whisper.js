@@ -1,6 +1,6 @@
 // src/transcription/whisper.js
 
-import { readFile, writeFile, stat } from 'node:fs/promises'
+import { readFile, writeFile } from 'node:fs/promises'
 import { exec } from 'node:child_process'
 import { promisify } from 'node:util'
 import { existsSync } from 'node:fs'
@@ -25,10 +25,8 @@ async function ensureWhisperContainerRunning() {
 
 export async function callWhisper(finalPath, whisperModelType) {
   try {
-    console.log('callWhisper invoked with:', {
-      finalPath,
-      whisperModelType,
-    })
+    console.log(`\ncallWhisper invoked with:\n`)
+    console.log({finalPath,whisperModelType})
 
     await ensureWhisperContainerRunning()
 
@@ -54,7 +52,7 @@ export async function callWhisper(finalPath, whisperModelType) {
     }
 
     const modelName = models[whisperModelType]
-    console.log(`Using Whisper model: ${modelName}`)
+    console.log(`\nUsing Whisper model:\n  - ${modelName}`)
 
     // Check if WAV file exists in the host system
     const wavFilePath = `${process.cwd()}/content/${finalPath.split('/').pop()}.wav`
@@ -63,51 +61,41 @@ export async function callWhisper(finalPath, whisperModelType) {
     if (!wavFileExists) {
       console.error(`WAV file not found in host system: ${wavFilePath}`)
     } else {
-      console.log(`WAV file exists in host system: ${wavFilePath}`)
+      console.log(`\nWAV file exists in host system:\n  - ${wavFilePath}`)
     }
-
-    try {
-      // Check file metadata to ensure it's accessible
-      const fileStats = await stat(wavFilePath)
-      console.log('WAV file stats:', fileStats)
-    } catch (error) {
-      console.error(`Error retrieving file stats for ${wavFilePath}:`, error)
-    }
-
     // Attempt to list files in the Whisper container's workspace to ensure it's mounted correctly
-    console.log('Checking if WAV file exists inside the Whisper container...')
-
-    // Capture the output of `ls` inside the container's workspace
-    const listWorkspaceCommand = `docker exec autoshow-whisper-1 ls -l /app/content`
+    console.log('\nChecking if WAV file exists inside the Whisper container...')
     try {
-      const { stdout: lsStdout } = await execPromise(listWorkspaceCommand)
-      console.log('Files inside Whisper container at /app/content:')
-      console.log(lsStdout)
+      // Capture the output of `ls` inside the container's workspace
+      const { stdout: lsStdout } = await execPromise(`docker exec autoshow-whisper-1 ls -l /app/content`)
+      console.log('Files inside Whisper container at /app/content:', lsStdout)
     } catch (err) {
       console.error('Error listing files inside Whisper container:', err.message)
     }
-
     // Prepare docker command for running Whisper
-    const dockerCommand = `docker exec autoshow-whisper-1 /app/main -m /app/models/${modelName} -f /app/content/${finalPath.split('/').pop()}.wav -of /app/content/${finalPath.split('/').pop()} --output-lrc`
-
-    console.log('Docker command constructed:', dockerCommand)
-    console.log(`Current working directory: ${process.cwd()}`)
-    console.log(`Expected WAV file in host system: ${wavFilePath}`)
-    console.log(`Expected WAV file in Whisper container: /app/content/${finalPath.split('/').pop()}.wav`)
+    const dockerCommand = `docker exec autoshow-whisper-1 /app/main \
+      -m /app/models/${modelName} \
+      -f /app/content/${finalPath.split('/').pop()}.wav \
+      -of /app/content/${finalPath.split('/').pop()} \
+      --output-lrc
+    `
+    console.log(`\nDocker command constructed:\n  - ${dockerCommand}`)
+    console.log(`\nCurrent working directory:\n  - ${process.cwd()}`)
+    console.log(`\nExpected WAV file in host system:\n  - ${wavFilePath}`)
+    console.log(`\nExpected WAV file in Whisper container:\n  - /app/content/${finalPath.split('/').pop()}.wav`)
 
     // Execute docker command
     const { stdout, stderr } = await execPromise(dockerCommand)
 
     // Log output and errors from the docker command
     if (stdout) {
-      console.log('Whisper command stdout:', stdout)
+      console.log('\nWhisper command stdout:', stdout)
     }
     if (stderr) {
-      console.error('Whisper command stderr:', stderr)
+      console.log('\nWhisper command stderr:', stderr)
     }
-
     console.log(`Whisper.cpp Model Selected:\n  - /app/models/${modelName}`)
-    console.log(`Expected LRC file path: ${finalPath}.lrc`)
+    console.log(`\nExpected LRC file path:\n  - ${finalPath}.lrc`)
 
     // Check if the LRC file was created
     const lrcFilePath = `${finalPath}.lrc`
@@ -116,13 +104,11 @@ export async function callWhisper(finalPath, whisperModelType) {
     if (!lrcFileExists) {
       console.error(`LRC file not found after Whisper execution: ${lrcFilePath}`)
     } else {
-      console.log(`LRC file exists: ${lrcFilePath}`)
+      console.log(`LRC file exists:\n  - ${lrcFilePath}`)
     }
 
     // Read and process the LRC file
     const lrcContent = await readFile(lrcFilePath, 'utf8')
-    console.log('LRC file content read successfully')
-
     const txtContent = lrcContent
       .split('\n')
       .filter((line) => !line.startsWith('[by:whisper.cpp]'))

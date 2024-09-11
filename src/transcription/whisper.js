@@ -1,61 +1,144 @@
 // src/transcription/whisper.js
 
-import { readFile, writeFile, access } from 'node:fs/promises'
+import { readFile, writeFile, stat } from 'node:fs/promises'
 import { exec } from 'node:child_process'
 import { promisify } from 'node:util'
+import { existsSync } from 'node:fs'
 
 const execPromise = promisify(exec)
 
-export async function callWhisper(finalPath, whisperModelType) {                                // Main function to process audio files with Whisper
+async function ensureWhisperContainerRunning() {
   try {
-    const models = {                                                                            // Object mapping model types to their corresponding file names
-      'tiny': "ggml-tiny.bin",
-      'tiny.en': "ggml-tiny.en.bin",
-      'base': "ggml-base.bin",
-      'base.en': "ggml-base.en.bin",
-      'small': "ggml-small.bin",
-      'small.en': "ggml-small.en.bin",
-      'medium': "ggml-medium.bin",
-      'medium.en': "ggml-medium.en.bin",
-      'large-v1': "ggml-large-v1.bin",
-      'large-v2': "ggml-large-v2.bin",
-      'large': "ggml-large-v2.bin"
-    }
-    if (!(whisperModelType in models)) {                                                        // Check if the provided model type is valid
-      console.error(`Unknown model type: ${whisperModelType}`)                                  // Log error for unknown model type
-      process.exit(1)                                                                           // Exit the process with an error code
-    }
-    const modelName = models[whisperModelType]                                                  // Get the file name for the selected model
-    const modelPath = `./whisper.cpp/models/${modelName}`                                       // Construct the full path to the model file
-    try {
-      await access(modelPath)                                                                   // Check if the model file exists
-      console.log(`Whisper model found: ${modelName}`)                                          // Log that the model was found
-    } catch (error) {
-      console.log(`Whisper model not found: ${modelName}`)                                      // If the model file doesn't exist, log it
-      console.log(`Downloading model: ${whisperModelType}`)                                     // Log the start of the download process
-      await execPromise(`bash ./whisper.cpp/models/download-ggml-model.sh ${whisperModelType}`) // Execute the download script
-      console.log(`Model downloaded: ${whisperModelType}`)                                      // Log successful download
-    }
-    await execPromise(`./whisper.cpp/main \
-      -m "whisper.cpp/models/${modelName}" \
-      -f "${finalPath}.wav" \
-      -of "${finalPath}" \
-      --output-lrc`
-    )                                                                                           // Execute the Whisper command-line tool
-    console.log(`Whisper.cpp Model Selected:\n  - whisper.cpp/models/${modelName}`)             // Log the selected model
-    console.log(`Transcript LRC file completed:\n  - ${finalPath}.lrc`)                         // Log the completion of the transcript
-    const lrcContent = await readFile(`${finalPath}.lrc`, 'utf8')                               // Read the contents of the generated LRC file
-    const txtContent = lrcContent.split('\n')                                                   // Split the content into lines
-      .filter(line => !line.startsWith('[by:whisper.cpp]'))                                     // Remove the Whisper.cpp attribution line
-      .map(line => line.replace(                                                                // Modify time stamps
-        /\[(\d{2,3}):(\d{2})\.(\d{2})\]/g, (match, p1, p2) => `[${p1}:${p2}]`
-      ))
-      .join('\n')                                                                               // Join the lines back together
-    await writeFile(`${finalPath}.txt`, txtContent)                                             // Write the transformed content to a new text file
-    console.log(`Transcript transformation completed:\n  - ${finalPath}.txt`)                   // Log the completion of the transformation
-    return txtContent                                                                           // Return the transformed text content
+    await execPromise('docker ps | grep autoshow-whisper-1')
+    console.log('Whisper container is already running.')
   } catch (error) {
-    console.error('Error in callWhisper:', error)                                               // Log any errors that occur during the process
-    throw error                                                                                 // Re-throw the error for handling by the caller
+    console.log('Whisper container is not running. Starting it...')
+    try {
+      await execPromise('docker-compose up -d whisper')
+      console.log('Whisper container started successfully.')
+    } catch (startError) {
+      console.error('Failed to start Whisper container:', startError)
+      throw startError
+    }
+  }
+}
+
+export async function callWhisper(finalPath, whisperModelType) {
+  try {
+    console.log('callWhisper invoked with:', {
+      finalPath,
+      whisperModelType,
+    })
+
+    await ensureWhisperContainerRunning()
+
+    // Model map
+    const models = {
+      'tiny': 'ggml-tiny.bin',
+      'tiny.en': 'ggml-tiny.en.bin',
+      'base': 'ggml-base.bin',
+      'base.en': 'ggml-base.en.bin',
+      'small': 'ggml-small.bin',
+      'small.en': 'ggml-small.en.bin',
+      'medium': 'ggml-medium.bin',
+      'medium.en': 'ggml-medium.en.bin',
+      'large-v1': 'ggml-large-v1.bin',
+      'large-v2': 'ggml-large-v2.bin',
+      'large': 'ggml-large-v2.bin',
+    }
+
+    // Check for valid model
+    if (!(whisperModelType in models)) {
+      console.error(`Unknown model type: ${whisperModelType}`)
+      process.exit(1)
+    }
+
+    const modelName = models[whisperModelType]
+    console.log(`Using Whisper model: ${modelName}`)
+
+    // Check if WAV file exists in the host system
+    const wavFilePath = `${process.cwd()}/content/${finalPath.split('/').pop()}.wav`
+    const wavFileExists = existsSync(wavFilePath)
+
+    if (!wavFileExists) {
+      console.error(`WAV file not found in host system: ${wavFilePath}`)
+    } else {
+      console.log(`WAV file exists in host system: ${wavFilePath}`)
+    }
+
+    try {
+      // Check file metadata to ensure it's accessible
+      const fileStats = await stat(wavFilePath)
+      console.log('WAV file stats:', fileStats)
+    } catch (error) {
+      console.error(`Error retrieving file stats for ${wavFilePath}:`, error)
+    }
+
+    // Attempt to list files in the Whisper container's workspace to ensure it's mounted correctly
+    console.log('Checking if WAV file exists inside the Whisper container...')
+
+    // Capture the output of `ls` inside the container's workspace
+    const listWorkspaceCommand = `docker exec autoshow-whisper-1 ls -l /app/content`
+    try {
+      const { stdout: lsStdout } = await execPromise(listWorkspaceCommand)
+      console.log('Files inside Whisper container at /app/content:')
+      console.log(lsStdout)
+    } catch (err) {
+      console.error('Error listing files inside Whisper container:', err.message)
+    }
+
+    // Prepare docker command for running Whisper
+    const dockerCommand = `docker exec autoshow-whisper-1 /app/main -m /app/models/${modelName} -f /app/content/${finalPath.split('/').pop()}.wav -of /app/content/${finalPath.split('/').pop()} --output-lrc`
+
+    console.log('Docker command constructed:', dockerCommand)
+    console.log(`Current working directory: ${process.cwd()}`)
+    console.log(`Expected WAV file in host system: ${wavFilePath}`)
+    console.log(`Expected WAV file in Whisper container: /app/content/${finalPath.split('/').pop()}.wav`)
+
+    // Execute docker command
+    const { stdout, stderr } = await execPromise(dockerCommand)
+
+    // Log output and errors from the docker command
+    if (stdout) {
+      console.log('Whisper command stdout:', stdout)
+    }
+    if (stderr) {
+      console.error('Whisper command stderr:', stderr)
+    }
+
+    console.log(`Whisper.cpp Model Selected:\n  - /app/models/${modelName}`)
+    console.log(`Expected LRC file path: ${finalPath}.lrc`)
+
+    // Check if the LRC file was created
+    const lrcFilePath = `${finalPath}.lrc`
+    const lrcFileExists = existsSync(lrcFilePath)
+
+    if (!lrcFileExists) {
+      console.error(`LRC file not found after Whisper execution: ${lrcFilePath}`)
+    } else {
+      console.log(`LRC file exists: ${lrcFilePath}`)
+    }
+
+    // Read and process the LRC file
+    const lrcContent = await readFile(lrcFilePath, 'utf8')
+    console.log('LRC file content read successfully')
+
+    const txtContent = lrcContent
+      .split('\n')
+      .filter((line) => !line.startsWith('[by:whisper.cpp]'))
+      .map((line) =>
+        line.replace(/\[(\d{2,3}):(\d{2})\.(\d{2})\]/g, (match, p1, p2) => `[${p1}:${p2}]`)
+      )
+      .join('\n')
+
+    // Write the processed transcript to a TXT file
+    const txtFilePath = `${finalPath}.txt`
+    await writeFile(txtFilePath, txtContent)
+    console.log(`Transcript transformation completed:\n  - ${txtFilePath}`)
+
+    return txtContent
+  } catch (error) {
+    console.error('Error in callWhisper:', error)
+    throw error
   }
 }

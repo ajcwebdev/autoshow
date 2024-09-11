@@ -274,15 +274,10 @@ npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --whisper la
 _TODO: Rethink Docker integrations, probably want some kind of Compose setup that runs whisper.cpp, llama.cpp, and the Autoshow Node server._
 
 ```bash
-# cp Dockerfile whisper.cpp
-# cd whisper.cpp
-# docker build -f Dockerfile -t whisper-image .
-# docker buildx build --platform=linux/arm64 -f Dockerfile -t whisper-image .
-# cd ..
-```
-
-```bash
-# npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --docker
+cp whisper.Dockerfile whisper.cpp
+mv whisper.cpp/whisper.Dockerfile whisper.cpp/Dockerfile
+docker-compose up --build
+docker-compose run autoshow --video "https://www.youtube.com/watch?v=jKB0EltG9Jo"
 ```
 
 ## Prompt Options

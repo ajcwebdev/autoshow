@@ -37,6 +37,9 @@ program
   .option('--speakers-expected <number>', 'Number of expected speakers for AssemblyAI transcription', parseInt, 1)
 
 program.action(async (options) => {
+  console.log(`Options received:\n`)
+  console.log(options)
+
   const handlers = {
     video: processVideo,
     playlist: processPlaylist,

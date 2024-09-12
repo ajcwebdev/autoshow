@@ -30,13 +30,10 @@ export async function runTranscription(finalPath, transcriptionOption, options =
     }
     const finalContent = `${mdContent}\n## Transcript\n\n${txtContent}`
     await writeFile(`${finalPath}.md`, finalContent)
-    console.log(`\nMarkdown file with frontmatter and transcript:\n  - ${finalPath}.md`)
+    console.log(`Markdown file with frontmatter and transcript:\n  - ${finalPath}.md`)
     return finalContent
   } catch (error) {
     console.error('Error in runTranscription:', error)
-    if (error.message === 'Transcription process failed' && error.stderr) {
-      console.error('Transcription stderr output:', error.stderr)
-    }
     throw error
   }
 }

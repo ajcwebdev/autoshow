@@ -19,10 +19,10 @@ if (!LLAMA_MODEL || !HUGGING_FACE_URL) {
 async function downloadModel() {
   const modelPath = `./src/llms/models/${LLAMA_MODEL}`
   if (existsSync(modelPath)) {
-    console.log('Model already exists. Skipping download.')
+    console.log(`\nSkipping download, model already exists:\n  - ${modelPath}`)
     return
   }
-  console.log(`Model not found. Attempting to download ${LLAMA_MODEL}...`)
+  console.log(`Model not found.\n  - Attempting to download ${LLAMA_MODEL}...`)
   try {
     await mkdir('./src/llms/models', { recursive: true })
     console.log('Starting download...')
@@ -54,9 +54,9 @@ export async function callLlama(transcriptContent, outputFilePath) {
       contextSequence: context.getSequence()
     })
     const response = await session.prompt(transcriptContent)
-    console.log(response)
+    // console.log(response)
     await writeFile(outputFilePath, response)
-    console.log(`Transcript saved to ${outputFilePath}`)
+    console.log(`\nTranscript saved to:\n  - ${outputFilePath}`)
   } catch (error) {
     console.error('Error:', error)
     throw error

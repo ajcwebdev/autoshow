@@ -75,7 +75,7 @@ export async function generateMarkdown(url) {
       "---\n"
     ].join('\n')
     await writeFile(`${finalPath}.md`, frontMatter)
-    console.log(`\nInitial markdown file created:\n  - ${finalPath}.md\n\n${frontMatter}`)
+    console.log(`\nFrontmatter created:\n\n${frontMatter}\nInitial markdown file created:\n  - ${finalPath}.md`)
     return { frontMatter, finalPath, filename }
   } catch (error) {
     console.error('Error generating markdown:', error)

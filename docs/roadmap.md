@@ -68,58 +68,34 @@ The framework I'll pick for building the final app will need to include authenti
 
 ### Greater Configurability
 
-Click any of the following to expand.
-
-<details>
-  <summary>Set better defaults for context limit, entropy threshold, and max temperature to improve transcript output and allow configuring temperature and max token output for LLMs.</summary>
+Set better defaults for context limit, entropy threshold, and max temperature to improve transcript output and allow configuring temperature and max token output for LLMs.
 
 - [Improving hallucinations and repetitions](https://github.com/ggerganov/whisper.cpp/discussions/2286)
 - [OpenAI `max_tokens`](https://platform.openai.com/docs/api-reference/chat/create#chat-create-max_tokens)
 - [OpenAI `temperature`](https://platform.openai.com/docs/api-reference/chat/create#chat-create-temperature)
 - [Claude Messages API](https://docs.anthropic.com/en/api/messages)
 
-</details>
-
-<details>
-  <summary>Include the ability to run multiple transcription services and LLMs on a given video URL.</summary>
-
-For example, the following would output four show note files for each combination of transcription and LLM services:
+Include the ability to run multiple transcription services and LLMs on a given video URL. For example, the following would output four show note files for each combination of transcription and LLM services:
 
 ```bash
 node --env-file=.env autoshow.js --deepgram --assembly --chatgpt --claude --video "https://www.youtube.com/watch?v=-jF0g_YGPdI"
 ```
 
-</details>
+Allow configuring different models for LLM and transcription providers with option-arguments.
 
-<details>
-  <summary>Allow configuring different models for LLM and transcription providers with option-arguments.</summary>
-
-  - Deepgram option-arguments
-    - `base`
-    - `enhanced`
-    - `nova`
-    - `nova2` for `nova-2`
-  - Assembly option-arguments
-    - `best`
-    - `nano`
-
-</details>
+- Deepgram option-arguments
+  - `base`
+  - `enhanced`
+  - `nova`
+  - `nova2` for `nova-2`
+- Assembly option-arguments
+  - `best`
+  - `nano`
 
 ## Version 1.0
 
 For me to consider this project production ready, `v1.0` will need to include the following:
 
-<details>
-  <summary>Click to expand</summary>
-
-- An interactive CLI, potentially using [Inquirer](https://github.com/SBoudrias/Inquirer.js).
-  - This will walk through all options and arguments in an interactive manner.
-  - The goal is for a user to be able to run only `npx autoshow` and process their content without needing to read any documentation or CLI help pages.
-- A full test suite for each function and utility. This will need either:
-  - Some kind of file data mocking for testing the end-to-end flow with audio and video.
-  - Example URLs that host easily accessible and available audio or video content files.
 - Astro integration so the markdown files that are generated with the show notes can be used to generate a complete website.
 - Docker support and setup instructions.
 - Deployment instructions for self hosting a Node.js server.
-
-</details>

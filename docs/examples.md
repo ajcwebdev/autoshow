@@ -443,6 +443,9 @@ This can be a useful way of creating a single markdown file of the entire projec
 
 ```bash
 cat README.md >> LLM.md && \
+  echo '\n\n' >> LLM.md && \
+  cat docs/examples.md >> LLM.md && \
+  echo '\n## AutoShow CLI Entry Point' >> LLM.md && \
   echo '\n\n```js' >> LLM.md && \
   cat src/autoshow.js >> LLM.md && \
   echo '\n```\n' >> LLM.md && \

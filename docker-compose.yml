@@ -11,7 +11,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     depends_on:
       - whisper
-
+      # - llama
   whisper:
     build:
       context: ./whisper.cpp
@@ -21,6 +21,15 @@ services:
     command: tail -f /dev/null
     tty: true
     stdin_open: true
-
+  # llama:
+  #   build:
+  #     context: ./llama.cpp
+  #     dockerfile: Dockerfile
+  #   volumes:
+  #     - ./content:/app/content
+  #   command: tail -f /dev/null
+  #   tty: true
+  #   stdin_open: true
 volumes:
   whisper:
+  # llama:

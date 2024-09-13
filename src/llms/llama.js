@@ -5,13 +5,17 @@ import { getLlama, LlamaChatSession } from "node-llama-cpp"
 import { existsSync } from 'node:fs'
 import { exec } from 'node:child_process'
 import { promisify } from 'node:util'
-import { env } from 'node:process'
 
 const execAsync = promisify(exec)
 
-const { LLAMA_MODEL, HUGGING_FACE_URL } = env
+// const LLAMA_MODEL = "Meta-Llama-3.1-8B-Instruct.IQ4_XS.gguf"
+// const LLAMA_HUGGING_FACE_URL = "https://huggingface.co/mradermacher/Meta-Llama-3.1-8B-Instruct-GGUF"
+const GEMMA_MODEL = "gemma-2-2b-it-IQ4_XS.gguf"
+const GEMMA_HUGGING_FACE_URL = "https://huggingface.co/lmstudio-community/gemma-2-2b-it-GGUF"
 
-if (!LLAMA_MODEL || !HUGGING_FACE_URL) {
+// const { LLAMA_MODEL, HUGGING_FACE_URL } = env
+
+if (!GEMMA_MODEL || !GEMMA_HUGGING_FACE_URL) {
   console.error('Environment variables LLAMA_MODEL and HUGGING_FACE_URL must be set')
   process.exit(1)
 }

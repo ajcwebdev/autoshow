@@ -358,3 +358,180 @@ LLAMA_MODEL="Meta-Llama-3.1-8B-Instruct.Q2_K.gguf" HUGGING_FACE_URL="https://hug
   src/autoshow.js \
   --video "https://www.youtube.com/watch?v=jKB0EltG9Jo"
 ```
+
+## Makeshift Test Suite
+
+Creating a robust and flexible test suite for this project is complex because of the range of network requests, file system operations, build steps, and 3rd party APIs involved.
+
+A more thought out test suite will be created at some point, but in the mean time this is a ridiculous and hacky way to test the majority of the project in a single go.
+
+- You'll need API keys for all services to make it through this entire command.
+- Mostly uses transcripts of videos around one minute long and cheaper models when possible, so the total cost of running this for any given service should be at most only a few cents.
+
+```bash
+npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" && \
+  mv content/2023-09-10-teach-jenn-tech-channel-trailer-prompt.md content/01---2023-09-10-teach-jenn-tech-channel-trailer-prompt.md && \
+  npm run as -- --playlist "https://www.youtube.com/playlist?list=PLCVnrVv4KhXMh4DQBigyvHSRTf2CSj129" && \
+  mv content/2022-11-05-intro-to-teach-jenn-tech-prompt.md content/02---2022-11-05-intro-to-teach-jenn-tech-prompt.md && \
+  mv content/2023-09-10-teach-jenn-tech-channel-trailer-prompt.md content/03---2023-09-10-teach-jenn-tech-channel-trailer-prompt.md && \
+  npm run as -- --urls "content/urls.md" && \
+  mv content/2022-11-05-intro-to-teach-jenn-tech-prompt.md content/04---2022-11-05-intro-to-teach-jenn-tech-prompt.md && \
+  mv content/2023-09-10-teach-jenn-tech-channel-trailer-prompt.md content/05---2023-09-10-teach-jenn-tech-channel-trailer-prompt.md && \
+  curl -L https://ajc.pics/audio/fsjam-short.mp3 -o ./content/audio.mp3 && \
+  npm run as -- --file "content/audio.mp3" && \
+  mv content/audio.mp3-prompt.md content/06---audio.mp3-prompt.md && \
+  npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --chatgpt && \
+  mv content/2023-09-10-teach-jenn-tech-channel-trailer-chatgpt-shownotes.md content/07---2023-09-10-teach-jenn-tech-channel-trailer-chatgpt-shownotes.md && \
+  npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --chatgpt GPT_4o_MINI && \
+  mv content/2023-09-10-teach-jenn-tech-channel-trailer-chatgpt-shownotes.md content/08---2023-09-10-teach-jenn-tech-channel-trailer-chatgpt-shownotes.md && \
+  npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --claude && \
+  mv content/2023-09-10-teach-jenn-tech-channel-trailer-claude-shownotes.md content/09---2023-09-10-teach-jenn-tech-channel-trailer-claude-shownotes.md && \
+  npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --claude CLAUDE_3_SONNET && \
+  mv content/2023-09-10-teach-jenn-tech-channel-trailer-claude-shownotes.md content/10---2023-09-10-teach-jenn-tech-channel-trailer-claude-shownotes.md && \
+  npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --gemini && \
+  mv content/2023-09-10-teach-jenn-tech-channel-trailer-gemini-shownotes.md content/11---2023-09-10-teach-jenn-tech-channel-trailer-gemini-shownotes.md && \
+  npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --gemini GEMINI_1_5_FLASH && \
+  mv content/2023-09-10-teach-jenn-tech-channel-trailer-gemini-shownotes.md content/12---2023-09-10-teach-jenn-tech-channel-trailer-gemini-shownotes.md && \
+  npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --cohere && \
+  mv content/2023-09-10-teach-jenn-tech-channel-trailer-cohere-shownotes.md content/13---2023-09-10-teach-jenn-tech-channel-trailer-cohere-shownotes.md && \
+  npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --cohere COMMAND_R_PLUS && \
+  mv content/2023-09-10-teach-jenn-tech-channel-trailer-cohere-shownotes.md content/14---2023-09-10-teach-jenn-tech-channel-trailer-cohere-shownotes.md && \
+  npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --mistral && \
+  mv content/2023-09-10-teach-jenn-tech-channel-trailer-mistral-shownotes.md content/15---2023-09-10-teach-jenn-tech-channel-trailer-mistral-shownotes.md && \
+  npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --mistral MIXTRAL_8x7b && \
+  mv content/2023-09-10-teach-jenn-tech-channel-trailer-mistral-shownotes.md content/16---2023-09-10-teach-jenn-tech-channel-trailer-mistral-shownotes.md && \
+  npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --octo && \
+  mv content/2023-09-10-teach-jenn-tech-channel-trailer-octo-shownotes.md content/17---2023-09-10-teach-jenn-tech-channel-trailer-octo-shownotes.md && \
+  npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --octo LLAMA_3_1_8B && \
+  mv content/2023-09-10-teach-jenn-tech-channel-trailer-octo-shownotes.md content/18---2023-09-10-teach-jenn-tech-channel-trailer-octo-shownotes.md && \
+  npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --llama && \
+  mv content/2023-09-10-teach-jenn-tech-channel-trailer-llama-shownotes.md content/19---2023-09-10-teach-jenn-tech-channel-trailer-llama-shownotes.md && \
+  npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --deepgram && \
+  mv content/2023-09-10-teach-jenn-tech-channel-trailer-prompt.md content/20---2023-09-10-teach-jenn-tech-channel-trailer-prompt.md && \
+  npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --deepgram --llama && \
+  mv content/2023-09-10-teach-jenn-tech-channel-trailer-llama-shownotes.md content/21---2023-09-10-teach-jenn-tech-channel-trailer-llama-shownotes.md && \
+  npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --assembly && \
+  mv content/2023-09-10-teach-jenn-tech-channel-trailer-prompt.md content/22---2023-09-10-teach-jenn-tech-channel-trailer-prompt.md && \
+  npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --assembly --llama && \
+  mv content/2023-09-10-teach-jenn-tech-channel-trailer-llama-shownotes.md content/23---2023-09-10-teach-jenn-tech-channel-trailer-llama-shownotes.md && \
+  npm run as -- --video "https://ajc.pics/audio/fsjam-short.mp3" --assembly --speaker-labels --speakers-expected 2 && \
+  mv content/2024-05-08-fsjam-short-prompt.md content/24---2024-05-08-fsjam-short-prompt.md && \
+  npm run as -- --video "https://ajc.pics/audio/fsjam-short.mp3" --assembly --speaker-labels --speakers-expected 2 --llama && \
+  mv content/2024-05-08-fsjam-short-llama-shownotes.md content/25---2024-05-08-fsjam-short-llama-shownotes.md && \
+  npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --whisper tiny && \
+  mv content/2023-09-10-teach-jenn-tech-channel-trailer-prompt.md content/26---2023-09-10-teach-jenn-tech-channel-trailer-prompt.md && \
+  npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --prompt titles && \
+  mv content/2023-09-10-teach-jenn-tech-channel-trailer-prompt.md content/27---2023-09-10-teach-jenn-tech-channel-trailer-prompt.md && \
+  npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --prompt titles summary shortChapters mediumChapters longChapters takeaways questions && \
+  mv content/2023-09-10-teach-jenn-tech-channel-trailer-prompt.md content/28---2023-09-10-teach-jenn-tech-channel-trailer-prompt.md && \
+  npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --prompt titles summary shortChapters takeaways questions --whisper tiny --llama && \
+  mv content/2023-09-10-teach-jenn-tech-channel-trailer-llama-shownotes.md content/29---2023-09-10-teach-jenn-tech-channel-trailer-llama-shownotes.md && \
+  npm run as -- --playlist "https://www.youtube.com/playlist?list=PLCVnrVv4KhXMh4DQBigyvHSRTf2CSj129" --prompt titles --whisper tiny --llama && \
+  mv content/2022-11-05-intro-to-teach-jenn-tech-llama-shownotes.md content/30---2022-11-05-intro-to-teach-jenn-tech-llama-shownotes.md && \
+  mv content/2023-09-10-teach-jenn-tech-channel-trailer-llama-shownotes.md content/31---2023-09-10-teach-jenn-tech-channel-trailer-llama-shownotes.md && \
+  npm run as -- --urls "content/urls.md" --prompt titles --whisper tiny --llama && \
+  mv content/2022-11-05-intro-to-teach-jenn-tech-llama-shownotes.md content/32---2022-11-05-intro-to-teach-jenn-tech-llama-shownotes.md && \
+  mv content/2023-09-10-teach-jenn-tech-channel-trailer-llama-shownotes.md content/33---2023-09-10-teach-jenn-tech-channel-trailer-llama-shownotes.md && \
+  npm run as -- --file "content/audio.mp3" --prompt titles --whisper tiny --llama && \
+  mv content/audio.mp3-llama-shownotes.md content/34---audio.mp3-llama-shownotes.md && \
+  npm run as -- --rss "https://ajcwebdev.substack.com/feed" && \
+  mv content/2021-05-10-thoughts-on-lambda-school-layoffs-prompt.md content/35---2021-05-10-thoughts-on-lambda-school-layoffs-prompt.md && \
+  npm run as -- --rss "https://feeds.transistor.fm/fsjam-podcast/" --order newest --skip 94 --whisper tiny && \
+  mv content/2020-10-27-episode-0-the-fullstack-jamstack-podcast-with-anthony-campolo-and-christopher-burns-prompt.md content/36---2020-10-27-episode-0-the-fullstack-jamstack-podcast-with-anthony-campolo-and-christopher-burns-prompt.md && \
+  npm run as -- --rss "https://feeds.transistor.fm/fsjam-podcast/" --order oldest --skip 94 --whisper tiny && \
+  mv content/2023-06-28-episode-94-clerk-with-james-perkins-prompt.md content/37---2023-06-28-episode-94-clerk-with-james-perkins-prompt.md
+```
+
+## Create Single Markdown File with Entire Project
+
+This can be a useful way of creating a single markdown file of the entire project for giving to an LLM as context to develop new features or debug code. I'll usually start a conversation by including this along with a prompt that explains what I want changed or added.
+
+```bash
+cat README.md >> LLM.md && \
+  echo '\n\n```js' >> LLM.md && \
+  cat src/autoshow.js >> LLM.md && \
+  echo '\n```\n' >> LLM.md && \
+  echo '## Utility Functions\n' >> LLM.md && \
+  echo '```js' >> LLM.md && \
+  cat src/utils/cleanUpFiles.js >> LLM.md && \
+  echo '\n```\n' >> LLM.md && \
+  echo '```js' >> LLM.md && \
+  cat src/utils/downloadAudio.js >> LLM.md && \
+  echo '\n```\n' >> LLM.md && \
+  echo '```js' >> LLM.md && \
+  cat src/utils/generateMarkdown.js >> LLM.md && \
+  echo '\n```\n' >> LLM.md && \
+  echo '```js' >> LLM.md && \
+  cat src/utils/runLLM.js >> LLM.md && \
+  echo '\n```\n' >> LLM.md && \
+  echo '```js' >> LLM.md && \
+  cat src/utils/runTranscription.js >> LLM.md && \
+  echo '\n```\n' >> LLM.md && \
+  echo '## Transcription Functions\n' >> LLM.md && \
+  echo '```js' >> LLM.md && \
+  cat src/transcription/whisper.js >> LLM.md && \
+  echo '\n```\n' >> LLM.md && \
+  echo '```js' >> LLM.md && \
+  cat src/transcription/deepgram.js >> LLM.md && \
+  echo '\n```\n' >> LLM.md && \
+  echo '```js' >> LLM.md && \
+  cat src/transcription/assembly.js >> LLM.md && \
+  echo '\n```\n' >> LLM.md && \
+  echo '## LLM Functions\n' >> LLM.md && \
+  echo '```js' >> LLM.md && \
+  cat src/llms/prompt.js >> LLM.md && \
+  echo '\n```\n' >> LLM.md && \
+  echo '```js' >> LLM.md && \
+  cat src/llms/chatgpt.js >> LLM.md && \
+  echo '\n```\n' >> LLM.md && \
+  echo '```js' >> LLM.md && \
+  cat src/llms/claude.js >> LLM.md && \
+  echo '\n```\n' >> LLM.md && \
+  echo '```js' >> LLM.md && \
+  cat src/llms/cohere.js >> LLM.md && \
+  echo '\n```\n' >> LLM.md && \
+  echo '```js' >> LLM.md && \
+  cat src/llms/gemini.js >> LLM.md && \
+  echo '\n```\n' >> LLM.md && \
+  echo '```js' >> LLM.md && \
+  cat src/llms/llama.js >> LLM.md && \
+  echo '\n```\n' >> LLM.md && \
+  echo '```js' >> LLM.md && \
+  cat src/llms/mistral.js >> LLM.md && \
+  echo '\n```\n' >> LLM.md && \
+  echo '```js' >> LLM.md && \
+  cat src/llms/octo.js >> LLM.md && \
+  echo '\n```\n' >> LLM.md && \
+  echo '## Process Commands\n' >> LLM.md && \
+  echo '```js' >> LLM.md && \
+  cat src/commands/processVideo.js >> LLM.md && \
+  echo '\n```\n' >> LLM.md && \
+  echo '```js' >> LLM.md && \
+  cat src/commands/processURLs.js >> LLM.md && \
+  echo '\n```\n' >> LLM.md && \
+  echo '```js' >> LLM.md && \
+  cat src/commands/processRSS.js >> LLM.md && \
+  echo '\n```\n' >> LLM.md && \
+  echo '```js' >> LLM.md && \
+  cat src/commands/processPlaylist.js >> LLM.md && \
+  echo '\n```\n' >> LLM.md && \
+  echo '```js' >> LLM.md && \
+  cat src/commands/processFile.js >> LLM.md && \
+  echo '\n```\n' >> LLM.md && \
+  echo '## Docker Files\n' >> LLM.md && \
+  echo '```Dockerfile' >> LLM.md && \
+  cat whisper.Dockerfile >> LLM.md && \
+  echo '\n```\n' >> LLM.md && \
+  echo '```Dockerfile' >> LLM.md && \
+  cat llama.Dockerfile >> LLM.md && \
+  echo '\n```\n' >> LLM.md && \
+  echo '```Dockerfile' >> LLM.md && \
+  cat Dockerfile >> LLM.md && \
+  echo '\n```\n' >> LLM.md && \
+  echo '```yml' >> LLM.md && \
+  cat docker-compose.yml >> LLM.md && \
+  echo '\n```\n' >> LLM.md && \
+  echo '```bash' >> LLM.md && \
+  cat docker-entrypoint.sh >> LLM.md && \
+  echo '\n```\n' >> LLM.md
+```

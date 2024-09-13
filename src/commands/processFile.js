@@ -42,7 +42,9 @@ export async function processFile(filePath, llmOption, transcriptionOption, opti
     const frontMatter = `---\ntitle: "${basename(filePath)}"\n---\n`
     await runTranscription(finalPath, transcriptionOption, options, frontMatter)
     await runLLM(finalPath, frontMatter, llmOption, options)
-    await cleanUpFiles(finalPath)
+    if (!options.noCleanUp) {
+      await cleanUpFiles(finalPath)
+    }
     console.log('File processing completed')
   } catch (error) {
     console.error('Error processing file:', error)

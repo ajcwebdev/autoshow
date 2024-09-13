@@ -35,6 +35,7 @@ program
   .option('--assembly', 'Use AssemblyAI for transcription')
   .option('--speaker-labels', 'Use speaker labels for AssemblyAI transcription')
   .option('--speakers-expected <number>', 'Number of expected speakers for AssemblyAI transcription', parseInt, 1)
+  .option('--noCleanUp', 'Do not delete intermediary files after processing')
 
 program.action(async (options) => {
   console.log(`Options received:\n`)

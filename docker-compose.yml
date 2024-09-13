@@ -18,6 +18,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./content:/app/content
+      - ./whisper.cpp/models:/app/models
     command: tail -f /dev/null
     tty: true
     stdin_open: true

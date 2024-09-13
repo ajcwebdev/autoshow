@@ -11,17 +11,21 @@
 - [Language Model (LLM) Options](#language-model-llm-options)
   - [OpenAI's ChatGPT Models](#openais-chatgpt-models)
   - [Anthropic's Claude Models](#anthropics-claude-models)
+  - [Google's Gemini Models](#googles-gemini-models)
   - [Cohere's Command Models](#coheres-command-models)
-  - [Mistral's Mixtral Models](#mistrals-mixtral-models)
+  - [Mistral's Mistral Models](#mistrals-mistral-models)
   - [OctoAI's Models](#octoais-models)
   - [Llama.cpp](#llamacpp)
 - [Transcription Options](#transcription-options)
   - [Deepgram](#deepgram)
   - [Assembly](#assembly)
   - [Whisper.cpp](#whispercpp)
+- [Docker Compose](#docker-compose)
 - [Alternative JavaScript Runtimes](#alternative-javascript-runtimes)
   - [Deno](#deno)
   - [Bun](#bun)
+- [Makeshift Test Suite](#makeshift-test-suite)
+- [Create Single Markdown File with Entire Project](#create-single-markdown-file-with-entire-project)
 
 ## Content and Feed Inputs
 
@@ -144,7 +148,7 @@ npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --claude CLA
 npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --claude CLAUDE_3_HAIKU
 ```
 
-### Gemini Models
+### Google's Gemini Models
 
 ```bash
 npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --gemini
@@ -205,23 +209,6 @@ npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --octo WIZAR
 
 ### Llama.cpp
 
-Download Llama3.1-8B instruct model.
-
-```bash
-curl \
-  -L https://huggingface.co/mradermacher/Meta-Llama-3.1-8B-Instruct-GGUF/resolve/main/Meta-Llama-3.1-8B-Instruct.Q2_K.gguf \
-  -o ./src/llms/models/Meta-Llama-3.1-8B-Instruct.Q2_K.gguf
-```
-
-Set model in `.env` file.
-
-```bash
-echo '\nLLAMA_MODEL="Meta-Llama-3.1-8B-Instruct.Q2_K.gguf"' >> .env
-# LLAMA_MODEL="Meta-Llama-3.1-8B-Instruct.Q2_K.gguf"
-echo '\nHUGGING_FACE_URL="https://huggingface.co/mradermacher/Meta-Llama-3.1-8B-Instruct-GGUF"' >> .env
-# HUGGING_FACE_URL="https://huggingface.co/mradermacher/Meta-Llama-3.1-8B-Instruct-GGUF"
-```
-
 ```bash
 npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --llama
 ```
@@ -269,9 +256,15 @@ npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --whisper me
 npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --whisper large
 ```
 
-> _Note: Make sure the model you select is the same model you built in the [Clone Whisper Repo](#clone-whisper-repo) step._
+Run `whisper.cpp` in a Docker container with `--whisper-docker`:
 
-_TODO: Rethink Docker integrations, probably want some kind of Compose setup that runs whisper.cpp, llama.cpp, and the Autoshow Node server._
+```bash
+npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --whisper-docker tiny
+```
+
+## Docker Compose
+
+This will run both `whisper.cpp` and the AutoShow Commander CLI in their own Docker containers.
 
 ```bash
 cp whisper.Dockerfile whisper.cpp
@@ -279,6 +272,8 @@ mv whisper.cpp/whisper.Dockerfile whisper.cpp/Dockerfile
 docker-compose up --build -d
 docker-compose run autoshow --video "https://www.youtube.com/watch?v=jKB0EltG9Jo"
 ```
+
+Currently working on the `llama.cpp` Docker integration so the entire project can be encapsulated in one local Docker Compose file.
 
 ## Prompt Options
 

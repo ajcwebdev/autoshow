@@ -17,8 +17,12 @@ export async function runTranscription(finalPath, transcriptionOption, options =
         await callAssembly(`${finalPath}.wav`, finalPath, options.speakerLabels, options.speakersExpected)
         txtContent = await readFile(`${finalPath}.txt`, 'utf8')
         break
+      case 'whisper-docker':
+      case 'whisper':
+        txtContent = await callWhisper(finalPath, transcriptionOption, options)
+        break
       default:
-        txtContent = await callWhisper(finalPath, transcriptionOption)
+        throw new Error(`Unknown transcription option: ${transcriptionOption}`)
     }
     let mdContent = ''
     try {

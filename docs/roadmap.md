@@ -6,9 +6,7 @@ This isn't exactly a full blown roadmap of upcoming milestones containing timeli
 
 - [Contributing](#contributing)
 - [Version 0.1](#version-01)
-  - [Documentation](#documentation)
-  - [Server](#server)
-  - [Frontend](#frontend)
+  - [Server and Frontend](#server-and-frontend)
   - [Greater Configurability](#greater-configurability)
 - [Version 1.0](#version-10)
 
@@ -22,17 +20,12 @@ Right now this project intentionally does not have a `CONTRIBUTING.md` doc. I wa
 
 ## Version 0.1
 
-<details>
-  <summary>Click to expand</summary>
-
 My current plan is to implement the majority of the functionality outlined here before publishing `v0.1` of `autoshow` on npm.
   - While `v0.1` will introduce more stability to the project, it won't be considered production ready until `v1.0`.
   - Until that time, I'll do my best to push changes through clearly documented PRs.
   - In the meantime, this repo will be changing rapidly and breaking changes should be expected.
 
-</details>
-
-### Server
+### Server and Frontend
 
 The server will eventually replicate all functionality implemented by the CLI.
 
@@ -54,8 +47,6 @@ With the exception of Fresh, I'll likely avoid more opinionated server framework
 - [Oak](https://oakserver.org/)
 
 </details>
-
-### Frontend
 
 Once I've settled on the handful of server frameworks I want to support, I'll build out a React frontend.
 
@@ -80,15 +71,9 @@ The framework I'll pick for building the final app will need to include authenti
 Click any of the following to expand.
 
 <details>
-  <summary>Set better defaults for context limit, entropy threshold, and max temperature to improve transcript output.</summary>
+  <summary>Set better defaults for context limit, entropy threshold, and max temperature to improve transcript output and allow configuring temperature and max token output for LLMs.</summary>
 
-[Improving hallucinations and repetitions](https://github.com/ggerganov/whisper.cpp/discussions/2286)
-
-</details>
-
-<details>
-  <summary>Allow configuring temperature and max token output for LLMs.</summary>
-
+- [Improving hallucinations and repetitions](https://github.com/ggerganov/whisper.cpp/discussions/2286)
 - [OpenAI `max_tokens`](https://platform.openai.com/docs/api-reference/chat/create#chat-create-max_tokens)
 - [OpenAI `temperature`](https://platform.openai.com/docs/api-reference/chat/create#chat-create-temperature)
 - [Claude Messages API](https://docs.anthropic.com/en/api/messages)
@@ -103,16 +88,6 @@ For example, the following would output four show note files for each combinatio
 ```bash
 node --env-file=.env autoshow.js --deepgram --assembly --chatgpt --claude --video "https://www.youtube.com/watch?v=-jF0g_YGPdI"
 ```
-
-</details>
-
-<details>
-  <summary>Allow configuring whether to delete or keep intermediary files.</summary>
-
-  - Follow example for an [option that may be a boolean or an option-argument declared with square brackets like `--optional [value]`](https://github.com/tj/commander.js/blob/master/examples/options-boolean-or-value.js):
-  - `--cleanUp` can be set to `true` or `false`.
-  - File clean up will be set to `false` by default.
-  - Decide between `--noCleanUp` and `--cleanUpOff` for option-argument that sets clean up to `false`.
 
 </details>
 

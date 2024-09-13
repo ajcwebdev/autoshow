@@ -96,12 +96,6 @@ Allow configuring different models for LLM and transcription providers with opti
 
 For me to consider this project production ready, `v1.0` will need to include the following:
 
-- An interactive CLI, potentially using [Inquirer](https://github.com/SBoudrias/Inquirer.js).
-  - This will walk through all options and arguments in an interactive manner.
-  - The goal is for a user to be able to run only `npx autoshow` and process their content without needing to read any documentation or CLI help pages.
-- A full test suite for each function and utility. This will need either:
-  - Some kind of file data mocking for testing the end-to-end flow with audio and video.
-  - Example URLs that host easily accessible and available audio or video content files.
 - Astro integration so the markdown files that are generated with the show notes can be used to generate a complete website.
 - Docker support and setup instructions.
 - Deployment instructions for self hosting a Node.js server.

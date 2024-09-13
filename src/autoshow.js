@@ -23,7 +23,8 @@ program
   .option('-r, --rss <rssURL>', 'Process a podcast RSS feed')
   .option('--order <order>', 'Specify the order for RSS feed processing (newest or oldest)', 'newest')
   .option('--skip <number>', 'Number of items to skip when processing RSS feed', parseInt, 0)
-  .option('--whisper <modelType>', 'Specify the Whisper model type', 'base')
+  .option('--whisper [modelType]', 'Use Whisper.cpp for transcription (non-Docker version)')
+  .option('--whisper-docker [modelType]', 'Use Whisper.cpp for transcription (Docker version)')
   .option('--chatgpt [model]', 'Use ChatGPT for processing with optional model specification')
   .option('--claude [model]', 'Use Claude for processing with optional model specification')
   .option('--cohere [model]', 'Use Cohere for processing with optional model specification')
@@ -35,8 +36,12 @@ program
   .option('--assembly', 'Use AssemblyAI for transcription')
   .option('--speaker-labels', 'Use speaker labels for AssemblyAI transcription')
   .option('--speakers-expected <number>', 'Number of expected speakers for AssemblyAI transcription', parseInt, 1)
+  .option('--noCleanUp', 'Do not delete intermediary files after processing')
 
 program.action(async (options) => {
+  console.log(`Options received:\n`)
+  console.log(options)
+
   const handlers = {
     video: processVideo,
     playlist: processPlaylist,
@@ -45,10 +50,21 @@ program.action(async (options) => {
     rss: processRSS,
   }
 
+  let transcriptionOption = 'whisper' // default
+
+  if (options.deepgram) {
+    transcriptionOption = 'deepgram'
+  } else if (options.assembly) {
+    transcriptionOption = 'assembly'
+  } else if (options.whisperDocker) {
+    transcriptionOption = 'whisper-docker'
+  } else if (options.whisper) {
+    transcriptionOption = 'whisper'
+  }
+
   const llmOption = [
     'chatgpt', 'claude', 'cohere', 'mistral', 'octo', 'llama', 'gemini'
   ].find(option => options[option])
-  const transcriptionOption = options.deepgram ? 'deepgram' : options.assembly ? 'assembly' : options.whisper
 
   for (const [key, handler] of Object.entries(handlers)) {
     if (options[key]) {

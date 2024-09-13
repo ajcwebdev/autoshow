@@ -66,7 +66,9 @@ export async function processRSS(rssUrl, llmOption, transcriptionOption, options
         await downloadAudio(item.showLink, filename)
         await runTranscription(finalPath, transcriptionOption, options, frontMatter)
         await runLLM(finalPath, frontMatter, llmOption, options)
-        await cleanUpFiles(finalPath)
+        if (!options.noCleanUp) {
+          await cleanUpFiles(finalPath)
+        }
         console.log(`\nProcess completed successfully for item: ${item.title}`)
       } catch (error) {
         console.error(`Error processing item: ${item.title}`, error)

@@ -12,7 +12,6 @@ import { generatePrompt } from '../llms/prompt.js'
 
 export async function runLLM(finalPath, frontMatter, llmOption, options) {
   try {
-    console.log('Debug: options received in runLLM:', options)
     const transcriptContent = await readFile(`${finalPath}.txt`, 'utf8')
     const llmFunctions = {
       chatgpt: callChatGPT,
@@ -24,7 +23,6 @@ export async function runLLM(finalPath, frontMatter, llmOption, options) {
       gemini: callGemini,
     }
     const promptSections = options.prompt || ['summary', 'longChapters']
-    console.log('Debug: promptSections:', promptSections)
     const prompt = generatePrompt(promptSections)
     const fullPrompt = `${prompt}\n${transcriptContent}`
     if (llmOption && llmFunctions[llmOption]) {
@@ -43,17 +41,7 @@ export async function runLLM(finalPath, frontMatter, llmOption, options) {
     } else {
       const finalContent = `${frontMatter}\n${prompt}## Transcript\n\n${transcriptContent}`
       await writeFile(`${finalPath}-prompt.md`, finalContent)
-      console.log(`No LLM specified. Created markdown file with original structure:\n  - ${finalPath}-prompt.md`)
-    }
-    try {
-      await unlink(`${finalPath}.md`)
-      console.log(`Temporary file removed:\n  - ${finalPath}.md`)
-      await unlink(`${finalPath}.txt`)
-      console.log(`Temporary file removed:\n  - ${finalPath}.txt`)
-    } catch (error) {
-      if (error.code !== 'ENOENT') {
-        console.error('Error removing temporary file:', error)
-      }
+      console.log(`\nNo LLM specified. Created markdown file with original structure:\n  - ${finalPath}-prompt.md\n`)
     }
   } catch (error) {
     console.error('Error running LLM:', error)

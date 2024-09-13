@@ -5,13 +5,17 @@ import { getLlama, LlamaChatSession } from "node-llama-cpp"
 import { existsSync } from 'node:fs'
 import { exec } from 'node:child_process'
 import { promisify } from 'node:util'
-import { env } from 'node:process'
 
 const execAsync = promisify(exec)
 
-const { LLAMA_MODEL, HUGGING_FACE_URL } = env
+// const LLAMA_MODEL = "Meta-Llama-3.1-8B-Instruct.IQ4_XS.gguf"
+// const LLAMA_HUGGING_FACE_URL = "https://huggingface.co/mradermacher/Meta-Llama-3.1-8B-Instruct-GGUF"
+const GEMMA_MODEL = "gemma-2-2b-it-IQ4_XS.gguf"
+const GEMMA_HUGGING_FACE_URL = "https://huggingface.co/lmstudio-community/gemma-2-2b-it-GGUF"
 
-if (!LLAMA_MODEL || !HUGGING_FACE_URL) {
+// const { LLAMA_MODEL, HUGGING_FACE_URL } = env
+
+if (!GEMMA_MODEL || !GEMMA_HUGGING_FACE_URL) {
   console.error('Environment variables LLAMA_MODEL and HUGGING_FACE_URL must be set')
   process.exit(1)
 }
@@ -19,10 +23,10 @@ if (!LLAMA_MODEL || !HUGGING_FACE_URL) {
 async function downloadModel() {
   const modelPath = `./src/llms/models/${LLAMA_MODEL}`
   if (existsSync(modelPath)) {
-    console.log('Model already exists. Skipping download.')
+    console.log(`\nSkipping download, model already exists:\n  - ${modelPath}`)
     return
   }
-  console.log(`Model not found. Attempting to download ${LLAMA_MODEL}...`)
+  console.log(`Model not found.\n  - Attempting to download ${LLAMA_MODEL}...`)
   try {
     await mkdir('./src/llms/models', { recursive: true })
     console.log('Starting download...')
@@ -54,9 +58,9 @@ export async function callLlama(transcriptContent, outputFilePath) {
       contextSequence: context.getSequence()
     })
     const response = await session.prompt(transcriptContent)
-    console.log(response)
+    // console.log(response)
     await writeFile(outputFilePath, response)
-    console.log(`Transcript saved to ${outputFilePath}`)
+    console.log(`\nTranscript saved to:\n  - ${outputFilePath}`)
   } catch (error) {
     console.error('Error:', error)
     throw error

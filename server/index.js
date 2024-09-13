@@ -1,6 +1,6 @@
 // server/index.js
 
-import http from 'http'
+import http from 'node:http'
 import { handleVideoRequest } from './routes/video.js'
 import { handlePlaylistRequest } from './routes/playlist.js'
 import { handleURLsRequest } from './routes/urls.js'

@@ -1,28 +1,26 @@
-FROM --platform=linux/arm64 ubuntu:22.04 AS build
+# Dockerfile
 
-WORKDIR /app
+FROM node:20
 
-RUN apt-get update && \
-    apt-get install -y build-essential libopenblas-dev pkg-config \
-    && rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*
+# Install ffmpeg, git, make, and curl
+RUN apt-get update && apt-get install -y ffmpeg git make curl docker.io
+WORKDIR /usr/src/app
 
-COPY .. .
+# Install yt-dlp
+RUN curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o /usr/local/bin/yt-dlp \
+    && chmod a+rx /usr/local/bin/yt-dlp
 
-ENV CFLAGS="-march=armv8-a"
-ENV CXXFLAGS="-march=armv8-a"
+# Copy package.json, package-lock.json, and install dependencies
+COPY package*.json ./
+RUN npm ci
 
-RUN make clean
+# Copy the rest of the application and create a directory for content
+COPY . .
+RUN mkdir -p /usr/src/app/content
 
-RUN make GGML_OPENBLAS=1
+# Make sure the entrypoint script is executable and set the entrypoint
+RUN chmod +x /usr/src/app/docker-entrypoint.sh
+ENTRYPOINT ["/usr/src/app/docker-entrypoint.sh"]
 
-FROM --platform=linux/arm64 ubuntu:22.04 AS runtime
-
-WORKDIR /app
-
-RUN apt-get update && \
-    apt-get install -y curl ffmpeg libopenblas-dev \
-    && rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*
-
-COPY --from=build /app /app
-
-ENTRYPOINT [ "bash", "-c" ]
+# Default command (can be overridden)
+CMD ["--help"]

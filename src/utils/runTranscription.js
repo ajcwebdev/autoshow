@@ -17,8 +17,12 @@ export async function runTranscription(finalPath, transcriptionOption, options =
         await callAssembly(`${finalPath}.wav`, finalPath, options.speakerLabels, options.speakersExpected)
         txtContent = await readFile(`${finalPath}.txt`, 'utf8')
         break
+      case 'whisper-docker':
+      case 'whisper':
+        txtContent = await callWhisper(finalPath, transcriptionOption, options)
+        break
       default:
-        txtContent = await callWhisper(finalPath, transcriptionOption)
+        throw new Error(`Unknown transcription option: ${transcriptionOption}`)
     }
     let mdContent = ''
     try {
@@ -30,13 +34,10 @@ export async function runTranscription(finalPath, transcriptionOption, options =
     }
     const finalContent = `${mdContent}\n## Transcript\n\n${txtContent}`
     await writeFile(`${finalPath}.md`, finalContent)
-    console.log(`\nMarkdown file with frontmatter and transcript:\n  - ${finalPath}.md`)
+    console.log(`Markdown file with frontmatter and transcript:\n  - ${finalPath}.md`)
     return finalContent
   } catch (error) {
     console.error('Error in runTranscription:', error)
-    if (error.message === 'Transcription process failed' && error.stderr) {
-      console.error('Transcription stderr output:', error.stderr)
-    }
     throw error
   }
 }

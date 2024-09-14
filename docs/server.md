@@ -44,7 +44,7 @@ curl -X POST http://localhost:3000/video \
   -H "Content-Type: application/json" \
   -d '{
     "youtubeUrl": "https://www.youtube.com/watch?v=jKB0EltG9Jo",
-    "model": "tiny"
+    "whisperModel": "tiny"
   }'
 ```
 
@@ -55,8 +55,8 @@ curl -X POST http://localhost:3000/video \
   -H "Content-Type: application/json" \
   -d '{
     "youtubeUrl": "https://www.youtube.com/watch?v=jKB0EltG9Jo",
-    "model": "tiny",
-    "llm": "chatgpt"
+    "whisperModel": "tiny",
+    "llm": "llama"
   }'
 ```
 
@@ -66,8 +66,17 @@ curl -X POST http://localhost:3000/video \
 curl -X POST http://localhost:3000/playlist \
   -H "Content-Type: application/json" \
   -d '{
+    "playlistUrl": "https://www.youtube.com/playlist?list=PLCVnrVv4KhXMh4DQBigyvHSRTf2CSj129"
+  }'
+```
+
+```bash
+curl -X POST http://localhost:3000/playlist \
+  -H "Content-Type: application/json" \
+  -d '{
     "playlistUrl": "https://www.youtube.com/playlist?list=PLCVnrVv4KhXMh4DQBigyvHSRTf2CSj129",
-    "model": "base"
+    "whisperModel": "tiny",
+    "llm": "llama"
   }'
 ```
 
@@ -77,8 +86,17 @@ curl -X POST http://localhost:3000/playlist \
 curl -X POST http://localhost:3000/urls \
   -H "Content-Type: application/json" \
   -d '{
+    "filePath": "content/urls.md"
+  }'
+```
+
+```bash
+curl -X POST http://localhost:3000/urls \
+  -H "Content-Type: application/json" \
+  -d '{
     "filePath": "content/urls.md",
-    "model": "base"
+    "whisperModel": "tiny",
+    "llm": "llama"
   }'
 ```
 
@@ -88,8 +106,17 @@ curl -X POST http://localhost:3000/urls \
 curl -X POST http://localhost:3000/file \
   -H "Content-Type: application/json" \
   -d '{
+    "filePath": "content/audio.mp3"
+  }'
+```
+
+```bash
+curl -X POST http://localhost:3000/file \
+  -H "Content-Type: application/json" \
+  -d '{
     "filePath": "content/audio.mp3",
-    "model": "base"
+    "whisperModel": "tiny",
+    "llm": "llama"
   }'
 ```
 
@@ -99,8 +126,17 @@ curl -X POST http://localhost:3000/file \
 curl -X POST http://localhost:3000/rss \
   -H "Content-Type: application/json" \
   -d '{
+    "rssUrl": "https://feeds.transistor.fm/fsjam-podcast/"
+  }'
+```
+
+```bash
+curl -X POST http://localhost:3000/rss \
+  -H "Content-Type: application/json" \
+  -d '{
     "rssUrl": "https://feeds.transistor.fm/fsjam-podcast/",
-    "model": "base",
+    "whisperModel": "tiny",
+    "llm": "llama",
     "order": "newest",
     "skip": 0
   }'

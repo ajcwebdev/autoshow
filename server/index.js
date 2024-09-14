@@ -10,47 +10,53 @@ import { env } from 'node:process'
 
 const port = env.PORT || 3000
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': 'http://localhost:5173',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type',
-}
-
 const server = http.createServer(async (req, res) => {
+  console.log(`[${new Date().toISOString()}] Received ${req.method} request for ${req.url}`)
+  res.setHeader('Access-Control-Allow-Origin', '*')
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
+  console.log('CORS headers set')
+
   if (req.method === 'OPTIONS') {
-    res.writeHead(204, corsHeaders)
+    console.log('Handling OPTIONS preflight request')
+    res.writeHead(204)
     res.end()
     return
   }
 
-  Object.entries(corsHeaders).forEach(([key, value]) => {
-    res.setHeader(key, value)
-  })
-
   if (req.method === 'POST') {
     switch (req.url) {
       case '/video':
+        console.log('Routing to handleVideoRequest')
         await handleVideoRequest(req, res)
         break
       case '/playlist':
+        console.log('Routing to handlePlaylistRequest')
         await handlePlaylistRequest(req, res)
         break
       case '/urls':
+        console.log('Routing to handleURLsRequest')
         await handleURLsRequest(req, res)
         break
       case '/file':
+        console.log('Routing to handleFileRequest')
         await handleFileRequest(req, res)
         break
       case '/rss':
+        console.log('Routing to handleRSSRequest')
         await handleRSSRequest(req, res)
         break
       default:
-        res.writeHead(404, { 'Content-Type': 'application/json' })
+        console.log('Unknown route, sending 404')
+        res.statusCode = 404
+        res.setHeader('Content-Type', 'application/json')
         res.end(JSON.stringify({ error: 'Not Found' }))
     }
   } else {
-    res.writeHead(404, { 'Content-Type': 'application/json' })
-    res.end(JSON.stringify({ error: 'Not Found' }))
+    console.log(`Method ${req.method} not allowed, sending 405`)
+    res.statusCode = 405
+    res.setHeader('Content-Type', 'application/json')
+    res.end(JSON.stringify({ error: 'Method Not Allowed' }))
   }
 })
 

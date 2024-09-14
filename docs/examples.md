@@ -267,8 +267,6 @@ npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --whisper-do
 This will run both `whisper.cpp` and the AutoShow Commander CLI in their own Docker containers.
 
 ```bash
-cp whisper.Dockerfile whisper.cpp
-mv whisper.cpp/whisper.Dockerfile whisper.cpp/Dockerfile
 docker-compose up --build -d
 docker-compose run autoshow --video "https://www.youtube.com/watch?v=jKB0EltG9Jo"
 ```
@@ -363,6 +361,9 @@ A more thought out test suite will be created at some point, but in the mean tim
 - You'll need API keys for all services to make it through this entire command.
 - Mostly uses transcripts of videos around one minute long and cheaper models when possible, so the total cost of running this for any given service should be at most only a few cents.
 
+<details>
+  <summary>Click for full test command</summary>
+
 ```bash
 npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" && \
   mv content/2023-09-10-teach-jenn-tech-channel-trailer-prompt.md content/01---2023-09-10-teach-jenn-tech-channel-trailer-prompt.md && \
@@ -372,7 +373,6 @@ npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" && \
   npm run as -- --urls "content/urls.md" && \
   mv content/2022-11-05-intro-to-teach-jenn-tech-prompt.md content/04---2022-11-05-intro-to-teach-jenn-tech-prompt.md && \
   mv content/2023-09-10-teach-jenn-tech-channel-trailer-prompt.md content/05---2023-09-10-teach-jenn-tech-channel-trailer-prompt.md && \
-  curl -L https://ajc.pics/audio/fsjam-short.mp3 -o ./content/audio.mp3 && \
   npm run as -- --file "content/audio.mp3" && \
   mv content/audio.mp3-prompt.md content/06---audio.mp3-prompt.md && \
   npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --chatgpt && \
@@ -437,6 +437,50 @@ npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" && \
   mv content/2023-06-28-episode-94-clerk-with-james-perkins-prompt.md content/37---2023-06-28-episode-94-clerk-with-james-perkins-prompt.md
 ```
 
+</details>
+
+<details>
+  <summary>Click for partial test command that doesn't use paid services</summary>
+
+```bash
+npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" && \
+  mv content/2023-09-10-teach-jenn-tech-channel-trailer-prompt.md content/01---2023-09-10-teach-jenn-tech-channel-trailer-prompt.md && \
+  npm run as -- --playlist "https://www.youtube.com/playlist?list=PLCVnrVv4KhXMh4DQBigyvHSRTf2CSj129" && \
+  mv content/2022-11-05-intro-to-teach-jenn-tech-prompt.md content/02---2022-11-05-intro-to-teach-jenn-tech-prompt.md && \
+  mv content/2023-09-10-teach-jenn-tech-channel-trailer-prompt.md content/03---2023-09-10-teach-jenn-tech-channel-trailer-prompt.md && \
+  npm run as -- --urls "content/urls.md" && \
+  mv content/2022-11-05-intro-to-teach-jenn-tech-prompt.md content/04---2022-11-05-intro-to-teach-jenn-tech-prompt.md && \
+  mv content/2023-09-10-teach-jenn-tech-channel-trailer-prompt.md content/05---2023-09-10-teach-jenn-tech-channel-trailer-prompt.md && \
+  npm run as -- --file "content/audio.mp3" && \
+  mv content/audio.mp3-prompt.md content/06---audio.mp3-prompt.md && \
+  npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --llama && \
+  mv content/2023-09-10-teach-jenn-tech-channel-trailer-llama-shownotes.md content/09---2023-09-10-teach-jenn-tech-channel-trailer-llama-shownotes.md && \
+  npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --whisper tiny && \
+  mv content/2023-09-10-teach-jenn-tech-channel-trailer-prompt.md content/10---2023-09-10-teach-jenn-tech-channel-trailer-prompt.md && \
+  npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --prompt titles && \
+  mv content/2023-09-10-teach-jenn-tech-channel-trailer-prompt.md content/11---2023-09-10-teach-jenn-tech-channel-trailer-prompt.md && \
+  npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --prompt titles summary shortChapters mediumChapters longChapters takeaways questions && \
+  mv content/2023-09-10-teach-jenn-tech-channel-trailer-prompt.md content/12---2023-09-10-teach-jenn-tech-channel-trailer-prompt.md && \
+  npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --prompt titles summary shortChapters takeaways questions --whisper tiny --llama && \
+  mv content/2023-09-10-teach-jenn-tech-channel-trailer-llama-shownotes.md content/13---2023-09-10-teach-jenn-tech-channel-trailer-llama-shownotes.md && \
+  npm run as -- --playlist "https://www.youtube.com/playlist?list=PLCVnrVv4KhXMh4DQBigyvHSRTf2CSj129" --prompt titles --whisper tiny --llama && \
+  mv content/2022-11-05-intro-to-teach-jenn-tech-llama-shownotes.md content/14---2022-11-05-intro-to-teach-jenn-tech-llama-shownotes.md && \
+  mv content/2023-09-10-teach-jenn-tech-channel-trailer-llama-shownotes.md content/15---2023-09-10-teach-jenn-tech-channel-trailer-llama-shownotes.md && \
+  npm run as -- --urls "content/urls.md" --prompt titles --whisper tiny --llama && \
+  mv content/2022-11-05-intro-to-teach-jenn-tech-llama-shownotes.md content/16---2022-11-05-intro-to-teach-jenn-tech-llama-shownotes.md && \
+  mv content/2023-09-10-teach-jenn-tech-channel-trailer-llama-shownotes.md content/17---2023-09-10-teach-jenn-tech-channel-trailer-llama-shownotes.md && \
+  npm run as -- --file "content/audio.mp3" --prompt titles --whisper tiny --llama && \
+  mv content/audio.mp3-llama-shownotes.md content/18---audio.mp3-llama-shownotes.md && \
+  npm run as -- --rss "https://ajcwebdev.substack.com/feed" && \
+  mv content/2021-05-10-thoughts-on-lambda-school-layoffs-prompt.md content/19---2021-05-10-thoughts-on-lambda-school-layoffs-prompt.md && \
+  npm run as -- --rss "https://feeds.transistor.fm/fsjam-podcast/" --order newest --skip 94 --whisper tiny && \
+  mv content/2020-10-27-episode-0-the-fullstack-jamstack-podcast-with-anthony-campolo-and-christopher-burns-prompt.md content/20---2020-10-27-episode-0-the-fullstack-jamstack-podcast-with-anthony-campolo-and-christopher-burns-prompt.md && \
+  npm run as -- --rss "https://feeds.transistor.fm/fsjam-podcast/" --order oldest --skip 94 --whisper tiny && \
+  mv content/2023-06-28-episode-94-clerk-with-james-perkins-prompt.md content/21---2023-06-28-episode-94-clerk-with-james-perkins-prompt.md
+```
+
+</details>
+
 ## Create Single Markdown File with Entire Project
 
 This can be a useful way of creating a single markdown file of the entire project for giving to an LLM as context to develop new features or debug code. I'll usually start a conversation by including this along with a prompt that explains what I want changed or added.
@@ -493,6 +537,9 @@ cat README.md >> LLM.md && \
   echo '\n```\n' >> LLM.md && \
   echo '```js' >> LLM.md && \
   cat src/llms/llama.js >> LLM.md && \
+  echo '\n```\n' >> LLM.md && \
+  echo '```js' >> LLM.md && \
+  cat src/llms/llamacpp.js >> LLM.md && \
   echo '\n```\n' >> LLM.md && \
   echo '```js' >> LLM.md && \
   cat src/llms/mistral.js >> LLM.md && \

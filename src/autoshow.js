@@ -131,7 +131,7 @@ program.action(async (options) => {
       },
       {
         type: 'list',
-        name: 'whisperModelType',
+        name: 'whisperModel',
         message: 'Select the Whisper model type:',
         choices: ['tiny', 'base', 'small', 'medium', 'large'],
         when: (answers) => answers.transcriptionOption === 'whisper',
@@ -190,9 +190,9 @@ program.action(async (options) => {
     // Set transcription options based on user selection
     if (answers.transcriptionOption === 'whisper') {
       if (answers.useDocker) {
-        options.whisperDocker = answers.whisperModelType
+        options.whisperDocker = answers.whisperModel
       } else {
-        options.whisper = answers.whisperModelType
+        options.whisper = answers.whisperModel
       }
     } else if (answers.transcriptionOption === 'deepgram') {
       options.deepgram = true

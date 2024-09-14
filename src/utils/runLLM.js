@@ -23,12 +23,12 @@ export async function runLLM(finalPath, frontMatter, llmOption, options) {
       gemini: callGemini,
     }
     const promptSections = options.prompt || ['summary', 'longChapters']
-    const prompt = generatePrompt(promptSections)
-    const fullPrompt = `${prompt}\n${transcriptContent}`
+    const fullPrompt = generatePrompt(promptSections)
+    const promptAndTranscript = `${fullPrompt}\n${transcriptContent}`
     if (llmOption && llmFunctions[llmOption]) {
       const tempOutputPath = `${finalPath}-${llmOption}-temp-shownotes.md`
       await llmFunctions[llmOption](
-        fullPrompt,
+        promptAndTranscript,
         tempOutputPath,
         options[llmOption] || undefined
       )
@@ -39,7 +39,7 @@ export async function runLLM(finalPath, frontMatter, llmOption, options) {
       await unlink(tempOutputPath)
       console.log(`Updated markdown file with generated show notes:\n  - ${finalOutputPath}`)
     } else {
-      const finalContent = `${frontMatter}\n${prompt}## Transcript\n\n${transcriptContent}`
+      const finalContent = `${frontMatter}\n${fullPrompt}## Transcript\n\n${transcriptContent}`
       await writeFile(`${finalPath}-prompt.md`, finalContent)
       console.log(`\nNo LLM specified. Created markdown file with original structure:\n  - ${finalPath}-prompt.md\n`)
     }

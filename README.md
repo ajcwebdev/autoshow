@@ -66,7 +66,8 @@ Run the following commands to clone `whisper.cpp` and build the `base` model:
 ```bash
 git clone https://github.com/ggerganov/whisper.cpp.git && \
   bash ./whisper.cpp/models/download-ggml-model.sh base && \
-  make -C whisper.cpp
+  make -C whisper.cpp && \
+  cp whisper.Dockerfile whisper.cpp/Dockerfile
 ```
 
 > Replace `base` with `large-v2` for the largest model, `medium` for a middle sized model, or `tiny` for the smallest model.
@@ -74,8 +75,9 @@ git clone https://github.com/ggerganov/whisper.cpp.git && \
 ### Clone Llama Repo
 
 ```bash
-git clone https://github.com/ggerganov/llama.cpp
-make -C llama.cpp
+git clone https://github.com/ggerganov/llama.cpp && \
+  make -C llama.cpp && \
+  cp llama.Dockerfile llama.cpp/Dockerfile
 ```
 
 ## Run Autoshow Node Scripts

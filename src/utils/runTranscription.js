@@ -22,7 +22,8 @@ export async function runTranscription(finalPath, transcriptionOption, options =
         txtContent = await callWhisper(finalPath, transcriptionOption, options)
         break
       default:
-        throw new Error(`Unknown transcription option: ${transcriptionOption}`)
+        txtContent = await callWhisper(finalPath, transcriptionOption, options)
+        break
     }
     let mdContent = ''
     try {

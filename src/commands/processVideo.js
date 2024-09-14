@@ -6,12 +6,12 @@ import { runTranscription } from '../utils/runTranscription.js'
 import { runLLM } from '../utils/runLLM.js'
 import { cleanUpFiles } from '../utils/cleanUpFiles.js'
 
-export async function processVideo(url, llmOption, transcriptionOption, options) {
+export async function processVideo(url, llmOpt, transcriptionService, options) {
   try {
     const { frontMatter, finalPath, filename } = await generateMarkdown(url)
     await downloadAudio(url, filename)
-    await runTranscription(finalPath, transcriptionOption, options)
-    await runLLM(finalPath, frontMatter, llmOption, options)
+    await runTranscription(finalPath, transcriptionService, options)
+    await runLLM(finalPath, frontMatter, llmOpt, options)
     if (!options.noCleanUp) {
       await cleanUpFiles(finalPath)
     }

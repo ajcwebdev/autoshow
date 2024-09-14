@@ -4,7 +4,7 @@ import { readFile } from 'node:fs/promises'
 import { processVideo } from './processVideo.js'
 import { resolve } from 'node:path'
 
-export async function processURLs(filePath, llmOption, transcriptionOption, options) {
+export async function processURLs(filePath, llmOpt, transcriptionService, options) {
   try {
     console.log(`Processing URLs from file: ${filePath}`)
     const absolutePath = resolve(filePath)
@@ -16,7 +16,7 @@ export async function processURLs(filePath, llmOption, transcriptionOption, opti
     for (const [index, url] of urls.entries()) {
       console.log(`Processing URL ${index + 1}/${urls.length}: ${url}`)
       try {
-        await processVideo(url, llmOption, transcriptionOption, options)
+        await processVideo(url, llmOpt, transcriptionService, options)
       } catch (error) {
         console.error(`Error processing URL ${url}:`, error)
       }

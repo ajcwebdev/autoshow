@@ -43,13 +43,8 @@ program
 program.action(async (options) => {
   console.log(`Options received:\n`)
   console.log(options)
-
-  // Check if no primary input options are provided
-  const noInputOptions =
-    !options.video && !options.playlist && !options.urls && !options.file && !options.rss
-
+  const noInputOptions = !options.video && !options.playlist && !options.urls && !options.file && !options.rss
   if (noInputOptions) {
-    // No input options provided, trigger Inquirer prompts
     const answers = await inquirer.prompt([
       {
         type: 'list',
@@ -100,7 +95,7 @@ program.action(async (options) => {
       },
       {
         type: 'list',
-        name: 'llmOption',
+        name: 'llmOpt',
         message: 'Select the Language Model (LLM) you want to use:',
         choices: [
           { name: 'OpenAI ChatGPT', value: 'chatgpt' },
@@ -116,7 +111,7 @@ program.action(async (options) => {
       },
       {
         type: 'list',
-        name: 'transcriptionOption',
+        name: 'transcriptionService',
         message: 'Select the transcription service you want to use:',
         choices: [
           { name: 'Whisper.cpp', value: 'whisper' },
@@ -128,7 +123,7 @@ program.action(async (options) => {
         type: 'confirm',
         name: 'useDocker',
         message: 'Do you want to run Whisper.cpp in a Docker container?',
-        when: (answers) => answers.transcriptionOption === 'whisper',
+        when: (answers) => answers.transcriptionService === 'whisper',
         default: false,
       },
       {
@@ -136,14 +131,14 @@ program.action(async (options) => {
         name: 'whisperModel',
         message: 'Select the Whisper model type:',
         choices: ['tiny', 'base', 'small', 'medium', 'large'],
-        when: (answers) => answers.transcriptionOption === 'whisper',
+        when: (answers) => answers.transcriptionService === 'whisper',
         default: 'large',
       },
       {
         type: 'confirm',
         name: 'speakerLabels',
         message: 'Do you want to use speaker labels?',
-        when: (answers) => answers.transcriptionOption === 'assembly',
+        when: (answers) => answers.transcriptionService === 'assembly',
         default: false,
       },
       {
@@ -177,28 +172,22 @@ program.action(async (options) => {
         default: false,
       },
     ])
-
-    // Map Inquirer answers to Commander.js options
     options = {
       ...options,
       ...answers,
     }
-
-    // Map the selected LLM to the appropriate option
-    if (answers.llmOption) {
-      options[answers.llmOption] = true
+    if (answers.llmOpt) {
+      options[answers.llmOpt] = true
     }
-
-    // Set transcription options based on user selection
-    if (answers.transcriptionOption === 'whisper') {
+    if (answers.transcriptionService === 'whisper') {
       if (answers.useDocker) {
         options.whisperDocker = answers.whisperModel
       } else {
         options.whisper = answers.whisperModel
       }
-    } else if (answers.transcriptionOption === 'deepgram') {
+    } else if (answers.transcriptionService === 'deepgram') {
       options.deepgram = true
-    } else if (answers.transcriptionOption === 'assembly') {
+    } else if (answers.transcriptionService === 'assembly') {
       options.assembly = true
       options.speakerLabels = answers.speakerLabels
       options.speakersExpected = answers.speakersExpected
@@ -213,25 +202,25 @@ program.action(async (options) => {
     rss: processRSS,
   }
 
-  let transcriptionOption = 'whisper' // default
+  let transcriptionService = 'whisper'
 
   if (options.deepgram) {
-    transcriptionOption = 'deepgram'
+    transcriptionService = 'deepgram'
   } else if (options.assembly) {
-    transcriptionOption = 'assembly'
+    transcriptionService = 'assembly'
   } else if (options.whisperDocker) {
-    transcriptionOption = 'whisper-docker'
+    transcriptionService = 'whisper-docker'
   } else if (options.whisper) {
-    transcriptionOption = 'whisper'
+    transcriptionService = 'whisper'
   }
 
-  const llmOption = ['chatgpt', 'claude', 'cohere', 'mistral', 'octo', 'llama', 'gemini'].find(
+  const llmOpt = ['chatgpt', 'claude', 'cohere', 'mistral', 'octo', 'llama', 'gemini'].find(
     (option) => options[option]
   )
 
   for (const [key, handler] of Object.entries(handlers)) {
     if (options[key]) {
-      await handler(options[key], llmOption, transcriptionOption, options)
+      await handler(options[key], llmOpt, transcriptionService, options)
     }
   }
 })

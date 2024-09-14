@@ -23,8 +23,8 @@ const handlePlaylistRequest = async (req, res) => {
         res.end(JSON.stringify({ error: 'Playlist URL is required' }))
         return
       }
-      const llmOption = llm || null
-      await processPlaylist(playlistUrl, llmOption, model, options)
+      const llmOpt = llm || null
+      await processPlaylist(playlistUrl, llmOpt, model, options)
       console.log('processPlaylist completed successfully')
       res.statusCode = 200
       res.setHeader('Content-Type', 'application/json')

@@ -23,10 +23,10 @@ const handleVideoRequest = async (req, res) => {
         res.end(JSON.stringify({ error: 'YouTube URL is required' }))
         return
       }
-      const llmOption = llm || null
+      const llmOpt = llm || null
       const whisperModel = model || 'base'
-      console.log('Calling processVideo with params:', { youtubeUrl, llmOption, whisperModel, options })
-      const finalContent = await processVideo(youtubeUrl, llmOption, whisperModel, options)
+      console.log('Calling processVideo with params:', { youtubeUrl, llmOpt, whisperModel, options })
+      const finalContent = await processVideo(youtubeUrl, llmOpt, whisperModel, options)
       console.log('processVideo completed successfully')
       res.statusCode = 200
       res.setHeader('Content-Type', 'application/json')

@@ -16,18 +16,15 @@ export async function callGemini(transcriptContent, outputFilePath, model = 'GEM
   const genAI = new GoogleGenerativeAI(env.GEMINI_API_KEY)
   const actualModel = geminiModel[model] || geminiModel.GEMINI_1_5_FLASH
   const gem = genAI.getGenerativeModel({ model: actualModel })
-  
   const maxRetries = 3;
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
       const result = await gem.generateContent(transcriptContent)
       const response = await result.response
       const text = response.text()
-      
       if (!text) {
         throw new Error("No text generated from Gemini")
       }
-      
       await writeFile(outputFilePath, text)
       console.log(`Transcript saved to ${outputFilePath}`)
       console.log(`\nModel: ${actualModel}`)
@@ -37,7 +34,6 @@ export async function callGemini(transcriptContent, outputFilePath, model = 'GEM
       if (attempt === maxRetries) {
         throw error
       }
-      // Wait before retrying (exponential backoff)
       await delay(Math.pow(2, attempt) * 1000)
     }
   }

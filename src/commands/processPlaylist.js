@@ -7,7 +7,7 @@ import { promisify } from 'node:util'
 
 const execFilePromise = promisify(execFile)
 
-export async function processPlaylist(playlistUrl, llmOption, transcriptionOption, options) {
+export async function processPlaylist(playlistUrl, llmOpt, transcriptionService, options) {
   try {
     console.log(`Processing playlist: ${playlistUrl}`)
     const { stdout } = await execFilePromise('yt-dlp', [
@@ -22,7 +22,7 @@ export async function processPlaylist(playlistUrl, llmOption, transcriptionOptio
     for (const [index, url] of urls.entries()) {
       console.log(`Processing video ${index + 1}/${urls.length}: ${url}`)
       try {
-        await processVideo(url, llmOption, transcriptionOption, options)
+        await processVideo(url, llmOpt, transcriptionService, options)
       } catch (error) {
         console.error(`Error processing video ${url}:`, error)
       }

@@ -13,7 +13,7 @@ const parser = new XMLParser({
   allowBooleanAttributes: true,
 })
 
-export async function processRSS(rssUrl, llmOption, transcriptionOption, options) {
+export async function processRSS(rssUrl, llmOpt, transcriptionService, options) {
   try {
     console.log(`Processing RSS feed: ${rssUrl}`)
     console.log(`Skipping first ${options.skip} items`)
@@ -64,8 +64,8 @@ export async function processRSS(rssUrl, llmOption, transcriptionOption, options
       try {
         const { frontMatter, finalPath, filename } = await generateRSSMarkdown(item)
         await downloadAudio(item.showLink, filename)
-        await runTranscription(finalPath, transcriptionOption, options, frontMatter)
-        await runLLM(finalPath, frontMatter, llmOption, options)
+        await runTranscription(finalPath, transcriptionService, options, frontMatter)
+        await runLLM(finalPath, frontMatter, llmOpt, options)
         if (!options.noCleanUp) {
           await cleanUpFiles(finalPath)
         }

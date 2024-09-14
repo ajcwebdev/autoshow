@@ -21,8 +21,8 @@ const handleFileRequest = async (req, res) => {
         res.end(JSON.stringify({ error: 'File path is required' }))
         return
       }
-      const llmOption = llm || null
-      await processFile(filePath, llmOption, model, options)
+      const llmOpt = llm || null
+      await processFile(filePath, llmOpt, model, options)
       console.log('processFile completed successfully')
       res.statusCode = 200
       res.setHeader('Content-Type', 'application/json')

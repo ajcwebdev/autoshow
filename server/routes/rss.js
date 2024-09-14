@@ -23,12 +23,12 @@ const handleRSSRequest = async (req, res) => {
         return
       }
 
-      const llmOption = llm || null
+      const llmOpt = llm || null
       const whisperModel = model || 'base'
       
       console.log('Starting processRSS in background')
       // Start processing in the background
-      processRSS(rssUrl, llmOption, whisperModel, order, skip, options)
+      processRSS(rssUrl, llmOpt, whisperModel, order, skip, options)
         .then(() => console.log('RSS processing completed successfully'))
         .catch(error => console.error('Error during RSS processing:', error))
 

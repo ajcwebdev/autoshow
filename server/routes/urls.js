@@ -21,8 +21,8 @@ const handleURLsRequest = async (req, res) => {
         res.end(JSON.stringify({ error: 'File path is required' }))
         return
       }
-      const llmOption = llm || null
-      await processURLs(filePath, llmOption, model, options)
+      const llmOpt = llm || null
+      await processURLs(filePath, llmOpt, model, options)
       console.log('processURLs completed successfully')
       res.statusCode = 200
       res.setHeader('Content-Type', 'application/json')

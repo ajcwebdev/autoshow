@@ -5,10 +5,10 @@ import { callWhisper } from '../transcription/whisper.js'
 import { callDeepgram } from '../transcription/deepgram.js'
 import { callAssembly } from '../transcription/assembly.js'
 
-export async function runTranscription(finalPath, transcriptionOption, options = {}) {
+export async function runTranscription(finalPath, transcriptionService, options = {}) {
   try {
     let txtContent
-    switch (transcriptionOption) {
+    switch (transcriptionService) {
       case 'deepgram':
         await callDeepgram(`${finalPath}.wav`, finalPath)
         txtContent = await readFile(`${finalPath}.txt`, 'utf8')
@@ -19,10 +19,10 @@ export async function runTranscription(finalPath, transcriptionOption, options =
         break
       case 'whisper-docker':
       case 'whisper':
-        txtContent = await callWhisper(finalPath, transcriptionOption, options)
+        txtContent = await callWhisper(finalPath, transcriptionService, options)
         break
       default:
-        txtContent = await callWhisper(finalPath, transcriptionOption, options)
+        txtContent = await callWhisper(finalPath, transcriptionService, options)
         break
     }
     let mdContent = ''

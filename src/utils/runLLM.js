@@ -11,39 +11,34 @@ import { callLlama } from '../llms/llama.js'
 import { callGemini } from '../llms/gemini.js'
 import { generatePrompt } from '../llms/prompt.js'
 
-export async function runLLM(finalPath, frontMatter, llmOption, options) {
+const llmFunctions = {
+  chatgpt: callChatGPT,
+  claude: callClaude,
+  cohere: callCohere,
+  mistral: callMistral,
+  octo: callOcto,
+  llama: callLlama,
+  // llamacpp: callLlamaCpp,
+  gemini: callGemini,
+}
+
+export async function runLLM(finalPath, frontMatter, llmOpt, options) {
   try {
-    const transcriptContent = await readFile(`${finalPath}.txt`, 'utf8')
-    const llmFunctions = {
-      chatgpt: callChatGPT,
-      claude: callClaude,
-      cohere: callCohere,
-      mistral: callMistral,
-      octo: callOcto,
-      llama: callLlama,
-      // llamacpp: callLlamaCpp,
-      gemini: callGemini,
-    }
-    const promptSections = options.prompt || ['summary', 'longChapters']
-    const fullPrompt = generatePrompt(promptSections)
-    const promptAndTranscript = `${fullPrompt}\n${transcriptContent}`
-    if (llmOption && llmFunctions[llmOption]) {
-      const tempOutputPath = `${finalPath}-${llmOption}-temp-shownotes.md`
-      await llmFunctions[llmOption](
-        promptAndTranscript,
-        tempOutputPath,
-        options[llmOption] || undefined
-      )
-      const generatedShowNotes = await readFile(tempOutputPath, 'utf8')
-      const finalContent = `${frontMatter}\n${generatedShowNotes}\n\n## Transcript\n\n${transcriptContent}`
-      const finalOutputPath = `${finalPath}-${llmOption}-shownotes.md`
-      await writeFile(finalOutputPath, finalContent)
-      await unlink(tempOutputPath)
-      console.log(`Updated markdown file with generated show notes:\n  - ${finalOutputPath}`)
+    const tempTranscript = await readFile(`${finalPath}.txt`, 'utf8')
+    const transcript = `## Transcript\n\n${tempTranscript}`
+    const promptAndTranscript = `${generatePrompt(options.prompt)}\n${transcript}`
+    if (llmOpt) {
+      const llmFunction = llmFunctions[llmOpt]
+      if (!llmFunction) throw new Error(`Invalid LLM option: ${llmOpt}`)
+      const tempPath = `${finalPath}-${llmOpt}-temp.md`
+      await llmFunction(promptAndTranscript, tempPath, options[llmOpt])
+      const showNotes = await readFile(tempPath, 'utf8')
+      await writeFile(`${finalPath}-${llmOpt}-shownotes.md`, `${frontMatter}\n${showNotes}\n${transcript}`)
+      await unlink(tempPath)
+      console.log(`Updated markdown file: ${finalPath}-${llmOpt}-shownotes.md`)
     } else {
-      const finalContent = `${frontMatter}\n${fullPrompt}## Transcript\n\n${transcriptContent}`
-      await writeFile(`${finalPath}-prompt.md`, finalContent)
-      console.log(`\nNo LLM specified. Created markdown file with original structure:\n  - ${finalPath}-prompt.md\n`)
+      await writeFile(`${finalPath}-prompt.md`, `${frontMatter}\n${promptAndTranscript}`)
+      console.log(`Created original structure: ${finalPath}-prompt.md`)
     }
   } catch (error) {
     console.error('Error running LLM:', error)

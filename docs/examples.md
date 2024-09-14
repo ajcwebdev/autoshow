@@ -268,7 +268,7 @@ This will run both `whisper.cpp` and the AutoShow Commander CLI in their own Doc
 
 ```bash
 docker-compose up --build -d
-docker-compose run autoshow --video "https://www.youtube.com/watch?v=jKB0EltG9Jo"
+docker-compose run autoshow --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --whisper-docker base
 ```
 
 Currently working on the `llama.cpp` Docker integration so the entire project can be encapsulated in one local Docker Compose file.

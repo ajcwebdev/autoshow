@@ -7,6 +7,7 @@ import { callCohere } from '../llms/cohere.js'
 import { callMistral } from '../llms/mistral.js'
 import { callOcto } from '../llms/octo.js'
 import { callLlama } from '../llms/llama.js'
+// import { callLlamaCpp } from '../llms/llamacpp.js'
 import { callGemini } from '../llms/gemini.js'
 import { generatePrompt } from '../llms/prompt.js'
 
@@ -20,6 +21,7 @@ export async function runLLM(finalPath, frontMatter, llmOption, options) {
       mistral: callMistral,
       octo: callOcto,
       llama: callLlama,
+      // llamacpp: callLlamaCpp,
       gemini: callGemini,
     }
     const promptSections = options.prompt || ['summary', 'longChapters']

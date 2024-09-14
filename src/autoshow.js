@@ -31,7 +31,8 @@ program
   .option('--cohere [model]', 'Use Cohere for processing with optional model specification')
   .option('--mistral [model]', 'Use Mistral for processing')
   .option('--octo [model]', 'Use Octo for processing')
-  .option('--llama', 'Use Llama for processing')
+  .option('--llama', 'Use Node Llama for processing')
+  // .option('--llamacpp', 'Use Llama.cpp for processing')
   .option('--gemini [model]', 'Use Gemini for processing with optional model specification')
   .option('--deepgram', 'Use Deepgram for transcription')
   .option('--assembly', 'Use AssemblyAI for transcription')
@@ -107,7 +108,8 @@ program.action(async (options) => {
           { name: 'Cohere', value: 'cohere' },
           { name: 'Mistral', value: 'mistral' },
           { name: 'OctoAI', value: 'octo' },
-          { name: 'Llama (local inference)', value: 'llama' },
+          { name: 'node-llama-cpp (local inference)', value: 'llama' },
+          // { name: 'Llama.cpp (local inference)', value: 'llamacpp' },
           { name: 'Google Gemini', value: 'gemini' },
           { name: 'Skip LLM Processing', value: null },
         ],

@@ -78,13 +78,28 @@ npm run as -- --rss "https://feeds.transistor.fm/fsjam-podcast/"
 Process RSS feed from oldest to newest:
 
 ```bash
-npm run as -- --rss "https://feeds.transistor.fm/fsjam-podcast/" --order oldest
+npm run as -- \
+  --rss "https://feeds.transistor.fm/fsjam-podcast/" \
+  --order oldest
 ```
 
 Start processing a different episode by selecting a number of episodes to skip:
 
 ```bash
-npm run as -- --rss "https://feeds.transistor.fm/fsjam-podcast/" --skip 1
+npm run as -- \
+  --rss "https://feeds.transistor.fm/fsjam-podcast/" \
+  --skip 1
+```
+
+Process a single specific episode from a podcast RSS feed by providing the episode's audio URL with the `--item` option:
+
+```bash
+npm run as -- \
+  --rss "https://ajcwebdev.substack.com/feed" \
+  --item "https://api.substack.com/feed/podcast/36236609/fd1f1532d9842fe1178de1c920442541.mp3" \
+  --whisper tiny \
+  --llama \
+  --prompt titles summary longChapters takeaways questions
 ```
 
 ## Language Model (LLM) Options

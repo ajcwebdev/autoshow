@@ -19,7 +19,11 @@ export async function processRSS(rssUrl, llmOpt, transcriptionService, options) 
   try {
     // Log the start of RSS feed processing
     console.log(`Processing RSS feed: ${rssUrl}`)
-    console.log(`Skipping first ${options.skip} items`)
+    if (options.item) {
+      console.log(`Processing only item: ${options.item}`)
+    } else {
+      console.log(`Skipping first ${options.skip} items`)
+    }
 
     // Fetch the RSS feed
     const response = await fetch(rssUrl, {
@@ -41,11 +45,11 @@ export async function processRSS(rssUrl, llmOpt, transcriptionService, options) 
     const feed = parser.parse(text)
 
     // Extract channel information
-    const { 
-      title: channelTitle, 
-      link: channelLink, 
-      image: { url: channelImage }, 
-      item: feedItems 
+    const {
+      title: channelTitle,
+      link: channelLink,
+      image: { url: channelImage },
+      item: feedItems
     } = feed.rss.channel
 
     // Initialize date formatter
@@ -71,17 +75,29 @@ export async function processRSS(rssUrl, llmOpt, transcriptionService, options) 
         coverImage: item['itunes:image']?.href || channelImage,
       }))
 
-    // Sort items based on the specified order
-    const sortedItems = options.order === 'newest' ? items : [...items].reverse()
-    const skippedItems = sortedItems.slice(options.skip)
+    let itemsToProcess = []
+    if (options.item) {
+      // Find the item matching the provided audio URL
+      const matchedItem = items.find(item => item.showLink === options.item)
+      if (!matchedItem) {
+        console.error(`Item with URL ${options.item} not found in the feed.`)
+        return
+      }
+      itemsToProcess = [matchedItem]
+    } else {
+      // Sort items based on the specified order
+      const sortedItems = options.order === 'newest' ? items : [...items].reverse()
+      const skippedItems = sortedItems.slice(options.skip)
+      itemsToProcess = skippedItems
 
-    // Log information about found items
-    console.log(`Found ${sortedItems.length} audio/video items in the RSS feed`)
-    console.log(`Processing ${skippedItems.length} items after skipping ${options.skip}`)
+      // Log information about found items
+      console.log(`Found ${sortedItems.length} audio/video items in the RSS feed`)
+      console.log(`Processing ${skippedItems.length} items after skipping ${options.skip}`)
+    }
 
     // Process each item in the feed
-    for (const [index, item] of skippedItems.entries()) {
-      console.log(`Processing item ${index + options.skip + 1}/${sortedItems.length}: ${item.title}`)
+    for (const [index, item] of itemsToProcess.entries()) {
+      console.log(`Processing item ${index + options.skip + 1}/${itemsToProcess.length}: ${item.title}`)
       try {
         // Generate markdown for the item
         const { frontMatter, finalPath, filename } = await generateRSSMarkdown(item)

@@ -109,7 +109,7 @@ npm run as -- --file "content/audio.mp3"
 Run on a podcast RSS feed.
 
 ```bash
-npm run as -- --rss "https://www.spreaker.com/show/4895847/episodes/feed"
+npm run as -- --rss "https://ajcwebdev.substack.com/feed"
 ```
 
 Use local LLM.

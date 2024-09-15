@@ -22,6 +22,7 @@ program
   .option('-u, --urls <filePath>', 'Process YouTube videos from a list of URLs in a file')
   .option('-f, --file <filePath>', 'Process a local audio or video file')
   .option('-r, --rss <rssURL>', 'Process a podcast RSS feed')
+  .option('--item <itemUrl>', 'Process a specific item in the RSS feed by providing its audio URL')
   .option('--order <order>', 'Specify the order for RSS feed processing (newest or oldest)', 'newest')
   .option('--skip <number>', 'Number of items to skip when processing RSS feed', parseInt, 0)
   .option('--whisper [modelType]', 'Use Whisper.cpp for transcription (non-Docker version)')
@@ -92,6 +93,20 @@ program.action(async (options) => {
         message: 'Enter the podcast RSS feed URL:',
         when: (answers) => answers.action === 'rss',
         validate: (input) => (input ? true : 'Please enter a valid URL.'),
+      },
+      {
+        type: 'confirm',
+        name: 'specifyItem',
+        message: 'Do you want to process a specific episode by providing its audio URL?',
+        when: (answers) => answers.action === 'rss',
+        default: false,
+      },
+      {
+        type: 'input',
+        name: 'item',
+        message: 'Enter the audio URL of the episode:',
+        when: (answers) => answers.action === 'rss' && answers.specifyItem,
+        validate: (input) => (input ? true : 'Please enter a valid audio URL.'),
       },
       {
         type: 'list',

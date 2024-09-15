@@ -4,8 +4,8 @@ const BASE_URL = 'http://localhost:3000'
 
 const data = {
   youtubeUrl: 'https://www.youtube.com/watch?v=jKB0EltG9Jo',
-  model: 'large',
-  llm: 'chatgpt'
+  whisperModel: 'tiny',
+  llm: 'llama'
 }
 
 const fetchVideo = async () => {
@@ -17,11 +17,10 @@ const fetchVideo = async () => {
       },
       body: JSON.stringify(data)
     })
-    
+    console.log('Fetch response status:', response.status)
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`)
     }
-    
     const result = await response.json()
     console.log(result)
   } catch (error) {

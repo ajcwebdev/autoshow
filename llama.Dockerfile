@@ -1,34 +1,33 @@
 # llama.cpp/Dockerfile
 
-FROM ubuntu:22.04
-
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    cmake \
-    git \
-    curl \
-    libopenblas-dev \
-    && rm -rf /var/lib/apt/lists/*
+FROM --platform=linux/arm64 ubuntu:22.04 AS build
 
 WORKDIR /app
 
-# Clone llama.cpp repository
-RUN git clone https://github.com/ggerganov/llama.cpp.git && \
-    cd llama.cpp && \
-    git checkout master  # or a specific commit/tag if needed
+# Install build dependencies
+RUN apt-get update && \
+    apt-get install -y build-essential libopenblas-dev pkg-config git curl && \
+    rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*
 
-# Build llama.cpp
-RUN cd llama.cpp && \
-    mkdir build && \
-    cd build && \
-    cmake .. && \
-    cmake --build . --config Release
+# Copy the local llama.cpp directory into the Docker image
+COPY . .
 
-# Copy your model file (adjust the path as needed)
-COPY models/Meta-Llama-3.1-8B-Instruct.IQ4_XS.gguf /app/models/
+# Clean any previous builds
+RUN make clean
 
-# Set the working directory to llama.cpp
-WORKDIR /app/llama.cpp
+# Build llama.cpp with OpenBLAS support
+RUN make LLAMA_OPENBLAS=1
 
-# Command to run when the container starts
-ENTRYPOINT ["./build/bin/main"]
+FROM --platform=linux/arm64 ubuntu:22.04 AS runtime
+
+WORKDIR /app
+
+# Install runtime dependencies
+RUN apt-get update && \
+    apt-get install -y curl libopenblas-dev && \
+    rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*
+
+# Copy the built llama.cpp binaries from the build stage
+COPY --from=build /app /app
+
+ENTRYPOINT [ "bash", "-c" ]

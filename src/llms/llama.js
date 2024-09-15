@@ -8,60 +8,61 @@ import { promisify } from 'node:util'
 
 const execAsync = promisify(exec)
 
-// const LLAMA_MODEL = "Meta-Llama-3.1-8B-Instruct.IQ4_XS.gguf"
-// const LLAMA_HUGGING_FACE_URL = "https://huggingface.co/mradermacher/Meta-Llama-3.1-8B-Instruct-GGUF"
-const GEMMA_MODEL = "gemma-2-2b-it-IQ4_XS.gguf"
-const GEMMA_HUGGING_FACE_URL = "https://huggingface.co/lmstudio-community/gemma-2-2b-it-GGUF"
+// Define local model configurations
+const localModels = {
+  LLAMA_MODEL: "Meta-Llama-3.1-8B-Instruct.IQ4_XS.gguf",
+  LLAMA_HUGGING_FACE_URL: "https://huggingface.co/mradermacher/Meta-Llama-3.1-8B-Instruct-GGUF",
+  GEMMA_MODEL: "gemma-2-2b-it-IQ4_XS.gguf",
+  GEMMA_HUGGING_FACE_URL: "https://huggingface.co/lmstudio-community/gemma-2-2b-it-GGUF",
+}
 
-// const { LLAMA_MODEL, HUGGING_FACE_URL } = env
+// Destructure GEMMA model details and set the model path
+const { GEMMA_MODEL, GEMMA_HUGGING_FACE_URL } = localModels
+const MODEL_PATH = `./src/llms/models/${GEMMA_MODEL}`
 
+// Check if GEMMA_MODEL and GEMMA_HUGGING_FACE_URL are set
 if (!GEMMA_MODEL || !GEMMA_HUGGING_FACE_URL) {
-  console.error('Environment variables LLAMA_MODEL and HUGGING_FACE_URL must be set')
+  console.error('GEMMA_MODEL and GEMMA_HUGGING_FACE_URL must be set')
   process.exit(1)
 }
 
+// Function to download the model if it doesn't exist
 async function downloadModel() {
-  const modelPath = `./src/llms/models/${LLAMA_MODEL}`
-  if (existsSync(modelPath)) {
-    console.log(`\nSkipping download, model already exists:\n  - ${modelPath}`)
-    return
-  }
-  console.log(`Model not found.\n  - Attempting to download ${LLAMA_MODEL}...`)
+  if (existsSync(MODEL_PATH)) return console.log(`\nModel already exists: ${MODEL_PATH}`)
+  console.log(`Downloading ${GEMMA_MODEL}...`)
   try {
     await mkdir('./src/llms/models', { recursive: true })
-    console.log('Starting download...')
-    const { stdout, stderr } = await execAsync(
-      `curl -L ${HUGGING_FACE_URL}/resolve/main/${LLAMA_MODEL} -o ${modelPath}`
+    const { stderr } = await execAsync(
+      `curl -L ${GEMMA_HUGGING_FACE_URL}/resolve/main/${GEMMA_MODEL} -o ${MODEL_PATH}`
     )
-    if (stderr) {
-      console.error('Error output:', stderr)
-    }
-    console.log('Download completed.')
-    if (stdout) {
-      console.log('Command output:', stdout)
-    }
+    if (stderr) console.error('Error:', stderr)
+    console.log('Download completed')
   } catch (err) {
-    console.error('Error during download:', err.message)
-    throw new Error('Failed to download the required model.')
+    console.error('Download failed:', err.message)
+    throw new Error('Failed to download the model')
   }
 }
 
-export async function callLlama(transcriptContent, outputFilePath) {
+// Main function to call the local Llama model
+export async function callLlama(promptAndTranscript, tempPath) {
   try {
+    // Ensure the model is downloaded
     await downloadModel()
+
+    // Initialize Llama and load the local model
     const llama = await getLlama()
-    const llamaModel = await llama.loadModel({
-      modelPath: `./src/llms/models/${LLAMA_MODEL}`
-    })
-    const context = await llamaModel.createContext()
-    const session = new LlamaChatSession({
-      contextSequence: context.getSequence()
-    })
-    const response = await session.prompt(transcriptContent)
-    // console.log(response)
-    await writeFile(outputFilePath, response)
-    console.log(`\nTranscript saved to:\n  - ${outputFilePath}`)
+    const localModel = await llama.loadModel({ modelPath: MODEL_PATH })
+
+    // Create a context for the model and create a chat session
+    const context = await localModel.createContext()
+    const session = new LlamaChatSession({ contextSequence: context.getSequence() })
+
+    // Generate a response and write the response to a temporary file
+    const response = await session.prompt(promptAndTranscript)
+    await writeFile(tempPath, response)
+    console.log(`\nTranscript saved to: ${tempPath}`)
   } catch (error) {
+    // Log and re-throw any errors that occur during the process
     console.error('Error:', error)
     throw error
   }

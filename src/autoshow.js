@@ -2,6 +2,11 @@
 
 // src/autoshow.js
 
+/**
+ * This script serves as the entry point for the 'autoshow' CLI application. It processes command-line arguments
+ * and options, and initiates the appropriate processing functions based on user input or interactive prompts.
+ */
+
 import { Command } from 'commander'
 import inquirer from 'inquirer'
 import { processVideo } from './commands/processVideo.js'
@@ -11,8 +16,10 @@ import { processFile } from './commands/processFile.js'
 import { processRSS } from './commands/processRSS.js'
 import { env } from 'node:process'
 
+// Initialize the command-line interface
 const program = new Command()
 
+// Define command-line options and their descriptions
 program
   .name('autoshow')
   .description('Automated processing of YouTube videos, playlists, podcast RSS feeds, and local audio/video files')
@@ -22,11 +29,11 @@ program
   .option('-u, --urls <filePath>', 'Process YouTube videos from a list of URLs in a file')
   .option('-f, --file <filePath>', 'Process a local audio or video file')
   .option('-r, --rss <rssURL>', 'Process a podcast RSS feed')
-  .option('--item <itemUrl>', 'Process a specific item in the RSS feed by providing its audio URL')
+  .option('--item <itemUrls...>', 'Process specific items in the RSS feed by providing their audio URLs')
   .option('--order <order>', 'Specify the order for RSS feed processing (newest or oldest)', 'newest')
   .option('--skip <number>', 'Number of items to skip when processing RSS feed', parseInt, 0)
   .option('--whisper [modelType]', 'Use Whisper.cpp for transcription (non-Docker version)')
-  .option('--whisper-docker [modelType]','Use Whisper.cpp for transcription (Docker version)')
+  .option('--whisper-docker [modelType]', 'Use Whisper.cpp for transcription (Docker version)')
   .option('--chatgpt [model]', 'Use ChatGPT for processing with optional model specification')
   .option('--claude [model]', 'Use Claude for processing with optional model specification')
   .option('--cohere [model]', 'Use Cohere for processing with optional model specification')
@@ -41,11 +48,15 @@ program
   .option('--speakers-expected <number>', 'Number of expected speakers for AssemblyAI transcription', parseInt, 1)
   .option('--noCleanUp', 'Do not delete intermediary files after processing')
 
+// Main action for the program
 program.action(async (options) => {
   console.log(`Options received:\n`)
   console.log(options)
+
+  // Check if no input options are provided if so, prompt the user interactively
   const noInputOptions = !options.video && !options.playlist && !options.urls && !options.file && !options.rss
   if (noInputOptions) {
+    // Interactive prompts using inquirer
     const answers = await inquirer.prompt([
       {
         type: 'list',
@@ -97,16 +108,16 @@ program.action(async (options) => {
       {
         type: 'confirm',
         name: 'specifyItem',
-        message: 'Do you want to process a specific episode by providing its audio URL?',
+        message: 'Do you want to process specific episodes by providing their audio URLs?',
         when: (answers) => answers.action === 'rss',
         default: false,
       },
       {
         type: 'input',
         name: 'item',
-        message: 'Enter the audio URL of the episode:',
+        message: 'Enter the audio URLs of the episodes (separated by commas):',
         when: (answers) => answers.action === 'rss' && answers.specifyItem,
-        validate: (input) => (input ? true : 'Please enter a valid audio URL.'),
+        validate: (input) => (input ? true : 'Please enter at least one valid audio URL.'),
       },
       {
         type: 'list',
@@ -187,13 +198,20 @@ program.action(async (options) => {
         default: false,
       },
     ])
+    // Merge the answers into the options object
     options = {
       ...options,
       ...answers,
     }
+    // Split the 'item' input into an array if it's a string
+    if (answers.item && typeof answers.item === 'string') {
+      options.item = answers.item.split(',').map((url) => url.trim())
+    }
+    // Set the LLM option based on user selection
     if (answers.llmOpt) {
       options[answers.llmOpt] = true
     }
+    // Configure transcription service options
     if (answers.transcriptionService === 'whisper') {
       if (answers.useDocker) {
         options.whisperDocker = answers.whisperModel
@@ -209,6 +227,12 @@ program.action(async (options) => {
     }
   }
 
+  // Ensure options.item is an array if provided via command line
+  if (options.item && !Array.isArray(options.item)) {
+    options.item = [options.item]
+  }
+
+  // Map actions to their respective handler functions
   const handlers = {
     video: processVideo,
     playlist: processPlaylist,
@@ -217,6 +241,7 @@ program.action(async (options) => {
     rss: processRSS,
   }
 
+  // Determine the transcription service to use
   let transcriptionService = 'whisper'
 
   if (options.deepgram) {
@@ -229,10 +254,12 @@ program.action(async (options) => {
     transcriptionService = 'whisper'
   }
 
+  // Determine the selected LLM option
   const llmOpt = ['chatgpt', 'claude', 'cohere', 'mistral', 'octo', 'llama', 'gemini'].find(
     (option) => options[option]
   )
 
+  // Execute the appropriate handler based on the action
   for (const [key, handler] of Object.entries(handlers)) {
     if (options[key]) {
       await handler(options[key], llmOpt, transcriptionService, options)
@@ -240,4 +267,5 @@ program.action(async (options) => {
   }
 })
 
+// Parse the command-line arguments
 program.parse(env.argv)

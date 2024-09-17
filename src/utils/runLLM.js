@@ -29,7 +29,7 @@ export async function runLLM(finalPath, frontMatter, llmOpt, options) {
     // Read the transcript file, generate the prompt, and combine it with the transcript
     const tempTranscript = await readFile(`${finalPath}.txt`, 'utf8')
     const transcript = `## Transcript\n\n${tempTranscript}`
-    const promptAndTranscript = `${generatePrompt(options.prompt)}\n${transcript}`
+    const promptAndTranscript = `${generatePrompt(options.prompt)}${transcript}`
     
     if (llmOpt) {
       // Get the appropriate LLM function based on the option

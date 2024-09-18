@@ -577,10 +577,10 @@ cat README.md >> LLM.md && \
   echo '\n```\n' >> LLM.md && \
   echo '## Docker Files\n' >> LLM.md && \
   echo '```Dockerfile' >> LLM.md && \
-  cat whisper.Dockerfile >> LLM.md && \
+  cat .github/whisper.Dockerfile >> LLM.md && \
   echo '\n```\n' >> LLM.md && \
   echo '```Dockerfile' >> LLM.md && \
-  cat llama.Dockerfile >> LLM.md && \
+  cat .github/llama.Dockerfile >> LLM.md && \
   echo '\n```\n' >> LLM.md && \
   echo '```Dockerfile' >> LLM.md && \
   cat Dockerfile >> LLM.md && \

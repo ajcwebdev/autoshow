@@ -1,4 +1,4 @@
-# llama.cpp/Dockerfile
+# .github/llama.cpp/Dockerfile
 
 FROM --platform=linux/arm64 ubuntu:22.04 AS build
 

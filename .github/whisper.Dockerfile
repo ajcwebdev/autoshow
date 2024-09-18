@@ -1,4 +1,4 @@
-# whisper.cpp/Dockerfile
+# .github/whisper.cpp/Dockerfile
 
 FROM --platform=linux/arm64 ubuntu:22.04 AS build
 

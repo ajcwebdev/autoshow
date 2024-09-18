@@ -6,7 +6,14 @@ import { runTranscription } from '../utils/runTranscription.js'
 import { runLLM } from '../utils/runLLM.js'
 import { cleanUpFiles } from '../utils/cleanUpFiles.js'
 
-// Define the main function to process a file
+/**
+ * Main function to process a local audio or video file.
+ * @param {string} filePath - The path to the local file to process.
+ * @param {string} llmOpt - The selected Language Model option.
+ * @param {string} transcriptionService - The transcription service to use.
+ * @param {object} options - Additional options for processing.
+ * @returns {Promise<void>}
+ */
 export async function processFile(filePath, llmOpt, transcriptionService, options) {
   try {
     // Download or convert the audio file and create frontmatter for markdown file

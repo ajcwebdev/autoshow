@@ -14,7 +14,13 @@ const geminiModel = {
 // Utility function to introduce a delay
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-// Main function to call Gemini API
+/**
+ * Main function to call Gemini API.
+ * @param {string} transcriptContent - The transcript content to process.
+ * @param {string} outputFilePath - The file path to save the output.
+ * @param {string} [model='GEMINI_1_5_FLASH'] - The Gemini model to use.
+ * @returns {Promise<string>} - The actual model name used.
+ */
 export async function callGemini(transcriptContent, outputFilePath, model = 'GEMINI_1_5_FLASH') {
   // Initialize the Google Generative AI client
   const genAI = new GoogleGenerativeAI(env.GEMINI_API_KEY)

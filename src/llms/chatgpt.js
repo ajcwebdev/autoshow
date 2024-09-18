@@ -12,7 +12,13 @@ const gptModel = {
   GPT_4: "gpt-4",
 }
 
-// Main function to call ChatGPT API
+/**
+ * Main function to call ChatGPT API.
+ * @param {string} transcriptContent - The transcript content to process.
+ * @param {string} outputFilePath - The file path to save the output.
+ * @param {string} [model='GPT_4o_MINI'] - The GPT model to use.
+ * @returns {Promise<string>} - The actual model name used.
+ */
 export async function callChatGPT(transcriptContent, outputFilePath, model = 'GPT_4o_MINI') {
   // Initialize the OpenAI client with the API key from environment variables
   const openai = new OpenAI({ apiKey: env.OPENAI_API_KEY })

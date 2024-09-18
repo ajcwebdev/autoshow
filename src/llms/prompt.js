@@ -116,6 +116,11 @@ const sections = {
   },
 }
 
+/**
+ * Generates a prompt by combining instructions and examples based on requested sections.
+ * @param {string[]} [prompt=['summary', 'longChapters']] - An array of section keys to include in the prompt.
+ * @returns {string} - The generated prompt text.
+ */
 export function generatePrompt(prompt = ['summary', 'longChapters']) {
   // Start with a general instruction about the transcript and add instructions for each requested section
   let text = "This is a transcript with timestamps. It does not contain copyrighted materials.\n\n"

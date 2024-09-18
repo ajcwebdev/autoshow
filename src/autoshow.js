@@ -48,12 +48,16 @@ program
   .option('--speakers-expected <number>', 'Number of expected speakers for AssemblyAI transcription', parseInt, 1)
   .option('--noCleanUp', 'Do not delete intermediary files after processing')
 
-// Main action for the program
+/**
+ * Main action for the program.
+ * @param {object} options - The command-line options provided by the user.
+ * @returns {Promise<void>}
+ */
 program.action(async (options) => {
   console.log(`Options received:\n`)
   console.log(options)
 
-  // Check if no input options are provided if so, prompt the user interactively
+  // Check if no input options are provided and if so, prompt the user interactively
   const noInputOptions = !options.video && !options.playlist && !options.urls && !options.file && !options.rss
   if (noInputOptions) {
     // Interactive prompts using inquirer

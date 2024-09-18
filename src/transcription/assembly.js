@@ -6,7 +6,14 @@ import { AssemblyAI } from 'assemblyai'
 // Initialize the AssemblyAI client with API key from environment variables
 const client = new AssemblyAI({ apiKey: process.env.ASSEMBLY_API_KEY })
 
-// Main function to handle transcription using AssemblyAI
+/**
+ * Main function to handle transcription using AssemblyAI.
+ * @param {string} input - The audio file path or URL to transcribe.
+ * @param {string} id - The identifier used for naming output files.
+ * @param {boolean} [useSpeakerLabels=false] - Whether to use speaker labels.
+ * @param {number} [speakersExpected=1] - The expected number of speakers.
+ * @returns {Promise<void>}
+ */
 export async function callAssembly(input, id, useSpeakerLabels = false, speakersExpected = 1) {
   try {
     // Request transcription from AssemblyAI

@@ -6,7 +6,13 @@ import { writeFile } from 'node:fs/promises'
 
 const execAsync = promisify(exec)
 
-// Main function to call Llama.cpp using Docker
+/**
+ * Main function to call Llama.cpp using Docker.
+ * @param {string} fullPrompt - The prompt to send to the model.
+ * @param {string} tempOutputPath - The temporary file path to save the output.
+ * @param {object} [options={}] - Additional options like model path, threads, and prediction tokens.
+ * @returns {Promise<void>}
+ */
 export async function callLlamaCpp(fullPrompt, tempOutputPath, options = {}) {
   try {
     // Set default options or use provided options

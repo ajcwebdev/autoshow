@@ -6,7 +6,14 @@ import { runTranscription } from '../utils/runTranscription.js'
 import { runLLM } from '../utils/runLLM.js'
 import { cleanUpFiles } from '../utils/cleanUpFiles.js'
 
-// Define the main function to process a single video
+/**
+ * Main function to process a single video.
+ * @param {string} url - The URL of the video to process.
+ * @param {string} llmOpt - The selected Language Model option.
+ * @param {string} transcriptionService - The transcription service to use.
+ * @param {object} options - Additional options for processing.
+ * @returns {Promise<void>}
+ */
 export async function processVideo(url, llmOpt, transcriptionService, options) {
   try {
     // Generate markdown with video metadata

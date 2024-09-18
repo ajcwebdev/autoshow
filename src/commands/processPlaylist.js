@@ -7,7 +7,14 @@ import { promisify } from 'node:util'
 
 const execFilePromise = promisify(execFile)
 
-// Define the main function to process a YouTube playlist
+/**
+ * Main function to process a YouTube playlist.
+ * @param {string} playlistUrl - The URL of the YouTube playlist to process.
+ * @param {string} llmOpt - The selected Language Model option.
+ * @param {string} transcriptionService - The transcription service to use.
+ * @param {object} options - Additional options for processing.
+ * @returns {Promise<void>}
+ */
 export async function processPlaylist(playlistUrl, llmOpt, transcriptionService, options) {
   try {
     // Log the start of playlist processing

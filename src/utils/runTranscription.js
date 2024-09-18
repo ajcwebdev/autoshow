@@ -5,8 +5,15 @@ import { callWhisper } from '../transcription/whisper.js'
 import { callDeepgram } from '../transcription/deepgram.js'
 import { callAssembly } from '../transcription/assembly.js'
 
-// Main function to run transcription
-export async function runTranscription(finalPath, transcriptionService, options = {}) {
+/**
+ * Main function to run transcription.
+ * @param {string} finalPath - The base path for the files.
+ * @param {string} transcriptionService - The transcription service to use.
+ * @param {object} [options={}] - Additional options for processing.
+ * @param {string} [frontMatter=''] - Optional front matter content for the markdown file.
+ * @returns {Promise<string>} - Returns the final content including markdown and transcript.
+ */
+export async function runTranscription(finalPath, transcriptionService, options = {}, frontMatter = '') {
   try {
     let txtContent
 
@@ -43,10 +50,11 @@ export async function runTranscription(finalPath, transcriptionService, options 
         break
     }
 
-    let mdContent = ''
+    let mdContent = frontMatter
     try {
       // Attempt to read existing markdown content
-      mdContent = await readFile(`${finalPath}.md`, 'utf8')
+      const existingContent = await readFile(`${finalPath}.md`, 'utf8')
+      mdContent += existingContent
     } catch (error) {
       // If the file doesn't exist, ignore the error
       if (error.code !== 'ENOENT') {

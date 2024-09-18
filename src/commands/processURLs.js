@@ -4,7 +4,14 @@ import { readFile } from 'node:fs/promises'
 import { processVideo } from './processVideo.js'
 import { resolve } from 'node:path'
 
-// Define the main function to process URLs from a file
+/**
+ * Main function to process URLs from a file.
+ * @param {string} filePath - The path to the file containing URLs.
+ * @param {string} llmOpt - The selected Language Model option.
+ * @param {string} transcriptionService - The transcription service to use.
+ * @param {object} options - Additional options for processing.
+ * @returns {Promise<void>}
+ */
 export async function processURLs(filePath, llmOpt, transcriptionService, options) {
   try {
     // Log the start of URL processing and resolve the absolute path of the file

@@ -2,7 +2,11 @@
 
 import { unlink } from 'node:fs/promises'
 
-// Define an asynchronous function to clean up temporary files
+/**
+ * Asynchronous function to clean up temporary files.
+ * @param {string} id - The identifier for the files to be cleaned up.
+ * @returns {Promise<void>}
+ */
 export async function cleanUpFiles(id) {
   try {
     // Log the start of the cleanup process

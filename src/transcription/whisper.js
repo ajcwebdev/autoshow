@@ -18,7 +18,13 @@ const WHISPER_MODELS = {
   'large': 'ggml-large-v2.bin',
 }
 
-// Main function to handle transcription using Whisper
+/**
+ * Main function to handle transcription using Whisper.
+ * @param {string} finalPath - The base path for the files.
+ * @param {string} transcriptionService - The transcription service to use.
+ * @param {object} options - Additional options for processing.
+ * @returns {Promise<string>} - Returns the formatted transcript content.
+ */
 export async function callWhisper(finalPath, transcriptionService, options) {
   // Determine which Whisper model to use
   const whisperModel = options.whisper || options.whisperDocker || 'base'
@@ -41,7 +47,13 @@ export async function callWhisper(finalPath, transcriptionService, options) {
   return txtContent
 }
 
-// Function to handle Whisper transcription using Docker
+/**
+ * Function to handle Whisper transcription using Docker.
+ * @param {string} finalPath - The base path for the files.
+ * @param {string} modelName - The model file name.
+ * @param {string} whisperModel - The Whisper model type.
+ * @returns {Promise<void>}
+ */
 async function callWhisperDocker(finalPath, modelName, whisperModel) {
   const WHISPER_CONTAINER_NAME = 'autoshow-whisper-1'
   const CONTENT_DIR = '/app/content'
@@ -77,7 +89,13 @@ async function callWhisperDocker(finalPath, modelName, whisperModel) {
   console.log(`Transcript LRC file completed:\n  - ${finalPath}.lrc`)
 }
 
-// Function to handle Whisper transcription without Docker
+/**
+ * Function to handle Whisper transcription without Docker.
+ * @param {string} finalPath - The base path for the files.
+ * @param {string} modelName - The model file name.
+ * @param {string} whisperModel - The Whisper model type.
+ * @returns {Promise<void>}
+ */
 async function callWhisperMain(finalPath, modelName, whisperModel) {
   const modelPath = `./whisper.cpp/models/${modelName}`
 
@@ -91,7 +109,9 @@ async function callWhisperMain(finalPath, modelName, whisperModel) {
     console.log(`Model downloaded: ${modelName}`)
   }
 
-  // Execute Whisper transcription
+  /**
+   * Execute Whisper transcription.
+   */
   await execPromise(
     `./whisper.cpp/main -m "whisper.cpp/models/${modelName}" -f "${finalPath}.wav" -of "${finalPath}" --output-lrc`
   )

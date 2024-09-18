@@ -9,7 +9,12 @@ import ffmpeg from 'ffmpeg-static'
 const execFilePromise = promisify(execFile)
 const execPromise = promisify(exec)
 
-// Function to download audio from a URL
+/**
+ * Function to download audio from a URL using yt-dlp.
+ * @param {string} url - The URL of the video to download audio from.
+ * @param {string} filename - The base filename to save the audio as.
+ * @returns {Promise<string>} - Returns the path to the downloaded WAV file.
+ */
 export async function downloadAudio(url, filename) {
   try {
     // Set the final path for the downloaded file
@@ -39,7 +44,11 @@ export async function downloadAudio(url, filename) {
   }
 }
 
-// Function to process a local audio file
+/**
+ * Function to process a local audio or video file.
+ * @param {string} filePath - The path to the local file.
+ * @returns {Promise<string>} - Returns the final path to the processed WAV file.
+ */
 export async function downloadFileAudio(filePath) {
   // Define supported audio and video formats
   const supportedFormats = new Set([

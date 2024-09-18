@@ -12,7 +12,13 @@ const mistralModel = {
   MISTRAL_NEMO: "open-mistral-nemo"
 }
 
-// Main function to call Mistral AI API
+/**
+ * Main function to call Mistral AI API.
+ * @param {string} transcriptContent - The transcript content to process.
+ * @param {string} outputFilePath - The file path to save the output.
+ * @param {string} [model='MISTRAL_NEMO'] - The Mistral model to use.
+ * @returns {Promise<string>} - The actual model name used.
+ */
 export async function callMistral(transcriptContent, outputFilePath, model = 'MISTRAL_NEMO') {
   // Initialize Mistral client with API key from environment variables
   const mistral = new Mistral(env.MISTRAL_API_KEY)

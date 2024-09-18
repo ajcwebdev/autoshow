@@ -7,7 +7,17 @@ import { writeFile } from 'node:fs/promises'
 // Promisify the execFile function for use with async/await
 const execFilePromise = promisify(execFile)
 
-// Function to generate markdown for RSS feed items
+/**
+ * Function to generate markdown for RSS feed items.
+ * @param {object} item - The RSS feed item object.
+ * @param {string} item.publishDate - The publish date of the item.
+ * @param {string} item.title - The title of the item.
+ * @param {string} item.coverImage - The cover image URL of the item.
+ * @param {string} item.showLink - The show link of the item.
+ * @param {string} item.channel - The channel name.
+ * @param {string} item.channelURL - The channel URL.
+ * @returns {Promise<{frontMatter: string, finalPath: string, filename: string}>} - Returns an object with frontMatter, finalPath, and filename.
+ */
 export async function generateRSSMarkdown(item) {
   try {
     // Destructure the item object
@@ -48,7 +58,11 @@ export async function generateRSSMarkdown(item) {
   }
 }
 
-// Function to generate markdown for YouTube videos
+/**
+ * Function to generate markdown for YouTube videos.
+ * @param {string} url - The URL of the YouTube video.
+ * @returns {Promise<{frontMatter: string, finalPath: string, filename: string}>} - Returns an object with frontMatter, finalPath, and filename.
+ */
 export async function generateMarkdown(url) {
   try {
     // Execute yt-dlp to get video information

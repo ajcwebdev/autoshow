@@ -4,8 +4,9 @@ import { unlink } from 'node:fs/promises'
 
 /**
  * Asynchronous function to clean up temporary files.
- * @param {string} id - The identifier for the files to be cleaned up.
+ * @param {string} id - The base filename (without extension) for the files to be cleaned up.
  * @returns {Promise<void>}
+ * @throws {Error} - If an error occurs while deleting files.
  */
 export async function cleanUpFiles(id) {
   try {
@@ -31,6 +32,7 @@ export async function cleanUpFiles(id) {
     // If the error is not "file not found", log the error
     if (error.code !== 'ENOENT') {
       console.error(`Error deleting file:`, error)
+      throw error
     }
     // If the error is "file not found", silently ignore it
   }

@@ -23,10 +23,10 @@ const parser = new XMLParser({
  * Main function to process an RSS feed.
  * @param {string} rssUrl - The URL of the RSS feed to process.
  * @param {string} llmOpt - The selected Language Model option.
- * @param {string} transcriptionService - The transcription service to use.
+ * @param {string} transcriptOpt - The transcription service to use.
  * @param {object} options - Additional options for processing.
  */
-export async function processRSS(rssUrl, llmOpt, transcriptionService, options) {
+export async function processRSS(rssUrl, llmOpt, transcriptOpt, options) {
   try {
     // Log the start of RSS feed processing
     console.log(`Processing RSS feed: ${rssUrl}`)
@@ -134,7 +134,7 @@ export async function processRSS(rssUrl, llmOpt, transcriptionService, options) 
         await downloadAudio(item.showLink, filename)
 
         // Run transcription
-        await runTranscription(finalPath, transcriptionService, options, frontMatter)
+        await runTranscription(finalPath, transcriptOpt, options, frontMatter)
 
         // Process with Language Model
         await runLLM(finalPath, frontMatter, llmOpt, options)

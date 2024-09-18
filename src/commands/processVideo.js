@@ -10,11 +10,11 @@ import { cleanUpFiles } from '../utils/cleanUpFiles.js'
  * Main function to process a single video.
  * @param {string} url - The URL of the video to process.
  * @param {string} llmOpt - The selected Language Model option.
- * @param {string} transcriptionService - The transcription service to use.
+ * @param {string} transcriptOpt - The transcription service to use.
  * @param {object} options - Additional options for processing.
  * @returns {Promise<void>}
  */
-export async function processVideo(url, llmOpt, transcriptionService, options) {
+export async function processVideo(url, llmOpt, transcriptOpt, options) {
   try {
     // Generate markdown with video metadata
     const { frontMatter, finalPath, filename } = await generateMarkdown(url)
@@ -23,7 +23,7 @@ export async function processVideo(url, llmOpt, transcriptionService, options) {
     await downloadAudio(url, filename)
 
     // Run transcription on the audio
-    await runTranscription(finalPath, transcriptionService, options)
+    await runTranscription(finalPath, transcriptOpt, options)
 
     // Process the transcript with the selected Language Model
     await runLLM(finalPath, frontMatter, llmOpt, options)

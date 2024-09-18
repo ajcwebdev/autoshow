@@ -6,19 +6,35 @@ import { callDeepgram } from '../transcription/deepgram.js'
 import { callAssembly } from '../transcription/assembly.js'
 
 /**
+ * @typedef {Object} transcriptOptions
+ * @property {boolean} [speakerLabels=false] - Whether to use speaker labels.
+ * @property {number} [speakersExpected=1] - The expected number of speakers.
+ * @property {string[]} [prompt] - Sections to include in the prompt.
+ * @property {string} [whisper] - Whisper model type.
+ * @property {string} [whisperDocker] - Whisper model type for Docker.
+ * // Include other properties used in options.
+ */
+
+/**
  * Main function to run transcription.
  * @param {string} finalPath - The base path for the files.
- * @param {string} transcriptionService - The transcription service to use.
- * @param {object} [options={}] - Additional options for processing.
+ * @param {string} transcriptOpt - The transcription service to use.
+ * @param {transcriptOptions} [options={}] - Additional options for processing.
  * @param {string} [frontMatter=''] - Optional front matter content for the markdown file.
  * @returns {Promise<string>} - Returns the final content including markdown and transcript.
+ * @throws {Error} - If the transcription service fails or an error occurs during processing.
  */
-export async function runTranscription(finalPath, transcriptionService, options = {}, frontMatter = '') {
+export async function runTranscription(
+  finalPath,
+  transcriptOpt,
+  options = {},
+  frontMatter = ''
+) {
   try {
     let txtContent
 
     // Choose the transcription service based on the provided option
-    switch (transcriptionService) {
+    switch (transcriptOpt) {
       case 'deepgram':
         // Use Deepgram for transcription and read the transcription result
         await callDeepgram(`${finalPath}.wav`, finalPath)
@@ -28,9 +44,9 @@ export async function runTranscription(finalPath, transcriptionService, options 
       case 'assembly':
         // Use AssemblyAI for transcription, pass options for speaker labels and number of speakers
         await callAssembly(
-          `${finalPath}.wav`, 
-          finalPath, 
-          options.speakerLabels, 
+          `${finalPath}.wav`,
+          finalPath,
+          options.speakerLabels,
           options.speakersExpected
         )
         // Read the transcription result
@@ -40,13 +56,13 @@ export async function runTranscription(finalPath, transcriptionService, options 
       case 'whisper-docker':
       case 'whisper':
         // Use Whisper (either local or Docker version) for transcription
-        txtContent = await callWhisper(finalPath, transcriptionService, options)
+        txtContent = await callWhisper(finalPath, transcriptOpt, options)
         break
 
       default:
         // If no service is specified, default to Whisper
         console.log('No transcription service specified, defaulting to Whisper')
-        txtContent = await callWhisper(finalPath, transcriptionService, options)
+        txtContent = await callWhisper(finalPath, transcriptOpt, options)
         break
     }
 

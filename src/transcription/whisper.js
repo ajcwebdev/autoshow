@@ -21,18 +21,18 @@ const WHISPER_MODELS = {
 /**
  * Main function to handle transcription using Whisper.
  * @param {string} finalPath - The base path for the files.
- * @param {string} transcriptionService - The transcription service to use.
+ * @param {string} transcriptOpt - The transcription service to use.
  * @param {object} options - Additional options for processing.
  * @returns {Promise<string>} - Returns the formatted transcript content.
  */
-export async function callWhisper(finalPath, transcriptionService, options) {
+export async function callWhisper(finalPath, transcriptOpt, options) {
   // Determine which Whisper model to use
   const whisperModel = options.whisper || options.whisperDocker || 'base'
   if (!(whisperModel in WHISPER_MODELS)) throw new Error(`Unknown model type: ${whisperModel}`)
   const modelName = WHISPER_MODELS[whisperModel]
 
   // Call the appropriate Whisper function based on the transcription service
-  await (transcriptionService === 'whisper-docker' ? callWhisperDocker : callWhisperMain)(finalPath, modelName, whisperModel)
+  await (transcriptOpt === 'whisper-docker' ? callWhisperDocker : callWhisperMain)(finalPath, modelName, whisperModel)
 
   // Read, process, and format the generated LRC file
   const lrcContent = await readFile(`${finalPath}.lrc`, 'utf8')

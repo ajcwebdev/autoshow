@@ -15,7 +15,13 @@ const octoModel = {
   WIZARD_2_8X_22B: "wizardlm-2-8x22b",
 }
 
-// Main function to call OctoAI API
+/**
+ * Main function to call OctoAI API.
+ * @param {string} transcriptContent - The transcript content to process.
+ * @param {string} outputFilePath - The file path to save the output.
+ * @param {string} [model='LLAMA_3_1_70B'] - The OctoAI model to use.
+ * @returns {Promise<string>} - The actual model name used.
+ */
 export async function callOcto(transcriptContent, outputFilePath, model = 'LLAMA_3_1_70B') {
   // Initialize OctoAI client with API key from environment variables
   const octoai = new OctoAIClient({ apiKey: env.OCTOAI_API_KEY })

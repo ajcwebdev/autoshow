@@ -47,19 +47,13 @@ npm run as -- --playlist "https://www.youtube.com/playlist?list=PLCVnrVv4KhXMh4D
 
 ### Process Multiple Videos Specified in a URLs File
 
-Run on an arbitrary list of URLs in `urls.md`.
+Run on an arbitrary list of URLs in `example-urls.md`.
 
 ```bash
-npm run as -- --urls "content/examples/urls.md"
+npm run as -- --urls "content/example-urls.md"
 ```
 
 ### Process Single Audio or Video File
-
-Download MP3 file for testing:
-
-```bash
-curl -L https://ajc.pics/audio/fsjam-short.mp3 -o ./content/audio.mp3
-```
 
 Run on `audio.mp3` on the `content` directory:
 
@@ -385,7 +379,7 @@ npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" && \
   npm run as -- --playlist "https://www.youtube.com/playlist?list=PLCVnrVv4KhXMh4DQBigyvHSRTf2CSj129" && \
   mv content/2022-11-05-intro-to-teach-jenn-tech-prompt.md content/02---2022-11-05-intro-to-teach-jenn-tech-prompt.md && \
   mv content/2023-09-10-teach-jenn-tech-channel-trailer-prompt.md content/03---2023-09-10-teach-jenn-tech-channel-trailer-prompt.md && \
-  npm run as -- --urls "content/urls.md" && \
+  npm run as -- --urls "content/example-urls.md" && \
   mv content/2022-11-05-intro-to-teach-jenn-tech-prompt.md content/04---2022-11-05-intro-to-teach-jenn-tech-prompt.md && \
   mv content/2023-09-10-teach-jenn-tech-channel-trailer-prompt.md content/05---2023-09-10-teach-jenn-tech-channel-trailer-prompt.md && \
   npm run as -- --file "content/audio.mp3" && \
@@ -439,7 +433,7 @@ npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" && \
   npm run as -- --playlist "https://www.youtube.com/playlist?list=PLCVnrVv4KhXMh4DQBigyvHSRTf2CSj129" --prompt titles --whisper tiny --llama && \
   mv content/2022-11-05-intro-to-teach-jenn-tech-llama-shownotes.md content/30---2022-11-05-intro-to-teach-jenn-tech-llama-shownotes.md && \
   mv content/2023-09-10-teach-jenn-tech-channel-trailer-llama-shownotes.md content/31---2023-09-10-teach-jenn-tech-channel-trailer-llama-shownotes.md && \
-  npm run as -- --urls "content/urls.md" --prompt titles --whisper tiny --llama && \
+  npm run as -- --urls "content/example-urls.md" --prompt titles --whisper tiny --llama && \
   mv content/2022-11-05-intro-to-teach-jenn-tech-llama-shownotes.md content/32---2022-11-05-intro-to-teach-jenn-tech-llama-shownotes.md && \
   mv content/2023-09-10-teach-jenn-tech-channel-trailer-llama-shownotes.md content/33---2023-09-10-teach-jenn-tech-channel-trailer-llama-shownotes.md && \
   npm run as -- --file "content/audio.mp3" --prompt titles --whisper tiny --llama && \
@@ -463,7 +457,7 @@ npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" && \
   npm run as -- --playlist "https://www.youtube.com/playlist?list=PLCVnrVv4KhXMh4DQBigyvHSRTf2CSj129" && \
   mv content/2022-11-05-intro-to-teach-jenn-tech-prompt.md content/02---2022-11-05-intro-to-teach-jenn-tech-prompt.md && \
   mv content/2023-09-10-teach-jenn-tech-channel-trailer-prompt.md content/03---2023-09-10-teach-jenn-tech-channel-trailer-prompt.md && \
-  npm run as -- --urls "content/urls.md" && \
+  npm run as -- --urls "content/example-urls.md" && \
   mv content/2022-11-05-intro-to-teach-jenn-tech-prompt.md content/04---2022-11-05-intro-to-teach-jenn-tech-prompt.md && \
   mv content/2023-09-10-teach-jenn-tech-channel-trailer-prompt.md content/05---2023-09-10-teach-jenn-tech-channel-trailer-prompt.md && \
   npm run as -- --file "content/audio.mp3" && \
@@ -481,7 +475,7 @@ npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" && \
   npm run as -- --playlist "https://www.youtube.com/playlist?list=PLCVnrVv4KhXMh4DQBigyvHSRTf2CSj129" --prompt titles --whisper tiny --llama && \
   mv content/2022-11-05-intro-to-teach-jenn-tech-llama-shownotes.md content/14---2022-11-05-intro-to-teach-jenn-tech-llama-shownotes.md && \
   mv content/2023-09-10-teach-jenn-tech-channel-trailer-llama-shownotes.md content/15---2023-09-10-teach-jenn-tech-channel-trailer-llama-shownotes.md && \
-  npm run as -- --urls "content/urls.md" --prompt titles --whisper tiny --llama && \
+  npm run as -- --urls "content/example-urls.md" --prompt titles --whisper tiny --llama && \
   mv content/2022-11-05-intro-to-teach-jenn-tech-llama-shownotes.md content/16---2022-11-05-intro-to-teach-jenn-tech-llama-shownotes.md && \
   mv content/2023-09-10-teach-jenn-tech-channel-trailer-llama-shownotes.md content/17---2023-09-10-teach-jenn-tech-channel-trailer-llama-shownotes.md && \
   npm run as -- --file "content/audio.mp3" --prompt titles --whisper tiny --llama && \
@@ -502,6 +496,9 @@ This can be a useful way of creating a single markdown file of the entire projec
 
 ```bash
 cat README.md >> LLM.md && \
+  echo '\n\n```' >> LLM.md && \
+  tree >> LLM.md && \
+  echo '\n```' >> LLM.md && \
   echo '\n\n' >> LLM.md && \
   cat docs/examples.md >> LLM.md && \
   echo '\n## AutoShow CLI Entry Point' >> LLM.md && \
@@ -580,10 +577,10 @@ cat README.md >> LLM.md && \
   echo '\n```\n' >> LLM.md && \
   echo '## Docker Files\n' >> LLM.md && \
   echo '```Dockerfile' >> LLM.md && \
-  cat whisper.Dockerfile >> LLM.md && \
+  cat .github/whisper.Dockerfile >> LLM.md && \
   echo '\n```\n' >> LLM.md && \
   echo '```Dockerfile' >> LLM.md && \
-  cat llama.Dockerfile >> LLM.md && \
+  cat .github/llama.Dockerfile >> LLM.md && \
   echo '\n```\n' >> LLM.md && \
   echo '```Dockerfile' >> LLM.md && \
   cat Dockerfile >> LLM.md && \

@@ -26,7 +26,10 @@ if (!GEMMA_MODEL || !GEMMA_HUGGING_FACE_URL) {
   process.exit(1)
 }
 
-// Function to download the model if it doesn't exist
+/**
+ * Function to download the model if it doesn't exist.
+ * @returns {Promise<void>}
+ */
 async function downloadModel() {
   if (existsSync(MODEL_PATH)) return console.log(`\nModel already exists: ${MODEL_PATH}`)
   console.log(`Downloading ${GEMMA_MODEL}...`)
@@ -43,7 +46,12 @@ async function downloadModel() {
   }
 }
 
-// Main function to call the local Llama model
+/**
+ * Main function to call the local Llama model.
+ * @param {string} promptAndTranscript - The combined prompt and transcript content.
+ * @param {string} tempPath - The temporary file path to save the output.
+ * @returns {Promise<void>}
+ */
 export async function callLlama(promptAndTranscript, tempPath) {
   try {
     // Ensure the model is downloaded

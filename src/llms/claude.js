@@ -12,7 +12,13 @@ const claudeModel = {
   CLAUDE_3_HAIKU: "claude-3-haiku-20240307",
 }
 
-// Main function to call Claude API
+/**
+ * Main function to call Claude API.
+ * @param {string} transcriptContent - The transcript content to process.
+ * @param {string} outputFilePath - The file path to save the output.
+ * @param {string} [model='CLAUDE_3_HAIKU'] - The Claude model to use.
+ * @returns {Promise<string>} - The actual model name used.
+ */
 export async function callClaude(transcriptContent, outputFilePath, model = 'CLAUDE_3_HAIKU') {
   // Initialize the Anthropic client with the API key from environment variables
   const anthropic = new Anthropic({ apiKey: env.ANTHROPIC_API_KEY })

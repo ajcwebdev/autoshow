@@ -7,8 +7,15 @@ import { promisify } from 'node:util'
 
 const execFilePromise = promisify(execFile)
 
-// Define the main function to process a YouTube playlist
-export async function processPlaylist(playlistUrl, llmOpt, transcriptionService, options) {
+/**
+ * Main function to process a YouTube playlist.
+ * @param {string} playlistUrl - The URL of the YouTube playlist to process.
+ * @param {string} llmOpt - The selected Language Model option.
+ * @param {string} transcriptOpt - The transcription service to use.
+ * @param {object} options - Additional options for processing.
+ * @returns {Promise<void>}
+ */
+export async function processPlaylist(playlistUrl, llmOpt, transcriptOpt, options) {
   try {
     // Log the start of playlist processing
     console.log(`Processing playlist: ${playlistUrl}`)
@@ -33,7 +40,7 @@ export async function processPlaylist(playlistUrl, llmOpt, transcriptionService,
       console.log(`Processing video ${index + 1}/${urls.length}: ${url}`)
       try {
         // Process individual video
-        await processVideo(url, llmOpt, transcriptionService, options)
+        await processVideo(url, llmOpt, transcriptOpt, options)
       } catch (error) {
         // Log any errors that occur during video processing
         console.error(`Error processing video ${url}:`, error)

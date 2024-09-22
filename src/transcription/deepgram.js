@@ -4,7 +4,12 @@ import { writeFile, readFile } from 'node:fs/promises'
 import { env } from 'node:process'
 import { createClient } from '@deepgram/sdk'
 
-// Main function to handle transcription using Deepgram
+/**
+ * Main function to handle transcription using Deepgram.
+ * @param {string} input - The URL or local file path of the audio to transcribe.
+ * @param {string} id - The identifier used for naming output files.
+ * @returns {Promise<void>}
+ */
 export async function callDeepgram(input, id) {
   // Initialize the Deepgram client with the API key from environment variables
   const deepgram = createClient(env.DEEPGRAM_API_KEY)

@@ -23,13 +23,20 @@ const llmFunctions = {
   gemini: callGemini,
 }
 
-// Main function to run the selected Language Model
+/**
+ * Main function to run the selected Language Model.
+ * @param {string} finalPath - The base path for the files.
+ * @param {string} frontMatter - The front matter content for the markdown file.
+ * @param {string} llmOpt - The selected Language Model option.
+ * @param {object} options - Additional options for processing.
+ * @returns {Promise<void>}
+ */
 export async function runLLM(finalPath, frontMatter, llmOpt, options) {
   try {
     // Read the transcript file, generate the prompt, and combine it with the transcript
     const tempTranscript = await readFile(`${finalPath}.txt`, 'utf8')
     const transcript = `## Transcript\n\n${tempTranscript}`
-    const promptAndTranscript = `${generatePrompt(options.prompt)}\n${transcript}`
+    const promptAndTranscript = `${generatePrompt(options.prompt)}${transcript}`
     
     if (llmOpt) {
       // Get the appropriate LLM function based on the option

@@ -10,7 +10,13 @@ const cohereModel = {
   COMMAND_R_PLUS: "command-r-plus" // Enhanced Command model
 }
 
-// Main function to call Cohere API
+/**
+ * Main function to call Cohere API.
+ * @param {string} transcriptContent - The transcript content to process.
+ * @param {string} outputFilePath - The file path to save the output.
+ * @param {string} [model='COMMAND_R'] - The Cohere model to use.
+ * @returns {Promise<string>} - The actual model name used.
+ */
 export async function callCohere(transcriptContent, outputFilePath, model = 'COMMAND_R') {
   // Initialize the Cohere client with the API key from environment variables
   const cohere = new CohereClient({ token: env.COHERE_API_KEY })

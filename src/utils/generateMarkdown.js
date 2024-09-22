@@ -7,14 +7,30 @@ import { writeFile } from 'node:fs/promises'
 // Promisify the execFile function for use with async/await
 const execFilePromise = promisify(execFile)
 
-// Function to generate markdown for RSS feed items
+/**
+ * @typedef {Object} MarkdownData
+ * @property {string} frontMatter - The front matter content for the markdown file.
+ * @property {string} finalPath - The base path for the files.
+ * @property {string} filename - The sanitized filename.
+ */
+
+/**
+ * Function to generate markdown for RSS feed items.
+ * @param {object} item - The RSS feed item object.
+ * @param {string} item.publishDate - The publish date of the item.
+ * @param {string} item.title - The title of the item.
+ * @param {string} item.coverImage - The cover image URL of the item.
+ * @param {string} item.showLink - The show link of the item.
+ * @param {string} item.channel - The channel name.
+ * @param {string} item.channelURL - The channel URL.
+ * @returns {Promise<MarkdownData>} - Returns an object with frontMatter, finalPath, and filename.
+ * @throws {Error} - If markdown generation fails.
+ */
 export async function generateRSSMarkdown(item) {
   try {
     // Destructure the item object
-    const {
-      publishDate, title, coverImage, showLink, channel, channelURL
-    } = item
-    
+    const { publishDate, title, coverImage, showLink, channel, channelURL } = item
+
     // Sanitize the title for use in the filename
     const sanitizedTitle = title
       .replace(/[^\w\s-]/g, '')
@@ -22,12 +38,12 @@ export async function generateRSSMarkdown(item) {
       .replace(/[\s_]+/g, '-')
       .replace(/-+/g, '-')
       .toLowerCase().slice(0, 200)
-    
-    // Construct the filename, path, and frontmatter for the markdown file
+
+    // Construct the filename, path, and front matter for the markdown file
     const filename = `${publishDate}-${sanitizedTitle}`
     const finalPath = `content/${filename}`
     const frontMatter = [
-      "---",
+      '---',
       `showLink: "${showLink}"`,
       `channel: "${channel}"`,
       `channelURL: "${channelURL}"`,
@@ -35,9 +51,9 @@ export async function generateRSSMarkdown(item) {
       `description: ""`,
       `publishDate: "${publishDate}"`,
       `coverImage: "${coverImage}"`,
-      "---\n"
+      '---\n',
     ].join('\n')
-    
+
     // Write the front matter to the markdown file
     await writeFile(`${finalPath}.md`, frontMatter)
     console.log(`\nInitial markdown file created:\n  - ${finalPath}.md`)
@@ -48,7 +64,12 @@ export async function generateRSSMarkdown(item) {
   }
 }
 
-// Function to generate markdown for YouTube videos
+/**
+ * Function to generate markdown for YouTube videos.
+ * @param {string} url - The URL of the YouTube video.
+ * @returns {Promise<MarkdownData>} - An object containing front matter, final path, and filename.
+ * @throws {Error} - If markdown generation fails.
+ */
 export async function generateMarkdown(url) {
   try {
     // Execute yt-dlp to get video information
@@ -62,12 +83,17 @@ export async function generateMarkdown(url) {
       '--print', '%(uploader_url)s',
       url
     ])
-    
+
     // Parse the output from yt-dlp
     const [
       formattedDate, title, thumbnail, webpage_url, channel, uploader_url
     ] = stdout.trim().split('\n')
-    
+
+    // Check for undefined variables
+    if (!formattedDate || !title || !thumbnail || !webpage_url || !channel || !uploader_url) {
+      throw new Error('Missing video metadata from yt-dlp output')
+    }
+
     // Sanitize the title for use in the filename
     const sanitizedTitle = title
       .replace(/[^\w\s-]/g, '')
@@ -76,12 +102,12 @@ export async function generateMarkdown(url) {
       .replace(/-+/g, '-')
       .toLowerCase()
       .slice(0, 200)
-    
-    // Construct the filename, path, and frontmatter for the markdown file
+
+    // Construct the filename, path, and front matter for the markdown file
     const filename = `${formattedDate}-${sanitizedTitle}`
     const finalPath = `content/${filename}`
     const frontMatter = [
-      "---",
+      '---',
       `showLink: "${webpage_url}"`,
       `channel: "${channel}"`,
       `channelURL: "${uploader_url}"`,
@@ -89,12 +115,14 @@ export async function generateMarkdown(url) {
       `description: ""`,
       `publishDate: "${formattedDate}"`,
       `coverImage: "${thumbnail}"`,
-      "---\n"
+      '---\n',
     ].join('\n')
-    
+
     // Write the front matter to the markdown file
     await writeFile(`${finalPath}.md`, frontMatter)
-    console.log(`\nFrontmatter created:\n\n${frontMatter}\nInitial markdown file created:\n  - ${finalPath}.md`)
+    console.log(
+      `\nFrontmatter created:\n\n${frontMatter}\nInitial markdown file created:\n  - ${finalPath}.md`
+    )
     return { frontMatter, finalPath, filename }
   } catch (error) {
     console.error('Error generating markdown:', error)

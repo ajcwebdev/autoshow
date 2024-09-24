@@ -23,6 +23,7 @@ export async function downloadAudio(url, filename) {
 
     // Execute yt-dlp to download the audio
     const { stderr } = await execFilePromise('yt-dlp', [
+      '--no-warnings',
       '--restrict-filenames',
       '--extract-audio',
       '--audio-format', 'wav',

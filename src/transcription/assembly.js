@@ -1,10 +1,11 @@
 // src/transcription/assembly.js
 
 import { writeFile } from 'node:fs/promises'
+import { env } from 'node:process'
 import { AssemblyAI } from 'assemblyai'
 
 // Initialize the AssemblyAI client with API key from environment variables
-const client = new AssemblyAI({ apiKey: process.env.ASSEMBLY_API_KEY })
+const client = new AssemblyAI({ apiKey: env.ASSEMBLY_API_KEY })
 
 /**
  * Main function to handle transcription using AssemblyAI.

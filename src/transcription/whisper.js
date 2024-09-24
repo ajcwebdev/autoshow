@@ -86,7 +86,7 @@ async function callWhisperDocker(finalPath, modelName, whisperModel) {
       -of ${path.join(CONTENT_DIR, fileName)} \
       --output-lrc`
   )
-  console.log(`Transcript LRC file completed:\n  - ${finalPath}.lrc`)
+  console.log(`\nTranscript LRC file completed:\n  - ${finalPath}.lrc`)
 }
 
 /**
@@ -102,11 +102,11 @@ async function callWhisperMain(finalPath, modelName, whisperModel) {
   // Check if the model exists locally, download if not
   try {
     await access(modelPath)
-    console.log(`Whisper model found: ${modelName}`)
+    console.log(`\nWhisper model found:\n  - ${modelPath}`)
   } catch {
-    console.log(`Whisper model not found: ${modelName}. Downloading model: ${whisperModel}`)
+    console.log(`\nWhisper model not found: ${modelPath}\n  - Downloading model: ${whisperModel}`)
     await execPromise(`bash ./whisper.cpp/models/download-ggml-model.sh ${whisperModel}`)
-    console.log(`Model downloaded: ${modelName}`)
+    console.log(`  - Model downloaded: ${modelPath}`)
   }
 
   /**
@@ -115,5 +115,5 @@ async function callWhisperMain(finalPath, modelName, whisperModel) {
   await execPromise(
     `./whisper.cpp/main -m "whisper.cpp/models/${modelName}" -f "${finalPath}.wav" -of "${finalPath}" --output-lrc`
   )
-  console.log(`Whisper.cpp Model Selected:\n  - whisper.cpp/models/${modelName}\nTranscript LRC file completed:\n  - ${finalPath}.lrc`)
+  console.log(`Whisper.cpp Model Selected:\n  - ${modelPath}\n\nTranscript LRC file completed:\n  - ${finalPath}.lrc`)
 }

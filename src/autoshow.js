@@ -71,7 +71,7 @@ program
   .option('--cohere [model]', 'Use Cohere for processing with optional model specification')
   .option('--mistral [model]', 'Use Mistral for processing')
   .option('--octo [model]', 'Use Octo for processing')
-  .option('--llama', 'Use Node Llama for processing')
+  .option('--llama [model]', 'Use Node Llama for processing with optional model specification')
   .option('--gemini [model]', 'Use Gemini for processing with optional model specification')
   .option('--noCleanUp', 'Do not delete intermediary files after processing')
 
@@ -155,6 +155,20 @@ const INQUIRER_PROMPT = [
   },
   {
     type: 'list',
+    name: 'llamaModel',
+    message: 'Select the LLAMA model you want to use:',
+    choices: [
+      { name: 'LLAMA 3 8B Q4 Model', value: 'LLAMA_3_1_8B_Q4_MODEL' },
+      { name: 'LLAMA 3 8B Q6 Model', value: 'LLAMA_3_1_8B_Q6_MODEL' },
+      { name: 'GEMMA 2 2B Q4 Model', value: 'GEMMA_2_2B_Q4_MODEL' },
+      { name: 'GEMMA 2 2B Q6 Model', value: 'GEMMA_2_2B_Q6_MODEL' },
+      { name: 'TINY LLAMA 1B Q4 Model', value: 'TINY_LLAMA_1B_Q4_MODEL' },
+      { name: 'TINY LLAMA 1B Q6 Model', value: 'TINY_LLAMA_1B_Q6_MODEL' },
+    ],
+    when: (answers) => answers.llmOpt === 'llama',
+  },
+  {
+    type: 'list',
     name: 'transcriptOpt',
     message: 'Select the transcription service you want to use:',
     choices: [
@@ -232,7 +246,7 @@ async function handleInteractivePrompt(options) {
   
   // Handle LLM options
   if (answers.llmOpt) {
-    options[answers.llmOpt] = true
+    options[answers.llmOpt] = answers.llmOpt === 'llama' ? answers.llamaModel : true
   }
   
   // Handle transcription options

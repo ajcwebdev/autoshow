@@ -1,6 +1,6 @@
 // src/commands/processFile.js
 
-import { basename } from 'node:path'
+import { generateFileMarkdown } from '../utils/generateMarkdown.js'
 import { downloadFileAudio } from '../utils/downloadAudio.js'
 import { runTranscription } from '../utils/runTranscription.js'
 import { runLLM } from '../utils/runLLM.js'
@@ -16,9 +16,11 @@ import { cleanUpFiles } from '../utils/cleanUpFiles.js'
  */
 export async function processFile(filePath, llmOpt, transcriptOpt, options) {
   try {
-    // Download or convert the audio file and create frontmatter for markdown file
-    const finalPath = await downloadFileAudio(filePath)
-    const frontMatter = `---\ntitle: "${basename(filePath)}"\n---\n`
+    // Generate markdown for the file
+    const { frontMatter, finalPath, filename } = await generateFileMarkdown(filePath)
+
+    // Download or convert the audio file
+    await downloadFileAudio(filePath, filename)
 
     // Run transcription on the file and process the transcript with the selected LLM
     await runTranscription(finalPath, transcriptOpt, options, frontMatter)

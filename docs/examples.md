@@ -25,6 +25,8 @@
   - [Deno](#deno)
   - [Bun](#bun)
 - [Makeshift Test Suite](#makeshift-test-suite)
+  - [Full Test Suite](#full-test-suite)
+  - [Partial Test Command for Local Services](#partial-test-command-for-local-services)
 - [Create Single Markdown File with Entire Project](#create-single-markdown-file-with-entire-project)
 
 ## Content and Feed Inputs
@@ -34,7 +36,7 @@
 Run on a single YouTube video.
 
 ```bash
-npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo"
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk"
 ```
 
 ### Process Multiple Videos in YouTube Playlist
@@ -42,7 +44,7 @@ npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo"
 Run on multiple YouTube videos in a playlist.
 
 ```bash
-npm run as -- --playlist "https://www.youtube.com/playlist?list=PLCVnrVv4KhXMh4DQBigyvHSRTf2CSj129"
+npm run as -- --playlist "https://www.youtube.com/playlist?list=PLCVnrVv4KhXPz0SoAVu8Rc1emAdGPbSbr"
 ```
 
 ### Process Multiple Videos Specified in a URLs File
@@ -116,23 +118,23 @@ For each model available for each provider, I have collected the following detai
 ### OpenAI's ChatGPT Models
 
 ```bash
-npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --chatgpt
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --chatgpt
 ```
 
 Select ChatGPT model:
 
 ```bash
 # Select GPT-4o mini model - https://platform.openai.com/docs/models/gpt-4o-mini
-npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --chatgpt GPT_4o_MINI
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --chatgpt GPT_4o_MINI
 
 # Select GPT-4o model - https://platform.openai.com/docs/models/gpt-4o
-npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --chatgpt GPT_4o
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --chatgpt GPT_4o
 
 # Select GPT-4 Turbo model - https://platform.openai.com/docs/models/gpt-4-turbo-and-gpt-4
-npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --chatgpt GPT_4_TURBO
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --chatgpt GPT_4_TURBO
 
 # Select GPT-4 model - https://platform.openai.com/docs/models/gpt-4-turbo-and-gpt-4
-npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --chatgpt GPT_4
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --chatgpt GPT_4
 ```
 
 | Model        | Context Window | Max Output | Input Tokens | Output Tokens | Batch Input | Batch Output |
@@ -145,81 +147,81 @@ npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --chatgpt GP
 ### Anthropic's Claude Models
 
 ```bash
-npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --claude
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --claude
 ```
 
 Select Claude model:
 
 ```bash
-npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --claude CLAUDE_3_5_SONNET
-npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --claude CLAUDE_3_OPUS
-npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --claude CLAUDE_3_SONNET
-npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --claude CLAUDE_3_HAIKU
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --claude CLAUDE_3_5_SONNET
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --claude CLAUDE_3_OPUS
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --claude CLAUDE_3_SONNET
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --claude CLAUDE_3_HAIKU
 ```
 
 ### Google's Gemini Models
 
 ```bash
-npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --gemini
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --gemini
 ```
 
 Select Gemini model:
 
 ```bash
-npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --gemini GEMINI_1_5_FLASH
-npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --gemini GEMINI_1_5_PRO
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --gemini GEMINI_1_5_FLASH
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --gemini GEMINI_1_5_PRO
 ```
 
 ### Cohere's Command Models
 
 ```bash
-npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --cohere
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --cohere
 ```
 
 Select Cohere model:
 
 ```bash
-npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --cohere COMMAND_R
-npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --cohere COMMAND_R_PLUS
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --cohere COMMAND_R
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --cohere COMMAND_R_PLUS
 ```
 
 ### Mistral's Mistral Models
 
 ```bash
-npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --mistral
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --mistral
 ```
 
 Select Mistral model:
 
 ```bash
-npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --mistral MIXTRAL_8x7b
-npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --mistral MIXTRAL_8x22b
-npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --mistral MISTRAL_LARGE
-npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --mistral MISTRAL_NEMO
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --mistral MIXTRAL_8x7b
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --mistral MIXTRAL_8x22b
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --mistral MISTRAL_LARGE
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --mistral MISTRAL_NEMO
 ```
 
 ### OctoAI's Models
 
 ```bash
-npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --octo
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --octo
 ```
 
 Select Octo model:
 
 ```bash
-npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --octo LLAMA_3_1_8B
-npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --octo LLAMA_3_1_70B
-npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --octo LLAMA_3_1_405B
-npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --octo MISTRAL_7B
-npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --octo MIXTRAL_8X_7B
-npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --octo NOUS_HERMES_MIXTRAL_8X_7B
-npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --octo WIZARD_2_8X_22B
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --octo LLAMA_3_1_8B
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --octo LLAMA_3_1_70B
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --octo LLAMA_3_1_405B
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --octo MISTRAL_7B
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --octo MIXTRAL_8X_7B
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --octo NOUS_HERMES_MIXTRAL_8X_7B
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --octo WIZARD_2_8X_22B
 ```
 
 ### Llama.cpp
 
 ```bash
-npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --llama
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --llama
 ```
 
 ## Transcription Options
@@ -229,13 +231,13 @@ Create a `.env` file and set API key as demonstrated in `.env.example` for `DEEP
 ### Deepgram
 
 ```bash
-npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --deepgram
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --deepgram
 ```
 
 ### Assembly
 
 ```bash
-npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --assembly
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --assembly
 ```
 
 Include speaker labels and number of speakers:
@@ -250,25 +252,25 @@ If neither the `--deepgram` or `--assembly` option is included for transcription
 
 ```bash
 # tiny model
-npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --whisper tiny
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --whisper tiny
 
 # base model
-npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --whisper base
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --whisper base
 
 # small model
-npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --whisper small
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --whisper small
 
 # medium model
-npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --whisper medium
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --whisper medium
 
 # large-v2 model
-npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --whisper large
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --whisper large
 ```
 
 Run `whisper.cpp` in a Docker container with `--whisper-docker`:
 
 ```bash
-npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --whisper-docker tiny
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --whisper-docker tiny
 ```
 
 ## Docker Compose
@@ -277,7 +279,7 @@ This will run both `whisper.cpp` and the AutoShow Commander CLI in their own Doc
 
 ```bash
 docker-compose up --build -d
-docker-compose run autoshow --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --whisper-docker base
+docker-compose run autoshow --video "https://www.youtube.com/watch?v=MORMZXEaONk" --whisper-docker base
 ```
 
 Currently working on the `llama.cpp` Docker integration so the entire project can be encapsulated in one local Docker Compose file.
@@ -287,55 +289,55 @@ Currently working on the `llama.cpp` Docker integration so the entire project ca
 Default includes summary and long chapters, equivalent to running this:
 
 ```bash
-npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --prompt summary longChapters
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --prompt summary longChapters
 ```
 
 Create five title ideas:
 
 ```bash
-npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --prompt titles
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --prompt titles
 ```
 
 Create a one sentence and one paragraph summary:
 
 ```bash
-npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --prompt summary
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --prompt summary
 ```
 
 Create a short, one sentence description for each chapter that's 25 words or shorter.
 
 ```bash
-npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --prompt shortChapters
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --prompt shortChapters
 ```
 
 Create a one paragraph description for each chapter that's around 50 words.
 
 ```bash
-npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --prompt mediumChapters
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --prompt mediumChapters
 ```
 
 Create a two paragraph description for each chapter that's over 75 words.
 
 ```bash
-npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --prompt longChapters
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --prompt longChapters
 ```
 
 Create three key takeaways about the content:
 
 ```bash
-npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --prompt takeaways
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --prompt takeaways
 ```
 
 Create ten questions about the content to check for comprehension:
 
 ```bash
-npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --prompt questions
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --prompt questions
 ```
 
 Include all prompt options:
 
 ```bash
-npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --prompt titles summary longChapters takeaways questions
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --prompt titles summary longChapters takeaways questions
 ```
 
 ## Alternative JavaScript Runtimes
@@ -343,152 +345,35 @@ npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --prompt tit
 ### Bun
 
 ```bash
-bun --env-file=.env src/autoshow.js \
-  --video "https://www.youtube.com/watch?v=jKB0EltG9Jo"
+bun bun-as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk"
 ```
 
 ### Deno
 
 ```bash
-LLAMA_MODEL="Meta-Llama-3.1-8B-Instruct.Q2_K.gguf" HUGGING_FACE_URL="https://huggingface.co/mradermacher/Meta-Llama-3.1-8B-Instruct-GGUF" \
-  deno run \
-  --allow-sys \
-  --allow-read \
-  --allow-run \
-  --allow-write \
-  --allow-env \
-  src/autoshow.js \
-  --video "https://www.youtube.com/watch?v=jKB0EltG9Jo"
+deno task deno-as --video "https://www.youtube.com/watch?v=MORMZXEaONk"
 ```
 
 ## Makeshift Test Suite
 
-Creating a robust and flexible test suite for this project is complex because of the range of network requests, file system operations, build steps, and 3rd party APIs involved.
+Creating a robust and flexible test suite for this project is complex because of the range of network requests, file system operations, build steps, and 3rd party APIs involved. A more thought out test suite will be created at some point, but in the mean time these are hacky but functional ways to test the majority of the project in a single go.
 
-A more thought out test suite will be created at some point, but in the mean time this is a ridiculous and hacky way to test the majority of the project in a single go.
+### Full Test Suite
 
 - You'll need API keys for all services to make it through this entire command.
 - Mostly uses transcripts of videos around one minute long and cheaper models when possible, so the total cost of running this for any given service should be at most only a few cents.
 
-<details>
-  <summary>Click for full test command</summary>
-
 ```bash
-npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" && \
-  mv content/2023-09-10-teach-jenn-tech-channel-trailer-prompt.md content/01---2023-09-10-teach-jenn-tech-channel-trailer-prompt.md && \
-  npm run as -- --playlist "https://www.youtube.com/playlist?list=PLCVnrVv4KhXMh4DQBigyvHSRTf2CSj129" && \
-  mv content/2022-11-05-intro-to-teach-jenn-tech-prompt.md content/02---2022-11-05-intro-to-teach-jenn-tech-prompt.md && \
-  mv content/2023-09-10-teach-jenn-tech-channel-trailer-prompt.md content/03---2023-09-10-teach-jenn-tech-channel-trailer-prompt.md && \
-  npm run as -- --urls "content/example-urls.md" && \
-  mv content/2022-11-05-intro-to-teach-jenn-tech-prompt.md content/04---2022-11-05-intro-to-teach-jenn-tech-prompt.md && \
-  mv content/2023-09-10-teach-jenn-tech-channel-trailer-prompt.md content/05---2023-09-10-teach-jenn-tech-channel-trailer-prompt.md && \
-  npm run as -- --file "content/audio.mp3" && \
-  mv content/audio.mp3-prompt.md content/06---audio.mp3-prompt.md && \
-  npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --chatgpt && \
-  mv content/2023-09-10-teach-jenn-tech-channel-trailer-chatgpt-shownotes.md content/07---2023-09-10-teach-jenn-tech-channel-trailer-chatgpt-shownotes.md && \
-  npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --chatgpt GPT_4o_MINI && \
-  mv content/2023-09-10-teach-jenn-tech-channel-trailer-chatgpt-shownotes.md content/08---2023-09-10-teach-jenn-tech-channel-trailer-chatgpt-shownotes.md && \
-  npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --claude && \
-  mv content/2023-09-10-teach-jenn-tech-channel-trailer-claude-shownotes.md content/09---2023-09-10-teach-jenn-tech-channel-trailer-claude-shownotes.md && \
-  npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --claude CLAUDE_3_SONNET && \
-  mv content/2023-09-10-teach-jenn-tech-channel-trailer-claude-shownotes.md content/10---2023-09-10-teach-jenn-tech-channel-trailer-claude-shownotes.md && \
-  npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --gemini && \
-  mv content/2023-09-10-teach-jenn-tech-channel-trailer-gemini-shownotes.md content/11---2023-09-10-teach-jenn-tech-channel-trailer-gemini-shownotes.md && \
-  npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --gemini GEMINI_1_5_FLASH && \
-  mv content/2023-09-10-teach-jenn-tech-channel-trailer-gemini-shownotes.md content/12---2023-09-10-teach-jenn-tech-channel-trailer-gemini-shownotes.md && \
-  npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --cohere && \
-  mv content/2023-09-10-teach-jenn-tech-channel-trailer-cohere-shownotes.md content/13---2023-09-10-teach-jenn-tech-channel-trailer-cohere-shownotes.md && \
-  npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --cohere COMMAND_R_PLUS && \
-  mv content/2023-09-10-teach-jenn-tech-channel-trailer-cohere-shownotes.md content/14---2023-09-10-teach-jenn-tech-channel-trailer-cohere-shownotes.md && \
-  npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --mistral && \
-  mv content/2023-09-10-teach-jenn-tech-channel-trailer-mistral-shownotes.md content/15---2023-09-10-teach-jenn-tech-channel-trailer-mistral-shownotes.md && \
-  npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --mistral MIXTRAL_8x7b && \
-  mv content/2023-09-10-teach-jenn-tech-channel-trailer-mistral-shownotes.md content/16---2023-09-10-teach-jenn-tech-channel-trailer-mistral-shownotes.md && \
-  npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --octo && \
-  mv content/2023-09-10-teach-jenn-tech-channel-trailer-octo-shownotes.md content/17---2023-09-10-teach-jenn-tech-channel-trailer-octo-shownotes.md && \
-  npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --octo LLAMA_3_1_8B && \
-  mv content/2023-09-10-teach-jenn-tech-channel-trailer-octo-shownotes.md content/18---2023-09-10-teach-jenn-tech-channel-trailer-octo-shownotes.md && \
-  npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --llama && \
-  mv content/2023-09-10-teach-jenn-tech-channel-trailer-llama-shownotes.md content/19---2023-09-10-teach-jenn-tech-channel-trailer-llama-shownotes.md && \
-  npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --deepgram && \
-  mv content/2023-09-10-teach-jenn-tech-channel-trailer-prompt.md content/20---2023-09-10-teach-jenn-tech-channel-trailer-prompt.md && \
-  npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --deepgram --llama && \
-  mv content/2023-09-10-teach-jenn-tech-channel-trailer-llama-shownotes.md content/21---2023-09-10-teach-jenn-tech-channel-trailer-llama-shownotes.md && \
-  npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --assembly && \
-  mv content/2023-09-10-teach-jenn-tech-channel-trailer-prompt.md content/22---2023-09-10-teach-jenn-tech-channel-trailer-prompt.md && \
-  npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --assembly --llama && \
-  mv content/2023-09-10-teach-jenn-tech-channel-trailer-llama-shownotes.md content/23---2023-09-10-teach-jenn-tech-channel-trailer-llama-shownotes.md && \
-  npm run as -- --video "https://ajc.pics/audio/fsjam-short.mp3" --assembly --speaker-labels --speakers-expected 2 && \
-  mv content/2024-05-08-fsjam-short-prompt.md content/24---2024-05-08-fsjam-short-prompt.md && \
-  npm run as -- --video "https://ajc.pics/audio/fsjam-short.mp3" --assembly --speaker-labels --speakers-expected 2 --llama && \
-  mv content/2024-05-08-fsjam-short-llama-shownotes.md content/25---2024-05-08-fsjam-short-llama-shownotes.md && \
-  npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --whisper tiny && \
-  mv content/2023-09-10-teach-jenn-tech-channel-trailer-prompt.md content/26---2023-09-10-teach-jenn-tech-channel-trailer-prompt.md && \
-  npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --prompt titles && \
-  mv content/2023-09-10-teach-jenn-tech-channel-trailer-prompt.md content/27---2023-09-10-teach-jenn-tech-channel-trailer-prompt.md && \
-  npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --prompt titles summary shortChapters mediumChapters longChapters takeaways questions && \
-  mv content/2023-09-10-teach-jenn-tech-channel-trailer-prompt.md content/28---2023-09-10-teach-jenn-tech-channel-trailer-prompt.md && \
-  npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --prompt titles summary shortChapters takeaways questions --whisper tiny --llama && \
-  mv content/2023-09-10-teach-jenn-tech-channel-trailer-llama-shownotes.md content/29---2023-09-10-teach-jenn-tech-channel-trailer-llama-shownotes.md && \
-  npm run as -- --playlist "https://www.youtube.com/playlist?list=PLCVnrVv4KhXMh4DQBigyvHSRTf2CSj129" --prompt titles --whisper tiny --llama && \
-  mv content/2022-11-05-intro-to-teach-jenn-tech-llama-shownotes.md content/30---2022-11-05-intro-to-teach-jenn-tech-llama-shownotes.md && \
-  mv content/2023-09-10-teach-jenn-tech-channel-trailer-llama-shownotes.md content/31---2023-09-10-teach-jenn-tech-channel-trailer-llama-shownotes.md && \
-  npm run as -- --urls "content/example-urls.md" --prompt titles --whisper tiny --llama && \
-  mv content/2022-11-05-intro-to-teach-jenn-tech-llama-shownotes.md content/32---2022-11-05-intro-to-teach-jenn-tech-llama-shownotes.md && \
-  mv content/2023-09-10-teach-jenn-tech-channel-trailer-llama-shownotes.md content/33---2023-09-10-teach-jenn-tech-channel-trailer-llama-shownotes.md && \
-  npm run as -- --file "content/audio.mp3" --prompt titles --whisper tiny --llama && \
-  mv content/audio.mp3-llama-shownotes.md content/34---audio.mp3-llama-shownotes.md && \
-  npm run as -- --rss "https://ajcwebdev.substack.com/feed" && \
-  mv content/2021-05-10-thoughts-on-lambda-school-layoffs-prompt.md content/35---2021-05-10-thoughts-on-lambda-school-layoffs-prompt.md && \
-  npm run as -- --rss "https://feeds.transistor.fm/fsjam-podcast/" --order newest --skip 94 --whisper tiny && \
-  mv content/2020-10-27-episode-0-the-fullstack-jamstack-podcast-with-anthony-campolo-and-christopher-burns-prompt.md content/36---2020-10-27-episode-0-the-fullstack-jamstack-podcast-with-anthony-campolo-and-christopher-burns-prompt.md && \
-  npm run as -- --rss "https://feeds.transistor.fm/fsjam-podcast/" --order oldest --skip 94 --whisper tiny && \
-  mv content/2023-06-28-episode-94-clerk-with-james-perkins-prompt.md content/37---2023-06-28-episode-94-clerk-with-james-perkins-prompt.md
+npm run test-all
 ```
 
-</details>
+### Partial Test Command for Local Services
 
-<details>
-  <summary>Click for partial test command that doesn't use paid services</summary>
+This version of the test suite only uses Whisper for transcription and Llama.cpp for LLM operations.
 
 ```bash
-npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" && \
-  mv content/2023-09-10-teach-jenn-tech-channel-trailer-prompt.md content/01---2023-09-10-teach-jenn-tech-channel-trailer-prompt.md && \
-  npm run as -- --playlist "https://www.youtube.com/playlist?list=PLCVnrVv4KhXMh4DQBigyvHSRTf2CSj129" && \
-  mv content/2022-11-05-intro-to-teach-jenn-tech-prompt.md content/02---2022-11-05-intro-to-teach-jenn-tech-prompt.md && \
-  mv content/2023-09-10-teach-jenn-tech-channel-trailer-prompt.md content/03---2023-09-10-teach-jenn-tech-channel-trailer-prompt.md && \
-  npm run as -- --urls "content/example-urls.md" && \
-  mv content/2022-11-05-intro-to-teach-jenn-tech-prompt.md content/04---2022-11-05-intro-to-teach-jenn-tech-prompt.md && \
-  mv content/2023-09-10-teach-jenn-tech-channel-trailer-prompt.md content/05---2023-09-10-teach-jenn-tech-channel-trailer-prompt.md && \
-  npm run as -- --file "content/audio.mp3" && \
-  mv content/audio.mp3-prompt.md content/06---audio.mp3-prompt.md && \
-  npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --llama && \
-  mv content/2023-09-10-teach-jenn-tech-channel-trailer-llama-shownotes.md content/09---2023-09-10-teach-jenn-tech-channel-trailer-llama-shownotes.md && \
-  npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --whisper tiny && \
-  mv content/2023-09-10-teach-jenn-tech-channel-trailer-prompt.md content/10---2023-09-10-teach-jenn-tech-channel-trailer-prompt.md && \
-  npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --prompt titles && \
-  mv content/2023-09-10-teach-jenn-tech-channel-trailer-prompt.md content/11---2023-09-10-teach-jenn-tech-channel-trailer-prompt.md && \
-  npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --prompt titles summary shortChapters mediumChapters longChapters takeaways questions && \
-  mv content/2023-09-10-teach-jenn-tech-channel-trailer-prompt.md content/12---2023-09-10-teach-jenn-tech-channel-trailer-prompt.md && \
-  npm run as -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo" --prompt titles summary shortChapters takeaways questions --whisper tiny --llama && \
-  mv content/2023-09-10-teach-jenn-tech-channel-trailer-llama-shownotes.md content/13---2023-09-10-teach-jenn-tech-channel-trailer-llama-shownotes.md && \
-  npm run as -- --playlist "https://www.youtube.com/playlist?list=PLCVnrVv4KhXMh4DQBigyvHSRTf2CSj129" --prompt titles --whisper tiny --llama && \
-  mv content/2022-11-05-intro-to-teach-jenn-tech-llama-shownotes.md content/14---2022-11-05-intro-to-teach-jenn-tech-llama-shownotes.md && \
-  mv content/2023-09-10-teach-jenn-tech-channel-trailer-llama-shownotes.md content/15---2023-09-10-teach-jenn-tech-channel-trailer-llama-shownotes.md && \
-  npm run as -- --urls "content/example-urls.md" --prompt titles --whisper tiny --llama && \
-  mv content/2022-11-05-intro-to-teach-jenn-tech-llama-shownotes.md content/16---2022-11-05-intro-to-teach-jenn-tech-llama-shownotes.md && \
-  mv content/2023-09-10-teach-jenn-tech-channel-trailer-llama-shownotes.md content/17---2023-09-10-teach-jenn-tech-channel-trailer-llama-shownotes.md && \
-  npm run as -- --file "content/audio.mp3" --prompt titles --whisper tiny --llama && \
-  mv content/audio.mp3-llama-shownotes.md content/18---audio.mp3-llama-shownotes.md && \
-  npm run as -- --rss "https://ajcwebdev.substack.com/feed" && \
-  mv content/2021-05-10-thoughts-on-lambda-school-layoffs-prompt.md content/19---2021-05-10-thoughts-on-lambda-school-layoffs-prompt.md && \
-  npm run as -- --rss "https://feeds.transistor.fm/fsjam-podcast/" --order newest --skip 94 --whisper tiny && \
-  mv content/2020-10-27-episode-0-the-fullstack-jamstack-podcast-with-anthony-campolo-and-christopher-burns-prompt.md content/20---2020-10-27-episode-0-the-fullstack-jamstack-podcast-with-anthony-campolo-and-christopher-burns-prompt.md && \
-  npm run as -- --rss "https://feeds.transistor.fm/fsjam-podcast/" --order oldest --skip 94 --whisper tiny && \
-  mv content/2023-06-28-episode-94-clerk-with-james-perkins-prompt.md content/21---2023-06-28-episode-94-clerk-with-james-perkins-prompt.md
+npm run test-local
 ```
-
-</details>
 
 ## Create Single Markdown File with Entire Project
 

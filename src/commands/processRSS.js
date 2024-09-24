@@ -20,6 +20,37 @@ const parser = new XMLParser({
 })
 
 /**
+ * Process a single item from the RSS feed.
+ * @param {Object} item - The item to process.
+ * @param {string} transcriptOpt - The transcription service to use.
+ * @param {string} llmOpt - The selected Language Model option.
+ * @param {Object} options - Additional options for processing.
+ */
+async function processItem(item, transcriptOpt, llmOpt, options) {
+  try {
+    // Generate markdown for the item
+    const { frontMatter, finalPath, filename } = await generateRSSMarkdown(item)
+
+    // Download audio
+    await downloadAudio(item.showLink, filename)
+
+    // Run transcription
+    await runTranscription(finalPath, transcriptOpt, options, frontMatter)
+
+    // Process with Language Model
+    await runLLM(finalPath, frontMatter, llmOpt, options)
+
+    // Clean up temporary files if necessary
+    if (!options.noCleanUp) {
+      await cleanUpFiles(finalPath)
+    }
+    console.log(`\nProcess completed successfully for item: ${item.title}`)
+  } catch (error) {
+    console.error(`Error processing item: ${item.title}`, error)
+  }
+}
+
+/**
  * Main function to process an RSS feed.
  * @param {string} rssUrl - The URL of the RSS feed to process.
  * @param {string} llmOpt - The selected Language Model option.
@@ -29,7 +60,7 @@ const parser = new XMLParser({
 export async function processRSS(rssUrl, llmOpt, transcriptOpt, options) {
   try {
     // Log the start of RSS feed processing
-    console.log(`Processing RSS feed: ${rssUrl}`)
+    console.log(`\nProcessing RSS feed: ${rssUrl}`)
 
     if (options.item && options.item.length > 0) {
       // If specific items are provided, list them
@@ -37,7 +68,7 @@ export async function processRSS(rssUrl, llmOpt, transcriptOpt, options) {
       options.item.forEach((url) => console.log(`  - ${url}`))
     } else {
       // If no specific items, log the number of items to skip
-      console.log(`Skipping first ${options.skip} items`)
+      console.log(`  - Skipping first ${options.skip} items`)
     }
 
     // Fetch the RSS feed
@@ -112,41 +143,20 @@ export async function processRSS(rssUrl, llmOpt, transcriptOpt, options) {
 
       // Log information about found items
       console.log(
-        `Found ${sortedItems.length} audio/video items in the RSS feed`
+        `  - Found ${sortedItems.length} audio/video items in the RSS feed`
       )
       console.log(
-        `Processing ${skippedItems.length} items after skipping ${options.skip}`
+        `  - Processing ${skippedItems.length} items after skipping ${options.skip}`
       )
     }
 
     // Process each item in the feed
     for (const [index, item] of itemsToProcess.entries()) {
       console.log(
-        `Processing item ${index + options.skip + 1}/${itemsToProcess.length}: ${
-          item.title
+        `\nProcessing item ${index + 1}/${itemsToProcess.length}: ${item.title
         }`
       )
-      try {
-        // Generate markdown for the item
-        const { frontMatter, finalPath, filename } = await generateRSSMarkdown(item)
-
-        // Download audio
-        await downloadAudio(item.showLink, filename)
-
-        // Run transcription
-        await runTranscription(finalPath, transcriptOpt, options, frontMatter)
-
-        // Process with Language Model
-        await runLLM(finalPath, frontMatter, llmOpt, options)
-
-        // Clean up temporary files if necessary
-        if (!options.noCleanUp) {
-          await cleanUpFiles(finalPath)
-        }
-        console.log(`\nProcess completed successfully for item: ${item.title}`)
-      } catch (error) {
-        console.error(`Error processing item: ${item.title}`, error)
-      }
+      await processItem(item, transcriptOpt, llmOpt, options)
     }
 
     // Log completion of RSS feed processing

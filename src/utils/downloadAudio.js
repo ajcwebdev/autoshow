@@ -23,6 +23,7 @@ export async function downloadAudio(url, filename) {
 
     // Execute yt-dlp to download the audio
     const { stderr } = await execFilePromise('yt-dlp', [
+      '--no-warnings',
       '--restrict-filenames',
       '--extract-audio',
       '--audio-format', 'wav',
@@ -48,10 +49,11 @@ export async function downloadAudio(url, filename) {
 /**
  * Function to process a local audio or video file.
  * @param {string} filePath - The path to the local file.
+ * @param {string} sanitizedFilename - The sanitized filename.
  * @returns {Promise<string>} - Returns the final path to the processed WAV file.
  * @throws {Error} - If the file type is unsupported or processing fails.
  */
-export async function downloadFileAudio(filePath) {
+export async function downloadFileAudio(filePath, sanitizedFilename) {
   // Define supported audio and video formats
   const supportedFormats = new Set([
     'wav', 'mp3', 'm4a', 'aac', 'ogg', 'flac', 'mp4', 'mkv', 'avi', 'mov', 'webm'
@@ -75,17 +77,18 @@ export async function downloadFileAudio(filePath) {
     }
     console.log(`Detected file type: ${fileType.ext}`)
 
+    const outputPath = `content/${sanitizedFilename}.wav`    
     // If the file is not already a WAV, convert it
     if (fileType.ext !== 'wav') {
       await execPromise(
-        `${ffmpeg} -i "${filePath}" -acodec pcm_s16le -ar 16000 -ac 1 "${filePath}.wav"`
+        `${ffmpeg} -i "${filePath}" -acodec pcm_s16le -ar 16000 -ac 1 "${outputPath}"`
       )
-      console.log(`Converted ${filePath} to ${filePath}.wav`)
+      console.log(`Converted ${filePath} to ${outputPath}`)
     } else {
       // If it's already a WAV, just copy it
-      await execPromise(`cp "${filePath}" "${filePath}.wav"`)
+      await execPromise(`cp "${filePath}" "${outputPath}"`)
     }
-    return filePath
+    return outputPath
   } catch (error) {
     console.error('Error in downloadFileAudio:', error.message)
     throw error

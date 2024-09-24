@@ -57,7 +57,7 @@ export async function runLLM(finalPath, frontMatter, llmOpt, options) {
     } else {
       // If no LLM is selected, just write the prompt and transcript
       await writeFile(`${finalPath}-prompt.md`, `${frontMatter}\n${promptAndTranscript}`)
-      console.log(`Created original structure: ${finalPath}-prompt.md`)
+      console.log(`\nFinal markdown file with prompt:\n  - ${finalPath}-prompt.md`)
     }
   } catch (error) {
     console.error('Error running LLM:', error)

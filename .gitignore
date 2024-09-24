@@ -7,3 +7,4 @@ package-lock.json
 src/llms/models
 .idea
 build
+deno.lock

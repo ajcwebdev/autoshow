@@ -3,6 +3,7 @@
 import { execFile } from 'node:child_process'
 import { promisify } from 'node:util'
 import { writeFile } from 'node:fs/promises'
+import { basename, extname } from 'node:path'
 
 // Promisify the execFile function for use with async/await
 const execFilePromise = promisify(execFile)
@@ -60,6 +61,70 @@ export async function generateRSSMarkdown(item) {
     return { frontMatter, finalPath, filename }
   } catch (error) {
     console.error('Error generating markdown:', error)
+    throw error
+  }
+}
+
+/**
+ * Function to generate markdown for local audio or video files.
+ * @param {string} filePath - The path to the local file.
+ * @returns {Promise<MarkdownData>} - Returns an object with frontMatter, finalPath, and filename.
+ * @throws {Error} - If markdown generation fails.
+ */
+export async function generateFileMarkdown(filePath) {
+  try {
+    // Extract the original filename from the full file path
+    const originalFilename = basename(filePath)
+
+    // Get the file extension
+    const fileExtension = extname(originalFilename)
+
+    // Remove the file extension from the original filename
+    const filenameWithoutExt = originalFilename.slice(0, -fileExtension.length)
+
+    // Sanitize the filename
+    const sanitizedFilename = filenameWithoutExt
+      // Replace any character that's not alphanumeric, whitespace, or hyphen with a hyphen
+      .replace(/[^\w\s-]/g, '-')
+      // Trim whitespace from both ends
+      .trim()
+      // Replace any sequence of whitespace or underscores with a single hyphen
+      .replace(/[\s_]+/g, '-')
+      // Replace any sequence of multiple hyphens with a single hyphen
+      .replace(/-+/g, '-')
+      // Convert to lowercase
+      .toLowerCase()
+      // Limit the length to 200 characters
+      .slice(0, 200)
+
+    // Construct the final path for the markdown file
+    const finalPath = `content/${sanitizedFilename}`
+
+    // Create the front matter content for the markdown file
+    const frontMatter = [
+      '---',
+      `showLink: "${originalFilename}"`,
+      `channel: ""`,
+      `channelURL: ""`,
+      `title: "${originalFilename}"`,
+      `description: ""`,
+      `publishDate: ""`,
+      `coverImage: ""`,
+      '---\n',
+    ].join('\n')
+
+    // Write the front matter to the markdown file
+    await writeFile(`${finalPath}.md`, frontMatter)
+
+    // Log the creation of the markdown file
+    console.log(`\nInitial markdown file created:\n  - ${finalPath}.md`)
+
+    // Return an object with the generated data
+    return { frontMatter, finalPath, filename: sanitizedFilename }
+  } catch (error) {
+    // Log any errors that occur during the process
+    console.error('Error generating markdown for file:', error)
+    // Re-throw the error to be handled by the calling function
     throw error
   }
 }

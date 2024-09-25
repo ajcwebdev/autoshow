@@ -8,7 +8,10 @@ import { promisify } from 'node:util'
 
 const execAsync = promisify(exec)
 
-// Define local model configurations
+/**
+ * Define local model configurations
+ * @type {Object.<string, {filename: string, url: string}>}
+ */
 const localModels = {
   LLAMA_3_1_8B_Q4_MODEL: {
     filename: "Meta-Llama-3.1-8B-Instruct.IQ4_XS.gguf",
@@ -40,6 +43,7 @@ const localModels = {
  * Function to download the model if it doesn't exist.
  * @param {string} [modelName='GEMMA_2_2B_Q4_MODEL'] - The name of the model to use.
  * @returns {Promise<string>} - The path to the downloaded model.
+ * @throws {Error} - If the model download fails.
  */
 async function downloadModel(modelName = 'GEMMA_2_2B_Q4_MODEL') {
   // Get the model object from localModels using the provided modelName or default to GEMMA_2_2B_Q4_MODEL
@@ -87,6 +91,7 @@ async function downloadModel(modelName = 'GEMMA_2_2B_Q4_MODEL') {
  * @param {string} outputFilePath - The file path to save the output.
  * @param {string} [modelName='GEMMA_2_2B_Q4_MODEL'] - The name of the model to use.
  * @returns {Promise<void>}
+ * @throws {Error} - If an error occurs during processing.
  */
 export async function callLlama(promptAndTranscript, outputFilePath, modelName = 'GEMMA_2_2B_Q4_MODEL') {
   try {
@@ -101,14 +106,13 @@ export async function callLlama(promptAndTranscript, outputFilePath, modelName =
     const context = await localModel.createContext()
     const session = new LlamaChatSession({ contextSequence: context.getSequence() })
 
-    // Generate a response and write the response to a temporary file
+    // Generate a response and write the response to a file
     const response = await session.prompt(promptAndTranscript)
     await writeFile(outputFilePath, response)
     console.log(`\nTranscript saved to:\n  - ${outputFilePath}`)
     console.log(`\nModel used:\n  - ${modelName}\n`)
   } catch (error) {
-    // Log and re-throw any errors that occur during the process
-    console.error('Error:', error)
+    console.error('Error in callLlama:', error)
     throw error
   }
 }

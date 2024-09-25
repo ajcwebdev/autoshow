@@ -5,13 +5,21 @@ import { downloadAudio } from '../utils/downloadAudio.js'
 import { runTranscription } from '../utils/runTranscription.js'
 import { runLLM } from '../utils/runLLM.js'
 import { cleanUpFiles } from '../utils/cleanUpFiles.js'
+import '../types.js'
+
+/**
+ * Custom types
+ * @typedef {LLMOption} LLMOption
+ * @typedef {TranscriptOption} TranscriptOption
+ * @typedef {ProcessingOptions} ProcessingOptions
+ */
 
 /**
  * Main function to process a single video.
  * @param {string} url - The URL of the video to process.
- * @param {string} llmOpt - The selected Language Model option.
- * @param {string} transcriptOpt - The transcription service to use.
- * @param {object} options - Additional options for processing.
+ * @param {LLMOption} llmOpt - The selected Language Model option.
+ * @param {TranscriptOption} transcriptOpt - The transcription service to use.
+ * @param {ProcessingOptions} options - Additional options for processing.
  * @returns {Promise<void>}
  */
 export async function processVideo(url, llmOpt, transcriptOpt, options) {

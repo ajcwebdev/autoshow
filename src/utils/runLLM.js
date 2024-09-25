@@ -10,8 +10,18 @@ import { callLlama } from '../llms/llama.js'
 // import { callLlamaCpp } from '../llms/llamacpp.js'
 import { callGemini } from '../llms/gemini.js'
 import { generatePrompt } from '../llms/prompt.js'
+import '../types.js'
+
+/**
+ * Import custom types
+ * @typedef {LLMOption} LLMOption
+ * @typedef {ProcessingOptions} ProcessingOptions
+ * @typedef {LLMFunction} LLMFunction
+ * @typedef {LLMFunctions} LLMFunctions
+ */
 
 // Object mapping LLM options to their respective functions
+/** @type {LLMFunctions} */
 const llmFunctions = {
   chatgpt: callChatGPT,
   claude: callClaude,
@@ -27,8 +37,8 @@ const llmFunctions = {
  * Main function to run the selected Language Model.
  * @param {string} finalPath - The base path for the files.
  * @param {string} frontMatter - The front matter content for the markdown file.
- * @param {string} llmOpt - The selected Language Model option.
- * @param {object} options - Additional options for processing.
+ * @param {LLMOption} llmOpt - The selected Language Model option.
+ * @param {ProcessingOptions} options - Additional options for processing.
  * @returns {Promise<void>}
  */
 export async function runLLM(finalPath, frontMatter, llmOpt, options) {

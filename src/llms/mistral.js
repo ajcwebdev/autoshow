@@ -4,7 +4,10 @@ import { writeFile } from 'node:fs/promises'
 import { env } from 'node:process'
 import { Mistral } from '@mistralai/mistralai'
 
-// Define available Mistral AI models
+/**
+ * Define available Mistral AI models
+ * @type {Object.<string, string>}
+ */
 const mistralModel = {
   MIXTRAL_8x7b: "open-mixtral-8x7b",
   MIXTRAL_8x22b: "open-mixtral-8x22b",
@@ -18,8 +21,13 @@ const mistralModel = {
  * @param {string} outputFilePath - The file path to save the output.
  * @param {string} [model='MISTRAL_NEMO'] - The Mistral model to use.
  * @returns {Promise<string>} - The actual model name used.
+ * @throws {Error} - If an error occurs during the API call.
  */
 export async function callMistral(transcriptContent, outputFilePath, model = 'MISTRAL_NEMO') {
+  // Check if the MISTRAL_API_KEY environment variable is set
+  if (!env.MISTRAL_API_KEY) {
+    throw new Error('MISTRAL_API_KEY environment variable is not set.')
+  }
   // Initialize Mistral client with API key from environment variables
   const mistral = new Mistral(env.MISTRAL_API_KEY)
   

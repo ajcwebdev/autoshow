@@ -3,6 +3,20 @@
 import { writeFile } from 'node:fs/promises'
 import { env } from 'node:process'
 import { AssemblyAI } from 'assemblyai'
+import '../types.js'
+
+/**
+ * Import custom types
+ * @typedef {TranscriptOption} TranscriptOption
+ * @typedef {ProcessingOptions} ProcessingOptions
+ */
+
+/**
+ * Check if the ASSEMBLY_API_KEY environment variable is set
+ */
+if (!env.ASSEMBLY_API_KEY) {
+  throw new Error('ASSEMBLY_API_KEY environment variable is not set.')
+}
 
 // Initialize the AssemblyAI client with API key from environment variables
 const client = new AssemblyAI({ apiKey: env.ASSEMBLY_API_KEY })
@@ -10,9 +24,10 @@ const client = new AssemblyAI({ apiKey: env.ASSEMBLY_API_KEY })
 /**
  * Main function to handle transcription using AssemblyAI.
  * @param {string} finalPath - The identifier used for naming output files.
- * @param {string} transcriptOpt - The transcription service to use.
- * @param {object} options - Additional options for processing.
+ * @param {TranscriptOption} transcriptOpt - The transcription service to use.
+ * @param {ProcessingOptions} options - Additional options for processing.
  * @returns {Promise<string>} - Returns the formatted transcript content.
+ * @throws {Error} - If an error occurs during transcription.
  */
 export async function callAssembly(finalPath, transcriptOpt, options) {
   try {
@@ -22,7 +37,7 @@ export async function callAssembly(finalPath, transcriptOpt, options) {
     // Request transcription from AssemblyAI
     const transcript = await client.transcripts.transcribe({
       audio: `${finalPath}.wav`,  // The audio file to transcribe
-      speech_model: 'nano',       // Use the 'nano' speech model for transcription
+      speech_model: 'nano',       // Use the 'nano' speech model for transcription (`best` also an option)
       ...(speakerLabels && {      // Conditionally add speaker labeling options
         speaker_labels: true,
       })
@@ -72,5 +87,6 @@ export async function callAssembly(finalPath, transcriptOpt, options) {
   } catch (error) {
     // Log any errors that occur during the transcription process
     console.error('Error processing the transcription:', error)
+    throw error // Re-throw the error for handling in the calling function
   }
 }

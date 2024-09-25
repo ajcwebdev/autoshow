@@ -4,7 +4,10 @@ import { writeFile } from 'node:fs/promises'
 import { env } from 'node:process'
 import { CohereClient } from 'cohere-ai'
 
-// Define available Cohere models
+/**
+ * Define available Cohere models
+ * @type {Object.<string, string>}
+ */
 const cohereModel = {
   COMMAND_R: "command-r", // Standard Command model
   COMMAND_R_PLUS: "command-r-plus" // Enhanced Command model
@@ -16,8 +19,14 @@ const cohereModel = {
  * @param {string} outputFilePath - The file path to save the output.
  * @param {string} [model='COMMAND_R'] - The Cohere model to use.
  * @returns {Promise<string>} - The actual model name used.
+ * @throws {Error} - If an error occurs during the API call.
  */
 export async function callCohere(transcriptContent, outputFilePath, model = 'COMMAND_R') {
+  // Check if the COHERE_API_KEY environment variable is set
+  if (!env.COHERE_API_KEY) {
+    throw new Error('COHERE_API_KEY environment variable is not set.')
+  }
+  
   // Initialize the Cohere client with the API key from environment variables
   const cohere = new CohereClient({ token: env.COHERE_API_KEY })
   

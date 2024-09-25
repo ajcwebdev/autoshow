@@ -1,6 +1,9 @@
 // src/llms/prompt.js
 
-// Define the structure for different sections of the prompt
+/**
+ * Define the structure for different sections of the prompt
+ * @type {Object.<string, {instruction: string, example: string}>}
+ */
 const sections = {
   // Section for generating titles
   titles: {

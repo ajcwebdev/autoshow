@@ -4,15 +4,23 @@ import { writeFile } from 'node:fs/promises'
 import { processVideo } from './processVideo.js'
 import { execFile } from 'node:child_process'
 import { promisify } from 'node:util'
+import '../types.js'
 
 const execFilePromise = promisify(execFile)
 
 /**
+ * Custom types
+ * @typedef {LLMOption} LLMOption
+ * @typedef {TranscriptOption} TranscriptOption
+ * @typedef {ProcessingOptions} ProcessingOptions
+ */
+
+/**
  * Main function to process a YouTube playlist.
  * @param {string} playlistUrl - The URL of the YouTube playlist to process.
- * @param {string} llmOpt - The selected Language Model option.
- * @param {string} transcriptOpt - The transcription service to use.
- * @param {object} options - Additional options for processing.
+ * @param {LLMOption} llmOpt - The selected Language Model option.
+ * @param {TranscriptOption} transcriptOpt - The transcription service to use.
+ * @param {ProcessingOptions} options - Additional options for processing.
  * @returns {Promise<void>}
  */
 export async function processPlaylist(playlistUrl, llmOpt, transcriptOpt, options) {
@@ -21,19 +29,28 @@ export async function processPlaylist(playlistUrl, llmOpt, transcriptOpt, option
     console.log(`Processing playlist: ${playlistUrl}`)
 
     // Use yt-dlp to fetch video URLs from the playlist
-    const { stdout } = await execFilePromise('yt-dlp', [
+    const { stdout, stderr } = await execFilePromise('yt-dlp', [
       '--flat-playlist',
       '--print', 'url',
       '--no-warnings',
       playlistUrl
     ])
 
+    // Check for errors in stderr
+    if (stderr) {
+      console.error(`yt-dlp error: ${stderr}`)
+    }
+
     // Split the stdout into an array of video URLs
     const urls = stdout.trim().split('\n').filter(Boolean)
     console.log(`Found ${urls.length} videos in the playlist`)
 
     // Write the URLs to a file for reference
-    await writeFile('content/urls.md', urls.join('\n'))
+    try {
+      await writeFile('content/urls.md', urls.join('\n'))
+    } catch (writeError) {
+      console.error('Error writing URLs to file:', writeError)
+    }
 
     // Process each video in the playlist
     for (const [index, url] of urls.entries()) {

@@ -4,7 +4,10 @@ import { writeFile } from 'node:fs/promises'
 import { env } from 'node:process'
 import { Anthropic } from '@anthropic-ai/sdk'
 
-// Define available Claude models
+/**
+ * Define available Claude models
+ * @type {Object.<string, string>}
+ */
 const claudeModel = {
   CLAUDE_3_5_SONNET: "claude-3-5-sonnet-20240620",
   CLAUDE_3_OPUS: "claude-3-opus-20240229",
@@ -18,8 +21,14 @@ const claudeModel = {
  * @param {string} outputFilePath - The file path to save the output.
  * @param {string} [model='CLAUDE_3_HAIKU'] - The Claude model to use.
  * @returns {Promise<string>} - The actual model name used.
+ * @throws {Error} - If an error occurs during the API call.
  */
 export async function callClaude(transcriptContent, outputFilePath, model = 'CLAUDE_3_HAIKU') {
+  // Check if the ANTHROPIC_API_KEY environment variable is set
+  if (!env.ANTHROPIC_API_KEY) {
+    throw new Error('ANTHROPIC_API_KEY environment variable is not set.')
+  }
+
   // Initialize the Anthropic client with the API key from environment variables
   const anthropic = new Anthropic({ apiKey: env.ANTHROPIC_API_KEY })
   

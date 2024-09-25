@@ -9,31 +9,21 @@ import { unlink } from 'node:fs/promises'
  * @throws {Error} - If an error occurs while deleting files.
  */
 export async function cleanUpFiles(id) {
-  try {
-    // Log the start of the cleanup process
-    console.log(`\nTemporary files removed:`)
+  // Array of file extensions to delete
+  const extensions = ['.wav', '.txt', '.md', '.lrc']
 
-    // Remove .wav file
-    await unlink(`${id}.wav`)
-    console.log(`  - ${id}.wav`)
+  // Log the start of the cleanup process
+  console.log(`\nTemporary files removed:`)
 
-    // Remove .txt file
-    await unlink(`${id}.txt`)
-    console.log(`  - ${id}.txt`)
-
-    // Remove .md file
-    await unlink(`${id}.md`)
-    console.log(`  - ${id}.md`)
-
-    // Remove .lrc file
-    await unlink(`${id}.lrc`)
-    console.log(`  - ${id}.lrc`)
-  } catch (error) {
-    // If the error is not "file not found", log the error
-    if (error.code !== 'ENOENT') {
-      console.error(`Error deleting file:`, error)
-      throw error
+  for (const ext of extensions) {
+    try {
+      await unlink(`${id}${ext}`)
+      console.log(`  - ${id}${ext}`)
+    } catch (error) {
+      if (error.code !== 'ENOENT') {
+        console.error(`Error deleting file ${id}${ext}:`, error)
+      }
+      // If the file does not exist, silently continue
     }
-    // If the error is "file not found", silently ignore it
   }
 }

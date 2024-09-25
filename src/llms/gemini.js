@@ -4,14 +4,21 @@ import { writeFile } from 'node:fs/promises'
 import { env } from 'node:process'
 import { GoogleGenerativeAI } from "@google/generative-ai"
 
-// Define available Gemini models
+/**
+ * Define available Gemini models
+ * @type {Object.<string, string>}
+ */
 const geminiModel = {
   GEMINI_1_5_FLASH: "gemini-1.5-flash",
   // GEMINI_1_5_PRO: "gemini-1.5-pro",
   GEMINI_1_5_PRO: "gemini-1.5-pro-exp-0827",
 }
 
-// Utility function to introduce a delay
+/**
+ * Utility function to introduce a delay
+ * @param {number} ms - Milliseconds to delay
+ * @returns {Promise<void>}
+ */
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 /**
@@ -20,8 +27,13 @@ const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
  * @param {string} outputFilePath - The file path to save the output.
  * @param {string} [model='GEMINI_1_5_FLASH'] - The Gemini model to use.
  * @returns {Promise<string>} - The actual model name used.
+ * @throws {Error} - If an error occurs during the API call.
  */
 export async function callGemini(transcriptContent, outputFilePath, model = 'GEMINI_1_5_FLASH') {
+  // Check if the GEMINI_API_KEY environment variable is set
+  if (!env.GEMINI_API_KEY) {
+    throw new Error('GEMINI_API_KEY environment variable is not set.')
+  }
   // Initialize the Google Generative AI client
   const genAI = new GoogleGenerativeAI(env.GEMINI_API_KEY)
   

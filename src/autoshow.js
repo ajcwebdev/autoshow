@@ -15,32 +15,16 @@ import { processPlaylist } from './commands/processPlaylist.js'
 import { processURLs } from './commands/processURLs.js'
 import { processFile } from './commands/processFile.js'
 import { processRSS } from './commands/processRSS.js'
-import { env } from 'node:process'
+import { argv } from 'node:process'
+import './types.js'
 
 /**
- * @typedef {Object} ProcessingOptions
- * @property {string[]} [prompt] - Specify prompt sections to include.
- * @property {string} [video] - URL of the YouTube video to process.
- * @property {string} [playlist] - URL of the YouTube playlist to process.
- * @property {string} [urls] - File path containing URLs to process.
- * @property {string} [file] - File path of the local audio/video file to process.
- * @property {string} [rss] - URL of the podcast RSS feed to process.
- * @property {string[]} [item] - Specific items in the RSS feed to process.
- * @property {string} [order='newest'] - Order for RSS feed processing ('newest' or 'oldest').
- * @property {number} [skip=0] - Number of items to skip when processing RSS feed.
- * @property {string} [whisper] - Whisper model type for non-Docker version.
- * @property {string} [whisperDocker] - Whisper model type for Docker version.
- * @property {string} [chatgpt] - ChatGPT model to use for processing.
- * @property {string} [claude] - Claude model to use for processing.
- * @property {string} [cohere] - Cohere model to use for processing.
- * @property {string} [mistral] - Mistral model to use for processing.
- * @property {string} [octo] - Octo model to use for processing.
- * @property {boolean} [llama=false] - Use Node Llama for processing.
- * @property {string} [gemini] - Gemini model to use for processing.
- * @property {boolean} [deepgram=false] - Use Deepgram for transcription.
- * @property {boolean} [assembly=false] - Use AssemblyAI for transcription.
- * @property {boolean} [speakerLabels=false] - Use speaker labels for AssemblyAI transcription.
- * @property {boolean} [noCleanUp=false] - Do not delete intermediary files after processing.
+ * Custom types
+ * @typedef {LLMOption} LLMOption
+ * @typedef {TranscriptOption} TranscriptOption
+ * @typedef {ProcessingOptions} ProcessingOptions
+ * @typedef {InquirerAnswers} InquirerAnswers
+ * @typedef {HandlerFunction} HandlerFunction
  */
 
 // Initialize the command-line interface
@@ -226,7 +210,7 @@ const INQUIRER_PROMPT = [
  * @returns {Promise<ProcessingOptions>} - The updated options after user input.
  */
 async function handleInteractivePrompt(options) {
-  /** @type {ProcessingOptions} */
+  /** @type {InquirerAnswers} */
   const answers = await inquirer.prompt(INQUIRER_PROMPT)
   options = {
     ...options,
@@ -279,7 +263,7 @@ program.action(async (options) => {
 
   /**
    * Map actions to their respective handler functions
-   * @type {Object.<string, function(string, string, string, ProcessingOptions): Promise<void>>}
+   * @type {Object.<string, HandlerFunction>}
    */
   const handlers = {
     video: processVideo,
@@ -290,20 +274,20 @@ program.action(async (options) => {
   }
 
   /**
-  * Determine the selected LLM option
-  * @type {string | undefined}
-  */
-  const llmOpt = ['chatgpt', 'claude', 'cohere', 'mistral', 'octo', 'llama', 'gemini'].find(
+   * Determine the selected LLM option
+   * @type {LLMOption | undefined}
+   */
+  const llmOpt = /** @type {LLMOption} */ (['chatgpt', 'claude', 'cohere', 'mistral', 'octo', 'llama', 'gemini'].find(
     (option) => options[option]
-  )
+  ))
 
   /**
-  * Determine the transcription service to use
-  * @type {string | undefined}
-  */
-  const transcriptOpt = ['whisper', 'whisperDocker', 'deepgram', 'assembly'].find(
+   * Determine the transcription service to use
+   * @type {TranscriptOption | undefined}
+   */
+  const transcriptOpt = /** @type {TranscriptOption} */ (['whisper', 'whisperDocker', 'deepgram', 'assembly'].find(
     (option) => options[option]
-  )
+  ))
 
   // Execute the appropriate handler based on the action
   for (const [key, handler] of Object.entries(handlers)) {
@@ -314,4 +298,4 @@ program.action(async (options) => {
 })
 
 // Parse the command-line arguments
-program.parse(env.argv)
+program.parse(argv)

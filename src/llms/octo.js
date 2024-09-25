@@ -4,7 +4,10 @@ import { writeFile } from 'node:fs/promises'
 import { env } from 'node:process'
 import { OctoAIClient } from '@octoai/sdk'
 
-// Define available OctoAI models
+/**
+ * Define available OctoAI models
+ * @type {Object.<string, string>}
+ */
 const octoModel = {
   LLAMA_3_1_8B: "meta-llama-3.1-8b-instruct",
   LLAMA_3_1_70B: "meta-llama-3.1-70b-instruct",
@@ -21,8 +24,13 @@ const octoModel = {
  * @param {string} outputFilePath - The file path to save the output.
  * @param {string} [model='LLAMA_3_1_70B'] - The OctoAI model to use.
  * @returns {Promise<string>} - The actual model name used.
+ * @throws {Error} - If an error occurs during the API call.
  */
 export async function callOcto(transcriptContent, outputFilePath, model = 'LLAMA_3_1_70B') {
+  // Check if the OCTOAI_API_KEY environment variable is set
+  if (!env.OCTOAI_API_KEY) {
+    throw new Error('OCTOAI_API_KEY environment variable is not set.')
+  }
   // Initialize OctoAI client with API key from environment variables
   const octoai = new OctoAIClient({ apiKey: env.OCTOAI_API_KEY })
   

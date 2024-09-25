@@ -4,26 +4,20 @@ import { execFile } from 'node:child_process'
 import { promisify } from 'node:util'
 import { writeFile } from 'node:fs/promises'
 import { basename, extname } from 'node:path'
+import '../types.js'
 
 // Promisify the execFile function for use with async/await
 const execFilePromise = promisify(execFile)
 
 /**
- * @typedef {Object} MarkdownData
- * @property {string} frontMatter - The front matter content for the markdown file.
- * @property {string} finalPath - The base path for the files.
- * @property {string} filename - The sanitized filename.
+ * Import custom types
+ * @typedef {MarkdownData} MarkdownData
+ * @typedef {RSSItem} RSSItem
  */
 
 /**
  * Function to generate markdown for RSS feed items.
- * @param {object} item - The RSS feed item object.
- * @param {string} item.publishDate - The publish date of the item.
- * @param {string} item.title - The title of the item.
- * @param {string} item.coverImage - The cover image URL of the item.
- * @param {string} item.showLink - The show link of the item.
- * @param {string} item.channel - The channel name.
- * @param {string} item.channelURL - The channel URL.
+ * @param {RSSItem} item - The RSS feed item object.
  * @returns {Promise<MarkdownData>} - Returns an object with frontMatter, finalPath, and filename.
  * @throws {Error} - If markdown generation fails.
  */

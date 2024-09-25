@@ -115,12 +115,12 @@ const commands = [
     newName: '23---2024-09-24-ep0-fsjam-podcast-llama-shownotes.md'
   },
   {
-    cmd: 'npm run as -- --video "https://ajc.pics/audio/fsjam-short.mp3" --assembly --speaker-labels --speakers-expected 2',
+    cmd: 'npm run as -- --video "https://ajc.pics/audio/fsjam-short.mp3" --assembly --speakerLabels',
     expectedFile: '2024-05-08-fsjam-short-prompt.md',
     newName: '24---2024-05-08-fsjam-short-prompt.md'
   },
   {
-    cmd: 'npm run as -- --video "https://ajc.pics/audio/fsjam-short.mp3" --assembly --speaker-labels --speakers-expected 2 --llama',
+    cmd: 'npm run as -- --video "https://ajc.pics/audio/fsjam-short.mp3" --assembly --speakerLabels --llama',
     expectedFile: '2024-05-08-fsjam-short-llama-shownotes.md',
     newName: '25---2024-05-08-fsjam-short-llama-shownotes.md'
   },

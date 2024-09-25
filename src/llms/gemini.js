@@ -53,7 +53,7 @@ export async function callGemini(transcriptContent, outputFilePath, model = 'GEM
       // Write the generated text to the output file
       await writeFile(outputFilePath, text)
       
-      console.log(`Transcript saved to ${outputFilePath}`)
+      console.log(`\nTranscript saved to:\n  - ${outputFilePath}`)
       console.log(`\nModel: ${actualModel}`)
       
       // Return the model name used

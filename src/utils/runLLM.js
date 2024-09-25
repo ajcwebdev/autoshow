@@ -53,7 +53,7 @@ export async function runLLM(finalPath, frontMatter, llmOpt, options) {
       
       // Remove the temporary file
       await unlink(tempPath)
-      console.log(`Updated markdown file: ${finalPath}-${llmOpt}-shownotes.md`)
+      console.log(`Updated markdown file:\n  - ${finalPath}-${llmOpt}-shownotes.md`)
     } else {
       // If no LLM is selected, just write the prompt and transcript
       await writeFile(`${finalPath}-prompt.md`, `${frontMatter}\n${promptAndTranscript}`)

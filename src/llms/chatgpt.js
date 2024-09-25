@@ -44,7 +44,7 @@ export async function callChatGPT(transcriptContent, outputFilePath, model = 'GP
     // Write the generated content to the output file
     await writeFile(outputFilePath, content)
     
-    console.log(`Transcript saved to ${outputFilePath}`)
+    console.log(`\nTranscript saved to:\n  - ${outputFilePath}`)
     // console.log(`\nChatGPT response:\n\n${JSON.stringify(response, null, 2)}`) // Commented out detailed response logging
     console.log(`\nFinish Reason: ${finish_reason}\nModel: ${usedModel}`)
     console.log(`Token Usage:\n  - ${prompt_tokens} prompt tokens\n  - ${completion_tokens} completion tokens\n  - ${total_tokens} total tokens\n`)

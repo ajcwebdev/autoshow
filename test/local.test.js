@@ -47,7 +47,7 @@ const commands = [
     newName: '09---2024-09-24-ep0-fsjam-podcast-prompt.md'
   },
   {
-    cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --prompt titles summary shortChapters mediumChapters longChapters takeaways questions',
+    cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --prompt titles summary mediumChapters takeaways questions',
     expectedFile: '2024-09-24-ep0-fsjam-podcast-prompt.md',
     newName: '10---2024-09-24-ep0-fsjam-podcast-prompt.md'
   },

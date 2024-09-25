@@ -84,11 +84,11 @@ async function downloadModel(modelName = 'GEMMA_2_2B_Q4_MODEL') {
 /**
  * Main function to call the local Llama model.
  * @param {string} promptAndTranscript - The combined prompt and transcript content.
- * @param {string} tempPath - The temporary file path to save the output.
+ * @param {string} outputFilePath - The file path to save the output.
  * @param {string} [modelName='GEMMA_2_2B_Q4_MODEL'] - The name of the model to use.
  * @returns {Promise<void>}
  */
-export async function callLlama(promptAndTranscript, tempPath, modelName = 'GEMMA_2_2B_Q4_MODEL') {
+export async function callLlama(promptAndTranscript, outputFilePath, modelName = 'GEMMA_2_2B_Q4_MODEL') {
   try {
     // Ensure the model is downloaded
     const modelPath = await downloadModel(modelName)
@@ -103,8 +103,8 @@ export async function callLlama(promptAndTranscript, tempPath, modelName = 'GEMM
 
     // Generate a response and write the response to a temporary file
     const response = await session.prompt(promptAndTranscript)
-    await writeFile(tempPath, response)
-    console.log(`\nTranscript saved to:\n  - ${tempPath}`)
+    await writeFile(outputFilePath, response)
+    console.log(`\nTranscript saved to:\n  - ${outputFilePath}`)
     console.log(`\nModel used:\n  - ${modelName}\n`)
   } catch (error) {
     // Log and re-throw any errors that occur during the process

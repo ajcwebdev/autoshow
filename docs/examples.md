@@ -243,7 +243,7 @@ npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --assembly
 Include speaker labels and number of speakers:
 
 ```bash
-npm run as -- --video "https://ajc.pics/audio/fsjam-short.mp3" --assembly --speaker-labels --speakers-expected 2
+npm run as -- --video "https://ajc.pics/audio/fsjam-short.mp3" --assembly --speakerLabels
 ```
 
 ### Whisper.cpp
@@ -267,10 +267,10 @@ npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --whisper me
 npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --whisper large
 ```
 
-Run `whisper.cpp` in a Docker container with `--whisper-docker`:
+Run `whisper.cpp` in a Docker container with `--whisperDocker`:
 
 ```bash
-npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --whisper-docker tiny
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --whisperDocker base
 ```
 
 ## Docker Compose
@@ -278,8 +278,7 @@ npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --whisper-do
 This will run both `whisper.cpp` and the AutoShow Commander CLI in their own Docker containers.
 
 ```bash
-docker-compose up --build -d
-docker-compose run autoshow --video "https://www.youtube.com/watch?v=MORMZXEaONk" --whisper-docker base
+docker-compose run autoshow --video "https://www.youtube.com/watch?v=MORMZXEaONk" --whisperDocker base
 ```
 
 Currently working on the `llama.cpp` Docker integration so the entire project can be encapsulated in one local Docker Compose file.

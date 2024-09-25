@@ -17,10 +17,6 @@ export async function cleanUpFiles(id) {
     await unlink(`${id}.wav`)
     console.log(`  - ${id}.wav`)
 
-    // Remove .lrc file
-    await unlink(`${id}.lrc`)
-    console.log(`  - ${id}.lrc`)
-
     // Remove .txt file
     await unlink(`${id}.txt`)
     console.log(`  - ${id}.txt`)
@@ -28,6 +24,10 @@ export async function cleanUpFiles(id) {
     // Remove .md file
     await unlink(`${id}.md`)
     console.log(`  - ${id}.md`)
+
+    // Remove .lrc file
+    await unlink(`${id}.lrc`)
+    console.log(`  - ${id}.lrc`)
   } catch (error) {
     // If the error is not "file not found", log the error
     if (error.code !== 'ENOENT') {

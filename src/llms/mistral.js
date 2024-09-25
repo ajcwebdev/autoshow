@@ -43,7 +43,7 @@ export async function callMistral(transcriptContent, outputFilePath, model = 'MI
     
     // Write the generated content to the specified output file
     await writeFile(outputFilePath, content)
-    console.log(`Transcript saved to ${outputFilePath}`)
+    console.log(`\nTranscript saved to:\n  - ${outputFilePath}`)
     
     // Log finish reason, used model, and token usage
     console.log(`\nFinish Reason: ${finishReason}\nModel: ${usedModel}`)

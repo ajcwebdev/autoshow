@@ -42,7 +42,7 @@ export async function callCohere(transcriptContent, outputFilePath, model = 'COM
     // Write the generated text to the output file
     await writeFile(outputFilePath, text)
     
-    console.log(`Transcript saved to ${outputFilePath}`)
+    console.log(`\nTranscript saved to:\n  - ${outputFilePath}`)
     // console.log(`\nCohere response:\n\n${JSON.stringify(response, null, 2)}`) // Commented out detailed response logging
     console.log(`\nFinish Reason: ${finishReason}\nModel: ${actualModel}`)
     console.log(`Token Usage:\n  - ${inputTokens} input tokens\n  - ${outputTokens} output tokens\n`)

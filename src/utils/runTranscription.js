@@ -8,7 +8,6 @@ import { callAssembly } from '../transcription/assembly.js'
 /**
  * @typedef {Object} transcriptOptions
  * @property {boolean} [speakerLabels=false] - Whether to use speaker labels.
- * @property {number} [speakersExpected=1] - The expected number of speakers.
  * @property {string[]} [prompt] - Sections to include in the prompt.
  * @property {string} [whisper] - Whisper model type.
  * @property {string} [whisperDocker] - Whisper model type for Docker.
@@ -42,18 +41,11 @@ export async function runTranscription(
         break
 
       case 'assembly':
-        // Use AssemblyAI for transcription, pass options for speaker labels and number of speakers
-        await callAssembly(
-          `${finalPath}.wav`,
-          finalPath,
-          options.speakerLabels,
-          options.speakersExpected
-        )
-        // Read the transcription result
-        txtContent = await readFile(`${finalPath}.txt`, 'utf8')
+        // Use AssemblyAI for transcription and pass option for speaker labels
+        txtContent = await callAssembly(finalPath, transcriptOpt, options)
         break
 
-      case 'whisper-docker':
+      case 'whisperDocker':
       case 'whisper':
         // Use Whisper (either local or Docker version) for transcription
         txtContent = await callWhisper(finalPath, transcriptOpt, options)

@@ -40,7 +40,6 @@ import { env } from 'node:process'
  * @property {boolean} [deepgram=false] - Use Deepgram for transcription.
  * @property {boolean} [assembly=false] - Use AssemblyAI for transcription.
  * @property {boolean} [speakerLabels=false] - Use speaker labels for AssemblyAI transcription.
- * @property {number} [speakersExpected=1] - Number of expected speakers for AssemblyAI transcription.
  * @property {boolean} [noCleanUp=false] - Do not delete intermediary files after processing.
  */
 
@@ -61,11 +60,10 @@ program
   .option('--order <order>', 'Specify the order for RSS feed processing (newest or oldest)', 'newest')
   .option('--skip <number>', 'Number of items to skip when processing RSS feed', parseInt, 0)
   .option('--whisper [modelType]', 'Use Whisper.cpp for transcription (non-Docker version)')
-  .option('--whisper-docker [modelType]', 'Use Whisper.cpp for transcription (Docker version)')
+  .option('--whisperDocker [modelType]', 'Use Whisper.cpp for transcription (Docker version)')
   .option('--deepgram', 'Use Deepgram for transcription')
   .option('--assembly', 'Use AssemblyAI for transcription')
-  .option('--speaker-labels', 'Use speaker labels for AssemblyAI transcription')
-  .option('--speakers-expected <number>', 'Number of expected speakers for AssemblyAI transcription', parseInt, 1)
+  .option('--speakerLabels', 'Use speaker labels for AssemblyAI transcription')
   .option('--chatgpt [model]', 'Use ChatGPT for processing with optional model specification')
   .option('--claude [model]', 'Use Claude for processing with optional model specification')
   .option('--cohere [model]', 'Use Cohere for processing with optional model specification')
@@ -198,15 +196,6 @@ const INQUIRER_PROMPT = [
     message: 'Do you want to use speaker labels?',
     when: (answers) => answers.transcriptOpt === 'assembly',
     default: false,
-  },
-  {
-    type: 'number',
-    name: 'speakersExpected',
-    message: 'How many speakers are expected?',
-    when: (answers) => answers.speakerLabels,
-    default: 1,
-    validate: (input) =>
-      input > 0 && input <= 25 ? true : 'Please enter a number between 1 and 25.',
   },
   {
     type: 'checkbox',

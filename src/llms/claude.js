@@ -45,7 +45,7 @@ export async function callClaude(transcriptContent, outputFilePath, model = 'CLA
     // Write the generated text to the output file
     await writeFile(outputFilePath, text)
     
-    console.log(`Transcript saved to ${outputFilePath}`)
+    console.log(`\nTranscript saved to:\n  - ${outputFilePath}`)
     // console.log(`\nClaude response:\n\n${JSON.stringify(response, null, 2)}`) // Commented out detailed response logging
     console.log(`\nStop Reason: ${stop_reason}\nModel: ${usedModel}`)
     console.log(`Token Usage:\n  - ${input_tokens} input tokens\n  - ${output_tokens} output tokens\n`)

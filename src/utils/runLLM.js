@@ -1,14 +1,13 @@
 // src/utils/runLLM.js
 
 import { readFile, writeFile, unlink } from 'node:fs/promises'
+import { callLlama } from '../llms/llama.js'
 import { callChatGPT } from '../llms/chatgpt.js'
 import { callClaude } from '../llms/claude.js'
+import { callGemini } from '../llms/gemini.js'
 import { callCohere } from '../llms/cohere.js'
 import { callMistral } from '../llms/mistral.js'
 import { callOcto } from '../llms/octo.js'
-import { callLlama } from '../llms/llama.js'
-// import { callLlamaCpp } from '../llms/llamacpp.js'
-import { callGemini } from '../llms/gemini.js'
 import { generatePrompt } from '../llms/prompt.js'
 import '../types.js'
 
@@ -23,14 +22,13 @@ import '../types.js'
 // Object mapping LLM options to their respective functions
 /** @type {LLMFunctions} */
 const llmFunctions = {
+  llama: callLlama,
   chatgpt: callChatGPT,
   claude: callClaude,
+  gemini: callGemini,
   cohere: callCohere,
   mistral: callMistral,
   octo: callOcto,
-  llama: callLlama,
-  // llamacpp: callLlamaCpp,
-  gemini: callGemini,
 }
 
 /**

@@ -3,13 +3,8 @@
 import { writeFile } from 'node:fs/promises'
 import { env } from 'node:process'
 import { AssemblyAI } from 'assemblyai'
-import '../types.js'
 
-/**
- * Import custom types
- * @typedef {TranscriptOption} TranscriptOption
- * @typedef {ProcessingOptions} ProcessingOptions
- */
+/** @import { TranscriptOption, ProcessingOptions } from '../types.js' */
 
 /**
  * Check if the ASSEMBLY_API_KEY environment variable is set
@@ -25,7 +20,7 @@ const client = new AssemblyAI({ apiKey: env.ASSEMBLY_API_KEY })
  * Main function to handle transcription using AssemblyAI.
  * @param {string} finalPath - The identifier used for naming output files.
  * @param {TranscriptOption} transcriptOpt - The transcription service to use.
- * @param {ProcessingOptions} options - Additional options for processing.
+ * @param {ProcessingOptions} options - Additional processing options.
  * @returns {Promise<string>} - Returns the formatted transcript content.
  * @throws {Error} - If an error occurs during transcription.
  */
@@ -47,22 +42,22 @@ export async function callAssembly(finalPath, transcriptOpt, options) {
     let txtContent = ''
 
     // Helper function to format timestamps
-    const formatTime = timestamp => {
+    const formatTime = (timestamp) => {
       const totalSeconds = Math.floor(timestamp / 1000)
       return `${Math.floor(totalSeconds / 60).toString().padStart(2, '0')}:${(totalSeconds % 60).toString().padStart(2, '0')}`
     }
 
     // Process the transcript based on whether utterances are available
     if (transcript.utterances) {
-      // If utterances are available, format each utterance with speaker labels if used
-      txtContent = transcript.utterances.map(utt => 
+      // If utterances are available, format each with speaker labels if used
+      txtContent = transcript.utterances.map((utt) =>
         `${speakerLabels ? `Speaker ${utt.speaker} ` : ''}(${formatTime(utt.start)}): ${utt.text}`
       ).join('\n')
     } else if (transcript.words) {
       // If only words are available, group them into lines with timestamps
       let currentLine = ''
       let currentTimestamp = formatTime(transcript.words[0].start)
-      transcript.words.forEach(word => {
+      transcript.words.forEach((word) => {
         if (currentLine.length + word.text.length > 80) {
           // Start a new line if the current line exceeds 80 characters
           txtContent += `[${currentTimestamp}] ${currentLine.trim()}\n`

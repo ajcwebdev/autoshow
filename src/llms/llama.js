@@ -8,9 +8,11 @@ import { promisify } from 'node:util'
 
 const execAsync = promisify(exec)
 
+/** @import { LLMFunction, LlamaModelType } from '../types.js' */
+
 /**
- * Define local model configurations
- * @type {Object.<string, {filename: string, url: string}>}
+ * Map of local model identifiers to their filenames and URLs
+ * @type {Record<LlamaModelType, {filename: string, url: string}>}
  */
 const localModels = {
   LLAMA_3_1_8B_Q4_MODEL: {
@@ -41,7 +43,7 @@ const localModels = {
 
 /**
  * Function to download the model if it doesn't exist.
- * @param {string} [modelName='GEMMA_2_2B_Q4_MODEL'] - The name of the model to use.
+ * @param {LlamaModelType} [modelName='GEMMA_2_2B_Q4_MODEL'] - The name of the model to use.
  * @returns {Promise<string>} - The path to the downloaded model.
  * @throws {Error} - If the model download fails.
  */
@@ -85,15 +87,16 @@ async function downloadModel(modelName = 'GEMMA_2_2B_Q4_MODEL') {
   }
 }
 
+/** @type {LLMFunction} */
 /**
  * Main function to call the local Llama model.
  * @param {string} promptAndTranscript - The combined prompt and transcript content.
- * @param {string} outputFilePath - The file path to save the output.
- * @param {string} [modelName='GEMMA_2_2B_Q4_MODEL'] - The name of the model to use.
+ * @param {string} tempPath - The temporary file path to write the LLM output.
+ * @param {LlamaModelType} [modelName='GEMMA_2_2B_Q4_MODEL'] - The name of the model to use.
  * @returns {Promise<void>}
  * @throws {Error} - If an error occurs during processing.
  */
-export async function callLlama(promptAndTranscript, outputFilePath, modelName = 'GEMMA_2_2B_Q4_MODEL') {
+export async function callLlama(promptAndTranscript, tempPath, modelName = 'GEMMA_2_2B_Q4_MODEL') {
   try {
     // Ensure the model is downloaded
     const modelPath = await downloadModel(modelName)
@@ -108,8 +111,8 @@ export async function callLlama(promptAndTranscript, outputFilePath, modelName =
 
     // Generate a response and write the response to a file
     const response = await session.prompt(promptAndTranscript)
-    await writeFile(outputFilePath, response)
-    console.log(`\nTranscript saved to:\n  - ${outputFilePath}`)
+    await writeFile(tempPath, response)
+    console.log(`\nTranscript saved to:\n  - ${tempPath}`)
     console.log(`\nModel used:\n  - ${modelName}\n`)
   } catch (error) {
     console.error('Error in callLlama:', error)

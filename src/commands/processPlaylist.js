@@ -4,22 +4,16 @@ import { writeFile } from 'node:fs/promises'
 import { processVideo } from './processVideo.js'
 import { execFile } from 'node:child_process'
 import { promisify } from 'node:util'
-import '../types.js'
+
+/** @import { LLMOption, TranscriptOption, ProcessingOptions } from '../types.js' */
 
 const execFilePromise = promisify(execFile)
 
 /**
- * Custom types
- * @typedef {LLMOption} LLMOption
- * @typedef {TranscriptOption} TranscriptOption
- * @typedef {ProcessingOptions} ProcessingOptions
- */
-
-/**
  * Main function to process a YouTube playlist.
  * @param {string} playlistUrl - The URL of the YouTube playlist to process.
- * @param {LLMOption} llmOpt - The selected Language Model option.
- * @param {TranscriptOption} transcriptOpt - The transcription service to use.
+ * @param {LLMOption} [llmOpt] - The selected Language Model option.
+ * @param {TranscriptOption} [transcriptOpt] - The transcription service to use.
  * @param {ProcessingOptions} options - Additional options for processing.
  * @returns {Promise<void>}
  */

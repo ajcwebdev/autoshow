@@ -4,9 +4,11 @@ import { writeFile } from 'node:fs/promises'
 import { env } from 'node:process'
 import { GoogleGenerativeAI } from "@google/generative-ai"
 
+/** @import { LLMFunction, GeminiModelType } from '../types.js' */
+
 /**
- * Define available Gemini models
- * @type {Object.<string, string>}
+ * Map of Gemini model identifiers to their API names
+ * @type {Record<GeminiModelType, string>}
  */
 const geminiModel = {
   GEMINI_1_5_FLASH: "gemini-1.5-flash",
@@ -21,15 +23,16 @@ const geminiModel = {
  */
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
+/** @type {LLMFunction} */
 /**
  * Main function to call Gemini API.
- * @param {string} transcriptContent - The transcript content to process.
- * @param {string} outputFilePath - The file path to save the output.
- * @param {string} [model='GEMINI_1_5_FLASH'] - The Gemini model to use.
- * @returns {Promise<string>} - The actual model name used.
+ * @param {string} promptAndTranscript - The combined prompt and transcript text to process.
+ * @param {string} tempPath - The temporary file path to write the LLM output.
+ * @param {GeminiModelType} [model='GEMINI_1_5_FLASH'] - The Gemini model to use.
+ * @returns {Promise<void>}
  * @throws {Error} - If an error occurs during the API call.
  */
-export async function callGemini(transcriptContent, outputFilePath, model = 'GEMINI_1_5_FLASH') {
+export async function callGemini(promptAndTranscript, tempPath, model = 'GEMINI_1_5_FLASH') {
   // Check if the GEMINI_API_KEY environment variable is set
   if (!env.GEMINI_API_KEY) {
     throw new Error('GEMINI_API_KEY environment variable is not set.')
@@ -43,13 +46,13 @@ export async function callGemini(transcriptContent, outputFilePath, model = 'GEM
   // Get the generative model
   const gem = genAI.getGenerativeModel({ model: actualModel })
   
-  const maxRetries = 3; // Maximum number of retry attempts
+  const maxRetries = 3 // Maximum number of retry attempts
   
   // Retry loop
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
       // Generate content using the selected model
-      const result = await gem.generateContent(transcriptContent)
+      const result = await gem.generateContent(promptAndTranscript)
       
       // Get the response from the generated content
       const response = await result.response
@@ -63,13 +66,12 @@ export async function callGemini(transcriptContent, outputFilePath, model = 'GEM
       }
       
       // Write the generated text to the output file
-      await writeFile(outputFilePath, text)
+      await writeFile(tempPath, text)
       
-      console.log(`\nTranscript saved to:\n  - ${outputFilePath}`)
+      console.log(`\nTranscript saved to:\n  - ${tempPath}`)
       console.log(`\nModel: ${actualModel}`)
       
-      // Return the model name used
-      return model
+      return
     } catch (error) {
       console.error(`Error in callGemini (attempt ${attempt}/${maxRetries}):`, error)
       

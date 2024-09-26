@@ -4,16 +4,11 @@ import { execFile } from 'node:child_process'
 import { promisify } from 'node:util'
 import { writeFile } from 'node:fs/promises'
 import { basename, extname } from 'node:path'
-import '../types.js'
+
+/** @import { MarkdownData, RSSItem } from '../types.js' */
 
 // Promisify the execFile function for use with async/await
 const execFilePromise = promisify(execFile)
-
-/**
- * Import custom types
- * @typedef {MarkdownData} MarkdownData
- * @typedef {RSSItem} RSSItem
- */
 
 /**
  * Function to generate markdown for RSS feed items.
@@ -32,7 +27,8 @@ export async function generateRSSMarkdown(item) {
       .trim()
       .replace(/[\s_]+/g, '-')
       .replace(/-+/g, '-')
-      .toLowerCase().slice(0, 200)
+      .toLowerCase()
+      .slice(0, 200)
 
     // Construct the filename, path, and front matter for the markdown file
     const filename = `${publishDate}-${sanitizedTitle}`

@@ -379,100 +379,38 @@ npm run test-local
 This can be a useful way of creating a single markdown file of the entire project for giving to an LLM as context to develop new features or debug code. I'll usually start a conversation by including this along with a prompt that explains what I want changed or added.
 
 ```bash
-cat README.md >> LLM.md && \
-  echo '\n\n```' >> LLM.md && \
-  tree >> LLM.md && \
-  echo '\n```' >> LLM.md && \
-  echo '\n\n' >> LLM.md && \
-  cat docs/examples.md >> LLM.md && \
-  echo '\n## AutoShow CLI Entry Point' >> LLM.md && \
-  echo '\n\n```js' >> LLM.md && \
-  cat src/autoshow.js >> LLM.md && \
-  echo '\n```\n' >> LLM.md && \
-  echo '## Utility Functions\n' >> LLM.md && \
-  echo '```js' >> LLM.md && \
-  cat src/utils/cleanUpFiles.js >> LLM.md && \
-  echo '\n```\n' >> LLM.md && \
-  echo '```js' >> LLM.md && \
-  cat src/utils/downloadAudio.js >> LLM.md && \
-  echo '\n```\n' >> LLM.md && \
-  echo '```js' >> LLM.md && \
-  cat src/utils/generateMarkdown.js >> LLM.md && \
-  echo '\n```\n' >> LLM.md && \
-  echo '```js' >> LLM.md && \
-  cat src/utils/runLLM.js >> LLM.md && \
-  echo '\n```\n' >> LLM.md && \
-  echo '```js' >> LLM.md && \
-  cat src/utils/runTranscription.js >> LLM.md && \
-  echo '\n```\n' >> LLM.md && \
-  echo '## Transcription Functions\n' >> LLM.md && \
-  echo '```js' >> LLM.md && \
-  cat src/transcription/whisper.js >> LLM.md && \
-  echo '\n```\n' >> LLM.md && \
-  echo '```js' >> LLM.md && \
-  cat src/transcription/deepgram.js >> LLM.md && \
-  echo '\n```\n' >> LLM.md && \
-  echo '```js' >> LLM.md && \
-  cat src/transcription/assembly.js >> LLM.md && \
-  echo '\n```\n' >> LLM.md && \
-  echo '## LLM Functions\n' >> LLM.md && \
-  echo '```js' >> LLM.md && \
-  cat src/llms/prompt.js >> LLM.md && \
-  echo '\n```\n' >> LLM.md && \
-  echo '```js' >> LLM.md && \
-  cat src/llms/chatgpt.js >> LLM.md && \
-  echo '\n```\n' >> LLM.md && \
-  echo '```js' >> LLM.md && \
-  cat src/llms/claude.js >> LLM.md && \
-  echo '\n```\n' >> LLM.md && \
-  echo '```js' >> LLM.md && \
-  cat src/llms/cohere.js >> LLM.md && \
-  echo '\n```\n' >> LLM.md && \
-  echo '```js' >> LLM.md && \
-  cat src/llms/gemini.js >> LLM.md && \
-  echo '\n```\n' >> LLM.md && \
-  echo '```js' >> LLM.md && \
-  cat src/llms/llama.js >> LLM.md && \
-  echo '\n```\n' >> LLM.md && \
-  echo '```js' >> LLM.md && \
-  cat src/llms/llamacpp.js >> LLM.md && \
-  echo '\n```\n' >> LLM.md && \
-  echo '```js' >> LLM.md && \
-  cat src/llms/mistral.js >> LLM.md && \
-  echo '\n```\n' >> LLM.md && \
-  echo '```js' >> LLM.md && \
-  cat src/llms/octo.js >> LLM.md && \
-  echo '\n```\n' >> LLM.md && \
-  echo '## Process Commands\n' >> LLM.md && \
-  echo '```js' >> LLM.md && \
-  cat src/commands/processVideo.js >> LLM.md && \
-  echo '\n```\n' >> LLM.md && \
-  echo '```js' >> LLM.md && \
-  cat src/commands/processURLs.js >> LLM.md && \
-  echo '\n```\n' >> LLM.md && \
-  echo '```js' >> LLM.md && \
-  cat src/commands/processRSS.js >> LLM.md && \
-  echo '\n```\n' >> LLM.md && \
-  echo '```js' >> LLM.md && \
-  cat src/commands/processPlaylist.js >> LLM.md && \
-  echo '\n```\n' >> LLM.md && \
-  echo '```js' >> LLM.md && \
-  cat src/commands/processFile.js >> LLM.md && \
-  echo '\n```\n' >> LLM.md && \
-  echo '## Docker Files\n' >> LLM.md && \
-  echo '```Dockerfile' >> LLM.md && \
-  cat .github/whisper.Dockerfile >> LLM.md && \
-  echo '\n```\n' >> LLM.md && \
-  echo '```Dockerfile' >> LLM.md && \
-  cat .github/llama.Dockerfile >> LLM.md && \
-  echo '\n```\n' >> LLM.md && \
-  echo '```Dockerfile' >> LLM.md && \
-  cat Dockerfile >> LLM.md && \
-  echo '\n```\n' >> LLM.md && \
-  echo '```yml' >> LLM.md && \
-  cat docker-compose.yml >> LLM.md && \
-  echo '\n```\n' >> LLM.md && \
-  echo '```bash' >> LLM.md && \
-  cat docker-entrypoint.sh >> LLM.md && \
-  echo '\n```\n' >> LLM.md
+export MD="LLM.md" && export COMMANDS="src/commands" && export UTILS="src/utils" && \
+  export LLMS="src/llms" && export TRANSCRIPT="src/transcription" && \
+  export OPEN="\n\n\`\`\`js" && export CLOSE="\n\`\`\`\n\n" && cat README.md >> $MD && \
+  echo '\n\n### Directory and File Structure\n\n```' >> $MD && tree >> $MD && \
+  echo '```\n\n## Example CLI Commands Test Suite'$OPEN'' >> $MD && cat test/all.test.js >> $MD && \
+  echo ''$CLOSE'## JSDoc Types'$OPEN'' >> $MD && cat src/types.js >> $MD && \
+  echo ''$CLOSE'## AutoShow CLI Entry Point'$OPEN'' >> $MD && cat src/autoshow.js >> $MD && \
+  echo ''$CLOSE'## Utility Functions\n\n### Generate Markdown'$OPEN'' >> $MD && cat $UTILS/generateMarkdown.js >> $MD && \
+  echo ''$CLOSE'### Download Audio'$OPEN'' >> $MD && cat $UTILS/downloadAudio.js >> $MD && \
+  echo ''$CLOSE'### Run Transcription'$OPEN'' >> $MD && cat $UTILS/runTranscription.js >> $MD && \
+  echo ''$CLOSE'### Run LLM'$OPEN'' >> $MD && cat $UTILS/runLLM.js >> $MD && \
+  echo ''$CLOSE'### Clean Up Files'$OPEN'' >> $MD && cat $UTILS/cleanUpFiles.js >> $MD && \
+  echo ''$CLOSE'## Process Commands\n\n### Process Video'$OPEN'' >> $MD && cat $COMMANDS/processVideo.js >> $MD && \
+  echo ''$CLOSE'### Process Playlist'$OPEN'' >> $MD && cat $COMMANDS/processPlaylist.js >> $MD && \
+  echo ''$CLOSE'### Process URLs'$OPEN'' >> $MD && cat $COMMANDS/processURLs.js >> $MD && \
+  echo ''$CLOSE'### Process RSS'$OPEN'' >> $MD && cat $COMMANDS/processRSS.js >> $MD && \
+  echo ''$CLOSE'### Process File'$OPEN'' >> $MD && cat $COMMANDS/processFile.js >> $MD && \
+  echo ''$CLOSE'## Transcription Functions\n\n### Call Whisper'$OPEN'' >> $MD && cat $TRANSCRIPT/whisper.js >> $MD && \
+  echo ''$CLOSE'### Call Deepgram'$OPEN'' >> $MD && cat $TRANSCRIPT/deepgram.js >> $MD && \
+  echo ''$CLOSE'### Call Assembly'$OPEN'' >> $MD && cat $TRANSCRIPT/assembly.js >> $MD && \
+  echo ''$CLOSE'## LLM Functions\n\n### Prompt Function'$OPEN'' >> $MD && cat $LLMS/prompt.js >> $MD && \
+  echo ''$CLOSE'### Call ChatGPT'$OPEN'' >> $MD && cat $LLMS/chatgpt.js >> $MD && \
+  echo ''$CLOSE'### Call Claude'$OPEN'' >> $MD && cat $LLMS/claude.js >> $MD && \
+  echo ''$CLOSE'### Call Cohere'$OPEN'' >> $MD && cat $LLMS/cohere.js >> $MD && \
+  echo ''$CLOSE'### Call Gemini'$OPEN'' >> $MD && cat $LLMS/gemini.js >> $MD && \
+  echo ''$CLOSE'### Call Llama.cpp'$OPEN'' >> $MD && cat $LLMS/llama.js >> $MD && \
+  echo ''$CLOSE'### Call Mistral'$OPEN'' >> $MD && cat $LLMS/mistral.js >> $MD && \
+  echo ''$CLOSE'### Call Octo'$OPEN'' >> $MD && cat $LLMS/octo.js >> $MD && \
+  echo ''$CLOSE'## Docker Files\n\n```Dockerfile' >> $MD && cat .github/whisper.Dockerfile >> $MD && \
+  echo ''$CLOSE'```Dockerfile' >> $MD && cat .github/llama.Dockerfile >> $MD && \
+  echo ''$CLOSE'```Dockerfile' >> $MD && cat Dockerfile >> $MD && \
+  echo ''$CLOSE'```yml' >> $MD && cat docker-compose.yml >> $MD && \
+  echo ''$CLOSE'```bash' >> $MD && cat docker-entrypoint.sh >> $MD && \
+  echo '\n```\n' >> $MD
 ```

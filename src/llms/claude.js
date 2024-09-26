@@ -4,9 +4,11 @@ import { writeFile } from 'node:fs/promises'
 import { env } from 'node:process'
 import { Anthropic } from '@anthropic-ai/sdk'
 
+/** @import { LLMFunction, ClaudeModelType } from '../types.js' */
+
 /**
- * Define available Claude models
- * @type {Object.<string, string>}
+ * Map of Claude model identifiers to their API names
+ * @type {Record<ClaudeModelType, string>}
  */
 const claudeModel = {
   CLAUDE_3_5_SONNET: "claude-3-5-sonnet-20240620",
@@ -15,15 +17,16 @@ const claudeModel = {
   CLAUDE_3_HAIKU: "claude-3-haiku-20240307",
 }
 
+/** @type {LLMFunction} */
 /**
  * Main function to call Claude API.
- * @param {string} transcriptContent - The transcript content to process.
- * @param {string} outputFilePath - The file path to save the output.
- * @param {string} [model='CLAUDE_3_HAIKU'] - The Claude model to use.
- * @returns {Promise<string>} - The actual model name used.
+ * @param {string} promptAndTranscript - The combined prompt and transcript text to process.
+ * @param {string} tempPath - The temporary file path to write the LLM output.
+ * @param {ClaudeModelType} [model='CLAUDE_3_HAIKU'] - The Claude model to use.
+ * @returns {Promise<void>}
  * @throws {Error} - If an error occurs during the API call.
  */
-export async function callClaude(transcriptContent, outputFilePath, model = 'CLAUDE_3_HAIKU') {
+export async function callClaude(promptAndTranscript, tempPath, model = 'CLAUDE_3_HAIKU') {
   // Check if the ANTHROPIC_API_KEY environment variable is set
   if (!env.ANTHROPIC_API_KEY) {
     throw new Error('ANTHROPIC_API_KEY environment variable is not set.')
@@ -40,7 +43,7 @@ export async function callClaude(transcriptContent, outputFilePath, model = 'CLA
     const response = await anthropic.messages.create({
       model: actualModel,
       max_tokens: 4000, // Maximum number of tokens in the response
-      messages: [{ role: 'user', content: transcriptContent }] // The input message (transcript content)
+      messages: [{ role: 'user', content: promptAndTranscript }] // The input message (transcript content)
     })
     
     // Destructure the response to get relevant information
@@ -52,15 +55,13 @@ export async function callClaude(transcriptContent, outputFilePath, model = 'CLA
     } = response
     
     // Write the generated text to the output file
-    await writeFile(outputFilePath, text)
+    await writeFile(tempPath, text)
     
-    console.log(`\nTranscript saved to:\n  - ${outputFilePath}`)
+    console.log(`\nTranscript saved to:\n  - ${tempPath}`)
     // console.log(`\nClaude response:\n\n${JSON.stringify(response, null, 2)}`) // Commented out detailed response logging
     console.log(`\nStop Reason: ${stop_reason}\nModel: ${usedModel}`)
     console.log(`Token Usage:\n  - ${input_tokens} input tokens\n  - ${output_tokens} output tokens\n`)
     
-    // Return the actual model name used
-    return Object.keys(claudeModel).find(key => claudeModel[key] === usedModel) || model
   } catch (error) {
     console.error('Error:', error)
     throw error // Re-throw the error for handling in the calling function

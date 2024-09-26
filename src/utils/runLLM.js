@@ -9,17 +9,9 @@ import { callCohere } from '../llms/cohere.js'
 import { callMistral } from '../llms/mistral.js'
 import { callOcto } from '../llms/octo.js'
 import { generatePrompt } from '../llms/prompt.js'
-import '../types.js'
 
-/**
- * Import custom types
- * @typedef {LLMOption} LLMOption
- * @typedef {ProcessingOptions} ProcessingOptions
- * @typedef {LLMFunction} LLMFunction
- * @typedef {LLMFunctions} LLMFunctions
- */
+/** @import { LLMOption, ProcessingOptions, LLMFunction, LLMFunctions } from '../types.js' */
 
-// Object mapping LLM options to their respective functions
 /** @type {LLMFunctions} */
 const llmFunctions = {
   llama: callLlama,
@@ -38,6 +30,7 @@ const llmFunctions = {
  * @param {LLMOption} llmOpt - The selected Language Model option.
  * @param {ProcessingOptions} options - Additional options for processing.
  * @returns {Promise<void>}
+ * @throws {Error} - If the LLM processing fails or an error occurs during execution.
  */
 export async function runLLM(finalPath, frontMatter, llmOpt, options) {
   try {
@@ -47,7 +40,9 @@ export async function runLLM(finalPath, frontMatter, llmOpt, options) {
     const promptAndTranscript = `${generatePrompt(options.prompt)}${transcript}`
     
     if (llmOpt) {
-      // Get the appropriate LLM function based on the option
+    /** Get the appropriate LLM function based on the option
+      * @type {LLMFunction}
+      */
       const llmFunction = llmFunctions[llmOpt]
       if (!llmFunction) throw new Error(`Invalid LLM option: ${llmOpt}`)
       

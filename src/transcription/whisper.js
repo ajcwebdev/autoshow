@@ -4,19 +4,14 @@ import { readFile, writeFile, access } from 'node:fs/promises'
 import { exec } from 'node:child_process'
 import { promisify } from 'node:util'
 import { basename, join } from 'node:path'
-import '../types.js'
 
 const execPromise = promisify(exec)
 
-/**
- * Import custom types
- * @typedef {TranscriptOption} TranscriptOption
- * @typedef {ProcessingOptions} ProcessingOptions
- */
+/** @import { TranscriptOption, ProcessingOptions, WhisperModelType } from '../types.js' */
 
 /**
  * Define available Whisper models
- * @type {Object.<string, string>}
+ * @type {Record<WhisperModelType, string>}
  */
 const WHISPER_MODELS = {
   'tiny': 'ggml-tiny.bin', 'tiny.en': 'ggml-tiny.en.bin',
@@ -31,13 +26,13 @@ const WHISPER_MODELS = {
  * Main function to handle transcription using Whisper.
  * @param {string} finalPath - The base path for the files.
  * @param {TranscriptOption} transcriptOpt - The transcription service to use.
- * @param {ProcessingOptions} options - Additional options for processing.
+ * @param {ProcessingOptions} options - Additional processing options.
  * @returns {Promise<string>} - Returns the formatted transcript content.
  * @throws {Error} - If an error occurs during transcription.
  */
 export async function callWhisper(finalPath, transcriptOpt, options) {
   try {
-    // Determine which Whisper model to use
+    /** @type {WhisperModelType} */
     const whisperModel = options.whisper || options.whisperDocker || 'base'
     if (!(whisperModel in WHISPER_MODELS)) {
       throw new Error(`Unknown model type: ${whisperModel}`)
@@ -54,8 +49,8 @@ export async function callWhisper(finalPath, transcriptOpt, options) {
     // Read, process, and format the generated LRC file
     const lrcContent = await readFile(`${finalPath}.lrc`, 'utf8')
     const txtContent = lrcContent.split('\n')
-      .filter(line => !line.startsWith('[by:whisper.cpp]'))
-      .map(line => line.replace(/\[(\d{2,3}):(\d{2})\.(\d{2})\]/g, (_, p1, p2) => `[${p1}:${p2}]`))
+      .filter((line) => !line.startsWith('[by:whisper.cpp]'))
+      .map((line) => line.replace(/\[(\d{2,3}):(\d{2})\.(\d{2})\]/g, (_, p1, p2) => `[${p1}:${p2}]`))
       .join('\n')
 
     // Write the formatted content to a text file
@@ -72,7 +67,7 @@ export async function callWhisper(finalPath, transcriptOpt, options) {
  * Function to handle Whisper transcription using Docker.
  * @param {string} finalPath - The base path for the files.
  * @param {string} modelName - The model file name.
- * @param {string} whisperModel - The Whisper model type.
+ * @param {WhisperModelType} whisperModel - The Whisper model type.
  * @returns {Promise<void>}
  * @throws {Error} - If an error occurs during Docker transcription.
  */
@@ -125,7 +120,7 @@ async function callWhisperDocker(finalPath, modelName, whisperModel) {
  * Function to handle Whisper transcription without Docker.
  * @param {string} finalPath - The base path for the files.
  * @param {string} modelName - The model file name.
- * @param {string} whisperModel - The Whisper model type.
+ * @param {WhisperModelType} whisperModel - The Whisper model type.
  * @returns {Promise<void>}
  * @throws {Error} - If an error occurs during transcription.
  */

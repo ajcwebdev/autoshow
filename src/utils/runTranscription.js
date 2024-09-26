@@ -4,19 +4,14 @@ import { readFile, writeFile } from 'node:fs/promises'
 import { callWhisper } from '../transcription/whisper.js'
 import { callDeepgram } from '../transcription/deepgram.js'
 import { callAssembly } from '../transcription/assembly.js'
-import '../types.js'
 
-/**
- * Import custom types
- * @typedef {TranscriptOption} TranscriptOption
- * @typedef {ProcessingOptions} ProcessingOptions
- */
+/** @import { TranscriptOption, ProcessingOptions } from '../types.js' */
 
 /**
  * Main function to run transcription.
  * @param {string} finalPath - The base path for the files.
  * @param {TranscriptOption} transcriptOpt - The transcription service to use.
- * @param {ProcessingOptions} [options={}] - Additional options for processing.
+ * @param {ProcessingOptions} [options={}] - Additional processing options.
  * @param {string} [frontMatter=''] - Optional front matter content for the markdown file.
  * @returns {Promise<string>} - Returns the final content including markdown and transcript.
  * @throws {Error} - If the transcription service fails or an error occurs during processing.

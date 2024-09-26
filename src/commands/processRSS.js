@@ -11,15 +11,8 @@ import { downloadAudio } from '../utils/downloadAudio.js'
 import { runTranscription } from '../utils/runTranscription.js'
 import { runLLM } from '../utils/runLLM.js'
 import { cleanUpFiles } from '../utils/cleanUpFiles.js'
-import '../types.js'
 
-/**
- * Import custom types
- * @typedef {LLMOption} LLMOption
- * @typedef {TranscriptOption} TranscriptOption
- * @typedef {ProcessingOptions} ProcessingOptions
- * @typedef {RSSItem} RSSItem
- */
+/** @import { LLMOption, TranscriptOption, ProcessingOptions, RSSItem } from '../types.js' */
 
 // Initialize XML parser with specific options
 const parser = new XMLParser({
@@ -31,8 +24,8 @@ const parser = new XMLParser({
 /**
  * Process a single item from the RSS feed.
  * @param {RSSItem} item - The item to process.
- * @param {TranscriptOption} transcriptOpt - The transcription service to use.
- * @param {LLMOption} llmOpt - The selected Language Model option.
+ * @param {TranscriptOption} [transcriptOpt] - The transcription service to use.
+ * @param {LLMOption} [llmOpt] - The selected Language Model option.
  * @param {ProcessingOptions} options - Additional options for processing.
  * @returns {Promise<void>}
  */
@@ -63,8 +56,8 @@ async function processItem(item, transcriptOpt, llmOpt, options) {
 /**
  * Main function to process an RSS feed.
  * @param {string} rssUrl - The URL of the RSS feed to process.
- * @param {LLMOption} llmOpt - The selected Language Model option.
- * @param {TranscriptOption} transcriptOpt - The transcription service to use.
+ * @param {LLMOption} [llmOpt] - The selected Language Model option.
+ * @param {TranscriptOption} [transcriptOpt] - The transcription service to use.
  * @param {ProcessingOptions} options - Additional options for processing.
  * @returns {Promise<void>}
  */

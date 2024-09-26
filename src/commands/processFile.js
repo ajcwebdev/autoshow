@@ -5,20 +5,14 @@ import { downloadFileAudio } from '../utils/downloadAudio.js'
 import { runTranscription } from '../utils/runTranscription.js'
 import { runLLM } from '../utils/runLLM.js'
 import { cleanUpFiles } from '../utils/cleanUpFiles.js'
-import '../types.js'
 
-/**
- * Import custom types
- * @typedef {LLMOption} LLMOption
- * @typedef {TranscriptOption} TranscriptOption
- * @typedef {ProcessingOptions} ProcessingOptions
- */
+/** @import { LLMOption, TranscriptOption, ProcessingOptions } from '../types.js' */
 
 /**
  * Main function to process a local audio or video file.
  * @param {string} filePath - The path to the local file to process.
- * @param {LLMOption} llmOpt - The selected Language Model option.
- * @param {TranscriptOption} transcriptOpt - The transcription service to use.
+ * @param {LLMOption} [llmOpt] - The selected Language Model option.
+ * @param {TranscriptOption} [transcriptOpt] - The transcription service to use.
  * @param {ProcessingOptions} options - Additional options for processing.
  * @returns {Promise<void>}
  */

@@ -31,13 +31,13 @@ export async function callDeepgram(input, id) {
       // Use URL or file content based on input type
       isUrl ? { url: input } : await readFile(input),
       // Use the "nova-2" model with smart formatting
-      { model: "nova-2", smart_format: true }
+      { model: 'nova-2', smart_format: true }
     )
 
     // Process and format the transcription result
     const formattedTranscript = result.results.channels[0].alternatives[0].paragraphs.paragraphs
-      .flatMap(paragraph => paragraph.sentences)
-      .map(sentence => {
+      .flatMap((paragraph) => paragraph.sentences)
+      .map((sentence) => {
         // Format timestamp and text for each sentence
         const minutes = Math.floor(sentence.start / 60).toString().padStart(2, '0')
         const seconds = Math.floor(sentence.start % 60).toString().padStart(2, '0')
@@ -51,6 +51,6 @@ export async function callDeepgram(input, id) {
   } catch (error) {
     // Log any errors that occur during the transcription process
     console.error('Error processing the transcription:', error)
-    throw error  // Re-throw the error for handling in the calling function
+    throw error // Re-throw the error for handling in the calling function
   }
 }

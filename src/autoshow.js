@@ -16,16 +16,8 @@ import { processURLs } from './commands/processURLs.js'
 import { processFile } from './commands/processFile.js'
 import { processRSS } from './commands/processRSS.js'
 import { argv } from 'node:process'
-import './types.js'
 
-/**
- * Custom types
- * @typedef {LLMOption} LLMOption
- * @typedef {TranscriptOption} TranscriptOption
- * @typedef {ProcessingOptions} ProcessingOptions
- * @typedef {InquirerAnswers} InquirerAnswers
- * @typedef {HandlerFunction} HandlerFunction
- */
+/** @import { ProcessingOptions, InquirerAnswers, InquirerQuestions, HandlerFunction, LLMOption, TranscriptOption, WhisperModelType } from './types.js' */
 
 // Initialize the command-line interface
 const program = new Command()
@@ -58,6 +50,7 @@ program
   .option('--noCleanUp', 'Do not delete intermediary files after processing')
 
 // Interactive prompts using inquirer
+/** @type {InquirerQuestions} */
 const INQUIRER_PROMPT = [
   {
     type: 'list',
@@ -170,7 +163,7 @@ const INQUIRER_PROMPT = [
     type: 'list',
     name: 'whisperModel',
     message: 'Select the Whisper model type:',
-    choices: ['tiny', 'base', 'small', 'medium', 'large'],
+    choices: ['tiny', 'tiny.en', 'base', 'base.en', 'small', 'small.en', 'medium', 'medium.en', 'large', 'large-v1', 'large-v2'],
     when: (answers) => answers.transcriptOpt === 'whisper',
     default: 'large',
   },
@@ -225,9 +218,9 @@ async function handleInteractivePrompt(options) {
   // Handle transcription options
   if (answers.transcriptOpt === 'whisper') {
     if (answers.useDocker) {
-      options.whisperDocker = answers.whisperModel
+      options.whisperDocker = /** @type {WhisperModelType} */ (answers.whisperModel)
     } else {
-      options.whisper = answers.whisperModel
+      options.whisper = /** @type {WhisperModelType} */ (answers.whisperModel)
     }
   } else {
     options[answers.transcriptOpt] = true
@@ -277,7 +270,7 @@ program.action(async (options) => {
    * Determine the selected LLM option
    * @type {LLMOption | undefined}
    */
-  const llmOpt = /** @type {LLMOption} */ (['chatgpt', 'claude', 'cohere', 'mistral', 'octo', 'llama', 'gemini'].find(
+  const llmOpt = /** @type {LLMOption | undefined} */ (['chatgpt', 'claude', 'cohere', 'mistral', 'octo', 'llama', 'gemini'].find(
     (option) => options[option]
   ))
 
@@ -285,7 +278,7 @@ program.action(async (options) => {
    * Determine the transcription service to use
    * @type {TranscriptOption | undefined}
    */
-  const transcriptOpt = /** @type {TranscriptOption} */ (['whisper', 'whisperDocker', 'deepgram', 'assembly'].find(
+  const transcriptOpt = /** @type {TranscriptOption | undefined} */ (['whisper', 'whisperDocker', 'deepgram', 'assembly'].find(
     (option) => options[option]
   ))
 

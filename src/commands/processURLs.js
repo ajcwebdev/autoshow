@@ -3,20 +3,14 @@
 import { readFile } from 'node:fs/promises'
 import { processVideo } from './processVideo.js'
 import { resolve } from 'node:path'
-import '../types.js'
 
-/**
- * Import custom types
- * @typedef {LLMOption} LLMOption
- * @typedef {TranscriptOption} TranscriptOption
- * @typedef {ProcessingOptions} ProcessingOptions
- */
+/** @import { LLMOption, TranscriptOption, ProcessingOptions } from '../types.js' */
 
 /**
  * Main function to process URLs from a file.
  * @param {string} filePath - The path to the file containing URLs.
- * @param {LLMOption} llmOpt - The selected Language Model option.
- * @param {TranscriptOption} transcriptOpt - The transcription service to use.
+ * @param {LLMOption} [llmOpt] - The selected Language Model option.
+ * @param {TranscriptOption} [transcriptOpt] - The transcription service to use.
  * @param {ProcessingOptions} options - Additional options for processing.
  * @returns {Promise<void>}
  */

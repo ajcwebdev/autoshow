@@ -4,7 +4,12 @@ import { writeFile } from 'node:fs/promises'
 import { env } from 'node:process'
 import { Mistral } from '@mistralai/mistralai'
 
-// Define available Mistral AI models
+/** @import { LLMFunction, MistralModelType } from '../types.js' */
+
+/**
+ * Map of Mistral model identifiers to their API names
+ * @type {Record<MistralModelType, string>}
+ */
 const mistralModel = {
   MIXTRAL_8x7b: "open-mixtral-8x7b",
   MIXTRAL_8x22b: "open-mixtral-8x22b",
@@ -12,14 +17,20 @@ const mistralModel = {
   MISTRAL_NEMO: "open-mistral-nemo"
 }
 
+/** @type {LLMFunction} */
 /**
  * Main function to call Mistral AI API.
- * @param {string} transcriptContent - The transcript content to process.
- * @param {string} outputFilePath - The file path to save the output.
- * @param {string} [model='MISTRAL_NEMO'] - The Mistral model to use.
- * @returns {Promise<string>} - The actual model name used.
+ * @param {string} promptAndTranscript - The combined prompt and transcript text to process.
+ * @param {string} tempPath - The temporary file path to write the LLM output.
+ * @param {MistralModelType} [model='MISTRAL_NEMO'] - The Mistral model to use.
+ * @returns {Promise<void>}
+ * @throws {Error} - If an error occurs during the API call.
  */
-export async function callMistral(transcriptContent, outputFilePath, model = 'MISTRAL_NEMO') {
+export async function callMistral(promptAndTranscript, tempPath, model = 'MISTRAL_NEMO') {
+  // Check if the MISTRAL_API_KEY environment variable is set
+  if (!env.MISTRAL_API_KEY) {
+    throw new Error('MISTRAL_API_KEY environment variable is not set.')
+  }
   // Initialize Mistral client with API key from environment variables
   const mistral = new Mistral(env.MISTRAL_API_KEY)
   
@@ -31,7 +42,7 @@ export async function callMistral(transcriptContent, outputFilePath, model = 'MI
     const response = await mistral.chat.complete({
       model: actualModel,
       // max_tokens: ?,  // Uncomment and set if you want to limit the response length
-      messages: [{ role: 'user', content: transcriptContent }],
+      messages: [{ role: 'user', content: promptAndTranscript }],
     })
     
     // Destructure the response to extract relevant information
@@ -42,15 +53,13 @@ export async function callMistral(transcriptContent, outputFilePath, model = 'MI
     } = response
     
     // Write the generated content to the specified output file
-    await writeFile(outputFilePath, content)
-    console.log(`Transcript saved to ${outputFilePath}`)
+    await writeFile(tempPath, content)
+    console.log(`\nTranscript saved to:\n  - ${tempPath}`)
     
     // Log finish reason, used model, and token usage
     console.log(`\nFinish Reason: ${finishReason}\nModel: ${usedModel}`)
     console.log(`Token Usage:\n  - ${promptTokens} prompt tokens\n  - ${completionTokens} completion tokens\n  - ${totalTokens} total tokens\n`)
     
-    // Return the name of the model used
-    return Object.keys(mistralModel).find(key => mistralModel[key] === usedModel) || model
   } catch (error) {
     // Log any errors that occur during the process
     console.error('Error:', error)

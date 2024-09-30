@@ -12,6 +12,8 @@ import { runTranscription } from '../utils/runTranscription.js'
 import { runLLM } from '../utils/runLLM.js'
 import { cleanUpFiles } from '../utils/cleanUpFiles.js'
 
+/** @import { LLMOption, TranscriptOption, ProcessingOptions, RSSItem } from '../types.js' */
+
 // Initialize XML parser with specific options
 const parser = new XMLParser({
   ignoreAttributes: false,
@@ -21,10 +23,11 @@ const parser = new XMLParser({
 
 /**
  * Process a single item from the RSS feed.
- * @param {Object} item - The item to process.
- * @param {string} transcriptOpt - The transcription service to use.
- * @param {string} llmOpt - The selected Language Model option.
- * @param {Object} options - Additional options for processing.
+ * @param {RSSItem} item - The item to process.
+ * @param {TranscriptOption} [transcriptOpt] - The transcription service to use.
+ * @param {LLMOption} [llmOpt] - The selected Language Model option.
+ * @param {ProcessingOptions} options - Additional options for processing.
+ * @returns {Promise<void>}
  */
 async function processItem(item, transcriptOpt, llmOpt, options) {
   try {
@@ -53,9 +56,10 @@ async function processItem(item, transcriptOpt, llmOpt, options) {
 /**
  * Main function to process an RSS feed.
  * @param {string} rssUrl - The URL of the RSS feed to process.
- * @param {string} llmOpt - The selected Language Model option.
- * @param {string} transcriptOpt - The transcription service to use.
- * @param {object} options - Additional options for processing.
+ * @param {LLMOption} [llmOpt] - The selected Language Model option.
+ * @param {TranscriptOption} [transcriptOpt] - The transcription service to use.
+ * @param {ProcessingOptions} options - Additional options for processing.
+ * @returns {Promise<void>}
  */
 export async function processRSS(rssUrl, llmOpt, transcriptOpt, options) {
   try {
@@ -71,14 +75,30 @@ export async function processRSS(rssUrl, llmOpt, transcriptOpt, options) {
       console.log(`  - Skipping first ${options.skip} items`)
     }
 
-    // Fetch the RSS feed
-    const response = await fetch(rssUrl, {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/rss+xml',
-      },
-      timeout: 5000, // Set a timeout of 5 seconds
-    })
+    // Set a timeout of 5 seconds using AbortController
+    const controller = new AbortController()
+    const timeout = setTimeout(() => {
+      controller.abort()
+    }, 5000)
+
+    let response
+    try {
+      response = await fetch(rssUrl, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/rss+xml',
+        },
+        signal: controller.signal,
+      })
+      clearTimeout(timeout)
+    } catch (error) {
+      if (error.name === 'AbortError') {
+        console.error('Fetch request timed out')
+      } else {
+        console.error('Error fetching RSS feed:', error)
+      }
+      throw error
+    }
 
     // Check if the response is successful
     if (!response.ok) {
@@ -86,8 +106,7 @@ export async function processRSS(rssUrl, llmOpt, transcriptOpt, options) {
     }
 
     // Parse the RSS feed content
-    const buffer = await response.arrayBuffer()
-    const text = Buffer.from(buffer).toString('utf-8')
+    const text = await response.text()
     const feed = parser.parse(text)
 
     // Extract channel information
@@ -108,8 +127,11 @@ export async function processRSS(rssUrl, llmOpt, transcriptOpt, options) {
       day: '2-digit',
     })
 
+    // Ensure feedItems is an array
+    const feedItemsArray = Array.isArray(feedItems) ? feedItems : [feedItems]
+
     // Filter and map feed items to extract necessary information
-    const items = feedItems
+    const items = feedItemsArray
       .filter((item) => {
         // Ensure the item has an enclosure with a valid type
         if (!item.enclosure || !item.enclosure.type) return false
@@ -153,8 +175,7 @@ export async function processRSS(rssUrl, llmOpt, transcriptOpt, options) {
     // Process each item in the feed
     for (const [index, item] of itemsToProcess.entries()) {
       console.log(
-        `\nProcessing item ${index + 1}/${itemsToProcess.length}: ${item.title
-        }`
+        `\nProcessing item ${index + 1}/${itemsToProcess.length}: ${item.title}`
       )
       await processItem(item, transcriptOpt, llmOpt, options)
     }
@@ -163,7 +184,7 @@ export async function processRSS(rssUrl, llmOpt, transcriptOpt, options) {
     console.log('RSS feed processing completed')
   } catch (error) {
     // Log any errors that occur during RSS feed processing
-    console.error('Error fetching or parsing feed:', error)
+    console.error('Error processing RSS feed:', error)
     throw error
   }
 }

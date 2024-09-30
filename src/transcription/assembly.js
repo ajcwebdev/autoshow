@@ -4,52 +4,63 @@ import { writeFile } from 'node:fs/promises'
 import { env } from 'node:process'
 import { AssemblyAI } from 'assemblyai'
 
+/** @import { TranscriptOption, ProcessingOptions } from '../types.js' */
+
+/**
+ * Check if the ASSEMBLY_API_KEY environment variable is set
+ */
+if (!env.ASSEMBLY_API_KEY) {
+  throw new Error('ASSEMBLY_API_KEY environment variable is not set.')
+}
+
 // Initialize the AssemblyAI client with API key from environment variables
 const client = new AssemblyAI({ apiKey: env.ASSEMBLY_API_KEY })
 
 /**
  * Main function to handle transcription using AssemblyAI.
- * @param {string} input - The audio file path or URL to transcribe.
- * @param {string} id - The identifier used for naming output files.
- * @param {boolean} [useSpeakerLabels=false] - Whether to use speaker labels.
- * @param {number} [speakersExpected=1] - The expected number of speakers.
- * @returns {Promise<void>}
+ * @param {string} finalPath - The identifier used for naming output files.
+ * @param {TranscriptOption} transcriptOpt - The transcription service to use.
+ * @param {ProcessingOptions} options - Additional processing options.
+ * @returns {Promise<string>} - Returns the formatted transcript content.
+ * @throws {Error} - If an error occurs during transcription.
  */
-export async function callAssembly(input, id, useSpeakerLabels = false, speakersExpected = 1) {
+export async function callAssembly(finalPath, transcriptOpt, options) {
   try {
+    const { speakerLabels } = options
+    console.log(`Parameters passed to callAssembly:`)
+    console.log(`  - finalPath: ${finalPath}\n  - transcriptOpt: ${transcriptOpt}\n  - speakerLabels: ${speakerLabels}`)
     // Request transcription from AssemblyAI
     const transcript = await client.transcripts.transcribe({
-      audio: input,                                                     // The audio file to transcribe
-      speech_model: 'nano',                                             // Use the 'nano' speech model for transcription
-      ...(useSpeakerLabels && {                                         // Conditionally add speaker labeling options
+      audio: `${finalPath}.wav`,  // The audio file to transcribe
+      speech_model: 'nano',       // Use the 'nano' speech model for transcription (`best` also an option)
+      ...(speakerLabels && {      // Conditionally add speaker labeling options
         speaker_labels: true,
-        speakers_expected: Math.max(1, Math.min(speakersExpected, 25))  // Ensure speakers are between 1 and 25
       })
     })
 
     // Initialize output string
-    let output = ''
+    let txtContent = ''
 
     // Helper function to format timestamps
-    const formatTime = timestamp => {
+    const formatTime = (timestamp) => {
       const totalSeconds = Math.floor(timestamp / 1000)
       return `${Math.floor(totalSeconds / 60).toString().padStart(2, '0')}:${(totalSeconds % 60).toString().padStart(2, '0')}`
     }
 
     // Process the transcript based on whether utterances are available
     if (transcript.utterances) {
-      // If utterances are available, format each utterance with speaker labels if used
-      output = transcript.utterances.map(utt => 
-        `${useSpeakerLabels ? `Speaker ${utt.speaker} ` : ''}(${formatTime(utt.start)}): ${utt.text}`
+      // If utterances are available, format each with speaker labels if used
+      txtContent = transcript.utterances.map((utt) =>
+        `${speakerLabels ? `Speaker ${utt.speaker} ` : ''}(${formatTime(utt.start)}): ${utt.text}`
       ).join('\n')
     } else if (transcript.words) {
       // If only words are available, group them into lines with timestamps
       let currentLine = ''
       let currentTimestamp = formatTime(transcript.words[0].start)
-      transcript.words.forEach(word => {
+      transcript.words.forEach((word) => {
         if (currentLine.length + word.text.length > 80) {
           // Start a new line if the current line exceeds 80 characters
-          output += `[${currentTimestamp}] ${currentLine.trim()}\n`
+          txtContent += `[${currentTimestamp}] ${currentLine.trim()}\n`
           currentLine = ''
           currentTimestamp = formatTime(word.start)
         }
@@ -57,18 +68,20 @@ export async function callAssembly(input, id, useSpeakerLabels = false, speakers
       })
       // Add the last line if there's any remaining text
       if (currentLine.length > 0) {
-        output += `[${currentTimestamp}] ${currentLine.trim()}\n`
+        txtContent += `[${currentTimestamp}] ${currentLine.trim()}\n`
       }
     } else {
       // If no structured data is available, use the plain text or a default message
-      output = transcript.text || 'No transcription available.'
+      txtContent = transcript.text || 'No transcription available.'
     }
 
     // Write the formatted transcript to a file
-    await writeFile(`${id}.txt`, output)
-    console.log('Transcript saved.')
+    await writeFile(`${finalPath}.txt`, txtContent)
+    console.log(`\nTranscript saved:\n  - ${finalPath}.txt`)
+    return txtContent
   } catch (error) {
     // Log any errors that occur during the transcription process
     console.error('Error processing the transcription:', error)
+    throw error // Re-throw the error for handling in the calling function
   }
 }

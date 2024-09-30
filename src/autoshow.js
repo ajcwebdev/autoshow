@@ -15,34 +15,9 @@ import { processPlaylist } from './commands/processPlaylist.js'
 import { processURLs } from './commands/processURLs.js'
 import { processFile } from './commands/processFile.js'
 import { processRSS } from './commands/processRSS.js'
-import { env } from 'node:process'
+import { argv } from 'node:process'
 
-/**
- * @typedef {Object} ProcessingOptions
- * @property {string[]} [prompt] - Specify prompt sections to include.
- * @property {string} [video] - URL of the YouTube video to process.
- * @property {string} [playlist] - URL of the YouTube playlist to process.
- * @property {string} [urls] - File path containing URLs to process.
- * @property {string} [file] - File path of the local audio/video file to process.
- * @property {string} [rss] - URL of the podcast RSS feed to process.
- * @property {string[]} [item] - Specific items in the RSS feed to process.
- * @property {string} [order='newest'] - Order for RSS feed processing ('newest' or 'oldest').
- * @property {number} [skip=0] - Number of items to skip when processing RSS feed.
- * @property {string} [whisper] - Whisper model type for non-Docker version.
- * @property {string} [whisperDocker] - Whisper model type for Docker version.
- * @property {string} [chatgpt] - ChatGPT model to use for processing.
- * @property {string} [claude] - Claude model to use for processing.
- * @property {string} [cohere] - Cohere model to use for processing.
- * @property {string} [mistral] - Mistral model to use for processing.
- * @property {string} [octo] - Octo model to use for processing.
- * @property {boolean} [llama=false] - Use Node Llama for processing.
- * @property {string} [gemini] - Gemini model to use for processing.
- * @property {boolean} [deepgram=false] - Use Deepgram for transcription.
- * @property {boolean} [assembly=false] - Use AssemblyAI for transcription.
- * @property {boolean} [speakerLabels=false] - Use speaker labels for AssemblyAI transcription.
- * @property {number} [speakersExpected=1] - Number of expected speakers for AssemblyAI transcription.
- * @property {boolean} [noCleanUp=false] - Do not delete intermediary files after processing.
- */
+/** @import { ProcessingOptions, InquirerAnswers, InquirerQuestions, HandlerFunction, LLMOption, TranscriptOption, WhisperModelType } from './types.js' */
 
 // Initialize the command-line interface
 const program = new Command()
@@ -61,11 +36,10 @@ program
   .option('--order <order>', 'Specify the order for RSS feed processing (newest or oldest)', 'newest')
   .option('--skip <number>', 'Number of items to skip when processing RSS feed', parseInt, 0)
   .option('--whisper [modelType]', 'Use Whisper.cpp for transcription (non-Docker version)')
-  .option('--whisper-docker [modelType]', 'Use Whisper.cpp for transcription (Docker version)')
+  .option('--whisperDocker [modelType]', 'Use Whisper.cpp for transcription (Docker version)')
   .option('--deepgram', 'Use Deepgram for transcription')
   .option('--assembly', 'Use AssemblyAI for transcription')
-  .option('--speaker-labels', 'Use speaker labels for AssemblyAI transcription')
-  .option('--speakers-expected <number>', 'Number of expected speakers for AssemblyAI transcription', parseInt, 1)
+  .option('--speakerLabels', 'Use speaker labels for AssemblyAI transcription')
   .option('--chatgpt [model]', 'Use ChatGPT for processing with optional model specification')
   .option('--claude [model]', 'Use Claude for processing with optional model specification')
   .option('--cohere [model]', 'Use Cohere for processing with optional model specification')
@@ -76,6 +50,7 @@ program
   .option('--noCleanUp', 'Do not delete intermediary files after processing')
 
 // Interactive prompts using inquirer
+/** @type {InquirerQuestions} */
 const INQUIRER_PROMPT = [
   {
     type: 'list',
@@ -188,7 +163,7 @@ const INQUIRER_PROMPT = [
     type: 'list',
     name: 'whisperModel',
     message: 'Select the Whisper model type:',
-    choices: ['tiny', 'base', 'small', 'medium', 'large'],
+    choices: ['tiny', 'tiny.en', 'base', 'base.en', 'small', 'small.en', 'medium', 'medium.en', 'large', 'large-v1', 'large-v2'],
     when: (answers) => answers.transcriptOpt === 'whisper',
     default: 'large',
   },
@@ -198,15 +173,6 @@ const INQUIRER_PROMPT = [
     message: 'Do you want to use speaker labels?',
     when: (answers) => answers.transcriptOpt === 'assembly',
     default: false,
-  },
-  {
-    type: 'number',
-    name: 'speakersExpected',
-    message: 'How many speakers are expected?',
-    when: (answers) => answers.speakerLabels,
-    default: 1,
-    validate: (input) =>
-      input > 0 && input <= 25 ? true : 'Please enter a number between 1 and 25.',
   },
   {
     type: 'checkbox',
@@ -237,7 +203,7 @@ const INQUIRER_PROMPT = [
  * @returns {Promise<ProcessingOptions>} - The updated options after user input.
  */
 async function handleInteractivePrompt(options) {
-  /** @type {ProcessingOptions} */
+  /** @type {InquirerAnswers} */
   const answers = await inquirer.prompt(INQUIRER_PROMPT)
   options = {
     ...options,
@@ -252,9 +218,9 @@ async function handleInteractivePrompt(options) {
   // Handle transcription options
   if (answers.transcriptOpt === 'whisper') {
     if (answers.useDocker) {
-      options.whisperDocker = answers.whisperModel
+      options.whisperDocker = /** @type {WhisperModelType} */ (answers.whisperModel)
     } else {
-      options.whisper = answers.whisperModel
+      options.whisper = /** @type {WhisperModelType} */ (answers.whisperModel)
     }
   } else {
     options[answers.transcriptOpt] = true
@@ -290,7 +256,7 @@ program.action(async (options) => {
 
   /**
    * Map actions to their respective handler functions
-   * @type {Object.<string, function(string, string, string, ProcessingOptions): Promise<void>>}
+   * @type {Object.<string, HandlerFunction>}
    */
   const handlers = {
     video: processVideo,
@@ -301,20 +267,20 @@ program.action(async (options) => {
   }
 
   /**
-  * Determine the selected LLM option
-  * @type {string | undefined}
-  */
-  const llmOpt = ['chatgpt', 'claude', 'cohere', 'mistral', 'octo', 'llama', 'gemini'].find(
+   * Determine the selected LLM option
+   * @type {LLMOption | undefined}
+   */
+  const llmOpt = /** @type {LLMOption | undefined} */ (['chatgpt', 'claude', 'cohere', 'mistral', 'octo', 'llama', 'gemini'].find(
     (option) => options[option]
-  )
+  ))
 
   /**
-  * Determine the transcription service to use
-  * @type {string | undefined}
-  */
-  const transcriptOpt = ['whisper', 'whisperDocker', 'deepgram', 'assembly'].find(
+   * Determine the transcription service to use
+   * @type {TranscriptOption | undefined}
+   */
+  const transcriptOpt = /** @type {TranscriptOption | undefined} */ (['whisper', 'whisperDocker', 'deepgram', 'assembly'].find(
     (option) => options[option]
-  )
+  ))
 
   // Execute the appropriate handler based on the action
   for (const [key, handler] of Object.entries(handlers)) {
@@ -325,4 +291,4 @@ program.action(async (options) => {
 })
 
 // Parse the command-line arguments
-program.parse(env.argv)
+program.parse(argv)

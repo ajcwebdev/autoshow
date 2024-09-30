@@ -8,3 +8,4 @@ src/llms/models
 .idea
 build
 deno.lock
+out

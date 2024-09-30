@@ -5,21 +5,13 @@ import { callWhisper } from '../transcription/whisper.js'
 import { callDeepgram } from '../transcription/deepgram.js'
 import { callAssembly } from '../transcription/assembly.js'
 
-/**
- * @typedef {Object} transcriptOptions
- * @property {boolean} [speakerLabels=false] - Whether to use speaker labels.
- * @property {number} [speakersExpected=1] - The expected number of speakers.
- * @property {string[]} [prompt] - Sections to include in the prompt.
- * @property {string} [whisper] - Whisper model type.
- * @property {string} [whisperDocker] - Whisper model type for Docker.
- * // Include other properties used in options.
- */
+/** @import { TranscriptOption, ProcessingOptions } from '../types.js' */
 
 /**
  * Main function to run transcription.
  * @param {string} finalPath - The base path for the files.
- * @param {string} transcriptOpt - The transcription service to use.
- * @param {transcriptOptions} [options={}] - Additional options for processing.
+ * @param {TranscriptOption} transcriptOpt - The transcription service to use.
+ * @param {ProcessingOptions} [options={}] - Additional processing options.
  * @param {string} [frontMatter=''] - Optional front matter content for the markdown file.
  * @returns {Promise<string>} - Returns the final content including markdown and transcript.
  * @throws {Error} - If the transcription service fails or an error occurs during processing.
@@ -42,18 +34,11 @@ export async function runTranscription(
         break
 
       case 'assembly':
-        // Use AssemblyAI for transcription, pass options for speaker labels and number of speakers
-        await callAssembly(
-          `${finalPath}.wav`,
-          finalPath,
-          options.speakerLabels,
-          options.speakersExpected
-        )
-        // Read the transcription result
-        txtContent = await readFile(`${finalPath}.txt`, 'utf8')
+        // Use AssemblyAI for transcription and pass options
+        txtContent = await callAssembly(finalPath, transcriptOpt, options)
         break
 
-      case 'whisper-docker':
+      case 'whisperDocker':
       case 'whisper':
         // Use Whisper (either local or Docker version) for transcription
         txtContent = await callWhisper(finalPath, transcriptOpt, options)

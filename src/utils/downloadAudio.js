@@ -6,6 +6,8 @@ import { readFile, access } from 'node:fs/promises'
 import { fileTypeFromBuffer } from 'file-type'
 import ffmpeg from 'ffmpeg-static'
 
+/** @import { SupportedFileType } from '../types.js' */
+
 const execFilePromise = promisify(execFile)
 const execPromise = promisify(exec)
 
@@ -55,6 +57,7 @@ export async function downloadAudio(url, filename) {
  */
 export async function downloadFileAudio(filePath, sanitizedFilename) {
   // Define supported audio and video formats
+  /** @type {Set<SupportedFileType>} */
   const supportedFormats = new Set([
     'wav', 'mp3', 'm4a', 'aac', 'ogg', 'flac', 'mp4', 'mkv', 'avi', 'mov', 'webm'
   ])
@@ -70,14 +73,14 @@ export async function downloadFileAudio(filePath, sanitizedFilename) {
 
     // Determine the file type
     const fileType = await fileTypeFromBuffer(buffer)
-    if (!fileType || !supportedFormats.has(fileType.ext)) {
+    if (!fileType || !supportedFormats.has(/** @type {SupportedFileType} */ (fileType.ext))) {
       throw new Error(
         fileType ? `Unsupported file type: ${fileType.ext}` : 'Unable to determine file type'
       )
     }
     console.log(`Detected file type: ${fileType.ext}`)
 
-    const outputPath = `content/${sanitizedFilename}.wav`    
+    const outputPath = `content/${sanitizedFilename}.wav`
     // If the file is not already a WAV, convert it
     if (fileType.ext !== 'wav') {
       await execPromise(

@@ -1,35 +1,36 @@
 // src/utils/runLLM.js
 
 import { readFile, writeFile, unlink } from 'node:fs/promises'
+import { callLlama } from '../llms/llama.js'
 import { callChatGPT } from '../llms/chatgpt.js'
 import { callClaude } from '../llms/claude.js'
+import { callGemini } from '../llms/gemini.js'
 import { callCohere } from '../llms/cohere.js'
 import { callMistral } from '../llms/mistral.js'
 import { callOcto } from '../llms/octo.js'
-import { callLlama } from '../llms/llama.js'
-// import { callLlamaCpp } from '../llms/llamacpp.js'
-import { callGemini } from '../llms/gemini.js'
 import { generatePrompt } from '../llms/prompt.js'
 
-// Object mapping LLM options to their respective functions
+/** @import { LLMOption, ProcessingOptions, LLMFunction, LLMFunctions } from '../types.js' */
+
+/** @type {LLMFunctions} */
 const llmFunctions = {
+  llama: callLlama,
   chatgpt: callChatGPT,
   claude: callClaude,
+  gemini: callGemini,
   cohere: callCohere,
   mistral: callMistral,
   octo: callOcto,
-  llama: callLlama,
-  // llamacpp: callLlamaCpp,
-  gemini: callGemini,
 }
 
 /**
  * Main function to run the selected Language Model.
  * @param {string} finalPath - The base path for the files.
  * @param {string} frontMatter - The front matter content for the markdown file.
- * @param {string} llmOpt - The selected Language Model option.
- * @param {object} options - Additional options for processing.
+ * @param {LLMOption} llmOpt - The selected Language Model option.
+ * @param {ProcessingOptions} options - Additional options for processing.
  * @returns {Promise<void>}
+ * @throws {Error} - If the LLM processing fails or an error occurs during execution.
  */
 export async function runLLM(finalPath, frontMatter, llmOpt, options) {
   try {
@@ -39,7 +40,9 @@ export async function runLLM(finalPath, frontMatter, llmOpt, options) {
     const promptAndTranscript = `${generatePrompt(options.prompt)}${transcript}`
     
     if (llmOpt) {
-      // Get the appropriate LLM function based on the option
+    /** Get the appropriate LLM function based on the option
+      * @type {LLMFunction}
+      */
       const llmFunction = llmFunctions[llmOpt]
       if (!llmFunction) throw new Error(`Invalid LLM option: ${llmOpt}`)
       
@@ -53,7 +56,7 @@ export async function runLLM(finalPath, frontMatter, llmOpt, options) {
       
       // Remove the temporary file
       await unlink(tempPath)
-      console.log(`Updated markdown file: ${finalPath}-${llmOpt}-shownotes.md`)
+      console.log(`Updated markdown file:\n  - ${finalPath}-${llmOpt}-shownotes.md`)
     } else {
       // If no LLM is selected, just write the prompt and transcript
       await writeFile(`${finalPath}-prompt.md`, `${frontMatter}\n${promptAndTranscript}`)

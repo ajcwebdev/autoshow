@@ -1,6 +1,11 @@
 // src/llms/prompt.js
 
-// Define the structure for different sections of the prompt
+/** @import { PromptSection } from '../types.js' */
+
+/**
+ * Define the structure for different sections of the prompt
+ * @type {Object.<string, PromptSection>}
+ */
 const sections = {
   // Section for generating titles
   titles: {
@@ -112,7 +117,7 @@ const sections = {
     7. What are the main considerations when choosing a database for a web application?
     8. How do containerization technologies like Docker impact web development and deployment?
     9. What role does responsive design play in modern web development?
-    10. How can developers ensure the security of user data in web applications?`,
+    10. How can developers ensure the security of user data in web applications?\n`,
   },
 }
 

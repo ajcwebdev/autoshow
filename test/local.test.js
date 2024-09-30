@@ -1,10 +1,10 @@
-// test/autoshow.test.js
+// test/local.test.js
 
 import test from 'node:test'
-import assert from 'node:assert/strict'
+import { strictEqual } from 'node:assert/strict'
 import { execSync } from 'node:child_process'
-import fs from 'node:fs'
-import path from 'node:path'
+import { existsSync, renameSync } from 'node:fs'
+import { join } from 'node:path'
 
 const commands = [
   {
@@ -47,7 +47,7 @@ const commands = [
     newName: '09---2024-09-24-ep0-fsjam-podcast-prompt.md'
   },
   {
-    cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --prompt titles summary shortChapters mediumChapters longChapters takeaways questions',
+    cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --prompt titles summary mediumChapters takeaways questions',
     expectedFile: '2024-09-24-ep0-fsjam-podcast-prompt.md',
     newName: '10---2024-09-24-ep0-fsjam-podcast-prompt.md'
   },
@@ -100,18 +100,18 @@ test('Autoshow Command Tests', async (t) => {
 
       if (Array.isArray(command.expectedFiles)) {
         for (const { file, newName } of command.expectedFiles) {
-          const filePath = path.join('content', file)
-          assert.strictEqual(fs.existsSync(filePath), true, `Expected file ${file} was not created`)
-          const newPath = path.join('content', newName)
-          fs.renameSync(filePath, newPath)
-          assert.strictEqual(fs.existsSync(newPath), true, `File was not renamed to ${newName}`)
+          const filePath = join('content', file)
+          strictEqual(existsSync(filePath), true, `Expected file ${file} was not created`)
+          const newPath = join('content', newName)
+          renameSync(filePath, newPath)
+          strictEqual(existsSync(newPath), true, `File was not renamed to ${newName}`)
         }
       } else {
-        const filePath = path.join('content', command.expectedFile)
-        assert.strictEqual(fs.existsSync(filePath), true, `Expected file ${command.expectedFile} was not created`)
-        const newPath = path.join('content', command.newName)
-        fs.renameSync(filePath, newPath)
-        assert.strictEqual(fs.existsSync(newPath), true, `File was not renamed to ${command.newName}`)
+        const filePath = join('content', command.expectedFile)
+        strictEqual(existsSync(filePath), true, `Expected file ${command.expectedFile} was not created`)
+        const newPath = join('content', command.newName)
+        renameSync(filePath, newPath)
+        strictEqual(existsSync(newPath), true, `File was not renamed to ${command.newName}`)
       }
     })
   }

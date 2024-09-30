@@ -7,16 +7,6 @@ import { AssemblyAI } from 'assemblyai'
 /** @import { TranscriptOption, ProcessingOptions } from '../types.js' */
 
 /**
- * Check if the ASSEMBLY_API_KEY environment variable is set
- */
-if (!env.ASSEMBLY_API_KEY) {
-  throw new Error('ASSEMBLY_API_KEY environment variable is not set.')
-}
-
-// Initialize the AssemblyAI client with API key from environment variables
-const client = new AssemblyAI({ apiKey: env.ASSEMBLY_API_KEY })
-
-/**
  * Main function to handle transcription using AssemblyAI.
  * @param {string} finalPath - The identifier used for naming output files.
  * @param {TranscriptOption} transcriptOpt - The transcription service to use.
@@ -25,6 +15,14 @@ const client = new AssemblyAI({ apiKey: env.ASSEMBLY_API_KEY })
  * @throws {Error} - If an error occurs during transcription.
  */
 export async function callAssembly(finalPath, transcriptOpt, options) {
+  // Check if the ASSEMBLY_API_KEY environment variable is set
+  if (!env.ASSEMBLY_API_KEY) {
+    throw new Error('ASSEMBLY_API_KEY environment variable is not set.')
+  }
+
+  // Initialize the AssemblyAI client with API key from environment variables
+  const client = new AssemblyAI({ apiKey: env.ASSEMBLY_API_KEY })
+
   try {
     const { speakerLabels } = options
     console.log(`Parameters passed to callAssembly:`)

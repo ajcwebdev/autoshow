@@ -1,10 +1,49 @@
 // src/commands/processURLs.js
 
-import { readFile } from 'node:fs/promises'
-import { processVideo } from './processVideo.js'
+import { readFile, writeFile } from 'node:fs/promises'
+import { execFile } from 'node:child_process'
+import { promisify } from 'node:util'
 import { resolve } from 'node:path'
+import { processVideo } from './processVideo.js'
 
 /** @import { LLMOption, TranscriptOption, ProcessingOptions } from '../types.js' */
+
+const execFilePromise = promisify(execFile)
+
+/**
+ * Extract metadata for a single video URL.
+ * @param {string} url - The URL of the video.
+ * @returns {Promise<Object>} - The video metadata.
+ */
+async function extractVideoMetadata(url) {
+  try {
+    const { stdout } = await execFilePromise('yt-dlp', [
+      '--restrict-filenames',
+      '--print', '%(webpage_url)s',
+      '--print', '%(channel)s',
+      '--print', '%(uploader_url)s',
+      '--print', '%(title)s',
+      '--print', '%(upload_date>%Y-%m-%d)s',
+      '--print', '%(thumbnail)s',
+      url
+    ])
+
+    const [showLink, channel, channelURL, title, publishDate, coverImage] = stdout.trim().split('\n')
+
+    return {
+      showLink,
+      channel,
+      channelURL,
+      title,
+      description: "",
+      publishDate,
+      coverImage
+    }
+  } catch (error) {
+    console.error(`Error extracting metadata for ${url}:`, error)
+    return null
+  }
+}
 
 /**
  * Main function to process URLs from a file.
@@ -28,6 +67,20 @@ export async function processURLs(filePath, llmOpt, transcriptOpt, options) {
 
     // Log the number of URLs found
     console.log(`Found ${urls.length} URLs in the file`)
+
+    // Extract metadata for all videos
+    const metadataPromises = urls.map(extractVideoMetadata)
+    const metadataList = await Promise.all(metadataPromises)
+    const validMetadata = metadataList.filter(Boolean)
+
+    // Generate JSON file with video information if --info option is used
+    if (options.info) {
+      const jsonContent = JSON.stringify(validMetadata, null, 2)
+      const jsonFilePath = 'content/urls_info.json'
+      await writeFile(jsonFilePath, jsonContent)
+      console.log(`Video information saved to: ${jsonFilePath}`)
+      return
+    }
 
     // Process each URL
     for (const [index, url] of urls.entries()) {

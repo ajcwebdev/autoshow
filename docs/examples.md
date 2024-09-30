@@ -98,6 +98,12 @@ npm run as -- \
   --prompt titles summary longChapters takeaways questions
 ```
 
+Run on a podcast RSS feed and generate JSON info file with markdown metadata of each item:
+
+```bash
+npm run as -- --rss "https://ajcwebdev.substack.com/feed" --info
+```
+
 ## Language Model (LLM) Options
 
 Create a `.env` file and set API key as demonstrated in `.env.example` for either:

@@ -35,6 +35,7 @@ program
   .option('--item <itemUrls...>', 'Process specific items in the RSS feed by providing their audio URLs')
   .option('--order <order>', 'Specify the order for RSS feed processing (newest or oldest)', 'newest')
   .option('--skip <number>', 'Number of items to skip when processing RSS feed', parseInt, 0)
+  .option('--info', 'Generate JSON file with RSS feed information instead of processing items')
   .option('--whisper [modelType]', 'Use Whisper.cpp for transcription (non-Docker version)')
   .option('--whisperDocker [modelType]', 'Use Whisper.cpp for transcription (Docker version)')
   .option('--deepgram', 'Use Deepgram for transcription')

@@ -13,6 +13,7 @@
  * @property {string} [file] - Local audio or video file path to process.
  * @property {string} [rss] - URL of the podcast RSS feed to process.
  * @property {string[]} [item] - Specific items (audio URLs) from the RSS feed to process.
+ * @property {boolean} [info] - Flag to generate JSON file with RSS feed information instead of processing items
  * @property {boolean} [noCleanUp] - Flag to indicate whether to keep temporary files after processing.
  * @property {WhisperModelType} [whisper] - Whisper model type to use for transcription (e.g., 'tiny', 'base').
  * @property {WhisperModelType} [whisperDocker] - Whisper model type to use in Docker for transcription.

@@ -128,19 +128,30 @@ async function callWhisperMain(finalPath, modelName, whisperModel) {
   const modelPath = `./whisper.cpp/models/${modelName}`
 
   try {
+    // Check if whisper.cpp directory exists, clone and build if not
+    await access('./whisper.cpp').catch(async () => {
+      console.log('\nwhisper.cpp directory not found. Cloning and building whisper.cpp...')
+      // Clone the whisper.cpp repository
+      await execPromise(`git clone https://github.com/ggerganov/whisper.cpp.git`)
+      // Build the project
+      await execPromise(`make -C whisper.cpp`)
+      // Copy the Dockerfile (adjust the path as needed)
+      await execPromise(`cp .github/whisper.Dockerfile whisper.cpp/Dockerfile`)
+      console.log('whisper.cpp cloned and built successfully.')
+    })
+    console.log('\nwhisper.cpp directory found.')
+  
     // Check if the model exists locally, download if not
-    try {
-      await access(modelPath)
-      console.log(`\nWhisper.cpp ${whisperModel} model found:`)
-      console.log(`  - ${modelName} model selected\n  - Model located at ${modelPath}`)
-    } catch {
+    await access(modelPath).catch(async () => {
       console.log(`\nWhisper.cpp ${whisperModel} model not found:`)
       console.log(`  - ${modelName} model selected\n  - Model downloading to ${modelPath}`)
       await execPromise(`bash ./whisper.cpp/models/download-ggml-model.sh ${whisperModel}`)
       console.log(`  - Model downloaded successfully`)
-    }
-
-    // Execute Whisper transcription
+    })
+    console.log(`\nWhisper.cpp ${whisperModel} model found:`)
+    console.log(`  - ${modelName} model selected\n  - Model located at ${modelPath}`)
+  
+    // Proceed with transcription
     await execPromise(
       `./whisper.cpp/main -m "whisper.cpp/models/${modelName}" -f "${finalPath}.wav" -of "${finalPath}" --output-lrc`
     )
@@ -148,5 +159,5 @@ async function callWhisperMain(finalPath, modelName, whisperModel) {
   } catch (error) {
     console.error('Error in callWhisperMain:', error)
     throw error
-  }
+  }  
 }

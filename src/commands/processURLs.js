@@ -1,49 +1,11 @@
 // src/commands/processURLs.js
 
 import { readFile, writeFile } from 'node:fs/promises'
-import { execFile } from 'node:child_process'
-import { promisify } from 'node:util'
 import { resolve } from 'node:path'
 import { processVideo } from './processVideo.js'
+import { extractVideoMetadata } from '../utils/generateMarkdown.js'
 
 /** @import { LLMOption, TranscriptOption, ProcessingOptions } from '../types.js' */
-
-const execFilePromise = promisify(execFile)
-
-/**
- * Extract metadata for a single video URL.
- * @param {string} url - The URL of the video.
- * @returns {Promise<Object>} - The video metadata.
- */
-async function extractVideoMetadata(url) {
-  try {
-    const { stdout } = await execFilePromise('yt-dlp', [
-      '--restrict-filenames',
-      '--print', '%(webpage_url)s',
-      '--print', '%(channel)s',
-      '--print', '%(uploader_url)s',
-      '--print', '%(title)s',
-      '--print', '%(upload_date>%Y-%m-%d)s',
-      '--print', '%(thumbnail)s',
-      url
-    ])
-
-    const [showLink, channel, channelURL, title, publishDate, coverImage] = stdout.trim().split('\n')
-
-    return {
-      showLink,
-      channel,
-      channelURL,
-      title,
-      description: "",
-      publishDate,
-      coverImage
-    }
-  } catch (error) {
-    console.error(`Error extracting metadata for ${url}:`, error)
-    return null
-  }
-}
 
 /**
  * Main function to process URLs from a file.

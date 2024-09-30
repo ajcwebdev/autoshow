@@ -91,12 +91,13 @@
 /**
  * Represents the metadata extracted from a YouTube video.
  * @typedef {Object} VideoMetadata
- * @property {string} formattedDate - The upload date in 'YYYY-MM-DD' format.
- * @property {string} title - The title of the video.
- * @property {string} thumbnail - The URL to the video's thumbnail image.
- * @property {string} webpage_url - The URL to the video's webpage.
+ * @property {string} showLink - The URL to the video's webpage.
  * @property {string} channel - The name of the channel that uploaded the video.
- * @property {string} uploader_url - The URL to the uploader's channel page.
+ * @property {string} channelURL - The URL to the uploader's channel page.
+ * @property {string} title - The title of the video.
+ * @property {string} description - The description of the video (empty string in this case).
+ * @property {string} publishDate - The upload date in 'YYYY-MM-DD' format.
+ * @property {string} coverImage - The URL to the video's thumbnail image.
  */
 
 /**

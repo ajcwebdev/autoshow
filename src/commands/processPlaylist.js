@@ -10,6 +10,36 @@ import { promisify } from 'node:util'
 const execFilePromise = promisify(execFile)
 
 /**
+ * Extract metadata for a single video in the playlist.
+ * @param {string} url - The URL of the video.
+ * @returns {Promise<Object>} - The video metadata.
+ */
+async function extractVideoMetadata(url) {
+  const { stdout } = await execFilePromise('yt-dlp', [
+    '--restrict-filenames',
+    '--print', '%(webpage_url)s',
+    '--print', '%(channel)s',
+    '--print', '%(uploader_url)s',
+    '--print', '%(title)s',
+    '--print', '%(upload_date>%Y-%m-%d)s',
+    '--print', '%(thumbnail)s',
+    url
+  ])
+
+  const [showLink, channel, channelURL, title, publishDate, coverImage] = stdout.trim().split('\n')
+
+  return {
+    showLink,
+    channel,
+    channelURL,
+    title,
+    description: "",
+    publishDate,
+    coverImage
+  }
+}
+
+/**
  * Main function to process a YouTube playlist.
  * @param {string} playlistUrl - The URL of the YouTube playlist to process.
  * @param {LLMOption} [llmOpt] - The selected Language Model option.
@@ -38,6 +68,19 @@ export async function processPlaylist(playlistUrl, llmOpt, transcriptOpt, option
     // Split the stdout into an array of video URLs
     const urls = stdout.trim().split('\n').filter(Boolean)
     console.log(`Found ${urls.length} videos in the playlist`)
+
+    // Extract metadata for all videos
+    const metadataPromises = urls.map(extractVideoMetadata)
+    const metadataList = await Promise.all(metadataPromises)
+
+    // Generate JSON file with playlist information
+    if (options.info) {
+      const jsonContent = JSON.stringify(metadataList, null, 2)
+      const jsonFilePath = 'content/playlist_info.json'
+      await writeFile(jsonFilePath, jsonContent)
+      console.log(`Playlist information saved to: ${jsonFilePath}`)
+      return
+    }
 
     // Write the URLs to a file for reference
     try {

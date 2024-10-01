@@ -47,6 +47,7 @@ program
   .option('--mistral [model]', 'Use Mistral for processing')
   .option('--octo [model]', 'Use Octo for processing')
   .option('--llama [model]', 'Use Node Llama for processing with optional model specification')
+  .option('--ollama [model]', 'Use Ollama for processing with optional model specification')
   .option('--gemini [model]', 'Use Gemini for processing with optional model specification')
   .option('--noCleanUp', 'Do not delete intermediary files after processing')
 
@@ -138,8 +139,6 @@ const INQUIRER_PROMPT = [
       { name: 'LLAMA 3 8B Q6 Model', value: 'LLAMA_3_1_8B_Q6_MODEL' },
       { name: 'GEMMA 2 2B Q4 Model', value: 'GEMMA_2_2B_Q4_MODEL' },
       { name: 'GEMMA 2 2B Q6 Model', value: 'GEMMA_2_2B_Q6_MODEL' },
-      { name: 'TINY LLAMA 1B Q4 Model', value: 'TINY_LLAMA_1B_Q4_MODEL' },
-      { name: 'TINY LLAMA 1B Q6 Model', value: 'TINY_LLAMA_1B_Q6_MODEL' },
     ],
     when: (answers) => answers.llmOpt === 'llama',
   },
@@ -271,7 +270,7 @@ program.action(async (options) => {
    * Determine the selected LLM option
    * @type {LLMOption | undefined}
    */
-  const llmOpt = /** @type {LLMOption | undefined} */ (['chatgpt', 'claude', 'cohere', 'mistral', 'octo', 'llama', 'gemini'].find(
+  const llmOpt = /** @type {LLMOption | undefined} */ (['chatgpt', 'claude', 'cohere', 'mistral', 'octo', 'llama', 'ollama', 'gemini'].find(
     (option) => options[option]
   ))
 

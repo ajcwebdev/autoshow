@@ -2,6 +2,7 @@
 
 import { readFile, writeFile, unlink } from 'node:fs/promises'
 import { callLlama } from '../llms/llama.js'
+import { callOllama } from '../llms/ollama.js'
 import { callChatGPT } from '../llms/chatgpt.js'
 import { callClaude } from '../llms/claude.js'
 import { callGemini } from '../llms/gemini.js'
@@ -15,6 +16,7 @@ import { generatePrompt } from '../llms/prompt.js'
 /** @type {LLMFunctions} */
 const llmFunctions = {
   llama: callLlama,
+  ollama: callOllama,
   chatgpt: callChatGPT,
   claude: callClaude,
   gemini: callGemini,

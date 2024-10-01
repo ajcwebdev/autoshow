@@ -30,14 +30,6 @@ const localModels = {
   GEMMA_2_2B_Q6_MODEL: {
     filename: "gemma-2-2b-it-Q6_K.gguf",
     url: "https://huggingface.co/lmstudio-community/gemma-2-2b-it-GGUF/resolve/main/gemma-2-2b-it-Q6_K.gguf"
-  },
-  TINY_LLAMA_1B_Q4_MODEL: {
-    filename: "tinyllama-1.1b-chat-v1.0.Q4_K_M.gguf",
-    url: "https://huggingface.co/TheBloke/TinyLlama-1.1B-Chat-v1.0-GGUF/resolve/main/tinyllama-1.1b-chat-v1.0.Q4_K_M.gguf"
-  },
-  TINY_LLAMA_1B_Q6_MODEL: {
-    filename: "tinyllama-1.1b-chat-v1.0.Q6_K.gguf",
-    url: "https://huggingface.co/TheBloke/TinyLlama-1.1B-Chat-v1.0-GGUF/resolve/main/tinyllama-1.1b-chat-v1.0.Q6_K.gguf"
   }
 }
 

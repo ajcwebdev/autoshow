@@ -23,6 +23,9 @@
     "bun-as": "bun --env-file=.env --no-warnings src/autoshow.js",
     "deno-as": "deno run --allow-sys --allow-read --allow-run --allow-write --allow-env src/autoshow.js",
     "v": "node --env-file=.env --no-warnings src/autoshow.js --whisper large --video",
+    "u": "node --env-file=.env --no-warnings src/autoshow.js --whisper large --urls",
+    "p": "node --env-file=.env --no-warnings src/autoshow.js --whisper large --playlist",
+    "f": "node --env-file=.env --no-warnings src/autoshow.js --whisper large --file",
     "serve": "node --env-file=.env --no-warnings --watch server/index.js",
     "fetch": "node --env-file=.env --no-warnings server/fetch.js",
     "test-local": "node --test test/local.test.js",
@@ -42,6 +45,7 @@
     "file-type": "^19.4.1",
     "inquirer": "^10.2.2",
     "node-llama-cpp": "^3.0.0-beta.44",
+    "ollama": "^0.5.9",
     "openai": "^4.55.7"
   }
 }

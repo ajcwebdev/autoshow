@@ -4,6 +4,7 @@ import { writeFile } from 'node:fs/promises'
 import { processVideo } from './processVideo.js'
 import { execFile } from 'node:child_process'
 import { promisify } from 'node:util'
+import { extractVideoMetadata } from '../utils/generateMarkdown.js'
 
 /** @import { LLMOption, TranscriptOption, ProcessingOptions } from '../types.js' */
 
@@ -38,6 +39,20 @@ export async function processPlaylist(playlistUrl, llmOpt, transcriptOpt, option
     // Split the stdout into an array of video URLs
     const urls = stdout.trim().split('\n').filter(Boolean)
     console.log(`Found ${urls.length} videos in the playlist`)
+
+    // Extract metadata for all videos
+    const metadataPromises = urls.map(extractVideoMetadata)
+    const metadataList = await Promise.all(metadataPromises)
+    const validMetadata = metadataList.filter(Boolean)
+
+    // Generate JSON file with playlist information
+    if (options.info) {
+      const jsonContent = JSON.stringify(validMetadata, null, 2)
+      const jsonFilePath = 'content/playlist_info.json'
+      await writeFile(jsonFilePath, jsonContent)
+      console.log(`Playlist information saved to: ${jsonFilePath}`)
+      return
+    }
 
     // Write the URLs to a file for reference
     try {

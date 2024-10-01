@@ -13,6 +13,7 @@
  * @property {string} [file] - Local audio or video file path to process.
  * @property {string} [rss] - URL of the podcast RSS feed to process.
  * @property {string[]} [item] - Specific items (audio URLs) from the RSS feed to process.
+ * @property {boolean} [info] - Flag to generate JSON file with RSS feed information instead of processing items
  * @property {boolean} [noCleanUp] - Flag to indicate whether to keep temporary files after processing.
  * @property {WhisperModelType} [whisper] - Whisper model type to use for transcription (e.g., 'tiny', 'base').
  * @property {WhisperModelType} [whisperDocker] - Whisper model type to use in Docker for transcription.
@@ -90,12 +91,13 @@
 /**
  * Represents the metadata extracted from a YouTube video.
  * @typedef {Object} VideoMetadata
- * @property {string} formattedDate - The upload date in 'YYYY-MM-DD' format.
- * @property {string} title - The title of the video.
- * @property {string} thumbnail - The URL to the video's thumbnail image.
- * @property {string} webpage_url - The URL to the video's webpage.
+ * @property {string} showLink - The URL to the video's webpage.
  * @property {string} channel - The name of the channel that uploaded the video.
- * @property {string} uploader_url - The URL to the uploader's channel page.
+ * @property {string} channelURL - The URL to the uploader's channel page.
+ * @property {string} title - The title of the video.
+ * @property {string} description - The description of the video (empty string in this case).
+ * @property {string} publishDate - The upload date in 'YYYY-MM-DD' format.
+ * @property {string} coverImage - The URL to the video's thumbnail image.
  */
 
 /**

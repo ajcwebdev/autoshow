@@ -17,11 +17,12 @@
   - [OctoAI's Models](#octoais-models)
   - [Llama.cpp](#llamacpp)
 - [Transcription Options](#transcription-options)
+  - [Whisper.cpp](#whispercpp)
   - [Deepgram](#deepgram)
   - [Assembly](#assembly)
-  - [Whisper.cpp](#whispercpp)
-- [Docker Compose](#docker-compose)
-- [Alternative JavaScript Runtimes](#alternative-javascript-runtimes)
+- [Prompt Options](#prompt-options)
+- [Alternative Runtimes](#alternative-runtimes)
+  - [Docker Compose](#docker-compose)
   - [Deno](#deno)
   - [Bun](#bun)
 - [Makeshift Test Suite](#makeshift-test-suite)
@@ -96,6 +97,12 @@ npm run as -- \
   --whisper tiny \
   --llama \
   --prompt titles summary longChapters takeaways questions
+```
+
+Run on a podcast RSS feed and generate JSON info file with markdown metadata of each item:
+
+```bash
+npm run as -- --rss "https://ajcwebdev.substack.com/feed" --info
 ```
 
 ## Language Model (LLM) Options
@@ -226,26 +233,6 @@ npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --llama
 
 ## Transcription Options
 
-Create a `.env` file and set API key as demonstrated in `.env.example` for `DEEPGRAM_API_KEY` or `ASSEMBLY_API_KEY`.
-
-### Deepgram
-
-```bash
-npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --deepgram
-```
-
-### Assembly
-
-```bash
-npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --assembly
-```
-
-Include speaker labels and number of speakers:
-
-```bash
-npm run as -- --video "https://ajc.pics/audio/fsjam-short.mp3" --assembly --speakerLabels
-```
-
 ### Whisper.cpp
 
 If neither the `--deepgram` or `--assembly` option is included for transcription, `autoshow` will default to running the largest Whisper.cpp model. To configure the size of the Whisper model, use the `--model` option and select one of the following:
@@ -273,15 +260,27 @@ Run `whisper.cpp` in a Docker container with `--whisperDocker`:
 npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --whisperDocker base
 ```
 
-## Docker Compose
+### Deepgram
 
-This will run both `whisper.cpp` and the AutoShow Commander CLI in their own Docker containers.
+Create a `.env` file and set API key as demonstrated in `.env.example` for `DEEPGRAM_API_KEY`.
 
 ```bash
-docker-compose run autoshow --video "https://www.youtube.com/watch?v=MORMZXEaONk" --whisperDocker base
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --deepgram
 ```
 
-Currently working on the `llama.cpp` Docker integration so the entire project can be encapsulated in one local Docker Compose file.
+### Assembly
+
+Create a `.env` file and set API key as demonstrated in `.env.example` for `ASSEMBLY_API_KEY`.
+
+```bash
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --assembly
+```
+
+Include speaker labels and number of speakers:
+
+```bash
+npm run as -- --video "https://ajc.pics/audio/fsjam-short.mp3" --assembly --speakerLabels
+```
 
 ## Prompt Options
 
@@ -339,7 +338,17 @@ Include all prompt options:
 npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --prompt titles summary longChapters takeaways questions
 ```
 
-## Alternative JavaScript Runtimes
+## Alternative Runtimes
+
+### Docker Compose
+
+This will run both `whisper.cpp` and the AutoShow Commander CLI in their own Docker containers.
+
+```bash
+docker-compose run autoshow --video "https://www.youtube.com/watch?v=MORMZXEaONk" --whisperDocker base
+```
+
+Currently working on the `llama.cpp` Docker integration so the entire project can be encapsulated in one local Docker Compose file.
 
 ### Bun
 

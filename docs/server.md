@@ -3,7 +3,7 @@
 This is currently a very simple proof-of-concept that only implements the most basic Autoshow command for [processing a single video file from a YouTube URL](/docs/examples.md#process-single-video-or-audio-file):
 
 ```bash
-npm run autoshow -- --video "https://www.youtube.com/watch?v=jKB0EltG9Jo"
+npm run autoshow -- --video "https://www.youtube.com/watch?v=MORMZXEaONk"
 ```
 
 See the [server section of the roadmap](/docs/readmap.md#server) for more information about future development on the server implementation.
@@ -25,119 +25,337 @@ Version 20 enters its maintenance period in October 2024 and end-of-life in Apri
 
 </details>
 
-## Video Endpoint
+## Process Endpoints
+
+### Video Endpoint
 
 Once the server is running, send a `POST` request to `http://localhost:3000/video` containing a JSON object with the YouTube URL:
 
 ```bash
-curl -X POST http://localhost:3000/video \
-  -H "Content-Type: application/json" \
-  -d '{
-    "youtubeUrl": "https://www.youtube.com/watch?v=jKB0EltG9Jo"
-  }'
+curl --json '{
+  "youtubeUrl": "https://www.youtube.com/watch?v=MORMZXEaONk"
+}' http://localhost:3000/video
 ```
 
-Configure `model`.
 
-```bash
-curl -X POST http://localhost:3000/video \
-  -H "Content-Type: application/json" \
-  -d '{
-    "youtubeUrl": "https://www.youtube.com/watch?v=jKB0EltG9Jo",
-    "whisperModel": "tiny"
-  }'
-```
 
 Use LLM.
 
 ```bash
-curl -X POST http://localhost:3000/video \
-  -H "Content-Type: application/json" \
-  -d '{
-    "youtubeUrl": "https://www.youtube.com/watch?v=jKB0EltG9Jo",
-    "whisperModel": "tiny",
-    "llm": "llama"
-  }'
+curl --json '{
+  "youtubeUrl": "https://www.youtube.com/watch?v=MORMZXEaONk",
+  "whisperModel": "tiny",
+  "llm": "llama"
+}' http://localhost:3000/video
 ```
 
-## Playlist Endpoint
+### Playlist Endpoint
 
 ```bash
-curl -X POST http://localhost:3000/playlist \
-  -H "Content-Type: application/json" \
-  -d '{
-    "playlistUrl": "https://www.youtube.com/playlist?list=PLCVnrVv4KhXMh4DQBigyvHSRTf2CSj129"
-  }'
+curl --json '{
+  "playlistUrl": "https://www.youtube.com/playlist?list=PLCVnrVv4KhXPz0SoAVu8Rc1emAdGPbSbr"
+}' http://localhost:3000/playlist 
 ```
 
 ```bash
-curl -X POST http://localhost:3000/playlist \
-  -H "Content-Type: application/json" \
-  -d '{
-    "playlistUrl": "https://www.youtube.com/playlist?list=PLCVnrVv4KhXMh4DQBigyvHSRTf2CSj129",
-    "whisperModel": "tiny",
-    "llm": "llama"
-  }'
+curl --json '{
+  "playlistUrl": "https://www.youtube.com/playlist?list=PLCVnrVv4KhXPz0SoAVu8Rc1emAdGPbSbr",
+  "whisperModel": "tiny",
+  "llm": "llama"
+}' http://localhost:3000/playlist 
 ```
 
-## URLs Endpoint
+### URLs Endpoint
 
 ```bash
-curl -X POST http://localhost:3000/urls \
-  -H "Content-Type: application/json" \
-  -d '{
-    "filePath": "content/urls.md"
-  }'
+curl --json '{
+  "filePath": "content/example-urls.md"
+}' http://localhost:3000/urls
 ```
 
 ```bash
-curl -X POST http://localhost:3000/urls \
-  -H "Content-Type: application/json" \
-  -d '{
-    "filePath": "content/urls.md",
-    "whisperModel": "tiny",
-    "llm": "llama"
-  }'
-```
-
-## File Endpoint
-
-```bash
-curl -X POST http://localhost:3000/file \
-  -H "Content-Type: application/json" \
-  -d '{
-    "filePath": "content/audio.mp3"
-  }'
+curl --json '{
+  "filePath": "content/example-urls.md",
+  "whisperModel": "tiny",
+  "llm": "llama"
+}' http://localhost:3000/urls
 ```
 
 ```bash
-curl -X POST http://localhost:3000/file \
-  -H "Content-Type: application/json" \
-  -d '{
-    "filePath": "content/audio.mp3",
-    "whisperModel": "tiny",
-    "llm": "llama"
-  }'
+curl --json '{
+  "filePath": "content/example-urls.md",
+  "prompts": ["titles", "mediumChapters"],
+  "whisperModel": "tiny",
+  "llm": "llama"
+}' http://localhost:3000/urls
 ```
 
-## RSS Endpoint
+### File Endpoint
 
 ```bash
-curl -X POST http://localhost:3000/rss \
-  -H "Content-Type: application/json" \
-  -d '{
-    "rssUrl": "https://feeds.transistor.fm/fsjam-podcast/"
-  }'
+curl --json '{
+  "filePath": "content/audio.mp3"
+}' http://localhost:3000/file
 ```
 
 ```bash
-curl -X POST http://localhost:3000/rss \
-  -H "Content-Type: application/json" \
-  -d '{
-    "rssUrl": "https://feeds.transistor.fm/fsjam-podcast/",
-    "whisperModel": "tiny",
-    "llm": "llama",
-    "order": "newest",
-    "skip": 0
-  }'
+curl --json '{
+  "filePath": "content/audio.mp3",
+  "whisperModel": "tiny",
+  "llm": "llama"
+}' http://localhost:3000/file
+```
+
+```bash
+curl --json '{
+  "filePath": "content/audio.mp3",
+  "prompts": ["titles"],
+  "whisperModel": "tiny",
+  "llm": "llama"
+}' http://localhost:3000/file
+```
+
+### RSS Endpoint
+
+```bash
+curl --json '{
+  "rssUrl": "https://feeds.transistor.fm/fsjam-podcast/"
+}' http://localhost:3000/rss
+```
+
+```bash
+curl --json '{
+  "rssUrl": "https://feeds.transistor.fm/fsjam-podcast/",
+  "whisperModel": "tiny",
+  "llm": "llama",
+  "order": "newest",
+  "skip": 0
+}' http://localhost:3000/rss
+```
+
+```bash
+curl --json '{
+  "rssUrl": "https://feeds.transistor.fm/fsjam-podcast/",
+  "order": "newest",
+  "skip": 94,
+  "whisperModel": "tiny"
+}' http://localhost:3000/rss
+```
+
+```bash
+curl --json '{
+  "rssUrl": "https://feeds.transistor.fm/fsjam-podcast/",
+  "order": "oldest",
+  "skip": 94,
+  "whisperModel": "tiny"
+}' http://localhost:3000/rss
+```
+
+## Language Model (LLM) Options
+
+### ChatGPT
+
+```bash
+curl --json '{
+  "youtubeUrl": "https://www.youtube.com/watch?v=MORMZXEaONk",
+  "llm": "chatgpt"
+}' http://localhost:3000/video
+```
+
+```bash
+curl --json '{
+  "youtubeUrl": "https://www.youtube.com/watch?v=MORMZXEaONk",
+  "llm": "chatgpt",
+  "llmModel": "GPT_4o_MINI"
+}' http://localhost:3000/video
+```
+
+### Claude
+
+```bash
+curl --json '{
+  "youtubeUrl": "https://www.youtube.com/watch?v=MORMZXEaONk",
+  "llm": "claude"
+}' http://localhost:3000/video
+```
+
+```bash
+curl --json '{
+  "youtubeUrl": "https://www.youtube.com/watch?v=MORMZXEaONk",
+  "llm": "claude",
+  "llmModel": "CLAUDE_3_SONNET"
+}' http://localhost:3000/video
+```
+
+### Gemini
+
+```bash
+curl --json '{
+  "youtubeUrl": "https://www.youtube.com/watch?v=MORMZXEaONk",
+  "llm": "gemini"
+}' http://localhost:3000/video
+```
+
+```bash
+curl --json '{
+  "youtubeUrl": "https://www.youtube.com/watch?v=MORMZXEaONk",
+  "llm": "gemini",
+  "llmModel": "GEMINI_1_5_FLASH"
+}' http://localhost:3000/video
+```
+
+### Cohere
+
+```bash
+curl --json '{
+  "youtubeUrl": "https://www.youtube.com/watch?v=MORMZXEaONk",
+  "llm": "cohere"
+}' http://localhost:3000/video
+```
+
+```bash
+curl --json '{
+  "youtubeUrl": "https://www.youtube.com/watch?v=MORMZXEaONk",
+  "llm": "cohere",
+  "llmModel": "COMMAND_R_PLUS"
+}' http://localhost:3000/video
+```
+
+### Mistral
+
+```bash
+curl --json '{
+  "youtubeUrl": "https://www.youtube.com/watch?v=MORMZXEaONk",
+  "llm": "mistral"
+}' http://localhost:3000/video
+```
+
+```bash
+curl --json '{
+  "youtubeUrl": "https://www.youtube.com/watch?v=MORMZXEaONk",
+  "llm": "mistral",
+  "llmModel": "MIXTRAL_8x7b"
+}' http://localhost:3000/video
+```
+
+### Octo
+
+```bash
+curl --json '{
+  "youtubeUrl": "https://www.youtube.com/watch?v=MORMZXEaONk",
+  "llm": "octo"
+}' http://localhost:3000/video
+```
+
+```bash
+curl --json '{
+  "youtubeUrl": "https://www.youtube.com/watch?v=MORMZXEaONk",
+  "llm": "octo",
+  "llmModel": "LLAMA_3_1_8B"
+}' http://localhost:3000/video
+```
+
+## Transcription Options
+
+### Whisper.cpp
+
+```bash
+curl --json '{
+  "youtubeUrl": "https://www.youtube.com/watch?v=MORMZXEaONk",
+  "whisperModel": "tiny"
+}' http://localhost:3000/video
+```
+
+### Deepgram
+
+```bash
+curl --json '{
+  "youtubeUrl": "https://www.youtube.com/watch?v=MORMZXEaONk",
+  "transcriptionService": "deepgram"
+}' http://localhost:3000/video
+```
+
+```bash
+curl --json '{
+  "youtubeUrl": "https://www.youtube.com/watch?v=MORMZXEaONk",
+  "transcriptionService": "deepgram",
+  "llm": "llama"
+}' http://localhost:3000/video
+```
+
+### Assembly
+
+```bash
+curl --json '{
+  "youtubeUrl": "https://www.youtube.com/watch?v=MORMZXEaONk",
+  "transcriptionService": "assembly"
+}' http://localhost:3000/video
+```
+
+```bash
+curl --json '{
+  "youtubeUrl": "https://www.youtube.com/watch?v=MORMZXEaONk",
+  "transcriptionService": "assembly",
+  "llm": "llama"
+}' http://localhost:3000/video
+```
+
+```bash
+curl --json '{
+  "youtubeUrl": "https://ajc.pics/audio/fsjam-short.mp3",
+  "transcriptionService": "assembly",
+  "speakerLabels": true
+}' http://localhost:3000/video
+```
+
+```bash
+curl --json '{
+  "youtubeUrl": "https://ajc.pics/audio/fsjam-short.mp3",
+  "transcriptionService": "assembly",
+  "speakerLabels": true,
+  "llm": "llama"
+}' http://localhost:3000/video
+```
+
+## Prompt Options
+
+```bash
+curl --json '{
+  "youtubeUrl": "https://www.youtube.com/watch?v=MORMZXEaONk",
+  "prompts": ["titles", "mediumChapters"]
+}' http://localhost:3000/video
+```
+
+```bash
+curl --json '{
+  "youtubeUrl": "https://www.youtube.com/watch?v=MORMZXEaONk",
+  "prompts": ["titles", "summary", "shortChapters", "takeaways", "questions"]
+}' http://localhost:3000/video
+```
+
+```bash
+curl --json '{
+  "youtubeUrl": "https://www.youtube.com/watch?v=MORMZXEaONk",
+  "prompts": ["titles", "summary", "shortChapters", "takeaways", "questions"],
+  "whisperModel": "tiny",
+  "llm": "llama"
+}' http://localhost:3000/video
+```
+
+```bash
+curl --json '{
+  "playlistUrl": "https://www.youtube.com/playlist?list=PLCVnrVv4KhXPz0SoAVu8Rc1emAdGPbSbr",
+  "prompts": ["titles", "mediumChapters"],
+  "whisperModel": "tiny",
+  "llm": "llama"
+}' http://localhost:3000/playlist
+```
+
+```bash
+curl --json '{
+  "playlistUrl": "https://www.youtube.com/playlist?list=PLCVnrVv4KhXPz0SoAVu8Rc1emAdGPbSbr",
+  "prompts": ["titles", "mediumChapters"],
+  "whisperModel": "tiny",
+  "llm": "llama"
+}' http://localhost:3000/playlist
 ```

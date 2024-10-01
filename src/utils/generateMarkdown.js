@@ -5,10 +5,45 @@ import { promisify } from 'node:util'
 import { writeFile } from 'node:fs/promises'
 import { basename, extname } from 'node:path'
 
-/** @import { MarkdownData, RSSItem } from '../types.js' */
+/** @import { MarkdownData, RSSItem, VideoMetadata } from '../types.js' */
 
 // Promisify the execFile function for use with async/await
 const execFilePromise = promisify(execFile)
+
+/**
+ * Extract metadata for a single video URL.
+ * @param {string} url - The URL of the video.
+ * @returns {Promise<VideoMetadata>} - The video metadata.
+ */
+export async function extractVideoMetadata(url) {
+  try {
+    const { stdout } = await execFilePromise('yt-dlp', [
+      '--restrict-filenames',
+      '--print', '%(webpage_url)s',
+      '--print', '%(channel)s',
+      '--print', '%(uploader_url)s',
+      '--print', '%(title)s',
+      '--print', '%(upload_date>%Y-%m-%d)s',
+      '--print', '%(thumbnail)s',
+      url
+    ])
+
+    const [showLink, channel, channelURL, title, publishDate, coverImage] = stdout.trim().split('\n')
+
+    return {
+      showLink,
+      channel,
+      channelURL,
+      title,
+      description: "",
+      publishDate,
+      coverImage
+    }
+  } catch (error) {
+    console.error(`Error extracting metadata for ${url}:`, error)
+    return null
+  }
+}
 
 /**
  * Function to generate markdown for RSS feed items.

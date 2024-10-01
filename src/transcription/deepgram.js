@@ -5,16 +5,6 @@ import { env } from 'node:process'
 import { createClient } from '@deepgram/sdk'
 
 /**
- * Check if the DEEPGRAM_API_KEY environment variable is set
- */
-if (!env.DEEPGRAM_API_KEY) {
-  throw new Error('DEEPGRAM_API_KEY environment variable is not set.')
-}
-
-// Initialize the Deepgram client with the API key from environment variables
-const deepgram = createClient(env.DEEPGRAM_API_KEY)
-
-/**
  * Main function to handle transcription using Deepgram.
  * @param {string} input - The URL or local file path of the audio to transcribe.
  * @param {string} id - The identifier used for naming output files.
@@ -22,6 +12,14 @@ const deepgram = createClient(env.DEEPGRAM_API_KEY)
  * @throws {Error} - If an error occurs during transcription.
  */
 export async function callDeepgram(input, id) {
+  // Check if the DEEPGRAM_API_KEY environment variable is set
+  if (!env.DEEPGRAM_API_KEY) {
+    throw new Error('DEEPGRAM_API_KEY environment variable is not set.')
+  }
+
+  // Initialize the Deepgram client with the API key from environment variables
+  const deepgram = createClient(env.DEEPGRAM_API_KEY)
+
   // Check if the input is a URL or a local file
   const isUrl = input.startsWith('http://') || input.startsWith('https://')
 

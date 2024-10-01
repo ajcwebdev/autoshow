@@ -11,7 +11,10 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     depends_on:
       - whisper
-      # - llama
+      - ollama
+    environment:
+      - OLLAMA_HOST=localhost
+      - OLLAMA_PORT=11434
   whisper:
     build:
       context: ./whisper.cpp
@@ -22,15 +25,9 @@ services:
     command: tail -f /dev/null
     tty: true
     stdin_open: true
-  # llama:
-  #   build:
-  #     context: ./llama.cpp
-  #     dockerfile: Dockerfile
-  #   volumes:
-  #     - ./content:/app/content
-  #   command: tail -f /dev/null
-  #   tty: true
-  #   stdin_open: true
+  ollama:
+    image: ollama/ollama
+    ports:
+      - "11434:11434"
 volumes:
   whisper:
-  # llama:

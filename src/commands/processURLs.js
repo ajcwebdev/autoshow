@@ -1,8 +1,9 @@
 // src/commands/processURLs.js
 
-import { readFile } from 'node:fs/promises'
-import { processVideo } from './processVideo.js'
+import { readFile, writeFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
+import { processVideo } from './processVideo.js'
+import { extractVideoMetadata } from '../utils/generateMarkdown.js'
 
 /** @import { LLMOption, TranscriptOption, ProcessingOptions } from '../types.js' */
 
@@ -28,6 +29,20 @@ export async function processURLs(filePath, llmOpt, transcriptOpt, options) {
 
     // Log the number of URLs found
     console.log(`Found ${urls.length} URLs in the file`)
+
+    // Extract metadata for all videos
+    const metadataPromises = urls.map(extractVideoMetadata)
+    const metadataList = await Promise.all(metadataPromises)
+    const validMetadata = metadataList.filter(Boolean)
+
+    // Generate JSON file with video information if --info option is used
+    if (options.info) {
+      const jsonContent = JSON.stringify(validMetadata, null, 2)
+      const jsonFilePath = 'content/urls_info.json'
+      await writeFile(jsonFilePath, jsonContent)
+      console.log(`Video information saved to: ${jsonFilePath}`)
+      return
+    }
 
     // Process each URL
     for (const [index, url] of urls.entries()) {

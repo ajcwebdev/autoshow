@@ -5,6 +5,7 @@
  * processing specific episodes based on user input. It supports processing multiple specific items or the entire feed.
  */
 
+import { writeFile } from 'node:fs/promises'
 import { XMLParser } from 'fast-xml-parser'
 import { generateRSSMarkdown } from '../utils/generateMarkdown.js'
 import { downloadAudio } from '../utils/downloadAudio.js'
@@ -144,9 +145,19 @@ export async function processRSS(rssUrl, llmOpt, transcriptOpt, options) {
         channel: channelTitle,
         channelURL: channelLink,
         title: item.title,
+        description: "", // Initialize description as empty string
         publishDate: dateFormatter.format(new Date(item.pubDate)),
         coverImage: item['itunes:image']?.href || channelImage || '',
       }))
+
+    // Generate JSON file with RSS feed information
+    if (options.info) {
+      const jsonContent = JSON.stringify(items, null, 2)
+      const jsonFilePath = 'content/rss_info.json'
+      await writeFile(jsonFilePath, jsonContent)
+      console.log(`RSS feed information saved to: ${jsonFilePath}`)
+      return
+    }
 
     let itemsToProcess = []
     if (options.item && options.item.length > 0) {

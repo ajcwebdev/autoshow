@@ -72,14 +72,6 @@ git clone https://github.com/ggerganov/whisper.cpp.git && \
 
 > Replace `base` with `large-v2` for the largest model, `medium` for a middle sized model, or `tiny` for the smallest model.
 
-### Clone Llama Repo
-
-```bash
-git clone https://github.com/ggerganov/llama.cpp && \
-  make -C llama.cpp && \
-  cp .github/llama.Dockerfile llama.cpp/Dockerfile
-```
-
 ## Run Autoshow Node Scripts
 
 Run on a single YouTube video.

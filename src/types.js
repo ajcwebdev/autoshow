@@ -15,8 +15,7 @@
  * @property {string[]} [item] - Specific items (audio URLs) from the RSS feed to process.
  * @property {boolean} [info] - Flag to generate JSON file with RSS feed information instead of processing items.
  * @property {boolean} [noCleanUp] - Flag to indicate whether to keep temporary files after processing.
- * @property {WhisperModelType} [whisper] - Whisper model type to use for transcription (e.g., 'tiny', 'base').
- * @property {WhisperModelType} [whisperDocker] - Whisper model type to use in Docker for transcription.
+ * @property {WhisperModelType} [whisperModel] - The Whisper model to use (e.g., 'tiny', 'base').
  * @property {boolean} [deepgram] - Flag to use Deepgram for transcription.
  * @property {boolean} [assembly] - Flag to use AssemblyAI for transcription.
  * @property {boolean} [speakerLabels] - Flag to use speaker labels in AssemblyAI transcription.

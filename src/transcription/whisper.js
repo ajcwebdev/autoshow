@@ -33,17 +33,25 @@ const WHISPER_MODELS = {
 export async function callWhisper(finalPath, transcriptOpt, options) {
   try {
     /** @type {WhisperModelType} */
-    const whisperModel = options.whisper || options.whisperDocker || 'base'
+    const whisperModel = options.whisperModel || 'base'
     if (!(whisperModel in WHISPER_MODELS)) {
       throw new Error(`Unknown model type: ${whisperModel}`)
     }
     const modelName = WHISPER_MODELS[whisperModel]
 
-    // Call the appropriate Whisper function based on the transcription service
+    // Adjust downloadModelName for 'large' model
+    let downloadModelName = whisperModel
+    if (whisperModel === 'large') {
+      downloadModelName = 'large-v2'
+    }
+
+    // Call the appropriate Whisper function
     if (transcriptOpt === 'whisperDocker') {
-      await callWhisperDocker(finalPath, modelName, whisperModel)
+      await callWhisperDocker(finalPath, modelName, downloadModelName)
+    } else if (transcriptOpt === 'whisper') {
+      await callWhisperMain(finalPath, modelName, downloadModelName)
     } else {
-      await callWhisperMain(finalPath, modelName, whisperModel)
+      throw new Error(`Unsupported transcription option: ${transcriptOpt}`)
     }
 
     // Read, process, and format the generated LRC file
@@ -71,7 +79,7 @@ export async function callWhisper(finalPath, transcriptOpt, options) {
  * @returns {Promise<void>}
  * @throws {Error} - If an error occurs during Docker transcription.
  */
-async function callWhisperDocker(finalPath, modelName, whisperModel) {
+async function callWhisperDocker(finalPath, modelName, downloadModelName) {
   const WHISPER_CONTAINER_NAME = 'autoshow-whisper-1'
   const CONTENT_DIR = '/app/content'
   const MODELS_DIR = '/app/models'
@@ -91,15 +99,15 @@ async function callWhisperDocker(finalPath, modelName, whisperModel) {
     // Check if the model exists in the container, download if not
     try {
       await execPromise(`docker exec ${WHISPER_CONTAINER_NAME} test -f ${modelPathContainer}`)
-      console.log(`\nWhisper.cpp ${whisperModel} model found at ${modelPathContainer}`)
+      console.log(`\nWhisper.cpp model found at ${modelPathContainer}`)
     } catch {
-      console.log(`\nWhisper.cpp ${whisperModel} model not found in container:`)
-      console.log(`  - ${modelName} model selected\n  - Model downloading to ${modelPathContainer}`)
-      await execPromise(`docker exec ${WHISPER_CONTAINER_NAME} ${MODELS_DIR}/download-ggml-model.sh ${whisperModel}`)
-      console.log(`  - Model downloaded successfully`)
+      console.log(`\nWhisper.cpp model not found in container: ${modelName}`)
+      console.log(`  - Model downloading to ${modelPathContainer}`)
+      await execPromise(`docker exec ${WHISPER_CONTAINER_NAME} ${MODELS_DIR}/download-ggml-model.sh ${downloadModelName}`)
+      console.log('  - Model downloaded successfully')
     }
 
-    // Execute Whisper transcription in the Docker container
+    // Proceed with transcription
     const fileName = basename(finalPath)
     await execPromise(
       `docker exec ${WHISPER_CONTAINER_NAME} /app/main \
@@ -123,7 +131,7 @@ async function callWhisperDocker(finalPath, modelName, whisperModel) {
  * @returns {Promise<void>}
  * @throws {Error} - If an error occurs during transcription.
  */
-async function callWhisperMain(finalPath, modelName, whisperModel) {
+async function callWhisperMain(finalPath, modelName, downloadModelName) {
   const modelPath = `./whisper.cpp/models/${modelName}`
 
   try {
@@ -142,12 +150,12 @@ async function callWhisperMain(finalPath, modelName, whisperModel) {
     // Check if the model exists locally, download if not
     await access(modelPath).catch(async () => {
       console.log('  - whisper.cpp directory found.')
-      console.log(`\nWhisper.cpp ${whisperModel} model not found:`)
-      console.log(`  - ${modelName} model selected\n  - Model downloading to ${modelPath}`)
-      await execPromise(`bash ./whisper.cpp/models/download-ggml-model.sh ${whisperModel}`)
-      console.log(`  - Model downloaded successfully`)
+      console.log(`\nWhisper.cpp model not found: ${modelName}`)
+      console.log(`  - Model downloading to ${modelPath}`)
+      await execPromise(`bash ./whisper.cpp/models/download-ggml-model.sh ${downloadModelName}`)
+      console.log('  - Model downloaded successfully')
     })
-    console.log(`  - Whisper.cpp ${whisperModel} model found at ${modelPath}`)
+    console.log(`  - Whisper.cpp model found at ${modelPath}`)
   
     // Proceed with transcription
     await execPromise(
@@ -157,5 +165,5 @@ async function callWhisperMain(finalPath, modelName, whisperModel) {
   } catch (error) {
     console.error('Error in callWhisperMain:', error)
     throw error
-  }  
+  }
 }

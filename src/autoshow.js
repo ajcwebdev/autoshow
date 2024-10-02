@@ -58,8 +58,8 @@ Report Issues:
   .option('--order <order>', 'Specify the order for RSS feed processing (newest or oldest)', 'newest')
   .option('--skip <number>', 'Number of items to skip when processing RSS feed', parseInt, 0)
   .option('--info', 'Generate JSON file with RSS feed information instead of processing items')
-  .option('--whisper [modelType]', 'Use Whisper.cpp for transcription (non-Docker version)')
-  .option('--whisperDocker [modelType]', 'Use Whisper.cpp for transcription (Docker version)')
+  .option('--whisper [model]', 'Use Whisper.cpp for transcription with optional model specification')
+  .option('--whisperDocker [model]', 'Use Whisper.cpp in Docker for transcription with optional model specification')
   .option('--deepgram', 'Use Deepgram for transcription')
   .option('--assembly', 'Use AssemblyAI for transcription')
   .option('--speakerLabels', 'Use speaker labels for AssemblyAI transcription')
@@ -148,15 +148,16 @@ program.action(async (options) => {
   const transcriptOptions = ['whisper', 'whisperDocker', 'deepgram', 'assembly']
   const selectedTranscripts = transcriptOptions.filter((opt) => options[opt])
   if (selectedTranscripts.length > 1) {
-    console.error(`Error: Multiple transcription options provided (${selectedTranscripts.join(
-        ', '
-      )}). Please specify only one transcription option.`
-    )
+    console.error(`Error: Multiple transcription options provided (${selectedTranscripts.join(', ')}). Please specify only one transcription option.`)
     exit(1)
   }
-  const transcriptOpt = /** @type {TranscriptOption | undefined} */ (
-    selectedTranscripts[0]
-  )
+  const transcriptOpt = /** @type {TranscriptOption | undefined} */ (selectedTranscripts[0])
+  // Extract the Whisper model if using Whisper transcription
+  let whisperModel
+  if (transcriptOpt === 'whisper' || transcriptOpt === 'whisperDocker') {
+    whisperModel = options[transcriptOpt] || 'base' // Default to 'base' if no model specified
+    options.whisperModel = whisperModel // Add this line
+  }
 
   // Execute the appropriate handler based on the action
   for (const [key, handler] of Object.entries(handlers)) {

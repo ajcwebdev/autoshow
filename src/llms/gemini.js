@@ -67,8 +67,6 @@ export async function callGemini(promptAndTranscript, tempPath, model = 'GEMINI_
       
       // Write the generated text to the output file
       await writeFile(tempPath, text)
-      
-      console.log(`\nTranscript saved to:\n  - ${tempPath}`)
       console.log(`\nModel: ${actualModel}`)
       
       return

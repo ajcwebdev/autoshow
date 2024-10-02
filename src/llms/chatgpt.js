@@ -55,10 +55,8 @@ export async function callChatGPT(promptAndTranscript, tempPath, model = 'GPT_4o
     
     // Write the generated content to the output file
     await writeFile(tempPath, content)
-    
-    console.log(`\nTranscript saved to:\n  - ${tempPath}`)
-    console.log(`\nFinish Reason: ${finish_reason}\nModel: ${usedModel}`)
-    console.log(`Token Usage:\n  - ${prompt_tokens} prompt tokens\n  - ${completion_tokens} completion tokens\n  - ${total_tokens} total tokens\n`)
+    console.log(`  - Finish Reason: ${finish_reason}\n  - ChatGPT Model: ${usedModel}`)
+    console.log(`  - Token Usage:\n    - ${prompt_tokens} prompt tokens\n    - ${completion_tokens} completion tokens\n    - ${total_tokens} total tokens`)
     
   } catch (error) {
     console.error('Error in callChatGPT:', error)

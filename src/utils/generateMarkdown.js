@@ -1,5 +1,6 @@
 // src/utils/generateMarkdown.js
 
+import { checkDependencies } from './checkDependencies.js'
 import { execFile } from 'node:child_process'
 import { promisify } from 'node:util'
 import { writeFile } from 'node:fs/promises'
@@ -16,7 +17,11 @@ const execFilePromise = promisify(execFile)
  * @returns {Promise<VideoMetadata>} - The video metadata.
  */
 export async function extractVideoMetadata(url) {
+  console.log('\nStep 0 - Generating metadata...')
   try {
+    // Check for required dependencies
+    await checkDependencies(['yt-dlp'])
+
     const { stdout } = await execFilePromise('yt-dlp', [
       '--restrict-filenames',
       '--print', '%(webpage_url)s',
@@ -25,23 +30,28 @@ export async function extractVideoMetadata(url) {
       '--print', '%(title)s',
       '--print', '%(upload_date>%Y-%m-%d)s',
       '--print', '%(thumbnail)s',
-      url
+      url,
     ])
 
     const [showLink, channel, channelURL, title, publishDate, coverImage] = stdout.trim().split('\n')
+
+    // Ensure all metadata is present
+    if (!showLink || !channel || !channelURL || !title || !publishDate || !coverImage) {
+      throw new Error('Incomplete metadata received from yt-dlp.')
+    }
 
     return {
       showLink,
       channel,
       channelURL,
       title,
-      description: "",
+      description: '',
       publishDate,
-      coverImage
+      coverImage,
     }
   } catch (error) {
-    console.error(`Error extracting metadata for ${url}:`, error)
-    return null
+    console.error(`Error extracting metadata for ${url}: ${error.message}`)
+    throw error
   }
 }
 
@@ -53,17 +63,12 @@ export async function extractVideoMetadata(url) {
  */
 export async function generateRSSMarkdown(item) {
   try {
+    console.log('\nStep 1 - Generating RSS markdown...')
     // Destructure the item object
     const { publishDate, title, coverImage, showLink, channel, channelURL } = item
 
     // Sanitize the title for use in the filename
-    const sanitizedTitle = title
-      .replace(/[^\w\s-]/g, '')
-      .trim()
-      .replace(/[\s_]+/g, '-')
-      .replace(/-+/g, '-')
-      .toLowerCase()
-      .slice(0, 200)
+    const sanitizedTitle = sanitizeTitle(title)
 
     // Construct the filename, path, and front matter for the markdown file
     const filename = `${publishDate}-${sanitizedTitle}`
@@ -82,10 +87,10 @@ export async function generateRSSMarkdown(item) {
 
     // Write the front matter to the markdown file
     await writeFile(`${finalPath}.md`, frontMatter)
-    console.log(`\nInitial markdown file created:\n  - ${finalPath}.md`)
+    console.log(`  - ${finalPath}.md\n  - Front matter successfully created and saved.`)
     return { frontMatter, finalPath, filename }
   } catch (error) {
-    console.error('Error generating markdown:', error)
+    console.error(`Error generating markdown for RSS item: ${error.message}`)
     throw error
   }
 }
@@ -98,29 +103,15 @@ export async function generateRSSMarkdown(item) {
  */
 export async function generateFileMarkdown(filePath) {
   try {
+    console.log('\nStep 1 - Generating file markdown...')
     // Extract the original filename from the full file path
     const originalFilename = basename(filePath)
 
-    // Get the file extension
-    const fileExtension = extname(originalFilename)
-
     // Remove the file extension from the original filename
-    const filenameWithoutExt = originalFilename.slice(0, -fileExtension.length)
+    const filenameWithoutExt = originalFilename.replace(extname(originalFilename), '')
 
     // Sanitize the filename
-    const sanitizedFilename = filenameWithoutExt
-      // Replace any character that's not alphanumeric, whitespace, or hyphen with a hyphen
-      .replace(/[^\w\s-]/g, '-')
-      // Trim whitespace from both ends
-      .trim()
-      // Replace any sequence of whitespace or underscores with a single hyphen
-      .replace(/[\s_]+/g, '-')
-      // Replace any sequence of multiple hyphens with a single hyphen
-      .replace(/-+/g, '-')
-      // Convert to lowercase
-      .toLowerCase()
-      // Limit the length to 200 characters
-      .slice(0, 200)
+    const sanitizedFilename = sanitizeTitle(filenameWithoutExt)
 
     // Construct the final path for the markdown file
     const finalPath = `content/${sanitizedFilename}`
@@ -142,13 +133,13 @@ export async function generateFileMarkdown(filePath) {
     await writeFile(`${finalPath}.md`, frontMatter)
 
     // Log the creation of the markdown file
-    console.log(`\nInitial markdown file created:\n  - ${finalPath}.md`)
+    console.log(`  - ${finalPath}.md\n  - Front matter successfully created and saved.`)
 
     // Return an object with the generated data
     return { frontMatter, finalPath, filename: sanitizedFilename }
   } catch (error) {
     // Log any errors that occur during the process
-    console.error('Error generating markdown for file:', error)
+    console.error(`Error generating markdown for file: ${error.message}`)
     // Re-throw the error to be handled by the calling function
     throw error
   }
@@ -162,6 +153,10 @@ export async function generateFileMarkdown(filePath) {
  */
 export async function generateMarkdown(url) {
   try {
+    console.log('\nStep 1 - Generating video markdown...')
+    // Check for required dependencies
+    await checkDependencies(['yt-dlp'])
+
     // Execute yt-dlp to get video information
     const { stdout } = await execFilePromise('yt-dlp', [
       '--restrict-filenames',
@@ -171,7 +166,7 @@ export async function generateMarkdown(url) {
       '--print', '%(webpage_url)s',
       '--print', '%(channel)s',
       '--print', '%(uploader_url)s',
-      url
+      url,
     ])
 
     // Parse the output from yt-dlp
@@ -179,19 +174,13 @@ export async function generateMarkdown(url) {
       formattedDate, title, thumbnail, webpage_url, channel, uploader_url
     ] = stdout.trim().split('\n')
 
-    // Check for undefined variables
+    // Ensure all metadata is present
     if (!formattedDate || !title || !thumbnail || !webpage_url || !channel || !uploader_url) {
-      throw new Error('Missing video metadata from yt-dlp output')
+      throw new Error('Incomplete metadata received from yt-dlp.')
     }
 
     // Sanitize the title for use in the filename
-    const sanitizedTitle = title
-      .replace(/[^\w\s-]/g, '')
-      .trim()
-      .replace(/[\s_]+/g, '-')
-      .replace(/-+/g, '-')
-      .toLowerCase()
-      .slice(0, 200)
+    const sanitizedTitle = sanitizeTitle(title)
 
     // Construct the filename, path, and front matter for the markdown file
     const filename = `${formattedDate}-${sanitizedTitle}`
@@ -210,12 +199,25 @@ export async function generateMarkdown(url) {
 
     // Write the front matter to the markdown file
     await writeFile(`${finalPath}.md`, frontMatter)
-    console.log(
-      `\nFrontmatter created:\n\n${frontMatter}\nInitial markdown file created:\n  - ${finalPath}.md`
-    )
+    console.log(`  - ${finalPath}.md\n  - Front matter successfully created and saved.`)
     return { frontMatter, finalPath, filename }
   } catch (error) {
-    console.error('Error generating markdown:', error)
+    console.error(`Error generating markdown for video: ${error.message}`)
     throw error
   }
+}
+
+/**
+ * Sanitize the title to create a safe filename.
+ * @param {string} title - The title to sanitize.
+ * @returns {string} - The sanitized title.
+ */
+function sanitizeTitle(title) {
+  return title
+    .replace(/[^\w\s-]/g, '')
+    .trim()
+    .replace(/[\s_]+/g, '-')
+    .replace(/-+/g, '-')
+    .toLowerCase()
+    .slice(0, 200)
 }

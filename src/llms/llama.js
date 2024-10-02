@@ -42,6 +42,7 @@ const localModels = {
 async function downloadModel(modelName = 'GEMMA_2_2B_Q4_MODEL') {
   // Get the model object from localModels using the provided modelName or default to GEMMA_2_2B_Q4_MODEL
   const model = localModels[modelName] || localModels.GEMMA_2_2B_Q4_MODEL
+  console.log(`  - ${model.filename} model selected.`)
 
   // If no valid model is found, throw an error
   if (!model) {
@@ -53,7 +54,7 @@ async function downloadModel(modelName = 'GEMMA_2_2B_Q4_MODEL') {
 
   // Check if the model file already exists
   if (existsSync(modelPath)) {
-    console.log(`\nModel already exists: ${modelPath}`)
+    console.log(`  - Model already exists at ${modelPath}`)
     // Return the path if the model already exists
     return modelPath
   }
@@ -84,14 +85,17 @@ async function downloadModel(modelName = 'GEMMA_2_2B_Q4_MODEL') {
  * Main function to call the local Llama model.
  * @param {string} promptAndTranscript - The combined prompt and transcript content.
  * @param {string} tempPath - The temporary file path to write the LLM output.
- * @param {LlamaModelType} [modelName='GEMMA_2_2B_Q4_MODEL'] - The name of the model to use.
+ * @param {LlamaModelType | boolean} [modelName=true] - The name of the model to use or true to use the default.
  * @returns {Promise<void>}
  * @throws {Error} - If an error occurs during processing.
  */
-export async function callLlama(promptAndTranscript, tempPath, modelName = 'GEMMA_2_2B_Q4_MODEL') {
+export async function callLlama(promptAndTranscript, tempPath, modelName = true) {
   try {
+    // If modelName is true or not provided, use the default model
+    const actualModelName = modelName === true ? 'GEMMA_2_2B_Q4_MODEL' : modelName
+
     // Ensure the model is downloaded
-    const modelPath = await downloadModel(modelName)
+    const modelPath = await downloadModel(actualModelName)
 
     // Initialize Llama and load the local model
     const llama = await getLlama()
@@ -104,8 +108,6 @@ export async function callLlama(promptAndTranscript, tempPath, modelName = 'GEMM
     // Generate a response and write the response to a file
     const response = await session.prompt(promptAndTranscript)
     await writeFile(tempPath, response)
-    console.log(`\nTranscript saved to:\n  - ${tempPath}`)
-    console.log(`\nModel used:\n  - ${modelName}\n`)
   } catch (error) {
     console.error('Error in callLlama:', error)
     throw error

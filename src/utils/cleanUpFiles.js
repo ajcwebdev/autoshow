@@ -13,7 +13,7 @@ export async function cleanUpFiles(id) {
   const extensions = ['.wav', '.txt', '.md', '.lrc']
 
   // Log the start of the cleanup process
-  console.log(`\nTemporary files removed:`)
+  console.log('\nStep 5 - Cleaning up temporary files...')
 
   for (const ext of extensions) {
     try {
@@ -21,7 +21,7 @@ export async function cleanUpFiles(id) {
       console.log(`  - ${id}${ext}`)
     } catch (error) {
       if (error.code !== 'ENOENT') {
-        console.error(`Error deleting file ${id}${ext}:`, error)
+        console.error(`Error deleting file ${id}${ext}: ${error.message}`)
       }
       // If the file does not exist, silently continue
     }

@@ -4,6 +4,7 @@ import { readFile, writeFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import { processVideo } from './processVideo.js'
 import { extractVideoMetadata } from '../utils/generateMarkdown.js'
+import { checkDependencies } from '../utils/checkDependencies.js'
 
 /** @import { LLMOption, TranscriptOption, ProcessingOptions } from '../types.js' */
 
@@ -17,8 +18,9 @@ import { extractVideoMetadata } from '../utils/generateMarkdown.js'
  */
 export async function processURLs(filePath, llmOpt, transcriptOpt, options) {
   try {
-    // Log the start of URL processing and resolve the absolute path of the file
-    console.log(`Processing URLs from file: ${filePath}`)
+    // Check for required dependencies
+    await checkDependencies(['yt-dlp'])
+
     const absolutePath = resolve(filePath)
 
     // Read and parse the content of the file into an array of URLs
@@ -27,8 +29,12 @@ export async function processURLs(filePath, llmOpt, transcriptOpt, options) {
       .map(line => line.trim())
       .filter(line => line && !line.startsWith('#'))
 
-    // Log the number of URLs found
-    console.log(`Found ${urls.length} URLs in the file`)
+    if (urls.length === 0) {
+      console.error('Error: No URLs found in the file.')
+      return
+    }
+
+    console.log(`\nFound ${urls.length} URLs in the file`)
 
     // Extract metadata for all videos
     const metadataPromises = urls.map(extractVideoMetadata)
@@ -46,21 +52,18 @@ export async function processURLs(filePath, llmOpt, transcriptOpt, options) {
 
     // Process each URL
     for (const [index, url] of urls.entries()) {
-      console.log(`Processing URL ${index + 1}/${urls.length}: ${url}`)
+      console.log(`\nProcessing URL ${index + 1}/${urls.length}: ${url}`)
       try {
-        // Process individual video
         await processVideo(url, llmOpt, transcriptOpt, options)
       } catch (error) {
-        // Log any errors that occur during video processing
-        console.error(`Error processing URL ${url}:`, error)
+        console.error(`Error processing URL ${url}: ${error.message}`)
+        // Continue processing the next URL
       }
     }
 
-    // Log completion of file processing
-    console.log('File processing completed')
+    console.log('\nURL file processing completed successfully.')
   } catch (error) {
-    // Log any errors that occur during file reading or processing
-    console.error(`Error reading or processing file ${filePath}:`, error)
+    console.error(`Error reading or processing file ${filePath}: ${error.message}`)
     throw error
   }
 }

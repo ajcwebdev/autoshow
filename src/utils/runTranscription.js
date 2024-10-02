@@ -18,7 +18,7 @@ import { callAssembly } from '../transcription/assembly.js'
  */
 export async function runTranscription(
   finalPath,
-  transcriptOpt,
+  transcriptOpt = 'whisper',
   options = {},
   frontMatter = ''
 ) {
@@ -28,27 +28,25 @@ export async function runTranscription(
     // Choose the transcription service based on the provided option
     switch (transcriptOpt) {
       case 'deepgram':
-        // Use Deepgram for transcription and read the transcription result
+        console.log('\nStep 3 - Using Deepgram for transcription...')
         await callDeepgram(`${finalPath}.wav`, finalPath)
         txtContent = await readFile(`${finalPath}.txt`, 'utf8')
         break
 
       case 'assembly':
-        // Use AssemblyAI for transcription and pass options
+        console.log('\nStep 3 - Using AssemblyAI for transcription...')
         txtContent = await callAssembly(finalPath, transcriptOpt, options)
         break
 
       case 'whisperDocker':
       case 'whisper':
-        // Use Whisper (either local or Docker version) for transcription
+        console.log('\nStep 3 - Using Whisper for transcription...')
         txtContent = await callWhisper(finalPath, transcriptOpt, options)
         break
 
       default:
-        // If no service is specified, default to Whisper
-        console.log('No transcription service specified, defaulting to Whisper')
-        txtContent = await callWhisper(finalPath, transcriptOpt, options)
-        break
+        console.error(`Error: Unsupported transcription option '${transcriptOpt}'.`)
+        throw new Error('Unsupported transcription option.')
     }
 
     let mdContent = frontMatter
@@ -57,9 +55,9 @@ export async function runTranscription(
       const existingContent = await readFile(`${finalPath}.md`, 'utf8')
       mdContent += existingContent
     } catch (error) {
-      // If the file doesn't exist, ignore the error
       if (error.code !== 'ENOENT') {
-        throw error // Re-throw if it's not a 'file not found' error
+        console.error(`Error reading markdown file: ${error.message}`)
+        throw error
       }
     }
 
@@ -68,13 +66,11 @@ export async function runTranscription(
 
     // Write final markdown file, including existing content and the new transcript
     await writeFile(`${finalPath}.md`, finalContent)
-    console.log(`Markdown file with frontmatter and transcript:\n  - ${finalPath}.md`)
+    console.log(`  - Markdown file updated with transcript at ${finalPath}.md`)
 
-    // Return final content including the original markdown and transcript
     return finalContent
   } catch (error) {
-    // Log any errors that occur during the transcription process
-    console.error('Error in runTranscription:', error)
-    throw error // Re-throw the error for handling by the calling function
+    console.error(`Error in transcription process: ${error.message}`)
+    throw error
   }
 }

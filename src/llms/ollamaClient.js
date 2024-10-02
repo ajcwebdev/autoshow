@@ -48,7 +48,7 @@ export async function callOllama(promptAndTranscript, tempPath, modelName = 'LLA
 
     // Map the model name to the Ollama model identifier
     const ollamaModelName = ollamaModels[modelName] || 'llama3.2:1b'
-    console.log(`Using Ollama model: ${ollamaModelName}`)
+    console.log(`  - ${ollamaModelName} model selected.`)
 
     // Check if the model is available
     console.log('Checking model availability...')
@@ -80,8 +80,6 @@ export async function callOllama(promptAndTranscript, tempPath, modelName = 'LLA
     // Write the response to the output file
     console.log(`Writing response to file: ${tempPath}`)
     await writeFile(tempPath, assistantReply)
-    console.log(`\nTranscript saved to:\n  - ${tempPath}`)
-    console.log(`\nModel used:\n  - ${ollamaModelName}\n`)
   } catch (error) {
     console.error('Error in callOllama:', error)
     if (error.code === 'ECONNREFUSED') {

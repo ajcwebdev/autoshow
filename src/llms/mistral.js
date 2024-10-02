@@ -54,11 +54,9 @@ export async function callMistral(promptAndTranscript, tempPath, model = 'MISTRA
     
     // Write the generated content to the specified output file
     await writeFile(tempPath, content)
-    console.log(`\nTranscript saved to:\n  - ${tempPath}`)
-    
     // Log finish reason, used model, and token usage
     console.log(`\nFinish Reason: ${finishReason}\nModel: ${usedModel}`)
-    console.log(`Token Usage:\n  - ${promptTokens} prompt tokens\n  - ${completionTokens} completion tokens\n  - ${totalTokens} total tokens\n`)
+    console.log(`Token Usage:\n  - ${promptTokens} prompt tokens\n  - ${completionTokens} completion tokens\n  - ${totalTokens} total tokens`)
     
   } catch (error) {
     // Log any errors that occur during the process

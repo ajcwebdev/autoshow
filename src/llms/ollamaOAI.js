@@ -42,6 +42,7 @@ export async function callOllama(promptAndTranscript, tempPath, modelName = 'LLA
   try {
     // Map the model name to the Ollama model identifier
     const ollamaModelName = ollamaModels[modelName] || 'llama3.2:1b'
+    console.log(`  - ${ollamaModelName} model selected.`)
 
     // Check if the model is available
     const modelsResponse = await fetch(`${ollamaBaseUrl}/api/tags`)
@@ -87,8 +88,6 @@ export async function callOllama(promptAndTranscript, tempPath, modelName = 'LLA
 
     // Write the response to the output file
     await writeFile(tempPath, assistantReply)
-    console.log(`\nTranscript saved to:\n  - ${tempPath}`)
-    console.log(`\nModel used:\n  - ${ollamaModelName}\n`)
   } catch (error) {
     console.error('Error in callOllama:', error)
     throw error

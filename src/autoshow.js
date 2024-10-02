@@ -3,9 +3,13 @@
 // src/autoshow.js
 
 /**
- * This script serves as the entry point for the 'autoshow' CLI application.
- * It processes command-line arguments and options, and initiates the appropriate
- * processing functions based on user input or interactive prompts.
+ * Autoshow CLI Application
+ *
+ * Automate processing of audio and video content from various sources.
+ * Supports processing YouTube videos, playlists, local files, and podcast RSS feeds.
+ *
+ * Documentation: https://github.com/ajcwebdev/autoshow#readme
+ * Report Issues: https://github.com/ajcwebdev/autoshow/issues
  */
 
 import { Command } from 'commander'
@@ -15,7 +19,7 @@ import { processPlaylist } from './commands/processPlaylist.js'
 import { processURLs } from './commands/processURLs.js'
 import { processFile } from './commands/processFile.js'
 import { processRSS } from './commands/processRSS.js'
-import { argv } from 'node:process'
+import { argv, exit } from 'node:process'
 
 /** @import { ProcessingOptions, HandlerFunction, LLMOption, TranscriptOption } from './types.js' */
 
@@ -25,7 +29,25 @@ const program = new Command()
 // Define command-line options and their descriptions
 program
   .name('autoshow')
-  .description('Automated processing of YouTube videos, playlists, podcast RSS feeds, and local audio/video files')
+  .version('0.0.1')
+  .description('Automate processing of audio and video content from various sources.')
+  .usage('[options]')
+  .addHelpText(
+    'after',
+    `
+Examples:
+  $ autoshow --video "https://www.youtube.com/watch?v=..."
+  $ autoshow --playlist "https://www.youtube.com/playlist?list=..."
+  $ autoshow --file "content/audio.mp3"
+  $ autoshow --rss "https://feeds.transistor.fm/fsjam-podcast/"
+
+Documentation:
+  https://github.com/ajcwebdev/autoshow#readme
+
+Report Issues:
+  https://github.com/ajcwebdev/autoshow/issues
+`
+  )
   .option('--prompt <sections...>', 'Specify prompt sections to include')
   .option('-v, --video <url>', 'Process a single YouTube video')
   .option('-p, --playlist <playlistUrl>', 'Process all videos in a YouTube playlist')
@@ -50,6 +72,7 @@ program
   .option('--ollama [model]', 'Use Ollama for processing with optional model specification')
   .option('--gemini [model]', 'Use Gemini for processing with optional model specification')
   .option('--noCleanUp', 'Do not delete intermediary files after processing')
+  .option('-i, --interactive', 'Run in interactive mode')
 
 /**
  * Main action for the program.
@@ -57,14 +80,19 @@ program
  * @returns {Promise<void>}
  */
 program.action(async (options) => {
-  console.log(`Options received:\n`)
-  console.log(options)
-  const { video, playlist, urls, file, rss } = options
+  console.log(`Options received: ${JSON.stringify(options, null, 2)}`)
 
-  // Check if no input options are provided and if so, prompt the user interactively
-  options = [video, playlist, urls, file, rss].every(opt => !opt) 
-    ? await handleInteractivePrompt(options) 
-    : options
+  // Determine if no action options were provided
+  const { video, playlist, urls, file, rss, interactive } = options
+  const noActionProvided = [video, playlist, urls, file, rss].every((opt) => !opt)
+
+  // If interactive mode is selected
+  if (interactive) {
+    options = await handleInteractivePrompt(options)
+  } else if (noActionProvided) {
+    console.error('Error: No input provided. Please specify an option. Use --help to see available options.')
+    program.help({ error: true })
+  }
 
   // Ensure options.item is an array if provided via command line
   if (options.item && !Array.isArray(options.item)) {
@@ -83,28 +111,74 @@ program.action(async (options) => {
     rss: processRSS,
   }
 
+  // Count the number of action options provided
+  const actionOptions = ['video', 'playlist', 'urls', 'file', 'rss']
+  const actionsProvided = actionOptions.filter((opt) => options[opt])
+
+  // If more than one action option is provided, show an error
+  if (actionsProvided.length > 1) {
+    console.error(`Error: Multiple input options provided (${actionsProvided.join(
+        ', '
+      )}). Please specify only one input option.`
+    )
+    exit(1)
+  }
+
   /**
    * Determine the selected LLM option
    * @type {LLMOption | undefined}
    */
-  const llmOpt = /** @type {LLMOption | undefined} */ ([
-    'chatgpt', 'claude', 'cohere', 'mistral', 'octo', 'llama', 'ollama', 'gemini'
-  ].find((option) => options[option]))
+  const llmOptions = [
+    'chatgpt', 'claude', 'cohere', 'mistral', 'octo', 'llama', 'ollama', 'gemini',
+  ]
+  const selectedLLMs = llmOptions.filter((opt) => options[opt])
+  if (selectedLLMs.length > 1) {
+    console.error(`Error: Multiple LLM options provided (${selectedLLMs.join(
+        ', '
+      )}). Please specify only one LLM option.`
+    )
+    exit(1)
+  }
+  const llmOpt = /** @type {LLMOption | undefined} */ (selectedLLMs[0])
 
   /**
    * Determine the transcription service to use
    * @type {TranscriptOption | undefined}
    */
-  const transcriptOpt = /** @type {TranscriptOption | undefined} */ ([
-    'whisper', 'whisperDocker', 'deepgram', 'assembly'
-  ].find((option) => options[option]))
+  const transcriptOptions = ['whisper', 'whisperDocker', 'deepgram', 'assembly']
+  const selectedTranscripts = transcriptOptions.filter((opt) => options[opt])
+  if (selectedTranscripts.length > 1) {
+    console.error(`Error: Multiple transcription options provided (${selectedTranscripts.join(
+        ', '
+      )}). Please specify only one transcription option.`
+    )
+    exit(1)
+  }
+  const transcriptOpt = /** @type {TranscriptOption | undefined} */ (
+    selectedTranscripts[0]
+  )
 
   // Execute the appropriate handler based on the action
   for (const [key, handler] of Object.entries(handlers)) {
     if (options[key]) {
-      await handler(options[key], llmOpt, transcriptOpt, options)
+      try {
+        await handler(options[key], llmOpt, transcriptOpt, options)
+        exit(0) // Successful execution
+      } catch (error) {
+        console.error(`Error processing ${key}:`, error.message)
+        exit(1)
+      }
     }
   }
+})
+
+// Handle unknown commands
+program.on('command:*', function () {
+  console.error(`Error: Invalid command '${program.args.join(
+      ' '
+    )}'. Use --help to see available commands.`
+  )
+  exit(1)
 })
 
 // Parse the command-line arguments

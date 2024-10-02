@@ -56,11 +56,9 @@ export async function callClaude(promptAndTranscript, tempPath, model = 'CLAUDE_
     
     // Write the generated text to the output file
     await writeFile(tempPath, text)
-    
-    console.log(`\nTranscript saved to:\n  - ${tempPath}`)
     // console.log(`\nClaude response:\n\n${JSON.stringify(response, null, 2)}`) // Commented out detailed response logging
-    console.log(`\nStop Reason: ${stop_reason}\nModel: ${usedModel}`)
-    console.log(`Token Usage:\n  - ${input_tokens} input tokens\n  - ${output_tokens} output tokens\n`)
+    console.log(`  - Stop Reason: ${stop_reason}\n  - Model: ${usedModel}`)
+    console.log(`  - Token Usage:\n    - ${input_tokens} input tokens\n    - ${output_tokens} output tokens`)
     
   } catch (error) {
     console.error('Error:', error)

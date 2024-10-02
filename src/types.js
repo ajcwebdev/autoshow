@@ -13,7 +13,7 @@
  * @property {string} [file] - Local audio or video file path to process.
  * @property {string} [rss] - URL of the podcast RSS feed to process.
  * @property {string[]} [item] - Specific items (audio URLs) from the RSS feed to process.
- * @property {boolean} [info] - Flag to generate JSON file with RSS feed information instead of processing items
+ * @property {boolean} [info] - Flag to generate JSON file with RSS feed information instead of processing items.
  * @property {boolean} [noCleanUp] - Flag to indicate whether to keep temporary files after processing.
  * @property {WhisperModelType} [whisper] - Whisper model type to use for transcription (e.g., 'tiny', 'base').
  * @property {WhisperModelType} [whisperDocker] - Whisper model type to use in Docker for transcription.
@@ -33,6 +33,7 @@
  * @property {string} [llamaModel] - Specific Llama model to use.
  * @property {number} [skip] - Number of items to skip in RSS feed processing.
  * @property {string} [order] - Order in which to process RSS feed items ('newest' or 'oldest').
+ * @property {boolean} [interactive] - Whether to run in interactive mode.
  */
 
 /**
@@ -56,6 +57,7 @@
  * @property {boolean} [noCleanUp] - Whether to keep temporary files after processing.
  * @property {string} [order] - Order in which to process RSS feed items ('newest' or 'oldest').
  * @property {number} [skip] - Number of items to skip in RSS feed processing.
+ * @property {boolean} [confirmAction] - Whether to proceed with the action.
  */
 
 /**
@@ -169,7 +171,7 @@
  */
 
 /**
- * Represents the object containing the different prompts, their instructions to the LLM, and their expected example output
+ * Represents the object containing the different prompts, their instructions to the LLM, and their expected example output.
  * @typedef {Object} PromptSection
  * @property {string} instruction - The instructions for the section.
  * @property {string} example - An example output for the section.
@@ -214,14 +216,14 @@
  */
 
 /**
- * Define all available LLM models
- * @typedef {'GPT_4o_MINI' | 'GPT_4o' | 'GPT_4_TURBO' | 'GPT_4'} ChatGPTModelType - Define available GPT models
- * @typedef {'CLAUDE_3_5_SONNET' | 'CLAUDE_3_OPUS' | 'CLAUDE_3_SONNET' | 'CLAUDE_3_HAIKU'} ClaudeModelType - Define available Claude models
- * @typedef {'COMMAND_R' | 'COMMAND_R_PLUS'} CohereModelType - Define available Cohere models
- * @typedef {'GEMINI_1_5_FLASH' | 'GEMINI_1_5_PRO'} GeminiModelType - Define available Gemini models
- * @typedef {'MIXTRAL_8x7b' | 'MIXTRAL_8x22b' | 'MISTRAL_LARGE' | 'MISTRAL_NEMO'} MistralModelType - Define available Mistral AI models
- * @typedef {'LLAMA_3_1_8B' | 'LLAMA_3_1_70B' | 'LLAMA_3_1_405B' | 'MISTRAL_7B' | 'MIXTRAL_8X_7B' | 'NOUS_HERMES_MIXTRAL_8X_7B' | 'WIZARD_2_8X_22B'} OctoModelType - Define available OctoAI models
- * @typedef {'LLAMA_3_1_8B_Q4_MODEL' | 'LLAMA_3_1_8B_Q6_MODEL' | 'GEMMA_2_2B_Q4_MODEL' | 'GEMMA_2_2B_Q6_MODEL' | 'TINY_LLAMA_1B_Q4_MODEL' | 'TINY_LLAMA_1B_Q6_MODEL'} LlamaModelType - Define local model configurations
+ * Define all available LLM models.
+ * @typedef {'GPT_4o_MINI' | 'GPT_4o' | 'GPT_4_TURBO' | 'GPT_4'} ChatGPTModelType - Define available GPT models.
+ * @typedef {'CLAUDE_3_5_SONNET' | 'CLAUDE_3_OPUS' | 'CLAUDE_3_SONNET' | 'CLAUDE_3_HAIKU'} ClaudeModelType - Define available Claude models.
+ * @typedef {'COMMAND_R' | 'COMMAND_R_PLUS'} CohereModelType - Define available Cohere models.
+ * @typedef {'GEMINI_1_5_FLASH' | 'GEMINI_1_5_PRO'} GeminiModelType - Define available Gemini models.
+ * @typedef {'MIXTRAL_8x7b' | 'MIXTRAL_8x22b' | 'MISTRAL_LARGE' | 'MISTRAL_NEMO'} MistralModelType - Define available Mistral AI models.
+ * @typedef {'LLAMA_3_1_8B' | 'LLAMA_3_1_70B' | 'LLAMA_3_1_405B' | 'MISTRAL_7B' | 'MIXTRAL_8X_7B' | 'NOUS_HERMES_MIXTRAL_8X_7B' | 'WIZARD_2_8X_22B'} OctoModelType - Define available OctoAI models.
+ * @typedef {'LLAMA_3_1_8B_Q4_MODEL' | 'LLAMA_3_1_8B_Q6_MODEL' | 'GEMMA_2_2B_Q4_MODEL' | 'GEMMA_2_2B_Q6_MODEL' | 'TINY_LLAMA_1B_Q4_MODEL' | 'TINY_LLAMA_1B_Q6_MODEL'} LlamaModelType - Define local model configurations.
  */
 
 /**

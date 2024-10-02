@@ -29,7 +29,7 @@ const mistralModel = {
 export async function callMistral(promptAndTranscript, tempPath, model = 'MISTRAL_NEMO') {
   // Check if the MISTRAL_API_KEY environment variable is set
   if (!env.MISTRAL_API_KEY) {
-    throw new Error('MISTRAL_API_KEY environment variable is not set.')
+    throw new Error('MISTRAL_API_KEY environment variable is not set. Please set it to your Mistral API key.')
   }
   // Initialize Mistral client with API key from environment variables
   const mistral = new Mistral(env.MISTRAL_API_KEY)
@@ -37,6 +37,7 @@ export async function callMistral(promptAndTranscript, tempPath, model = 'MISTRA
   try {
     // Select the actual model to use, defaulting to MISTRAL_NEMO if the specified model is not found
     const actualModel = mistralModel[model] || mistralModel.MISTRAL_NEMO
+    console.log(`\nUsing Mistral model: ${actualModel}`)
     
     // Make API call to Mistral AI for chat completion
     const response = await mistral.chat.complete({
@@ -55,12 +56,12 @@ export async function callMistral(promptAndTranscript, tempPath, model = 'MISTRA
     // Write the generated content to the specified output file
     await writeFile(tempPath, content)
     // Log finish reason, used model, and token usage
-    console.log(`\nFinish Reason: ${finishReason}\nModel: ${usedModel}`)
+    console.log(`\nFinish Reason: ${finishReason}\nModel Used: ${usedModel}`)
     console.log(`Token Usage:\n  - ${promptTokens} prompt tokens\n  - ${completionTokens} completion tokens\n  - ${totalTokens} total tokens`)
     
   } catch (error) {
     // Log any errors that occur during the process
-    console.error('Error:', error)
+    console.error(`Error in callMistral: ${error.message}`)
     throw error  // Re-throw the error for handling by the caller
   }
 }

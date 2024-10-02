@@ -29,7 +29,7 @@ export async function processVideo(url, llmOpt, transcriptOpt, options) {
     await downloadAudio(url, filename)
 
     // Run transcription on the audio
-    await runTranscription(finalPath, transcriptOpt, options)
+    await runTranscription(finalPath, transcriptOpt, options, frontMatter)
 
     // Process the transcript with the selected Language Model
     await runLLM(finalPath, frontMatter, llmOpt, options)

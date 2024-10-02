@@ -59,6 +59,7 @@ export async function runTranscription(
         console.error(`Error reading markdown file: ${error.message}`)
         throw error
       }
+      // If the file does not exist, proceed without appending
     }
 
     // Combine existing markdown content with the transcript

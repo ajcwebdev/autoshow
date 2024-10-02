@@ -36,7 +36,7 @@ export async function callOllama(promptAndTranscript, tempPath, modelName = 'LLA
   try {
     // Map the model name to the Ollama model identifier
     const ollamaModelName = ollamaModels[modelName] || 'llama3.2:1b'
-    console.log(`  - ${ollamaModelName} model selected.`)
+    console.log(`  - Using Ollama model: ${ollamaModelName}`)
 
     // Check if the model is available
     const models = await ollama.list()
@@ -45,11 +45,16 @@ export async function callOllama(promptAndTranscript, tempPath, modelName = 'LLA
     // If the model is not available, pull it
     if (!isAvailable) {
       console.log(`Model ${ollamaModelName} not found. Pulling it now...`)
-      const pullStream = await ollama.pull({ model: ollamaModelName, stream: true })
-      for await (const part of pullStream) {
-        console.log(`Pulling ${ollamaModelName}: ${part.status}`)
+      try {
+        const pullStream = await ollama.pull({ model: ollamaModelName, stream: true })
+        for await (const part of pullStream) {
+          console.log(`Pulling ${ollamaModelName}: ${part.status}`)
+        }
+        console.log(`Model ${ollamaModelName} successfully pulled.`)
+      } catch (pullError) {
+        console.error(`Error pulling model ${ollamaModelName}: ${pullError.message}`)
+        throw pullError
       }
-      console.log(`Model ${ollamaModelName} successfully pulled.`)
     }
 
     // Call the Ollama chat API
@@ -63,8 +68,9 @@ export async function callOllama(promptAndTranscript, tempPath, modelName = 'LLA
 
     // Write the response to the output file
     await writeFile(tempPath, assistantReply)
+    console.log(`\nResponse saved to ${tempPath}`)
   } catch (error) {
-    console.error('Error in callLlama:', error)
+    console.error(`Error in callOllama: ${error.message}`)
     throw error
   }
 }

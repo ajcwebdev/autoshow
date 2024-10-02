@@ -27,7 +27,7 @@ const cohereModel = {
 export async function callCohere(promptAndTranscript, tempPath, model = 'COMMAND_R') {
   // Check if the COHERE_API_KEY environment variable is set
   if (!env.COHERE_API_KEY) {
-    throw new Error('COHERE_API_KEY environment variable is not set.')
+    throw new Error('COHERE_API_KEY environment variable is not set. Please set it to your Cohere API key.')
   }
   
   // Initialize the Cohere client with the API key from environment variables
@@ -58,7 +58,7 @@ export async function callCohere(promptAndTranscript, tempPath, model = 'COMMAND
     console.log(`Token Usage:\n  - ${inputTokens} input tokens\n  - ${outputTokens} output tokens`)
     
   } catch (error) {
-    console.error('Error:', error)
+    console.error(`Error in callCohere: ${error.message}`)
     throw error // Re-throw the error for handling in the calling function
   }
 }

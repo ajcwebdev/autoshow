@@ -18,7 +18,7 @@ export async function cleanUpFiles(id) {
   for (const ext of extensions) {
     try {
       await unlink(`${id}${ext}`)
-      console.log(`  - ${id}${ext}`)
+      console.log(`  - Deleted: ${id}${ext}`)
     } catch (error) {
       if (error.code !== 'ENOENT') {
         console.error(`Error deleting file ${id}${ext}: ${error.message}`)

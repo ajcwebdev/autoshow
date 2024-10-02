@@ -32,22 +32,6 @@ program
   .version('0.0.1')
   .description('Automate processing of audio and video content from various sources.')
   .usage('[options]')
-  .addHelpText(
-    'after',
-    `
-Examples:
-  $ autoshow --video "https://www.youtube.com/watch?v=..."
-  $ autoshow --playlist "https://www.youtube.com/playlist?list=..."
-  $ autoshow --file "content/audio.mp3"
-  $ autoshow --rss "https://feeds.transistor.fm/fsjam-podcast/"
-
-Documentation:
-  https://github.com/ajcwebdev/autoshow#readme
-
-Report Issues:
-  https://github.com/ajcwebdev/autoshow/issues
-`
-  )
   .option('--prompt <sections...>', 'Specify prompt sections to include')
   .option('-v, --video <url>', 'Process a single YouTube video')
   .option('-p, --playlist <playlistUrl>', 'Process all videos in a YouTube playlist')
@@ -73,6 +57,19 @@ Report Issues:
   .option('--gemini [model]', 'Use Gemini for processing with optional model specification')
   .option('--noCleanUp', 'Do not delete intermediary files after processing')
   .option('-i, --interactive', 'Run in interactive mode')
+  .addHelpText(
+    'after',
+    `
+Examples:
+  $ autoshow --video "https://www.youtube.com/watch?v=..."
+  $ autoshow --playlist "https://www.youtube.com/playlist?list=..."
+  $ autoshow --file "content/audio.mp3"
+  $ autoshow --rss "https://feeds.transistor.fm/fsjam-podcast/"
+
+Documentation: https://github.com/ajcwebdev/autoshow#readme
+Report Issues: https://github.com/ajcwebdev/autoshow/issues
+`
+  )
 
 /**
  * Main action for the program.
@@ -151,7 +148,15 @@ program.action(async (options) => {
     console.error(`Error: Multiple transcription options provided (${selectedTranscripts.join(', ')}). Please specify only one transcription option.`)
     exit(1)
   }
-  const transcriptOpt = /** @type {TranscriptOption | undefined} */ (selectedTranscripts[0])
+  let transcriptOpt = /** @type {TranscriptOption | undefined} */ (selectedTranscripts[0])
+
+  // Standardize the transcription option names
+  if (transcriptOpt === 'whisper-docker') {
+    transcriptOpt = 'whisperDocker'
+  } else if (transcriptOpt === 'whisper') {
+    transcriptOpt = 'whisper'
+  }
+
   // Extract the Whisper model if using Whisper transcription
   let whisperModel
   if (transcriptOpt === 'whisper' || transcriptOpt === 'whisperDocker') {
@@ -175,10 +180,7 @@ program.action(async (options) => {
 
 // Handle unknown commands
 program.on('command:*', function () {
-  console.error(`Error: Invalid command '${program.args.join(
-      ' '
-    )}'. Use --help to see available commands.`
-  )
+  console.error(`Error: Invalid command '${program.args.join(' ')}'. Use --help to see available commands.`)
   exit(1)
 })
 

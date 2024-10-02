@@ -47,6 +47,7 @@ async function processItem(item, transcriptOpt, llmOpt, options) {
     console.log(`\nItem processing completed successfully: ${item.title}`)
   } catch (error) {
     console.error(`Error processing item ${item.title}: ${error.message}`)
+    // Continue processing the next item
   }
 }
 
@@ -90,12 +91,13 @@ export async function processRSS(rssUrl, llmOpt, transcriptOpt, options) {
       } else {
         console.error(`Error fetching RSS feed: ${error.message}`)
       }
-      throw error
+      process.exit(1) // Exit with an error code
     }
 
     // Check if the response is successful
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`)
+      console.error(`HTTP error! status: ${response.status}`)
+      process.exit(1) // Exit with an error code
     }
 
     // Parse the RSS feed content
@@ -137,7 +139,7 @@ export async function processRSS(rssUrl, llmOpt, transcriptOpt, options) {
 
     if (items.length === 0) {
       console.error('Error: No audio/video items found in the RSS feed.')
-      return
+      process.exit(1) // Exit with an error code
     }
 
     // Generate JSON file with RSS feed information if --info option is used
@@ -155,7 +157,7 @@ export async function processRSS(rssUrl, llmOpt, transcriptOpt, options) {
       const matchedItems = items.filter((item) => options.item.includes(item.showLink))
       if (matchedItems.length === 0) {
         console.error('Error: No matching items found for the provided URLs.')
-        return
+        process.exit(1) // Exit with an error code
       }
       itemsToProcess = matchedItems
     } else {
@@ -176,6 +178,6 @@ export async function processRSS(rssUrl, llmOpt, transcriptOpt, options) {
     console.log('\n\nRSS feed processing completed successfully.\n')
   } catch (error) {
     console.error(`Error processing RSS feed: ${error.message}`)
-    throw error
+    process.exit(1) // Exit with an error code
   }
 }

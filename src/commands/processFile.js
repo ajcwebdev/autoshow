@@ -38,6 +38,6 @@ export async function processFile(filePath, llmOpt, transcriptOpt, options) {
     console.log('\n\nLocal file processing completed successfully.\n')
   } catch (error) {
     console.error(`Error processing file: ${error.message}`)
-    throw error
+    process.exit(1) // Exit with an error code
   }
 }

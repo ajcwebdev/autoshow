@@ -14,7 +14,7 @@ import { createClient } from '@deepgram/sdk'
 export async function callDeepgram(input, id) {
   // Check if the DEEPGRAM_API_KEY environment variable is set
   if (!env.DEEPGRAM_API_KEY) {
-    throw new Error('DEEPGRAM_API_KEY environment variable is not set.')
+    throw new Error('DEEPGRAM_API_KEY environment variable is not set. Please set it to your Deepgram API key.')
   }
 
   // Initialize the Deepgram client with the API key from environment variables
@@ -48,7 +48,7 @@ export async function callDeepgram(input, id) {
     console.log(`\nTranscript saved:\n  - ${id}.txt`)
   } catch (error) {
     // Log any errors that occur during the transcription process
-    console.error('Error processing the transcription:', error)
+    console.error(`Error processing the transcription: ${error.message}`)
     throw error // Re-throw the error for handling in the calling function
   }
 }

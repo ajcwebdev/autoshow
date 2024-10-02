@@ -35,7 +35,8 @@ export async function callWhisper(finalPath, transcriptOpt, options) {
     /** @type {WhisperModelType} */
     const whisperModel = options.whisperModel || 'base'
     if (!(whisperModel in WHISPER_MODELS)) {
-      throw new Error(`Unknown model type: ${whisperModel}`)
+      console.error(`Unknown model type: ${whisperModel}`)
+      process.exit(1) // Exit with an error code
     }
     const modelName = WHISPER_MODELS[whisperModel]
 
@@ -51,7 +52,8 @@ export async function callWhisper(finalPath, transcriptOpt, options) {
     } else if (transcriptOpt === 'whisper') {
       await callWhisperMain(finalPath, modelName, downloadModelName)
     } else {
-      throw new Error(`Unsupported transcription option: ${transcriptOpt}`)
+      console.error(`Unsupported transcription option: ${transcriptOpt}`)
+      process.exit(1) // Exit with an error code
     }
 
     // Read, process, and format the generated LRC file
@@ -67,7 +69,7 @@ export async function callWhisper(finalPath, transcriptOpt, options) {
     return txtContent
   } catch (error) {
     console.error('Error in callWhisper:', error)
-    throw error
+    process.exit(1) // Exit with an error code
   }
 }
 

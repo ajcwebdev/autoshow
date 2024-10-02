@@ -31,7 +31,7 @@ export async function processURLs(filePath, llmOpt, transcriptOpt, options) {
 
     if (urls.length === 0) {
       console.error('Error: No URLs found in the file.')
-      return
+      process.exit(1) // Exit with an error code
     }
 
     console.log(`\nFound ${urls.length} URLs in the file`)
@@ -64,6 +64,6 @@ export async function processURLs(filePath, llmOpt, transcriptOpt, options) {
     console.log('\nURL file processing completed successfully.')
   } catch (error) {
     console.error(`Error reading or processing file ${filePath}: ${error.message}`)
-    throw error
+    process.exit(1) // Exit with an error code
   }
 }

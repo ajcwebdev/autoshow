@@ -29,7 +29,7 @@ const gptModel = {
 export async function callChatGPT(promptAndTranscript, tempPath, model = 'GPT_4o_MINI') {
   // Check for API key
   if (!env.OPENAI_API_KEY) {
-    throw new Error('OPENAI_API_KEY environment variable is not set.')
+    throw new Error('OPENAI_API_KEY environment variable is not set. Please set it to your OpenAI API key.')
   }
 
   // Initialize the OpenAI client with the API key from environment variables
@@ -59,7 +59,7 @@ export async function callChatGPT(promptAndTranscript, tempPath, model = 'GPT_4o
     console.log(`  - Token Usage:\n    - ${prompt_tokens} prompt tokens\n    - ${completion_tokens} completion tokens\n    - ${total_tokens} total tokens`)
     
   } catch (error) {
-    console.error('Error in callChatGPT:', error)
+    console.error(`Error in callChatGPT: ${error.message}`)
     throw error // Re-throw the error for handling in the calling function
   }
 }

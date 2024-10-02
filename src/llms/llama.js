@@ -75,7 +75,7 @@ async function downloadModel(modelName = 'GEMMA_2_2B_Q4_MODEL') {
     return modelPath
   } catch (err) {
     // If an error occurs during download, log it and throw a new error
-    console.error('Download failed:', err.message)
+    console.error(`Download failed: ${err.message}`)
     throw new Error('Failed to download the model')
   }
 }
@@ -109,7 +109,7 @@ export async function callLlama(promptAndTranscript, tempPath, modelName = true)
     const response = await session.prompt(promptAndTranscript)
     await writeFile(tempPath, response)
   } catch (error) {
-    console.error('Error in callLlama:', error)
+    console.error(`Error in callLlama: ${error.message}`)
     throw error
   }
 }

@@ -40,7 +40,7 @@ export async function processPlaylist(playlistUrl, llmOpt, transcriptOpt, option
     const urls = stdout.trim().split('\n').filter(Boolean)
     if (urls.length === 0) {
       console.error('Error: No videos found in the playlist.')
-      return
+      process.exit(1) // Exit with an error code
     }
 
     console.log(`\nFound ${urls.length} videos in the playlist`)
@@ -73,6 +73,6 @@ export async function processPlaylist(playlistUrl, llmOpt, transcriptOpt, option
     console.log('\nPlaylist processing completed successfully.\n')
   } catch (error) {
     console.error(`Error processing playlist: ${error.message}`)
-    throw error
+    process.exit(1) // Exit with an error code
   }
 }

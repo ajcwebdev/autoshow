@@ -1,6 +1,6 @@
 // server/routes/playlist.js
 
-import { processPlaylist } from '../../src/commands/processPlaylist.js'
+import { processPlaylist } from '../../../src/commands/processPlaylist.js'
 import { reqToOpts } from '../utils/reqToOpts.js'
 
 // Handler for /playlist route

@@ -1,6 +1,6 @@
 // server/routes/rss.js
 
-import { processRSS } from '../../src/commands/processRSS.js'
+import { processRSS } from '../../../src/commands/processRSS.js'
 import { reqToOpts } from '../utils/reqToOpts.js'
 
 // Handler for /rss route

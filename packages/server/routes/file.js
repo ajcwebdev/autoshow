@@ -1,6 +1,6 @@
 // server/routes/file.js
 
-import { processFile } from '../../src/commands/processFile.js'
+import { processFile } from '../../../src/commands/processFile.js'
 import { reqToOpts } from '../utils/reqToOpts.js'
 
 // Handler for /file route

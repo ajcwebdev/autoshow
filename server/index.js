@@ -1,65 +1,48 @@
 // server/index.js
 
-import http from 'node:http'
-import { handleVideoRequest } from './routes/video.js'
-import { handlePlaylistRequest } from './routes/playlist.js'
-import { handleURLsRequest } from './routes/urls.js'
-import { handleFileRequest } from './routes/file.js'
-import { handleRSSRequest } from './routes/rss.js'
-import { env } from 'node:process'
+import Fastify from 'fastify' // Import Fastify
+import cors from '@fastify/cors' // Import CORS plugin
+import { handleVideoRequest } from './routes/video.js' // Import video route handler
+import { handlePlaylistRequest } from './routes/playlist.js' // Import playlist route handler
+import { handleURLsRequest } from './routes/urls.js' // Import URLs route handler
+import { handleFileRequest } from './routes/file.js' // Import file route handler
+import { handleRSSRequest } from './routes/rss.js' // Import RSS route handler
+import { env } from 'node:process' // Import environment variables
 
-const port = env.PORT || 3000
+const port = env.PORT || 3000 // Set the port from environment variable or default to 3000
 
-const server = http.createServer(async (req, res) => {
-  console.log(`[${new Date().toISOString()}] Received ${req.method} request for ${req.url}`)
-  res.setHeader('Access-Control-Allow-Origin', '*')
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
-  console.log('CORS headers set')
+async function start() {
+  const fastify = Fastify({ logger: true }) // Create a Fastify instance with logging enabled
 
-  if (req.method === 'OPTIONS') {
-    console.log('Handling OPTIONS preflight request')
-    res.writeHead(204)
-    res.end()
-    return
+  // Register CORS plugin to handle CORS headers and preflight requests
+  await fastify.register(cors, {
+    origin: '*',
+    methods: ['GET', 'POST', 'OPTIONS'],
+    allowedHeaders: ['Content-Type'],
+  })
+
+  // Log each incoming request
+  fastify.addHook('onRequest', async (request, reply) => {
+    console.log(`[${new Date().toISOString()}] Received ${request.method} request for ${request.url}`)
+  })
+
+  // Define route handlers
+  fastify.post('/video', handleVideoRequest) // Handle POST /video requests
+  fastify.post('/playlist', handlePlaylistRequest) // Handle POST /playlist requests
+  fastify.post('/urls', handleURLsRequest) // Handle POST /urls requests
+  fastify.post('/file', handleFileRequest) // Handle POST /file requests
+  fastify.post('/rss', handleRSSRequest) // Handle POST /rss requests
+
+  // Removed the manual OPTIONS route to avoid conflict with @fastify/cors
+
+  // Start the Fastify server
+  try {
+    await fastify.listen({ port })
+    console.log(`Server running at http://localhost:${port}`)
+  } catch (err) {
+    fastify.log.error(err)
+    process.exit(1)
   }
+}
 
-  if (req.method === 'POST') {
-    switch (req.url) {
-      case '/video':
-        console.log('Routing to handleVideoRequest')
-        await handleVideoRequest(req, res)
-        break
-      case '/playlist':
-        console.log('Routing to handlePlaylistRequest')
-        await handlePlaylistRequest(req, res)
-        break
-      case '/urls':
-        console.log('Routing to handleURLsRequest')
-        await handleURLsRequest(req, res)
-        break
-      case '/file':
-        console.log('Routing to handleFileRequest')
-        await handleFileRequest(req, res)
-        break
-      case '/rss':
-        console.log('Routing to handleRSSRequest')
-        await handleRSSRequest(req, res)
-        break
-      default:
-        console.log('Unknown route, sending 404')
-        res.statusCode = 404
-        res.setHeader('Content-Type', 'application/json')
-        res.end(JSON.stringify({ error: 'Not Found' }))
-    }
-  } else {
-    console.log(`Method ${req.method} not allowed, sending 405`)
-    res.statusCode = 405
-    res.setHeader('Content-Type', 'application/json')
-    res.end(JSON.stringify({ error: 'Method Not Allowed' }))
-  }
-})
-
-server.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}`)
-})
+start() // Start the server

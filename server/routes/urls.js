@@ -1,50 +1,36 @@
 // server/routes/urls.js
 
-import { processURLs } from '../../src/commands/processURLs.js'
-import { mapRequestDataToOptions } from '../utils/mapRequestDataToOptions.js'
+import { processURLs } from '../../src/commands/processURLs.js' // Import processURLs function
+import { reqToOpts } from '../utils/reqToOpts.js' // Import utility function
 
-const handleURLsRequest = async (req, res) => {
+// Handler for /urls route
+const handleURLsRequest = async (request, reply) => {
   console.log('Entered handleURLsRequest')
-  let body = ''
-  req.on('data', (chunk) => {
-    body += chunk.toString()
-    console.log('Received chunk:', chunk.toString())
-  })
-  req.on('end', async () => {
-    console.log('Request body complete:', body)
-    try {
-      const requestData = JSON.parse(body)
-      console.log('Parsed request body:', requestData)
 
-      const { filePath } = requestData
+  try {
+    const requestData = request.body // Access parsed request body
+    console.log('Parsed request body:', requestData)
 
-      if (!filePath) {
-        console.log('File path not provided, sending 400')
-        res.statusCode = 400
-        res.setHeader('Content-Type', 'application/json')
-        res.end(JSON.stringify({ error: 'File path is required' }))
-        return
-      }
+    const { filePath } = requestData // Extract file path
 
-      const { options, llmOpt, transcriptOpt } = mapRequestDataToOptions(requestData)
-
-      console.log('Calling processURLs with params:', { filePath, llmOpt, transcriptOpt, options })
-
-      await processURLs(filePath, llmOpt, transcriptOpt, options)
-
-      console.log('processURLs completed successfully')
-      res.statusCode = 200
-      res.setHeader('Content-Type', 'application/json')
-      res.end(JSON.stringify({
-        message: 'URLs processed successfully.',
-      }))
-    } catch (error) {
-      console.error('Error processing URLs:', error)
-      res.statusCode = 500
-      res.setHeader('Content-Type', 'application/json')
-      res.end(JSON.stringify({ error: 'An error occurred while processing the URLs' }))
+    if (!filePath) {
+      console.log('File path not provided, sending 400')
+      reply.status(400).send({ error: 'File path is required' }) // Send 400 Bad Request
+      return
     }
-  })
+
+    // Map request data to processing options
+    const { options, llmOpt, transcriptOpt } = reqToOpts(requestData)
+    console.log('Calling processURLs with params:', { filePath, llmOpt, transcriptOpt, options })
+
+    await processURLs(filePath, llmOpt, transcriptOpt, options) // Process the URLs
+
+    console.log('processURLs completed successfully')
+    reply.send({ message: 'URLs processed successfully.' }) // Send success response
+  } catch (error) {
+    console.error('Error processing URLs:', error)
+    reply.status(500).send({ error: 'An error occurred while processing the URLs' }) // Send 500 Internal Server Error
+  }
 }
 
-export { handleURLsRequest }
+export { handleURLsRequest } // Export the handler function

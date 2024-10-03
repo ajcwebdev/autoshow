@@ -35,6 +35,7 @@
   "dependencies": {
     "@anthropic-ai/sdk": "^0.26.0",
     "@deepgram/sdk": "^3.5.1",
+    "@fastify/cors": "^10.0.1",
     "@google/generative-ai": "^0.17.1",
     "@mistralai/mistralai": "^1.0.2",
     "@octoai/sdk": "^1.5.1",
@@ -42,6 +43,7 @@
     "cohere-ai": "^7.12.0",
     "commander": "^12.1.0",
     "fast-xml-parser": "^4.4.1",
+    "fastify": "^5.0.0",
     "ffmpeg-static": "^5.2.0",
     "file-type": "^19.4.1",
     "inquirer": "^10.2.2",

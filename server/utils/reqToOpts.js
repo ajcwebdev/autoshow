@@ -12,37 +12,47 @@ function reqToOpts(requestData) {
     ['speakerLabels', 'prompt', 'noCleanUp', 'order', 'skip', 'info', 'item']
   ]
 
-  const options = {} // Initialize options object
-  let llmOpt = null // Initialize llm option
-  let transcriptOpt = null // Initialize transcript option
+  // Initialize options object
+  const options = {}
+  // Initialize llm option
+  let llmOpt = null
+  // Initialize transcript option
+  let transcriptOpt = null
 
   // Check if LLM is provided and valid
   if (requestData.llm && llmOptions.includes(requestData.llm)) {
-    llmOpt = requestData.llm // Set llmOpt
-    options[llmOpt] = requestData.llmModel || true // Set LLM model or true
+    // Set llmOpt
+    llmOpt = requestData.llm
+    // Set LLM model or true
+    options[llmOpt] = requestData.llmModel || true
   }
 
-  // Determine transcript service
+  // Determine transcript service and default to 'whisper' if not specified
   transcriptOpt = transcriptOptions.includes(requestData.transcriptService)
     ? requestData.transcriptService
-    : 'whisper' // Default to 'whisper' if not specified
+    : 'whisper'
 
   // Set transcript options
   if (transcriptOpt === 'whisper') {
-    options.whisperModel = requestData.whisperModel || 'base' // Set whisper model
-    options.whisper = options.whisperModel // Enable whisper option
+    // Set whisper model
+    options.whisperModel = requestData.whisperModel || 'base'
+    // Enable whisper option
+    options.whisper = options.whisperModel
   } else {
-    options[transcriptOpt] = true // Enable selected transcript service
+    // Enable selected transcript service
+    options[transcriptOpt] = true
   }
 
   // Map other options from request data
   for (const opt of otherOptions) {
     if (requestData[opt] !== undefined) {
-      options[opt] = requestData[opt] // Set option if provided
+      // Set option if provided
+      options[opt] = requestData[opt]
     }
   }
 
-  return { options, llmOpt, transcriptOpt } // Return mapped options
+  // Return mapped options
+  return { options, llmOpt, transcriptOpt }
 }
 
-export { reqToOpts } // Export the function
+export { reqToOpts }

@@ -1,18 +1,20 @@
 // server/index.js
 
-import Fastify from 'fastify' // Import Fastify
-import cors from '@fastify/cors' // Import CORS plugin
-import { handleVideoRequest } from './routes/video.js' // Import video route handler
-import { handlePlaylistRequest } from './routes/playlist.js' // Import playlist route handler
-import { handleURLsRequest } from './routes/urls.js' // Import URLs route handler
-import { handleFileRequest } from './routes/file.js' // Import file route handler
-import { handleRSSRequest } from './routes/rss.js' // Import RSS route handler
-import { env } from 'node:process' // Import environment variables
+import Fastify from 'fastify'
+import cors from '@fastify/cors'
+import { handleVideoRequest } from './routes/video.js'
+import { handlePlaylistRequest } from './routes/playlist.js'
+import { handleURLsRequest } from './routes/urls.js'
+import { handleFileRequest } from './routes/file.js'
+import { handleRSSRequest } from './routes/rss.js'
+import { env } from 'node:process'
 
-const port = env.PORT || 3000 // Set the port from environment variable or default to 3000
+// Set the port from environment variable or default to 3000
+const port = env.PORT || 3000
 
 async function start() {
-  const fastify = Fastify({ logger: true }) // Create a Fastify instance with logging enabled
+  // Create a Fastify instance with logging enabled
+  const fastify = Fastify({ logger: true })
 
   // Register CORS plugin to handle CORS headers and preflight requests
   await fastify.register(cors, {
@@ -23,19 +25,18 @@ async function start() {
 
   // Log each incoming request
   fastify.addHook('onRequest', async (request, reply) => {
-    console.log(`[${new Date().toISOString()}] Received ${request.method} request for ${request.url}`)
+    console.log(
+      `[${new Date().toISOString()}] Received ${request.method} request for ${request.url}`
+    )
   })
 
   // Define route handlers
-  fastify.post('/video', handleVideoRequest) // Handle POST /video requests
-  fastify.post('/playlist', handlePlaylistRequest) // Handle POST /playlist requests
-  fastify.post('/urls', handleURLsRequest) // Handle POST /urls requests
-  fastify.post('/file', handleFileRequest) // Handle POST /file requests
-  fastify.post('/rss', handleRSSRequest) // Handle POST /rss requests
+  fastify.post('/video', handleVideoRequest)
+  fastify.post('/playlist', handlePlaylistRequest)
+  fastify.post('/urls', handleURLsRequest)
+  fastify.post('/file', handleFileRequest)
+  fastify.post('/rss', handleRSSRequest)
 
-  // Removed the manual OPTIONS route to avoid conflict with @fastify/cors
-
-  // Start the Fastify server
   try {
     await fastify.listen({ port })
     console.log(`Server running at http://localhost:${port}`)
@@ -45,4 +46,4 @@ async function start() {
   }
 }
 
-start() // Start the server
+start()

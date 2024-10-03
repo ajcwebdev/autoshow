@@ -1,21 +1,23 @@
 // server/routes/urls.js
 
-import { processURLs } from '../../src/commands/processURLs.js' // Import processURLs function
-import { reqToOpts } from '../utils/reqToOpts.js' // Import utility function
+import { processURLs } from '../../src/commands/processURLs.js'
+import { reqToOpts } from '../utils/reqToOpts.js'
 
 // Handler for /urls route
 const handleURLsRequest = async (request, reply) => {
   console.log('Entered handleURLsRequest')
 
   try {
-    const requestData = request.body // Access parsed request body
+    // Access parsed request body
+    const requestData = request.body
     console.log('Parsed request body:', requestData)
 
-    const { filePath } = requestData // Extract file path
+    // Extract file path
+    const { filePath } = requestData
 
     if (!filePath) {
       console.log('File path not provided, sending 400')
-      reply.status(400).send({ error: 'File path is required' }) // Send 400 Bad Request
+      reply.status(400).send({ error: 'File path is required' })
       return
     }
 
@@ -23,14 +25,14 @@ const handleURLsRequest = async (request, reply) => {
     const { options, llmOpt, transcriptOpt } = reqToOpts(requestData)
     console.log('Calling processURLs with params:', { filePath, llmOpt, transcriptOpt, options })
 
-    await processURLs(filePath, llmOpt, transcriptOpt, options) // Process the URLs
+    await processURLs(filePath, llmOpt, transcriptOpt, options)
 
     console.log('processURLs completed successfully')
-    reply.send({ message: 'URLs processed successfully.' }) // Send success response
+    reply.send({ message: 'URLs processed successfully.' })
   } catch (error) {
     console.error('Error processing URLs:', error)
-    reply.status(500).send({ error: 'An error occurred while processing the URLs' }) // Send 500 Internal Server Error
+    reply.status(500).send({ error: 'An error occurred while processing the URLs' })
   }
 }
 
-export { handleURLsRequest } // Export the handler function
+export { handleURLsRequest }

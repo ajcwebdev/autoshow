@@ -1,21 +1,23 @@
 // server/routes/video.js
 
-import { processVideo } from '../../src/commands/processVideo.js' // Import processVideo function
-import { reqToOpts } from '../utils/reqToOpts.js' // Import utility function
+import { processVideo } from '../../src/commands/processVideo.js'
+import { reqToOpts } from '../utils/reqToOpts.js'
 
 // Handler for /video route
 const handleVideoRequest = async (request, reply) => {
   console.log('Entered handleVideoRequest')
 
   try {
-    const requestData = request.body // Access parsed request body
+    // Access parsed request body
+    const requestData = request.body
     console.log('Parsed request body:', requestData)
 
-    const { youtubeUrl } = requestData // Extract YouTube URL
+    // Extract YouTube URL
+    const { youtubeUrl } = requestData
 
     if (!youtubeUrl) {
       console.log('YouTube URL not provided, sending 400')
-      reply.status(400).send({ error: 'YouTube URL is required' }) // Send 400 Bad Request
+      reply.status(400).send({ error: 'YouTube URL is required' })
       return
     }
 
@@ -23,14 +25,14 @@ const handleVideoRequest = async (request, reply) => {
     const { options, llmOpt, transcriptOpt } = reqToOpts(requestData)
     console.log('Calling processVideo with params:', { youtubeUrl, llmOpt, transcriptOpt, options })
 
-    await processVideo(youtubeUrl, llmOpt, transcriptOpt, options) // Process the video
+    await processVideo(youtubeUrl, llmOpt, transcriptOpt, options)
 
     console.log('processVideo completed successfully')
-    reply.send({ message: 'Video processed successfully.' }) // Send success response
+    reply.send({ message: 'Video processed successfully.' })
   } catch (error) {
     console.error('Error processing video:', error)
-    reply.status(500).send({ error: 'An error occurred while processing the video' }) // Send 500 Internal Server Error
+    reply.status(500).send({ error: 'An error occurred while processing the video' })
   }
 }
 
-export { handleVideoRequest } // Export the handler function
+export { handleVideoRequest }

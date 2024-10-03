@@ -14,12 +14,12 @@ const execPromise = promisify(exec)
  * @type {Record<WhisperModelType, string>}
  */
 const WHISPER_MODELS = {
-  'tiny': 'ggml-tiny.bin', 'tiny.en': 'ggml-tiny.en.bin',
-  'base': 'ggml-base.bin', 'base.en': 'ggml-base.en.bin',
-  'small': 'ggml-small.bin', 'small.en': 'ggml-small.en.bin',
-  'medium': 'ggml-medium.bin', 'medium.en': 'ggml-medium.en.bin',
+  tiny: 'ggml-tiny.bin', 'tiny.en': 'ggml-tiny.en.bin',
+  base: 'ggml-base.bin', 'base.en': 'ggml-base.en.bin',
+  small: 'ggml-small.bin', 'small.en': 'ggml-small.en.bin',
+  medium: 'ggml-medium.bin', 'medium.en': 'ggml-medium.en.bin',
   'large-v1': 'ggml-large-v1.bin', 'large-v2': 'ggml-large-v2.bin',
-  'large': 'ggml-large-v2.bin',
+  large: 'ggml-large-v2.bin',
 }
 
 /**
@@ -32,44 +32,42 @@ const WHISPER_MODELS = {
  */
 export async function callWhisper(finalPath, transcriptOpt, options) {
   try {
-    /** @type {WhisperModelType} */
+    // Get the whisper model from options or use 'base' as default
     const whisperModel = options.whisperModel || 'base'
-    if (!(whisperModel in WHISPER_MODELS)) {
-      console.error(`Unknown model type: ${whisperModel}`)
-      process.exit(1) // Exit with an error code
-    }
+    
+    // Check if the selected model is valid
+    if (!(whisperModel in WHISPER_MODELS)) throw new Error(`Unknown model type: ${whisperModel}`)
+
+    // Get the model file name
     const modelName = WHISPER_MODELS[whisperModel]
+    
+    // Adjust download model name for 'large' model
+    const downloadModelName = whisperModel === 'large' ? 'large-v2' : whisperModel
 
-    // Adjust downloadModelName for 'large' model
-    let downloadModelName = whisperModel
-    if (whisperModel === 'large') {
-      downloadModelName = 'large-v2'
-    }
+    // Call appropriate Whisper function based on transcriptOpt
+    await (transcriptOpt === 'whisperDocker' ? callWhisperDocker : callWhisperMain)(finalPath, modelName, downloadModelName)
 
-    // Call the appropriate Whisper function
-    if (transcriptOpt === 'whisperDocker') {
-      await callWhisperDocker(finalPath, modelName, downloadModelName)
-    } else if (transcriptOpt === 'whisper') {
-      await callWhisperMain(finalPath, modelName, downloadModelName)
-    } else {
-      console.error(`Unsupported transcription option: ${transcriptOpt}`)
-      process.exit(1) // Exit with an error code
-    }
-
-    // Read, process, and format the generated LRC file
+    // Read the generated LRC file
     const lrcContent = await readFile(`${finalPath}.lrc`, 'utf8')
+    
+    // Process and format the LRC content
     const txtContent = lrcContent.split('\n')
-      .filter((line) => !line.startsWith('[by:whisper.cpp]'))
-      .map((line) => line.replace(/\[(\d{2,3}):(\d{2})\.(\d{2})\]/g, (_, p1, p2) => `[${p1}:${p2}]`))
+      .filter(line => !line.startsWith('[by:whisper.cpp]')) // Remove whisper.cpp attribution
+      .map(line => line.replace(/\[(\d{2,3}):(\d{2})\.(\d{2})\]/g, (_, p1, p2) => `[${p1}:${p2}]`)) // Simplify timestamp format
       .join('\n')
 
     // Write the formatted content to a text file
     await writeFile(`${finalPath}.txt`, txtContent)
+    
+    // Log completion message
     console.log(`  - Transcript transformation completed at ${finalPath}.txt`)
+    
+    // Return the processed content
     return txtContent
   } catch (error) {
+    // Log any errors and exit the process
     console.error('Error in callWhisper:', error)
-    process.exit(1) // Exit with an error code
+    process.exit(1)
   }
 }
 
@@ -82,44 +80,31 @@ export async function callWhisper(finalPath, transcriptOpt, options) {
  * @throws {Error} - If an error occurs during Docker transcription.
  */
 async function callWhisperDocker(finalPath, modelName, downloadModelName) {
+  // Define constants for Docker setup
   const WHISPER_CONTAINER_NAME = 'autoshow-whisper-1'
   const CONTENT_DIR = '/app/content'
   const MODELS_DIR = '/app/models'
   const modelPathContainer = `${MODELS_DIR}/${modelName}`
 
   try {
-    // Check if the Whisper container is running, start it if not
-    try {
-      await execPromise(`docker ps | grep ${WHISPER_CONTAINER_NAME}`)
-      console.log('\nWhisper container is already running.')
-    } catch {
-      console.log('\nWhisper container is not running. Starting it...')
-      await execPromise('docker-compose up -d whisper')
-      console.log('Whisper container started successfully.')
-    }
+    // Check if Whisper container is running, start it if not
+    await execPromise(`docker ps | grep ${WHISPER_CONTAINER_NAME}`)
+      .catch(() => execPromise('docker-compose up -d whisper'))
 
     // Check if the model exists in the container, download if not
-    try {
-      await execPromise(`docker exec ${WHISPER_CONTAINER_NAME} test -f ${modelPathContainer}`)
-      console.log(`\nWhisper.cpp model found at ${modelPathContainer}`)
-    } catch {
-      console.log(`\nWhisper.cpp model not found in container: ${modelName}`)
-      console.log(`  - Model downloading to ${modelPathContainer}`)
-      await execPromise(`docker exec ${WHISPER_CONTAINER_NAME} ${MODELS_DIR}/download-ggml-model.sh ${downloadModelName}`)
-      console.log('  - Model downloaded successfully')
-    }
+    await execPromise(`docker exec ${WHISPER_CONTAINER_NAME} test -f ${modelPathContainer}`)
+      .catch(() => execPromise(`docker exec ${WHISPER_CONTAINER_NAME} ${MODELS_DIR}/download-ggml-model.sh ${downloadModelName}`))
 
-    // Proceed with transcription
+    // Get the base filename
     const fileName = basename(finalPath)
-    await execPromise(
-      `docker exec ${WHISPER_CONTAINER_NAME} /app/main \
-        -m ${modelPathContainer} \
-        -f ${join(CONTENT_DIR, `${fileName}.wav`)} \
-        -of ${join(CONTENT_DIR, fileName)} \
-        --output-lrc`
-    )
+    
+    // Execute Whisper transcription in Docker
+    await execPromise(`docker exec ${WHISPER_CONTAINER_NAME} /app/main -m ${modelPathContainer} -f ${join(CONTENT_DIR, `${fileName}.wav`)} -of ${join(CONTENT_DIR, fileName)} --output-lrc`)
+    
+    // Log completion message
     console.log(`  - Transcript LRC file completed at ${finalPath}.lrc`)
   } catch (error) {
+    // Log any errors and re-throw
     console.error('Error in callWhisperDocker:', error)
     throw error
   }
@@ -134,37 +119,29 @@ async function callWhisperDocker(finalPath, modelName, downloadModelName) {
  * @throws {Error} - If an error occurs during transcription.
  */
 async function callWhisperMain(finalPath, modelName, downloadModelName) {
+  // Define the path for the Whisper model
   const modelPath = `./whisper.cpp/models/${modelName}`
 
   try {
     // Check if whisper.cpp directory exists, clone and build if not
     await access('./whisper.cpp').catch(async () => {
-      console.log('\nwhisper.cpp directory not found. Cloning and building whisper.cpp...')
-      // Clone the whisper.cpp repository
-      await execPromise(`git clone https://github.com/ggerganov/whisper.cpp.git`)
-      // Build the project
-      await execPromise(`make -C whisper.cpp`)
-      // Copy the Dockerfile (adjust the path as needed)
-      await execPromise(`cp .github/whisper.Dockerfile whisper.cpp/Dockerfile`)
-      console.log('whisper.cpp cloned and built successfully.')
+      // Clone, build, and setup whisper.cpp
+      await execPromise('git clone https://github.com/ggerganov/whisper.cpp.git && make -C whisper.cpp && cp .github/whisper.Dockerfile whisper.cpp/Dockerfile')
     })
-  
+
     // Check if the model exists locally, download if not
     await access(modelPath).catch(async () => {
-      console.log('  - whisper.cpp directory found.')
-      console.log(`\nWhisper.cpp model not found: ${modelName}`)
-      console.log(`  - Model downloading to ${modelPath}`)
+      // Download the model
       await execPromise(`bash ./whisper.cpp/models/download-ggml-model.sh ${downloadModelName}`)
-      console.log('  - Model downloaded successfully')
     })
-    console.log(`  - Whisper.cpp model found at ${modelPath}`)
-  
-    // Proceed with transcription
-    await execPromise(
-      `./whisper.cpp/main -m "whisper.cpp/models/${modelName}" -f "${finalPath}.wav" -of "${finalPath}" --output-lrc`
-    )
+
+    // Execute Whisper transcription
+    await execPromise(`./whisper.cpp/main -m "whisper.cpp/models/${modelName}" -f "${finalPath}.wav" -of "${finalPath}" --output-lrc`)
+    
+    // Log completion message
     console.log(`  - Transcript LRC file completed at ${finalPath}.lrc`)
   } catch (error) {
+    // Log any errors and re-throw
     console.error('Error in callWhisperMain:', error)
     throw error
   }

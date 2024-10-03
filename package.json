@@ -18,6 +18,7 @@
     "autoshow": "./autoshow.js"
   },
   "scripts": {
+    "setup": "bash ./setup.sh",
     "autoshow": "node --env-file=.env --no-warnings src/autoshow.js",
     "as": "node --env-file=.env --no-warnings src/autoshow.js",
     "bun-as": "bun --env-file=.env --no-warnings src/autoshow.js",

@@ -15,6 +15,10 @@ const execAsync = promisify(exec)
  * @type {Record<LlamaModelType, {filename: string, url: string}>}
  */
 const localModels = {
+  // LLAMA_3_2_1B_Q6_MODEL: {
+  //   filename: "Llama-3.2-1B.i1-Q6_K.gguf",
+  //   url: "https://huggingface.co/mradermacher/Llama-3.2-1B-i1-GGUF/resolve/main/Llama-3.2-1B.i1-Q6_K.gguf"
+  // },
   LLAMA_3_1_8B_Q4_MODEL: {
     filename: "Meta-Llama-3.1-8B-Instruct.IQ4_XS.gguf",
     url: "https://huggingface.co/mradermacher/Meta-Llama-3.1-8B-Instruct-GGUF/resolve/main/Meta-Llama-3.1-8B-Instruct.IQ4_XS.gguf"

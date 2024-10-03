@@ -1,0 +1,48 @@
+---
+import PageLayout from "@/layouts/Base.astro";
+
+import { Icon } from "astro-icon/components";
+
+/** 
+	Uses https://www.astroicon.dev/getting-started/
+	Find icons via guide: https://www.astroicon.dev/guides/customization/#open-source-icon-sets
+	Only installed pack is: @iconify-json/mdi
+*/
+const socialLinks: {
+	friendlyName: string;
+	link: string;
+	name: string;
+}[] = [
+	{
+		friendlyName: "Github",
+		link: "https://github.com/ajcwebdev/autoshow",
+		name: "mdi:github",
+	},
+];
+---
+
+<PageLayout meta={{ title: "Home" }}>
+	<section>
+		<h1>Autoshow Website Generator</h1>
+		<p>This uses Autoshow and Astro to generate individual web pages with show notes based on video and audio content of any kind.</p>
+		<div>
+			<p>Social Links:</p>
+			<ul>
+				{
+					socialLinks.map(({ friendlyName, link, name }) => (
+						<li>
+							<a
+								href={link}
+								rel={`noopener noreferrer me authn"}`}
+								target="_blank"
+							>
+								<Icon aria-hidden="true" focusable="false" name={name} />
+								<span>{friendlyName}</span>
+							</a>
+						</li>
+					))
+				}
+			</ul>
+		</div>
+	</section>
+</PageLayout>

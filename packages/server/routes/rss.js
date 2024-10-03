@@ -5,12 +5,12 @@ import { reqToOpts } from '../utils/reqToOpts.js'
 
 // Handler for /rss route
 const handleRSSRequest = async (request, reply) => {
-  console.log('Entered handleRSSRequest')
+  console.log('\nEntered handleRSSRequest')
 
   try {
     // Access parsed request body
     const requestData = request.body
-    console.log('Parsed request body:', requestData)
+    console.log('\nParsed request body:', requestData)
 
     // Extract RSS URL
     const { rssUrl } = requestData
@@ -23,11 +23,11 @@ const handleRSSRequest = async (request, reply) => {
 
     // Map request data to processing options
     const { options, llmOpt, transcriptOpt } = reqToOpts(requestData)
-    console.log('Calling processRSS with params:', { rssUrl, llmOpt, transcriptOpt, options })
+    console.log('\nCalling processRSS with params:', { rssUrl, llmOpt, transcriptOpt, options })
 
     await processRSS(rssUrl, llmOpt, transcriptOpt, options)
 
-    console.log('processRSS completed successfully')
+    console.log('\nprocessRSS completed successfully')
     reply.send({ message: 'RSS feed processed successfully.' })
   } catch (error) {
     console.error('Error processing RSS request:', error)

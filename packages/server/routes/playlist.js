@@ -5,12 +5,12 @@ import { reqToOpts } from '../utils/reqToOpts.js'
 
 // Handler for /playlist route
 const handlePlaylistRequest = async (request, reply) => {
-  console.log('Entered handlePlaylistRequest')
+  console.log('\nEntered handlePlaylistRequest')
 
   try {
     // Access parsed request body
     const requestData = request.body
-    console.log('Parsed request body:', requestData)
+    console.log('\nParsed request body:', requestData)
 
     // Extract playlist URL
     const { playlistUrl } = requestData
@@ -23,11 +23,11 @@ const handlePlaylistRequest = async (request, reply) => {
 
     // Map request data to processing options
     const { options, llmOpt, transcriptOpt } = reqToOpts(requestData)
-    console.log('Calling processPlaylist with params:', { playlistUrl, llmOpt, transcriptOpt, options })
+    console.log('\nCalling processPlaylist with params:', { playlistUrl, llmOpt, transcriptOpt, options })
 
     await processPlaylist(playlistUrl, llmOpt, transcriptOpt, options)
 
-    console.log('processPlaylist completed successfully')
+    console.log('\nprocessPlaylist completed successfully')
     reply.send({ message: 'Playlist processed successfully.' })
   } catch (error) {
     console.error('Error processing playlist:', error)

@@ -5,12 +5,12 @@ import { reqToOpts } from '../utils/reqToOpts.js'
 
 // Handler for /urls route
 const handleURLsRequest = async (request, reply) => {
-  console.log('Entered handleURLsRequest')
+  console.log('\nEntered handleURLsRequest')
 
   try {
     // Access parsed request body
     const requestData = request.body
-    console.log('Parsed request body:', requestData)
+    console.log('\nParsed request body:', requestData)
 
     // Extract file path
     const { filePath } = requestData
@@ -23,11 +23,11 @@ const handleURLsRequest = async (request, reply) => {
 
     // Map request data to processing options
     const { options, llmOpt, transcriptOpt } = reqToOpts(requestData)
-    console.log('Calling processURLs with params:', { filePath, llmOpt, transcriptOpt, options })
+    console.log('\nCalling processURLs with params:', { filePath, llmOpt, transcriptOpt, options })
 
     await processURLs(filePath, llmOpt, transcriptOpt, options)
 
-    console.log('processURLs completed successfully')
+    console.log('\nprocessURLs completed successfully')
     reply.send({ message: 'URLs processed successfully.' })
   } catch (error) {
     console.error('Error processing URLs:', error)

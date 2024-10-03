@@ -28,7 +28,8 @@
     "p": "node --env-file=.env --no-warnings src/autoshow.js --whisper large --playlist",
     "f": "node --env-file=.env --no-warnings src/autoshow.js --whisper large --file",
     "serve": "node --env-file=.env --no-warnings --watch packages/server/index.js",
-    "fetch": "node --env-file=.env --no-warnings packages/server/fetch.js",
+    "fetch-local": "node --env-file=.env --no-warnings packages/server/tests/fetch-local.js",
+    "fetch-all": "node --env-file=.env --no-warnings packages/server/tests/fetch-all.js",
     "test-local": "node --test test/local.test.js",
     "test-all": "node --test test/all.test.js"
   },

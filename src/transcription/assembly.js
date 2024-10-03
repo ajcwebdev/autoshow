@@ -17,7 +17,7 @@ import { AssemblyAI } from 'assemblyai'
 export async function callAssembly(finalPath, transcriptOpt, options) {
   // Check if the ASSEMBLY_API_KEY environment variable is set
   if (!env.ASSEMBLY_API_KEY) {
-    throw new Error('ASSEMBLY_API_KEY environment variable is not set.')
+    throw new Error('ASSEMBLY_API_KEY environment variable is not set. Please set it to your AssemblyAI API key.')
   }
 
   // Initialize the AssemblyAI client with API key from environment variables
@@ -79,7 +79,7 @@ export async function callAssembly(finalPath, transcriptOpt, options) {
     return txtContent
   } catch (error) {
     // Log any errors that occur during the transcription process
-    console.error('Error processing the transcription:', error)
+    console.error(`Error processing the transcription: ${error.message}`)
     throw error // Re-throw the error for handling in the calling function
   }
 }

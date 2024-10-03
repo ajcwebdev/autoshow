@@ -4,8 +4,10 @@ import inquirer from 'inquirer'
 
 /** @import { ProcessingOptions, InquirerAnswers, InquirerQuestions, WhisperModelType } from './types.js' */
 
-// Interactive prompts using inquirer
-/** @type {InquirerQuestions} */
+/**
+ * Interactive prompts using inquirer
+ * @type {InquirerQuestions}
+ */
 const INQUIRER_PROMPT = [
   {
     type: 'list',
@@ -148,16 +150,29 @@ const INQUIRER_PROMPT = [
     message: 'Do you want to keep intermediary files after processing?',
     default: false,
   },
+  {
+    type: 'confirm',
+    name: 'confirmAction',
+    message: 'Proceed with the above configuration?',
+    default: true,
+  },
 ]
 
 /**
- * Prompts the user for input if no command-line options are provided.
+ * Prompts the user for input if interactive mode is selected.
  * @param {ProcessingOptions} options - The initial command-line options.
  * @returns {Promise<ProcessingOptions>} - The updated options after user input.
  */
 export async function handleInteractivePrompt(options) {
   /** @type {InquirerAnswers} */
   const answers = await inquirer.prompt(INQUIRER_PROMPT)
+
+  // If user cancels the action
+  if (!answers.confirmAction) {
+    console.log('Operation cancelled.')
+    process.exit(0)
+  }
+
   options = {
     ...options,
     ...answers,
@@ -183,6 +198,14 @@ export async function handleInteractivePrompt(options) {
   if (answers.item && typeof answers.item === 'string') {
     options.item = answers.item.split(',').map((url) => url.trim())
   }
+
+  // Remove properties that are not options
+  delete options.action
+  delete options.specifyItem
+  delete options.llamaModel
+  delete options.useDocker
+  delete options.whisperModel
+  delete options.confirmAction
 
   return options
 }

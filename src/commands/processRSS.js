@@ -1,10 +1,5 @@
 // src/commands/processRSS.js
 
-/**
- * This module defines the function to process a podcast RSS feed. It handles fetching the RSS feed, parsing it, and
- * processing specific episodes based on user input. It supports processing multiple specific items or the entire feed.
- */
-
 import { writeFile } from 'node:fs/promises'
 import { XMLParser } from 'fast-xml-parser'
 import { generateRSSMarkdown } from '../utils/generateMarkdown.js'
@@ -48,9 +43,11 @@ async function processItem(item, transcriptOpt, llmOpt, options) {
     if (!options.noCleanUp) {
       await cleanUpFiles(finalPath)
     }
-    console.log(`\nProcess completed successfully for item: ${item.title}`)
+
+    console.log(`\nItem processing completed successfully: ${item.title}`)
   } catch (error) {
-    console.error(`Error processing item: ${item.title}`, error)
+    console.error(`Error processing item ${item.title}: ${error.message}`)
+    // Continue processing the next item
   }
 }
 
@@ -64,23 +61,19 @@ async function processItem(item, transcriptOpt, llmOpt, options) {
  */
 export async function processRSS(rssUrl, llmOpt, transcriptOpt, options) {
   try {
-    // Log the start of RSS feed processing
-    console.log(`\nProcessing RSS feed: ${rssUrl}`)
-
     if (options.item && options.item.length > 0) {
       // If specific items are provided, list them
-      console.log(`Processing specific items:`)
+      console.log('\nProcessing specific items:')
       options.item.forEach((url) => console.log(`  - ${url}`))
     } else {
-      // If no specific items, log the number of items to skip
       console.log(`  - Skipping first ${options.skip} items`)
     }
 
-    // Set a timeout of 5 seconds using AbortController
+    // Fetch the RSS feed with a timeout
     const controller = new AbortController()
     const timeout = setTimeout(() => {
       controller.abort()
-    }, 5000)
+    }, 10000) // 10 seconds timeout
 
     let response
     try {
@@ -94,23 +87,24 @@ export async function processRSS(rssUrl, llmOpt, transcriptOpt, options) {
       clearTimeout(timeout)
     } catch (error) {
       if (error.name === 'AbortError') {
-        console.error('Fetch request timed out')
+        console.error('Error: Fetch request timed out.')
       } else {
-        console.error('Error fetching RSS feed:', error)
+        console.error(`Error fetching RSS feed: ${error.message}`)
       }
-      throw error
+      process.exit(1) // Exit with an error code
     }
 
     // Check if the response is successful
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`)
+      console.error(`HTTP error! status: ${response.status}`)
+      process.exit(1) // Exit with an error code
     }
 
     // Parse the RSS feed content
     const text = await response.text()
     const feed = parser.parse(text)
 
-    // Extract channel information
+    // Extract channel and item information
     const {
       title: channelTitle,
       link: channelLink,
@@ -121,17 +115,10 @@ export async function processRSS(rssUrl, llmOpt, transcriptOpt, options) {
     // Extract channel image URL safely
     const channelImage = channelImageObject?.url || ''
 
-    // Initialize date formatter
-    const dateFormatter = new Intl.DateTimeFormat('en-CA', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-    })
-
     // Ensure feedItems is an array
     const feedItemsArray = Array.isArray(feedItems) ? feedItems : [feedItems]
 
-    // Filter and map feed items to extract necessary information
+    // Filter and map feed items
     const items = feedItemsArray
       .filter((item) => {
         // Ensure the item has an enclosure with a valid type
@@ -145,12 +132,17 @@ export async function processRSS(rssUrl, llmOpt, transcriptOpt, options) {
         channel: channelTitle,
         channelURL: channelLink,
         title: item.title,
-        description: "", // Initialize description as empty string
-        publishDate: dateFormatter.format(new Date(item.pubDate)),
+        description: '',
+        publishDate: new Date(item.pubDate).toISOString().split('T')[0],
         coverImage: item['itunes:image']?.href || channelImage || '',
       }))
 
-    // Generate JSON file with RSS feed information
+    if (items.length === 0) {
+      console.error('Error: No audio/video items found in the RSS feed.')
+      process.exit(1) // Exit with an error code
+    }
+
+    // Generate JSON file with RSS feed information if --info option is used
     if (options.info) {
       const jsonContent = JSON.stringify(items, null, 2)
       const jsonFilePath = 'content/rss_info.json'
@@ -164,38 +156,28 @@ export async function processRSS(rssUrl, llmOpt, transcriptOpt, options) {
       // Find the items matching the provided audio URLs
       const matchedItems = items.filter((item) => options.item.includes(item.showLink))
       if (matchedItems.length === 0) {
-        console.error(`No matching items found for the provided URLs.`)
-        return
+        console.error('Error: No matching items found for the provided URLs.')
+        process.exit(1) // Exit with an error code
       }
       itemsToProcess = matchedItems
     } else {
-      // Sort items based on the specified order
+      // Sort items based on the specified order and apply skip
       const sortedItems = options.order === 'newest' ? items : [...items].reverse()
-      const skippedItems = sortedItems.slice(options.skip)
-      itemsToProcess = skippedItems
+      itemsToProcess = sortedItems.slice(options.skip)
 
-      // Log information about found items
-      console.log(
-        `  - Found ${sortedItems.length} audio/video items in the RSS feed`
-      )
-      console.log(
-        `  - Processing ${skippedItems.length} items after skipping ${options.skip}`
-      )
+      console.log(`  - Found ${sortedItems.length} items in the RSS feed.`)
+      console.log(`  - Processing ${itemsToProcess.length} items after skipping ${options.skip}.`)
     }
 
     // Process each item in the feed
     for (const [index, item] of itemsToProcess.entries()) {
-      console.log(
-        `\nProcessing item ${index + 1}/${itemsToProcess.length}: ${item.title}`
-      )
+      console.log(`\nProcessing item ${index + 1}/${itemsToProcess.length}: ${item.title}`)
       await processItem(item, transcriptOpt, llmOpt, options)
     }
 
-    // Log completion of RSS feed processing
-    console.log('RSS feed processing completed')
+    console.log('\n\nRSS feed processing completed successfully.\n')
   } catch (error) {
-    // Log any errors that occur during RSS feed processing
-    console.error('Error processing RSS feed:', error)
-    throw error
+    console.error(`Error processing RSS feed: ${error.message}`)
+    process.exit(1) // Exit with an error code
   }
 }

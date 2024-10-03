@@ -32,7 +32,7 @@ const octoModel = {
 export async function callOcto(promptAndTranscript, tempPath, model = 'LLAMA_3_1_70B') {
   // Check if the OCTOAI_API_KEY environment variable is set
   if (!env.OCTOAI_API_KEY) {
-    throw new Error('OCTOAI_API_KEY environment variable is not set.')
+    throw new Error('OCTOAI_API_KEY environment variable is not set. Please set it to your OctoAI API key.')
   }
   // Initialize OctoAI client with API key from environment variables
   const octoai = new OctoAIClient({ apiKey: env.OCTOAI_API_KEY })
@@ -40,6 +40,7 @@ export async function callOcto(promptAndTranscript, tempPath, model = 'LLAMA_3_1
   try {
     // Select the actual model to use, defaulting to LLAMA_3_1_70B if the specified model is not found
     const actualModel = octoModel[model] || octoModel.LLAMA_3_1_70B
+    console.log(`\nUsing OctoAI model: ${actualModel}`)
     
     // Make API call to OctoAI for text generation
     const response = await octoai.textGen.createChatCompletion({
@@ -57,15 +58,15 @@ export async function callOcto(promptAndTranscript, tempPath, model = 'LLAMA_3_1
     
     // Write the generated content to the specified output file
     await writeFile(tempPath, content)
-    console.log(`Octo show notes saved to ${tempPath}`)
+    console.log(`\nOctoAI response saved to ${tempPath}`)
     
     // Log finish reason, used model, and token usage
-    console.log(`\nFinish Reason: ${finishReason}\nModel: ${usedModel}`)
-    console.log(`Token Usage:\n  - ${promptTokens} prompt tokens\n  - ${completionTokens} completion tokens\n  - ${totalTokens} total tokens\n`)
+    console.log(`\nFinish Reason: ${finishReason}\nModel Used: ${usedModel}`)
+    console.log(`Token Usage:\n  - ${promptTokens} prompt tokens\n  - ${completionTokens} completion tokens\n  - ${totalTokens} total tokens`)
     
   } catch (error) {
     // Log any errors that occur during the process
-    console.error('Error:', error)
+    console.error(`Error in callOcto: ${error.message}`)
     throw error  // Re-throw the error for handling by the caller
   }
 }

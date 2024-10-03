@@ -1,46 +1,38 @@
 // server/routes/video.js
 
 import { processVideo } from '../../src/commands/processVideo.js'
+import { reqToOpts } from '../utils/reqToOpts.js'
 
-const handleVideoRequest = async (req, res) => {
+// Handler for /video route
+const handleVideoRequest = async (request, reply) => {
   console.log('Entered handleVideoRequest')
-  let body = ''
 
-  req.on('data', chunk => {
-    body += chunk.toString()
-    console.log('Received chunk:', chunk.toString())
-  })
+  try {
+    // Access parsed request body
+    const requestData = request.body
+    console.log('Parsed request body:', requestData)
 
-  req.on('end', async () => {
-    console.log('Request body complete:', body)
-    try {
-      const { youtubeUrl, model, llm, options = {} } = JSON.parse(body)
-      console.log('Parsed request body:', { youtubeUrl, model, llm, options })
-      if (!youtubeUrl) {
-        console.log('YouTube URL not provided, sending 400')
-        res.statusCode = 400
-        res.setHeader('Content-Type', 'application/json')
-        res.end(JSON.stringify({ error: 'YouTube URL is required' }))
-        return
-      }
-      const llmOpt = llm || null
-      const whisperModel = model || 'base'
-      console.log('Calling processVideo with params:', { youtubeUrl, llmOpt, whisperModel, options })
-      const finalContent = await processVideo(youtubeUrl, llmOpt, whisperModel, options)
-      console.log('processVideo completed successfully')
-      res.statusCode = 200
-      res.setHeader('Content-Type', 'application/json')
-      res.end(JSON.stringify({ 
-        message: 'Video processed successfully.',
-        content: finalContent
-      }))
-    } catch (error) {
-      console.error('Error processing video:', error)
-      res.statusCode = 500
-      res.setHeader('Content-Type', 'application/json')
-      res.end(JSON.stringify({ error: 'An error occurred while processing the video' }))
+    // Extract YouTube URL
+    const { youtubeUrl } = requestData
+
+    if (!youtubeUrl) {
+      console.log('YouTube URL not provided, sending 400')
+      reply.status(400).send({ error: 'YouTube URL is required' })
+      return
     }
-  })
+
+    // Map request data to processing options
+    const { options, llmOpt, transcriptOpt } = reqToOpts(requestData)
+    console.log('Calling processVideo with params:', { youtubeUrl, llmOpt, transcriptOpt, options })
+
+    await processVideo(youtubeUrl, llmOpt, transcriptOpt, options)
+
+    console.log('processVideo completed successfully')
+    reply.send({ message: 'Video processed successfully.' })
+  } catch (error) {
+    console.error('Error processing video:', error)
+    reply.status(500).send({ error: 'An error occurred while processing the video' })
+  }
 }
 
 export { handleVideoRequest }

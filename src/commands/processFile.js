@@ -21,7 +21,7 @@ export async function processFile(filePath, llmOpt, transcriptOpt, options) {
     // Generate markdown for the file
     const { frontMatter, finalPath, filename } = await generateFileMarkdown(filePath)
 
-    // Download or convert the audio file
+    // Convert the audio or video file to the required format
     await downloadFileAudio(filePath, filename)
 
     // Run transcription on the file
@@ -35,11 +35,9 @@ export async function processFile(filePath, llmOpt, transcriptOpt, options) {
       await cleanUpFiles(finalPath)
     }
 
-    // Log completion message
-    console.log('File processing completed')
+    console.log('\n\nLocal file processing completed successfully.\n')
   } catch (error) {
-    // Log any errors that occur during processing
-    console.error('Error processing file:', error)
-    throw error
+    console.error(`Error processing file: ${error.message}`)
+    process.exit(1) // Exit with an error code
   }
 }

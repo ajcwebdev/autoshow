@@ -37,8 +37,6 @@ curl --json '{
 }' http://localhost:3000/video
 ```
 
-
-
 Use LLM.
 
 ```bash
@@ -54,7 +52,7 @@ curl --json '{
 ```bash
 curl --json '{
   "playlistUrl": "https://www.youtube.com/playlist?list=PLCVnrVv4KhXPz0SoAVu8Rc1emAdGPbSbr"
-}' http://localhost:3000/playlist 
+}' http://localhost:3000/playlist
 ```
 
 ```bash
@@ -62,7 +60,7 @@ curl --json '{
   "playlistUrl": "https://www.youtube.com/playlist?list=PLCVnrVv4KhXPz0SoAVu8Rc1emAdGPbSbr",
   "whisperModel": "tiny",
   "llm": "llama"
-}' http://localhost:3000/playlist 
+}' http://localhost:3000/playlist
 ```
 
 ### URLs Endpoint
@@ -271,14 +269,14 @@ curl --json '{
 ```bash
 curl --json '{
   "youtubeUrl": "https://www.youtube.com/watch?v=MORMZXEaONk",
-  "transcriptionService": "deepgram"
+  "transcriptService": "deepgram"
 }' http://localhost:3000/video
 ```
 
 ```bash
 curl --json '{
   "youtubeUrl": "https://www.youtube.com/watch?v=MORMZXEaONk",
-  "transcriptionService": "deepgram",
+  "transcriptService": "deepgram",
   "llm": "llama"
 }' http://localhost:3000/video
 ```
@@ -288,14 +286,14 @@ curl --json '{
 ```bash
 curl --json '{
   "youtubeUrl": "https://www.youtube.com/watch?v=MORMZXEaONk",
-  "transcriptionService": "assembly"
+  "transcriptService": "assembly"
 }' http://localhost:3000/video
 ```
 
 ```bash
 curl --json '{
   "youtubeUrl": "https://www.youtube.com/watch?v=MORMZXEaONk",
-  "transcriptionService": "assembly",
+  "transcriptService": "assembly",
   "llm": "llama"
 }' http://localhost:3000/video
 ```
@@ -303,7 +301,7 @@ curl --json '{
 ```bash
 curl --json '{
   "youtubeUrl": "https://ajc.pics/audio/fsjam-short.mp3",
-  "transcriptionService": "assembly",
+  "transcriptService": "assembly",
   "speakerLabels": true
 }' http://localhost:3000/video
 ```
@@ -311,7 +309,7 @@ curl --json '{
 ```bash
 curl --json '{
   "youtubeUrl": "https://ajc.pics/audio/fsjam-short.mp3",
-  "transcriptionService": "assembly",
+  "transcriptService": "assembly",
   "speakerLabels": true,
   "llm": "llama"
 }' http://localhost:3000/video

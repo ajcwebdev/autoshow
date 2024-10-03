@@ -21,7 +21,7 @@ const geminiModel = {
  * @param {number} ms - Milliseconds to delay
  * @returns {Promise<void>}
  */
-const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms))
 
 /** @type {LLMFunction} */
 /**
@@ -35,7 +35,7 @@ const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 export async function callGemini(promptAndTranscript, tempPath, model = 'GEMINI_1_5_FLASH') {
   // Check if the GEMINI_API_KEY environment variable is set
   if (!env.GEMINI_API_KEY) {
-    throw new Error('GEMINI_API_KEY environment variable is not set.')
+    throw new Error('GEMINI_API_KEY environment variable is not set. Please set it to your Gemini API key.')
   }
   // Initialize the Google Generative AI client
   const genAI = new GoogleGenerativeAI(env.GEMINI_API_KEY)
@@ -43,16 +43,13 @@ export async function callGemini(promptAndTranscript, tempPath, model = 'GEMINI_
   // Select the actual model to use, defaulting to GEMINI_1_5_FLASH if not specified
   const actualModel = geminiModel[model] || geminiModel.GEMINI_1_5_FLASH
   
-  // Get the generative model
-  const gem = genAI.getGenerativeModel({ model: actualModel })
-  
   const maxRetries = 3 // Maximum number of retry attempts
   
   // Retry loop
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
       // Generate content using the selected model
-      const result = await gem.generateContent(promptAndTranscript)
+      const result = await gemAI.generateContent(promptAndTranscript, { model: actualModel })
       
       // Get the response from the generated content
       const response = await result.response
@@ -67,13 +64,11 @@ export async function callGemini(promptAndTranscript, tempPath, model = 'GEMINI_
       
       // Write the generated text to the output file
       await writeFile(tempPath, text)
-      
-      console.log(`\nTranscript saved to:\n  - ${tempPath}`)
       console.log(`\nModel: ${actualModel}`)
       
       return
     } catch (error) {
-      console.error(`Error in callGemini (attempt ${attempt}/${maxRetries}):`, error)
+      console.error(`Error in callGemini (attempt ${attempt}/${maxRetries}): ${error.message}`)
       
       // If this is the last attempt, throw the error
       if (attempt === maxRetries) {

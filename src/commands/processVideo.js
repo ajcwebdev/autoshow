@@ -1,5 +1,6 @@
 // src/commands/processVideo.js
 
+import { checkDependencies } from '../utils/checkDependencies.js'
 import { generateMarkdown } from '../utils/generateMarkdown.js'
 import { downloadAudio } from '../utils/downloadAudio.js'
 import { runTranscription } from '../utils/runTranscription.js'
@@ -18,6 +19,9 @@ import { cleanUpFiles } from '../utils/cleanUpFiles.js'
  */
 export async function processVideo(url, llmOpt, transcriptOpt, options) {
   try {
+    // Check for required dependencies
+    await checkDependencies(['yt-dlp'])
+
     // Generate markdown with video metadata
     const { frontMatter, finalPath, filename } = await generateMarkdown(url)
 
@@ -25,7 +29,7 @@ export async function processVideo(url, llmOpt, transcriptOpt, options) {
     await downloadAudio(url, filename)
 
     // Run transcription on the audio
-    await runTranscription(finalPath, transcriptOpt, options)
+    await runTranscription(finalPath, transcriptOpt, options, frontMatter)
 
     // Process the transcript with the selected Language Model
     await runLLM(finalPath, frontMatter, llmOpt, options)
@@ -34,8 +38,11 @@ export async function processVideo(url, llmOpt, transcriptOpt, options) {
     if (!options.noCleanUp) {
       await cleanUpFiles(finalPath)
     }
+
+    console.log('\nVideo processing completed successfully.\n')
   } catch (error) {
     // Log any errors that occur during video processing
-    console.error('Error processing video:', error)
+    console.error('Error processing video:', error.message)
+    throw error // Re-throw to be handled by caller
   }
 }

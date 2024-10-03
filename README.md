@@ -72,14 +72,6 @@ git clone https://github.com/ggerganov/whisper.cpp.git && \
 
 > Replace `base` with `large-v2` for the largest model, `medium` for a middle sized model, or `tiny` for the smallest model.
 
-### Clone Llama Repo
-
-```bash
-git clone https://github.com/ggerganov/llama.cpp && \
-  make -C llama.cpp && \
-  cp .github/llama.Dockerfile llama.cpp/Dockerfile
-```
-
 ## Run Autoshow Node Scripts
 
 Run on a single YouTube video.
@@ -123,7 +115,7 @@ Use 3rd party LLM providers.
 ```bash
 npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --chatgpt GPT_4o_MINI
 npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --claude CLAUDE_3_5_SONNET
-npm run as -- --video "https://www.youtube.com/watch?v=h41DF9GUqx4" --gemini GEMINI_1_5_PRO
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --gemini GEMINI_1_5_PRO
 npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --cohere COMMAND_R_PLUS
 npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --mistral MISTRAL_LARGE
 npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --octo LLAMA_3_1_405B

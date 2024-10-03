@@ -5,6 +5,7 @@ import { processVideo } from './processVideo.js'
 import { execFile } from 'node:child_process'
 import { promisify } from 'node:util'
 import { extractVideoMetadata } from '../utils/generateMarkdown.js'
+import { checkDependencies } from '../utils/checkDependencies.js'
 
 /** @import { LLMOption, TranscriptOption, ProcessingOptions } from '../types.js' */
 
@@ -20,10 +21,10 @@ const execFilePromise = promisify(execFile)
  */
 export async function processPlaylist(playlistUrl, llmOpt, transcriptOpt, options) {
   try {
-    // Log the start of playlist processing
-    console.log(`Processing playlist: ${playlistUrl}`)
+    // Check for required dependencies
+    await checkDependencies(['yt-dlp'])
 
-    // Use yt-dlp to fetch video URLs from the playlist
+    // Fetch video URLs from the playlist
     const { stdout, stderr } = await execFilePromise('yt-dlp', [
       '--flat-playlist',
       '--print', 'url',
@@ -31,21 +32,25 @@ export async function processPlaylist(playlistUrl, llmOpt, transcriptOpt, option
       playlistUrl
     ])
 
-    // Check for errors in stderr
     if (stderr) {
-      console.error(`yt-dlp error: ${stderr}`)
+      console.error(`yt-dlp warnings: ${stderr}`)
     }
 
     // Split the stdout into an array of video URLs
     const urls = stdout.trim().split('\n').filter(Boolean)
-    console.log(`Found ${urls.length} videos in the playlist`)
+    if (urls.length === 0) {
+      console.error('Error: No videos found in the playlist.')
+      process.exit(1) // Exit with an error code
+    }
+
+    console.log(`\nFound ${urls.length} videos in the playlist`)
 
     // Extract metadata for all videos
     const metadataPromises = urls.map(extractVideoMetadata)
     const metadataList = await Promise.all(metadataPromises)
     const validMetadata = metadataList.filter(Boolean)
 
-    // Generate JSON file with playlist information
+    // Generate JSON file with playlist information if --info option is used
     if (options.info) {
       const jsonContent = JSON.stringify(validMetadata, null, 2)
       const jsonFilePath = 'content/playlist_info.json'
@@ -54,30 +59,20 @@ export async function processPlaylist(playlistUrl, llmOpt, transcriptOpt, option
       return
     }
 
-    // Write the URLs to a file for reference
-    try {
-      await writeFile('content/urls.md', urls.join('\n'))
-    } catch (writeError) {
-      console.error('Error writing URLs to file:', writeError)
-    }
-
     // Process each video in the playlist
     for (const [index, url] of urls.entries()) {
-      console.log(`Processing video ${index + 1}/${urls.length}: ${url}`)
+      console.log(`\nProcessing video ${index + 1}/${urls.length}: ${url}`)
       try {
-        // Process individual video
         await processVideo(url, llmOpt, transcriptOpt, options)
       } catch (error) {
-        // Log any errors that occur during video processing
-        console.error(`Error processing video ${url}:`, error)
+        console.error(`Error processing video ${url}: ${error.message}`)
+        // Continue processing the next video
       }
     }
 
-    // Log completion of playlist processing
-    console.log('Playlist processing completed')
+    console.log('\nPlaylist processing completed successfully.\n')
   } catch (error) {
-    // Log any errors that occur during playlist processing
-    console.error('Error processing playlist:', error)
-    throw error
+    console.error(`Error processing playlist: ${error.message}`)
+    process.exit(1) // Exit with an error code
   }
 }

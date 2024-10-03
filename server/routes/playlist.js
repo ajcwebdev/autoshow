@@ -1,43 +1,38 @@
 // server/routes/playlist.js
 
 import { processPlaylist } from '../../src/commands/processPlaylist.js'
+import { reqToOpts } from '../utils/reqToOpts.js'
 
-const handlePlaylistRequest = async (req, res) => {
+// Handler for /playlist route
+const handlePlaylistRequest = async (request, reply) => {
   console.log('Entered handlePlaylistRequest')
-  let body = ''
 
-  req.on('data', chunk => {
-    body += chunk.toString()
-    console.log('Received chunk:', chunk.toString())
-  })
+  try {
+    // Access parsed request body
+    const requestData = request.body
+    console.log('Parsed request body:', requestData)
 
-  req.on('end', async () => {
-    console.log('Request body complete:', body)
-    try {
-      const { playlistUrl, model = 'base', llm, options = {} } = JSON.parse(body)
-      console.log('Parsed request body:', { playlistUrl, model, llm, options })
-      if (!playlistUrl) {
-        console.log('Playlist URL not provided, sending 400')
-        res.statusCode = 400
-        res.setHeader('Content-Type', 'application/json')
-        res.end(JSON.stringify({ error: 'Playlist URL is required' }))
-        return
-      }
-      const llmOpt = llm || null
-      await processPlaylist(playlistUrl, llmOpt, model, options)
-      console.log('processPlaylist completed successfully')
-      res.statusCode = 200
-      res.setHeader('Content-Type', 'application/json')
-      res.end(JSON.stringify({ 
-        message: 'Playlist processed successfully.'
-      }))
-    } catch (error) {
-      console.error('Error processing playlist:', error)
-      res.statusCode = 500
-      res.setHeader('Content-Type', 'application/json')
-      res.end(JSON.stringify({ error: 'An error occurred while processing the playlist' }))
+    // Extract playlist URL
+    const { playlistUrl } = requestData
+
+    if (!playlistUrl) {
+      console.log('Playlist URL not provided, sending 400')
+      reply.status(400).send({ error: 'Playlist URL is required' })
+      return
     }
-  })
+
+    // Map request data to processing options
+    const { options, llmOpt, transcriptOpt } = reqToOpts(requestData)
+    console.log('Calling processPlaylist with params:', { playlistUrl, llmOpt, transcriptOpt, options })
+
+    await processPlaylist(playlistUrl, llmOpt, transcriptOpt, options)
+
+    console.log('processPlaylist completed successfully')
+    reply.send({ message: 'Playlist processed successfully.' })
+  } catch (error) {
+    console.error('Error processing playlist:', error)
+    reply.status(500).send({ error: 'An error occurred while processing the playlist' })
+  }
 }
 
 export { handlePlaylistRequest }

@@ -1,5 +1,6 @@
 // src/utils/downloadAudio.js
 
+import { checkDependencies } from './checkDependencies.js'
 import { exec, execFile } from 'node:child_process'
 import { promisify } from 'node:util'
 import { readFile, access } from 'node:fs/promises'
@@ -20,8 +21,12 @@ const execPromise = promisify(exec)
  */
 export async function downloadAudio(url, filename) {
   try {
+    // Check for required dependencies
+    await checkDependencies(['yt-dlp'])
+
     // Set the final path for the downloaded file
     const finalPath = `content/${filename}`
+    console.log('\nStep 2 - Downloading audio...')
 
     // Execute yt-dlp to download the audio
     const { stderr } = await execFilePromise('yt-dlp', [
@@ -32,18 +37,20 @@ export async function downloadAudio(url, filename) {
       '--postprocessor-args', 'ffmpeg:-ar 16000 -ac 1',
       '--no-playlist',
       '-o', `${finalPath}.%(ext)s`,
-      url
+      url,
     ])
 
     // Log any errors from yt-dlp
-    if (stderr) console.error('yt-dlp errors:', stderr)
+    if (stderr) {
+      console.error(`yt-dlp warnings: ${stderr}`)
+    }
 
     // Construct the path of the downloaded file
     const downloadedFile = `${finalPath}.wav`
-    console.log(`WAV file downloaded:\n  - ${downloadedFile}`)
+    console.log(`  - ${downloadedFile}\n  - Audio downloaded successfully.`)
     return downloadedFile
   } catch (error) {
-    console.error('Error during audio download:', error)
+    console.error(`Error downloading audio: ${error.message}`)
     throw error
   }
 }
@@ -59,7 +66,7 @@ export async function downloadFileAudio(filePath, sanitizedFilename) {
   // Define supported audio and video formats
   /** @type {Set<SupportedFileType>} */
   const supportedFormats = new Set([
-    'wav', 'mp3', 'm4a', 'aac', 'ogg', 'flac', 'mp4', 'mkv', 'avi', 'mov', 'webm'
+    'wav', 'mp3', 'm4a', 'aac', 'ogg', 'flac', 'mp4', 'mkv', 'avi', 'mov', 'webm',
   ])
   try {
     // Check if the file exists
@@ -67,9 +74,6 @@ export async function downloadFileAudio(filePath, sanitizedFilename) {
 
     // Read the file into a buffer
     const buffer = await readFile(filePath)
-    console.log(
-      `File read successfully. Buffer length: ${buffer.length}\nDetermining file type...`
-    )
 
     // Determine the file type
     const fileType = await fileTypeFromBuffer(buffer)
@@ -78,22 +82,19 @@ export async function downloadFileAudio(filePath, sanitizedFilename) {
         fileType ? `Unsupported file type: ${fileType.ext}` : 'Unable to determine file type'
       )
     }
-    console.log(`Detected file type: ${fileType.ext}`)
+    console.log(`\nStep 2 - File read successfully and type detected as ${fileType.ext}, converting to WAV...`)
 
     const outputPath = `content/${sanitizedFilename}.wav`
-    // If the file is not already a WAV, convert it
-    if (fileType.ext !== 'wav') {
-      await execPromise(
-        `${ffmpeg} -i "${filePath}" -acodec pcm_s16le -ar 16000 -ac 1 "${outputPath}"`
-      )
-      console.log(`Converted ${filePath} to ${outputPath}`)
-    } else {
-      // If it's already a WAV, just copy it
-      await execPromise(`cp "${filePath}" "${outputPath}"`)
-    }
+
+    // Convert the file to WAV format
+    await execPromise(
+      `${ffmpeg} -i "${filePath}" -ar 16000 -ac 1 -vn "${outputPath}"`
+    )
+    console.log(`  - ${outputPath}\n  - File converted to WAV format successfully.`)
+
     return outputPath
   } catch (error) {
-    console.error('Error in downloadFileAudio:', error.message)
+    console.error(`Error processing local file: ${error.message}`)
     throw error
   }
 }

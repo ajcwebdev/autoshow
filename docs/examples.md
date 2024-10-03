@@ -48,12 +48,24 @@ Run on multiple YouTube videos in a playlist.
 npm run as -- --playlist "https://www.youtube.com/playlist?list=PLCVnrVv4KhXPz0SoAVu8Rc1emAdGPbSbr"
 ```
 
+Run on playlist URL and generate JSON info file with markdown metadata of each video in the playlist:
+
+```bash
+npm run as -- --playlist "https://www.youtube.com/playlist?list=PLCVnrVv4KhXPz0SoAVu8Rc1emAdGPbSbr" --info
+```
+
 ### Process Multiple Videos Specified in a URLs File
 
 Run on an arbitrary list of URLs in `example-urls.md`.
 
 ```bash
 npm run as -- --urls "content/example-urls.md"
+```
+
+Run on URLs file and generate JSON info file with markdown metadata of each video:
+
+```bash
+npm run as -- --urls "content/example-urls.md" --info
 ```
 
 ### Process Single Audio or Video File

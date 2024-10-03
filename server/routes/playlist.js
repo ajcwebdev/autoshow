@@ -1,12 +1,13 @@
 // server/routes/playlist.js
 
 import { processPlaylist } from '../../src/commands/processPlaylist.js'
+import { mapRequestDataToOptions } from '../utils/mapRequestDataToOptions.js'
 
 const handlePlaylistRequest = async (req, res) => {
   console.log('Entered handlePlaylistRequest')
   let body = ''
 
-  req.on('data', chunk => {
+  req.on('data', (chunk) => {
     body += chunk.toString()
     console.log('Received chunk:', chunk.toString())
   })
@@ -14,8 +15,11 @@ const handlePlaylistRequest = async (req, res) => {
   req.on('end', async () => {
     console.log('Request body complete:', body)
     try {
-      const { playlistUrl, model = 'base', llm, options = {} } = JSON.parse(body)
-      console.log('Parsed request body:', { playlistUrl, model, llm, options })
+      const requestData = JSON.parse(body)
+      console.log('Parsed request body:', requestData)
+
+      const { playlistUrl } = requestData
+
       if (!playlistUrl) {
         console.log('Playlist URL not provided, sending 400')
         res.statusCode = 400
@@ -23,14 +27,21 @@ const handlePlaylistRequest = async (req, res) => {
         res.end(JSON.stringify({ error: 'Playlist URL is required' }))
         return
       }
-      const llmOpt = llm || null
-      await processPlaylist(playlistUrl, llmOpt, model, options)
+
+      const { options, llmOpt, transcriptOpt } = mapRequestDataToOptions(requestData)
+
+      console.log('Calling processPlaylist with params:', { playlistUrl, llmOpt, transcriptOpt, options })
+
+      await processPlaylist(playlistUrl, llmOpt, transcriptOpt, options)
+
       console.log('processPlaylist completed successfully')
       res.statusCode = 200
       res.setHeader('Content-Type', 'application/json')
-      res.end(JSON.stringify({ 
-        message: 'Playlist processed successfully.'
-      }))
+      res.end(
+        JSON.stringify({
+          message: 'Playlist processed successfully.',
+        })
+      )
     } catch (error) {
       console.error('Error processing playlist:', error)
       res.statusCode = 500

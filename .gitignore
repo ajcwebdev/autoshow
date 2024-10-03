@@ -1,6 +1,6 @@
 node_modules
 .DS_Store
-content
+/content
 whisper.cpp
 package-lock.json
 .env

@@ -1,6 +1,6 @@
 // server/routes/video.js
 
-import { processVideo } from '../../src/commands/processVideo.js'
+import { processVideo } from '../../../src/commands/processVideo.js'
 import { reqToOpts } from '../utils/reqToOpts.js'
 
 // Handler for /video route

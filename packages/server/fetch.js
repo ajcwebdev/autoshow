@@ -1,6 +1,7 @@
 // server/fetch.js
 
 const BASE_URL = 'http://localhost:3000'
+const VIDEO_ROUTE = 'video'
 
 const data = {
   youtubeUrl: 'https://www.youtube.com/watch?v=jKB0EltG9Jo',
@@ -10,7 +11,7 @@ const data = {
 
 const fetchVideo = async () => {
   try {
-    const response = await fetch(`${BASE_URL}/video`, {
+    const response = await fetch(`${BASE_URL}/${VIDEO_ROUTE}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

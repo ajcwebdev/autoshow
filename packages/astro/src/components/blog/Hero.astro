@@ -1,0 +1,47 @@
+---
+import type { CollectionEntry } from "astro:content"
+import { Image } from "astro:assets"
+import FormattedDate from "../FormattedDate.astro"
+
+interface Props {
+	content: CollectionEntry<"post">
+}
+
+const {
+	content: { data },
+} = Astro.props
+
+const dateTimeOptions: Intl.DateTimeFormatOptions = {
+	month: "long",
+}
+---
+
+{
+	data.coverImage && (
+		<div>
+			<Image
+				alt={data.coverImage.alt}
+				fetchpriority="high"
+				loading="eager"
+				src={data.coverImage.src}
+			/>
+		</div>
+	)
+}
+{data.draft ? <span>(Draft)</span> : null}
+<h1>
+	{data.title}
+</h1>
+<div>
+	<p>
+		<FormattedDate date={data.publishDate} dateTimeOptions={dateTimeOptions} />
+	</p>
+	{
+		data.updatedDate && (
+			<span>
+				Last Updated:
+				<FormattedDate date={data.updatedDate} dateTimeOptions={dateTimeOptions} />
+			</span>
+		)
+	}
+</div>

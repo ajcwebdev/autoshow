@@ -1,6 +1,6 @@
 // server/routes/urls.js
 
-import { processURLs } from '../../src/commands/processURLs.js'
+import { processURLs } from '../../../src/commands/processURLs.js'
 import { reqToOpts } from '../utils/reqToOpts.js'
 
 // Handler for /urls route

@@ -243,6 +243,12 @@ npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --octo WIZAR
 npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --llama
 ```
 
+### Ollama
+
+```bash
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --ollama
+```
+
 ## Transcription Options
 
 ### Whisper.cpp
@@ -357,7 +363,7 @@ npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --prompt tit
 This will run both `whisper.cpp` and the AutoShow Commander CLI in their own Docker containers.
 
 ```bash
-docker-compose run autoshow --video "https://www.youtube.com/watch?v=MORMZXEaONk" --whisperDocker base
+docker compose run autoshow --video "https://www.youtube.com/watch?v=MORMZXEaONk" --whisperDocker base
 ```
 
 Currently working on the `llama.cpp` Docker integration so the entire project can be encapsulated in one local Docker Compose file.
@@ -426,6 +432,7 @@ export MD="LLM.md" && export COMMANDS="src/commands" && export UTILS="src/utils"
   echo ''$CLOSE'### Call Cohere'$OPEN'' >> $MD && cat $LLMS/cohere.js >> $MD && \
   echo ''$CLOSE'### Call Gemini'$OPEN'' >> $MD && cat $LLMS/gemini.js >> $MD && \
   echo ''$CLOSE'### Call Llama.cpp'$OPEN'' >> $MD && cat $LLMS/llama.js >> $MD && \
+  echo ''$CLOSE'### Call Ollama'$OPEN'' >> $MD && cat $LLMS/ollama.js >> $MD && \
   echo ''$CLOSE'### Call Mistral'$OPEN'' >> $MD && cat $LLMS/mistral.js >> $MD && \
   echo ''$CLOSE'### Call Octo'$OPEN'' >> $MD && cat $LLMS/octo.js >> $MD && \
   echo ''$CLOSE'## Docker Files\n\n```Dockerfile' >> $MD && cat .github/whisper.Dockerfile >> $MD && \

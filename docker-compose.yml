@@ -15,6 +15,8 @@ services:
     environment:
       - OLLAMA_HOST=ollama
       - OLLAMA_PORT=11434
+    networks:
+      - autoshownet
   whisper:
     build:
       context: ./whisper.cpp
@@ -25,8 +27,11 @@ services:
     command: tail -f /dev/null
     tty: true
     stdin_open: true
+    networks:
+      - autoshownet
   ollama:
     image: ollama/ollama
+    command: ["ollama", "serve", "--address", "0.0.0.0"]  # Listen on all interfaces
     ports:
       - "11434:11434"
     volumes:
@@ -36,3 +41,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - autoshownet
+networks:
+  autoshownet:
+    driver: bridge

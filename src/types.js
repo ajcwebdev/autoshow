@@ -178,7 +178,7 @@
 
 /**
  * Represents the options for Language Models (LLMs) that can be used in the application.
- * @typedef {'chatgpt' | 'claude' | 'cohere' | 'mistral' | 'octo' | 'llama' | 'gemini'} LLMOption
+ * @typedef {'chatgpt' | 'claude' | 'cohere' | 'mistral' | 'octo' | 'llama' | 'ollama' | 'gemini'} LLMOption
  *
  * - `'chatgpt'`: Use OpenAI's ChatGPT models.
  * - `'claude'`: Use Anthropic's Claude models.
@@ -186,6 +186,7 @@
  * - `'mistral'`: Use Mistral AI's language models.
  * - `'octo'`: Use OctoAI's language models.
  * - `'llama'`: Use Llama models for local inference.
+ * - `'ollama'`: Use Ollama for processing.
  * - `'gemini'`: Use Google's Gemini models.
  */
 

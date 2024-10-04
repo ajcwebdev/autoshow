@@ -1,7 +1,6 @@
 // src/llms/ollama.js
 
 import { writeFile } from 'node:fs/promises'
-import { Ollama } from 'ollama'
 
 /** @import { LLMFunction, LlamaModelType } from '../types.js' */
 
@@ -21,11 +20,11 @@ const ollamaModels = {
   QWEN_2_5_7B_MODEL: 'qwen2.5:7b',
 }
 
-/** @type {LLMFunction} */
 /**
- * Main function to call the Llama model using the Ollama library.
+ * Main function to call the Llama model using the Ollama REST API.
  * This function checks if the model is available, pulls it if necessary,
  * and then proceeds with the chat.
+ * @type {LLMFunction}
  * @param {string} promptAndTranscript - The combined prompt and transcript content.
  * @param {string} tempPath - The temporary file path to write the LLM output.
  * @param {LlamaModelType} [modelName='LLAMA_3_2_1B_MODEL'] - The name of the model to use.
@@ -38,47 +37,42 @@ export async function callOllama(promptAndTranscript, tempPath, modelName = 'LLA
     const ollamaModelName = ollamaModels[modelName] || 'llama3.2:1b'
     
     // Get host and port from environment variables or use defaults
-    const ollamaHost = process.env.OLLAMA_HOST || 'localhost'
+    const ollamaHost = process.env.OLLAMA_HOST || 'ollama'
     const ollamaPort = process.env.OLLAMA_PORT || '11434'
     const baseUrl = `http://${ollamaHost}:${ollamaPort}`
-
-    // Create a new OllamaClient with the baseUrl
-    const client = new Ollama({ baseUrl })
+    
     console.log(`  - Using Ollama model: ${ollamaModelName} at ${baseUrl}`)
-
-    // Check if the model is available
-    const models = await client.list()
-    const isAvailable = models.models.some(model => model.name === ollamaModelName)
-
-    // If the model is not available, pull it
-    if (!isAvailable) {
-      console.log(`Model ${ollamaModelName} not found. Pulling it now...`)
-      try {
-        const pullStream = await client.pull({ model: ollamaModelName, stream: true })
-        for await (const part of pullStream) {
-          console.log(`Pulling ${ollamaModelName}: ${part.status}`)
-        }
-        console.log(`Model ${ollamaModelName} successfully pulled.`)
-      } catch (pullError) {
-        console.error(`Error pulling model ${ollamaModelName}: ${pullError.message}`)
-        throw pullError
-      }
-    }
-
+    
     // Call the Ollama chat API
-    const response = await client.chat({
-      model: ollamaModelName,
-      messages: [{ role: 'user', content: promptAndTranscript }],
+    console.log(`  - Sending chat request to Ollama...`)
+    const response = await fetch(`${baseUrl}/api/chat`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: ollamaModelName,
+        messages: [{ role: 'user', content: promptAndTranscript }],
+        stream: false,
+      }),
     })
 
-    // Extract the assistant's reply
-    const assistantReply = response.message.content
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
 
+    const data = await response.json()
+    
+    // Extract the assistant's reply
+    const assistantReply = data.message.content
+    console.log(`  - Received response from Ollama.`)
+    
     // Write the response to the output file
     await writeFile(tempPath, assistantReply)
     console.log(`\nResponse saved to ${tempPath}`)
   } catch (error) {
     console.error(`Error in callOllama: ${error.message}`)
+    console.error(`Stack Trace: ${error.stack}`)
     throw error
   }
 }

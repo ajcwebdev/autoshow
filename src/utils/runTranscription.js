@@ -2,15 +2,16 @@
 
 import { readFile, writeFile } from 'node:fs/promises'
 import { callWhisper } from '../transcription/whisper.js'
+import { callWhisperDocker } from '../transcription/whisperDocker.js'
 import { callDeepgram } from '../transcription/deepgram.js'
 import { callAssembly } from '../transcription/assembly.js'
 
-/** @import { TranscriptOption, ProcessingOptions } from '../types.js' */
+/** @import { TranscriptServices, ProcessingOptions } from '../types.js' */
 
 /**
  * Main function to run transcription.
  * @param {string} finalPath - The base path for the files.
- * @param {TranscriptOption} transcriptOpt - The transcription service to use.
+ * @param {TranscriptServices} transcriptServices - The transcription service to use.
  * @param {ProcessingOptions} [options={}] - Additional processing options.
  * @param {string} [frontMatter=''] - Optional front matter content for the markdown file.
  * @returns {Promise<string>} - Returns the final content including markdown and transcript.
@@ -18,7 +19,7 @@ import { callAssembly } from '../transcription/assembly.js'
  */
 export async function runTranscription(
   finalPath,
-  transcriptOpt = 'whisper',
+  transcriptServices,
   options = {},
   frontMatter = ''
 ) {
@@ -26,27 +27,27 @@ export async function runTranscription(
     let txtContent
 
     // Choose the transcription service based on the provided option
-    switch (transcriptOpt) {
+    switch (transcriptServices) {
       case 'deepgram':
         console.log('\nStep 3 - Using Deepgram for transcription...')
-        await callDeepgram(`${finalPath}.wav`, finalPath)
-        txtContent = await readFile(`${finalPath}.txt`, 'utf8')
+        txtContent = await callDeepgram(finalPath, options)
         break
 
       case 'assembly':
         console.log('\nStep 3 - Using AssemblyAI for transcription...')
-        txtContent = await callAssembly(finalPath, transcriptOpt, options)
+        txtContent = await callAssembly(finalPath, options)
         break
-
+      
       case 'whisperDocker':
-      case 'whisper':
-        console.log('\nStep 3 - Using Whisper for transcription...')
-        txtContent = await callWhisper(finalPath, transcriptOpt, options)
-        break
+        console.log('\nStep 3 - Using Whisper Docker for transcription...')
+        txtContent = await callWhisperDocker(finalPath, options)
+        break  
 
+      case 'whisper':
       default:
-        console.error(`Error: Unsupported transcription option '${transcriptOpt}'.`)
-        throw new Error('Unsupported transcription option.')
+        console.log('\nStep 3 - Using Whisper for transcription...')
+        txtContent = await callWhisper(finalPath, options)
+        break
     }
 
     let mdContent = frontMatter

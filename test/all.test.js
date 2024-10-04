@@ -132,6 +132,11 @@ const commands = [
     newName: '26---2024-09-24-ep0-fsjam-podcast-prompt.md'
   },
   {
+    cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --whisperDocker tiny',
+    expectedFile: '2024-09-24-ep0-fsjam-podcast-prompt.md',
+    newName: '26B---2024-09-24-ep0-fsjam-podcast-prompt.md'
+  },
+  {
     cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --prompt titles',
     expectedFile: '2024-09-24-ep0-fsjam-podcast-prompt.md',
     newName: '27---2024-09-24-ep0-fsjam-podcast-prompt.md'

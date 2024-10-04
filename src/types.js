@@ -24,11 +24,11 @@
  * @property {string} [cohere] - Cohere model to use (e.g., 'COMMAND_R_PLUS').
  * @property {string} [mistral] - Mistral model to use (e.g., 'MISTRAL_LARGE').
  * @property {string} [octo] - OctoAI model to use (e.g., 'LLAMA_3_1_8B').
- * @property {string} [llama] - Llama model to use for local inference (e.g., 'LLAMA_3_1_8B_Q4_MODEL').
+ * @property {string} [llama] - Llama model to use for local inference (e.g., 'LLAMA_3_1_8B_Q4').
  * @property {string} [gemini] - Gemini model to use (e.g., 'GEMINI_1_5_FLASH').
  * @property {string[]} [prompt] - Array of prompt sections to include (e.g., ['titles', 'summary']).
- * @property {LLMOption} [llmOpt] - The selected LLM option.
- * @property {TranscriptOption} [transcriptOpt] - The selected transcription option.
+ * @property {LLMServices} [llmServices] - The selected LLM option.
+ * @property {TranscriptServices} [transcriptServices] - The selected transcription option.
  * @property {string} [llamaModel] - Specific Llama model to use.
  * @property {number} [skip] - Number of items to skip in RSS feed processing.
  * @property {string} [order] - Order in which to process RSS feed items ('newest' or 'oldest').
@@ -46,9 +46,9 @@
  * @property {string} [rss] - RSS feed URL provided by the user.
  * @property {boolean} [specifyItem] - Whether the user wants to specify specific RSS items.
  * @property {string} [item] - Comma-separated audio URLs of specific RSS items.
- * @property {LLMOption} [llmOpt] - LLM option selected by the user.
+ * @property {LLMServices} [llmServices] - LLM option selected by the user.
  * @property {string} [llamaModel] - Specific Llama model selected by the user.
- * @property {TranscriptOption} [transcriptOpt] - Transcription option selected by the user.
+ * @property {TranscriptServices} [transcriptServices] - Transcription option selected by the user.
  * @property {boolean} [useDocker] - Whether to use Docker for Whisper transcription.
  * @property {WhisperModelType} [whisperModel] - Whisper model type selected by the user.
  * @property {boolean} [speakerLabels] - Whether to use speaker labels in transcription.
@@ -75,8 +75,8 @@
  * Represents a handler function for processing different actions (e.g., video, playlist).
  * @callback HandlerFunction
  * @param {string} input - The primary input (e.g., URL or file path) for processing.
- * @param {LLMOption} [llmOpt] - The selected LLM option.
- * @param {TranscriptOption} [transcriptOpt] - The selected transcription option.
+ * @param {LLMServices} [llmServices] - The selected LLM option.
+ * @param {TranscriptServices} [transcriptServices] - The selected transcription option.
  * @param {ProcessingOptions} options - Additional processing options.
  * @returns {Promise<void>} - A promise that resolves when processing is complete.
  */
@@ -116,7 +116,7 @@
 
 /**
  * Represents the options for RSS feed processing.
- * @typedef {Object} RSSProcessingOptions
+ * @typedef {Object} RSSOptions
  * @property {string} [order] - The order to process items ('newest' or 'oldest').
  * @property {number} [skip] - The number of items to skip.
  */
@@ -136,38 +136,48 @@
 
 /**
  * Represents the transcription services that can be used in the application.
- * @typedef {'whisper' | 'whisperDocker' | 'deepgram' | 'assembly'} TranscriptOption
+ * @typedef {'whisper' | 'whisperDocker' | 'deepgram' | 'assembly'} TranscriptServices
  *
- * - `'whisper'`: Use Whisper.cpp for transcription.
- * - `'whisperDocker'`: Use Whisper.cpp in a Docker container.
- * - `'deepgram'`: Use Deepgram's transcription service.
- * - `'assembly'`: Use AssemblyAI's transcription service.
- */
-
-/**
- * Represents the options for transcription.
- * @typedef {Object} TranscriptionOptions
- * @property {boolean} [speakerLabels] - Whether to use speaker labels.
- * @property {string} [language] - The language code for transcription (e.g., 'en').
- * @property {string} [model] - The model type to use for transcription.
+ * - whisper: Use Whisper.cpp for transcription.
+ * - whisperDocker: Use Whisper.cpp in a Docker container.
+ * - deepgram: Use Deepgram's transcription service.
+ * - assembly: Use AssemblyAI's transcription service.
  */
 
 /**
  * Represents the available Whisper model types.
  * @typedef {'tiny' | 'tiny.en' | 'base' | 'base.en' | 'small' | 'small.en' | 'medium' | 'medium.en' | 'large' | 'large-v1' | 'large-v2'} WhisperModelType
  *
- * - `'tiny'`: Smallest multilingual model.
- * - `'tiny.en'`: Smallest English-only model.
- * - `'base'`: Base multilingual model.
- * - `'base.en'`: Base English-only model.
- * - `'small'`: Small multilingual model.
- * - `'small.en'`: Small English-only model.
- * - `'medium'`: Medium multilingual model.
- * - `'medium.en'`: Medium English-only model.
- * - `'large'`: Largest multilingual model (same as 'large-v2').
- * - `'large-v1'`: Large multilingual model version 1.
- * - `'large-v2'`: Large multilingual model version 2.
+ * - tiny: Smallest multilingual model.
+ * - tiny.en: Smallest English-only model.
+ * - base: Base multilingual model.
+ * - base.en: Base English-only model.
+ * - small: Small multilingual model.
+ * - small.en: Small English-only model.
+ * - medium: Medium multilingual model.
+ * - medium.en: Medium English-only model.
+ * - large: Largest multilingual model (same as 'large-v2').
+ * - large-v1: Large multilingual model version 1.
+ * - large-v2: Large multilingual model version 2.
  */
+
+/**
+ * Define available Whisper models
+ * @type {Record<WhisperModelType, string>}
+ */
+export const WHISPER_MODELS = {
+    tiny: 'ggml-tiny.bin',
+    'tiny.en': 'ggml-tiny.en.bin',
+    base: 'ggml-base.bin',
+    'base.en': 'ggml-base.en.bin',
+    small: 'ggml-small.bin',
+    'small.en': 'ggml-small.en.bin',
+    medium: 'ggml-medium.bin',
+    'medium.en': 'ggml-medium.en.bin',
+    'large-v1': 'ggml-large-v1.bin',
+    'large-v2': 'ggml-large-v2.bin',
+    large: 'ggml-large-v2.bin',
+  }
 
 /**
  * Represents the object containing the different prompts, their instructions to the LLM, and their expected example output.
@@ -178,16 +188,16 @@
 
 /**
  * Represents the options for Language Models (LLMs) that can be used in the application.
- * @typedef {'chatgpt' | 'claude' | 'cohere' | 'mistral' | 'octo' | 'llama' | 'ollama' | 'gemini'} LLMOption
+ * @typedef {'chatgpt' | 'claude' | 'cohere' | 'mistral' | 'octo' | 'llama' | 'ollama' | 'gemini'} LLMServices
  *
- * - `'chatgpt'`: Use OpenAI's ChatGPT models.
- * - `'claude'`: Use Anthropic's Claude models.
- * - `'cohere'`: Use Cohere's language models.
- * - `'mistral'`: Use Mistral AI's language models.
- * - `'octo'`: Use OctoAI's language models.
- * - `'llama'`: Use Llama models for local inference.
- * - `'ollama'`: Use Ollama for processing.
- * - `'gemini'`: Use Google's Gemini models.
+ * - chatgpt: Use OpenAI's ChatGPT models.
+ * - claude: Use Anthropic's Claude models.
+ * - cohere: Use Cohere's language models.
+ * - mistral: Use Mistral AI's language models.
+ * - octo: Use OctoAI's language models.
+ * - llama: Use Llama models for local inference.
+ * - ollama: Use Ollama for processing.
+ * - gemini: Use Google's Gemini models.
  */
 
 /**
@@ -210,9 +220,9 @@
 
 /**
  * Represents a mapping of LLM option keys to their corresponding functions.
- * @typedef {Object.<LLMOption, LLMFunction>} LLMFunctions
+ * @typedef {Object.<LLMServices, LLMFunction>} LLMFunctions
  *
- * This ensures that only valid `LLMOption` values can be used as keys in the `llmFunctions` object.
+ * This ensures that only valid `LLMServices` values can be used as keys in the `llmFunctions` object.
  */
 
 /**
@@ -223,8 +233,111 @@
  * @typedef {'GEMINI_1_5_FLASH' | 'GEMINI_1_5_PRO'} GeminiModelType - Define available Gemini models.
  * @typedef {'MIXTRAL_8x7b' | 'MIXTRAL_8x22b' | 'MISTRAL_LARGE' | 'MISTRAL_NEMO'} MistralModelType - Define available Mistral AI models.
  * @typedef {'LLAMA_3_1_8B' | 'LLAMA_3_1_70B' | 'LLAMA_3_1_405B' | 'MISTRAL_7B' | 'MIXTRAL_8X_7B' | 'NOUS_HERMES_MIXTRAL_8X_7B' | 'WIZARD_2_8X_22B'} OctoModelType - Define available OctoAI models.
- * @typedef {'LLAMA_3_1_8B_Q4_MODEL' | 'LLAMA_3_1_8B_Q6_MODEL' | 'GEMMA_2_2B_Q4_MODEL' | 'GEMMA_2_2B_Q6_MODEL' | 'TINY_LLAMA_1B_Q4_MODEL' | 'TINY_LLAMA_1B_Q6_MODEL'} LlamaModelType - Define local model configurations.
+ * @typedef {'QWEN_2_5_3B' | 'PHI_3_5' | 'LLAMA_3_2_1B' | 'GEMMA_2_2B'} LlamaModelType - Define local model configurations.
+ * @typedef {'LLAMA_3_2_1B' | 'LLAMA_3_2_3B' | 'GEMMA_2_2B' | 'PHI_3_5' | 'QWEN_2_5_1B' | 'QWEN_2_5_3B'} OllamaModelType - Define local model with Ollama.
  */
+
+/**
+ * Map of ChatGPT model identifiers to their API names
+ * @type {Record<ChatGPTModelType, string>}
+ */
+export const GPT_MODELS = {
+  GPT_4o_MINI: "gpt-4o-mini",
+  GPT_4o: "gpt-4o",
+  GPT_4_TURBO: "gpt-4-turbo",
+  GPT_4: "gpt-4",
+}
+
+/**
+ * Map of Claude model identifiers to their API names
+ * @type {Record<ClaudeModelType, string>}
+ */
+export const CLAUDE_MODELS = {
+  CLAUDE_3_5_SONNET: "claude-3-5-sonnet-20240620",
+  CLAUDE_3_OPUS: "claude-3-opus-20240229",
+  CLAUDE_3_SONNET: "claude-3-sonnet-20240229",
+  CLAUDE_3_HAIKU: "claude-3-haiku-20240307",
+}
+
+/**
+ * Map of Cohere model identifiers to their API names
+ * @type {Record<CohereModelType, string>}
+ */
+export const COHERE_MODELS = {
+  COMMAND_R: "command-r", // Standard Command model
+  COMMAND_R_PLUS: "command-r-plus" // Enhanced Command model
+}
+
+/**
+ * Map of Gemini model identifiers to their API names
+ * @type {Record<GeminiModelType, string>}
+ */
+export const GEMINI_MODELS = {
+  GEMINI_1_5_FLASH: "gemini-1.5-flash",
+  // GEMINI_1_5_PRO: "gemini-1.5-pro",
+  GEMINI_1_5_PRO: "gemini-1.5-pro-exp-0827",
+}
+
+/**
+ * Map of Mistral model identifiers to their API names
+ * @type {Record<MistralModelType, string>}
+ */
+export const MISTRAL_MODELS = {
+  MIXTRAL_8x7b: "open-mixtral-8x7b",
+  MIXTRAL_8x22b: "open-mixtral-8x22b",
+  MISTRAL_LARGE: "mistral-large-latest",
+  MISTRAL_NEMO: "open-mistral-nemo"
+}
+
+/**
+ * Map of OctoAI model identifiers to their API names
+ * @type {Record<OctoModelType, string>}
+ */
+export const OCTO_MODELS = {
+  LLAMA_3_1_8B: "meta-llama-3.1-8b-instruct",
+  LLAMA_3_1_70B: "meta-llama-3.1-70b-instruct",
+  LLAMA_3_1_405B: "meta-llama-3.1-405b-instruct",
+  MISTRAL_7B: "mistral-7b-instruct",
+  MIXTRAL_8X_7B: "mixtral-8x7b-instruct",
+  NOUS_HERMES_MIXTRAL_8X_7B: "nous-hermes-2-mixtral-8x7b-dpo",
+  WIZARD_2_8X_22B: "wizardlm-2-8x22b",
+}
+
+/**
+ * Map of local model identifiers to their filenames and URLs
+ * @type {Record<LlamaModelType, {filename: string, url: string}>}
+ */
+export const LLAMA_MODELS = {
+  QWEN_2_5_3B: {
+    filename: "qwen2.5-3b-instruct-q6_k.gguf",
+    url: "https://huggingface.co/Qwen/Qwen2.5-3B-Instruct-GGUF/resolve/main/qwen2.5-3b-instruct-q6_k.gguf"
+  },
+  PHI_3_5: {
+    filename: "Phi-3.5-mini-instruct-Q6_K.gguf",
+    url: "https://huggingface.co/bartowski/Phi-3.5-mini-instruct-GGUF/resolve/main/Phi-3.5-mini-instruct-Q6_K.gguf"
+  },
+  LLAMA_3_2_1B: {
+    filename: "Llama-3.2-1B.i1-Q6_K.gguf",
+    url: "https://huggingface.co/mradermacher/Llama-3.2-1B-i1-GGUF/resolve/main/Llama-3.2-1B.i1-Q6_K.gguf"
+  },
+  GEMMA_2_2B: {
+    filename: "gemma-2-2b-it-Q6_K.gguf",
+    url: "https://huggingface.co/lmstudio-community/gemma-2-2b-it-GGUF/resolve/main/gemma-2-2b-it-Q6_K.gguf"
+  }
+}
+
+/**
+ * Map of model identifiers to their corresponding names in Ollama
+ * @type {Record<OllamaModelType, string>}
+ */
+export const OLLAMA_MODELS = {
+  LLAMA_3_2_1B: 'llama3.2:1b',
+  LLAMA_3_2_3B: 'llama3.2:3b',
+  GEMMA_2_2B: 'gemma2:2b',
+  PHI_3_5: 'phi3.5:3.8b',
+  QWEN_2_5_1B: 'qwen2.5:1.5b',
+  QWEN_2_5_3B: 'qwen2.5:3b',
+}
 
 /**
  * Represents the function signature for cleaning up temporary files.

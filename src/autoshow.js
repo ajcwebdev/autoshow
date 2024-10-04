@@ -21,7 +21,7 @@ import { processFile } from './commands/processFile.js'
 import { processRSS } from './commands/processRSS.js'
 import { argv, exit } from 'node:process'
 
-/** @import { ProcessingOptions, HandlerFunction, LLMOption, TranscriptOption } from './types.js' */
+/** @import { ProcessingOptions, HandlerFunction, LLMServices, TranscriptServices } from './types.js' */
 
 // Initialize the command-line interface
 const program = new Command()
@@ -79,6 +79,22 @@ Report Issues: https://github.com/ajcwebdev/autoshow/issues
 program.action(async (options) => {
   console.log(`Options received: ${JSON.stringify(options, null, 2)}`)
 
+  /**
+   * Map actions to their respective handler functions
+   * @type {Object.<string, HandlerFunction>}
+   */
+  const PROCESS_HANDLERS = {
+    video: processVideo,
+    playlist: processPlaylist,
+    urls: processURLs,
+    file: processFile,
+    rss: processRSS,
+  }
+
+  const ACTION_OPTIONS = ['video', 'playlist', 'urls', 'file', 'rss']
+  const LLM_OPTIONS = ['chatgpt', 'claude', 'cohere', 'mistral', 'octo', 'llama', 'ollama', 'gemini']
+  const TRANSCRIPT_OPTIONS = ['whisper', 'whisperDocker', 'deepgram', 'assembly']
+
   // Determine if no action options were provided
   const { video, playlist, urls, file, rss, interactive } = options
   const noActionProvided = [video, playlist, urls, file, rss].every((opt) => !opt)
@@ -87,8 +103,7 @@ program.action(async (options) => {
   if (interactive) {
     options = await handleInteractivePrompt(options)
   } else if (noActionProvided) {
-    console.error('Error: No input provided. Please specify an option. Use --help to see available options.')
-    program.help({ error: true })
+    options = await handleInteractivePrompt(options)
   }
 
   // Ensure options.item is an array if provided via command line
@@ -96,79 +111,31 @@ program.action(async (options) => {
     options.item = [options.item]
   }
 
-  /**
-   * Map actions to their respective handler functions
-   * @type {Object.<string, HandlerFunction>}
-   */
-  const handlers = {
-    video: processVideo,
-    playlist: processPlaylist,
-    urls: processURLs,
-    file: processFile,
-    rss: processRSS,
-  }
-
-  // Count the number of action options provided
-  const actionOptions = ['video', 'playlist', 'urls', 'file', 'rss']
-  const actionsProvided = actionOptions.filter((opt) => options[opt])
-
-  // If more than one action option is provided, show an error
+  const actionsProvided = ACTION_OPTIONS.filter((opt) => options[opt])
   if (actionsProvided.length > 1) {
-    console.error(`Error: Multiple input options provided (${actionsProvided.join(
-        ', '
-      )}). Please specify only one input option.`
-    )
+    console.error(`Error: Multiple input options provided (${actionsProvided.join(', ')}). Please specify only one input option.`)
     exit(1)
   }
 
-  /**
-   * Determine the selected LLM option
-   * @type {LLMOption | undefined}
-   */
-  const llmOptions = [
-    'chatgpt', 'claude', 'cohere', 'mistral', 'octo', 'llama', 'ollama', 'gemini',
-  ]
-  const selectedLLMs = llmOptions.filter((opt) => options[opt])
+  const selectedLLMs = LLM_OPTIONS.filter((opt) => options[opt])
   if (selectedLLMs.length > 1) {
-    console.error(`Error: Multiple LLM options provided (${selectedLLMs.join(
-        ', '
-      )}). Please specify only one LLM option.`
-    )
+    console.error(`Error: Multiple LLM options provided (${selectedLLMs.join(', ')}). Please specify only one LLM option.`)
     exit(1)
   }
-  const llmOpt = /** @type {LLMOption | undefined} */ (selectedLLMs[0])
+  const llmServices = /** @type {LLMServices | undefined} */ (selectedLLMs[0])
 
-  /**
-   * Determine the transcription service to use
-   * @type {TranscriptOption | undefined}
-   */
-  const transcriptOptions = ['whisper', 'whisperDocker', 'deepgram', 'assembly']
-  const selectedTranscripts = transcriptOptions.filter((opt) => options[opt])
+  const selectedTranscripts = TRANSCRIPT_OPTIONS.filter((opt) => options[opt])
   if (selectedTranscripts.length > 1) {
     console.error(`Error: Multiple transcription options provided (${selectedTranscripts.join(', ')}). Please specify only one transcription option.`)
     exit(1)
   }
-  let transcriptOpt = /** @type {TranscriptOption | undefined} */ (selectedTranscripts[0])
-
-  // Standardize the transcription option names
-  if (transcriptOpt === 'whisper-docker') {
-    transcriptOpt = 'whisperDocker'
-  } else if (transcriptOpt === 'whisper') {
-    transcriptOpt = 'whisper'
-  }
-
-  // Extract the Whisper model if using Whisper transcription
-  let whisperModel
-  if (transcriptOpt === 'whisper' || transcriptOpt === 'whisperDocker') {
-    whisperModel = options[transcriptOpt] || 'base' // Default to 'base' if no model specified
-    options.whisperModel = whisperModel // Add this line
-  }
+  const transcriptServices = /** @type {TranscriptServices | undefined} */ (selectedTranscripts[0])
 
   // Execute the appropriate handler based on the action
-  for (const [key, handler] of Object.entries(handlers)) {
+  for (const [key, handler] of Object.entries(PROCESS_HANDLERS)) {
     if (options[key]) {
       try {
-        await handler(options[key], llmOpt, transcriptOpt, options)
+        await handler(options[key], llmServices, transcriptServices, options)
         exit(0) // Successful execution
       } catch (error) {
         console.error(`Error processing ${key}:`, error.message)

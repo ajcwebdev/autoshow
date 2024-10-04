@@ -22,10 +22,10 @@ const handleVideoRequest = async (request, reply) => {
     }
 
     // Map request data to processing options
-    const { options, llmOpt, transcriptOpt } = reqToOpts(requestData)
-    console.log('\nCalling processVideo with params:', { youtubeUrl, llmOpt, transcriptOpt, options })
+    const { options, llmServices, transcriptServices } = reqToOpts(requestData)
+    console.log('\nCalling processVideo with params:', { youtubeUrl, llmServices, transcriptServices, options })
 
-    await processVideo(youtubeUrl, llmOpt, transcriptOpt, options)
+    await processVideo(youtubeUrl, llmServices, transcriptServices, options)
 
     console.log('\nprocessVideo completed successfully')
     reply.send({ message: 'Video processed successfully.' })

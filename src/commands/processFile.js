@@ -6,17 +6,17 @@ import { runTranscription } from '../utils/runTranscription.js'
 import { runLLM } from '../utils/runLLM.js'
 import { cleanUpFiles } from '../utils/cleanUpFiles.js'
 
-/** @import { LLMOption, TranscriptOption, ProcessingOptions } from '../types.js' */
+/** @import { LLMServices, TranscriptServices, ProcessingOptions } from '../types.js' */
 
 /**
  * Main function to process a local audio or video file.
  * @param {string} filePath - The path to the local file to process.
- * @param {LLMOption} [llmOpt] - The selected Language Model option.
- * @param {TranscriptOption} [transcriptOpt] - The transcription service to use.
+ * @param {LLMServices} [llmServices] - The selected Language Model option.
+ * @param {TranscriptServices} [transcriptServices] - The transcription service to use.
  * @param {ProcessingOptions} options - Additional options for processing.
  * @returns {Promise<void>}
  */
-export async function processFile(filePath, llmOpt, transcriptOpt, options) {
+export async function processFile(filePath, llmServices, transcriptServices, options) {
   try {
     // Generate markdown for the file
     const { frontMatter, finalPath, filename } = await generateFileMarkdown(filePath)
@@ -25,10 +25,10 @@ export async function processFile(filePath, llmOpt, transcriptOpt, options) {
     await downloadFileAudio(filePath, filename)
 
     // Run transcription on the file
-    await runTranscription(finalPath, transcriptOpt, options, frontMatter)
+    await runTranscription(finalPath, transcriptServices, options, frontMatter)
 
     // Process the transcript with the selected Language Model
-    await runLLM(finalPath, frontMatter, llmOpt, options)
+    await runLLM(finalPath, frontMatter, llmServices, options)
 
     // Clean up temporary files if the noCleanUp option is not set
     if (!options.noCleanUp) {

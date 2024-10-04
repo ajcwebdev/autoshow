@@ -72,17 +72,18 @@ const INQUIRER_PROMPT = [
   },
   {
     type: 'list',
-    name: 'llmOpt',
+    name: 'llmServices',
     message: 'Select the Language Model (LLM) you want to use:',
     choices: [
+      { name: 'Skip LLM Processing', value: null },
+      { name: 'node-llama-cpp (local inference)', value: 'llama' },
+      { name: 'Ollama (local inference)', value: 'ollama' },
       { name: 'OpenAI ChatGPT', value: 'chatgpt' },
       { name: 'Anthropic Claude', value: 'claude' },
+      { name: 'Google Gemini', value: 'gemini' },
       { name: 'Cohere', value: 'cohere' },
       { name: 'Mistral', value: 'mistral' },
       { name: 'OctoAI', value: 'octo' },
-      { name: 'node-llama-cpp (local inference)', value: 'llama' },
-      { name: 'Google Gemini', value: 'gemini' },
-      { name: 'Skip LLM Processing', value: null },
     ],
   },
   {
@@ -95,38 +96,32 @@ const INQUIRER_PROMPT = [
       { name: 'GEMMA 2 2B Q4 Model', value: 'GEMMA_2_2B_Q4_MODEL' },
       { name: 'GEMMA 2 2B Q6 Model', value: 'GEMMA_2_2B_Q6_MODEL' },
     ],
-    when: (answers) => answers.llmOpt === 'llama',
+    when: (answers) => answers.llmServices === 'llama',
   },
   {
     type: 'list',
-    name: 'transcriptOpt',
+    name: 'transcriptServices',
     message: 'Select the transcription service you want to use:',
     choices: [
       { name: 'Whisper.cpp', value: 'whisper' },
+      { name: 'Whisper.cpp (Docker)', value: 'whisperDocker' },
       { name: 'Deepgram', value: 'deepgram' },
       { name: 'AssemblyAI', value: 'assembly' },
     ],
-  },
-  {
-    type: 'confirm',
-    name: 'useDocker',
-    message: 'Do you want to run Whisper.cpp in a Docker container?',
-    when: (answers) => answers.transcriptOpt === 'whisper',
-    default: false,
   },
   {
     type: 'list',
     name: 'whisperModel',
     message: 'Select the Whisper model type:',
     choices: ['tiny', 'tiny.en', 'base', 'base.en', 'small', 'small.en', 'medium', 'medium.en', 'large', 'large-v1', 'large-v2'],
-    when: (answers) => answers.transcriptOpt === 'whisper',
-    default: 'large',
+    when: (answers) => answers.transcriptServices === 'whisper' || answers.transcriptServices === 'whisperDocker',
+    default: 'large-v2',
   },
   {
     type: 'confirm',
     name: 'speakerLabels',
     message: 'Do you want to use speaker labels?',
-    when: (answers) => answers.transcriptOpt === 'assembly',
+    when: (answers) => answers.transcriptServices === 'assembly',
     default: false,
   },
   {
@@ -179,19 +174,15 @@ export async function handleInteractivePrompt(options) {
   }
   
   // Handle LLM options
-  if (answers.llmOpt) {
-    options[answers.llmOpt] = answers.llmOpt === 'llama' ? answers.llamaModel : true
+  if (answers.llmServices) {
+    options[answers.llmServices] = answers.llmServices === 'llama' ? answers.llamaModel : true
   }
   
   // Handle transcription options
-  if (answers.transcriptOpt === 'whisper') {
-    if (answers.useDocker) {
-      options.whisperDocker = /** @type {WhisperModelType} */ (answers.whisperModel)
-    } else {
-      options.whisper = /** @type {WhisperModelType} */ (answers.whisperModel)
-    }
+  if (answers.transcriptServices === 'whisper' || answers.transcriptServices === 'whisperDocker') {
+    options[answers.transcriptServices] = /** @type {WhisperModelType} */ (answers.whisperModel)
   } else {
-    options[answers.transcriptOpt] = true
+    options[answers.transcriptServices] = true
   }
   
   // Handle 'item' for RSS feed
@@ -202,9 +193,6 @@ export async function handleInteractivePrompt(options) {
   // Remove properties that are not options
   delete options.action
   delete options.specifyItem
-  delete options.llamaModel
-  delete options.useDocker
-  delete options.whisperModel
   delete options.confirmAction
 
   return options

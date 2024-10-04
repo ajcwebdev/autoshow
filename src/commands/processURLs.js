@@ -6,17 +6,17 @@ import { processVideo } from './processVideo.js'
 import { extractVideoMetadata } from '../utils/generateMarkdown.js'
 import { checkDependencies } from '../utils/checkDependencies.js'
 
-/** @import { LLMOption, TranscriptOption, ProcessingOptions } from '../types.js' */
+/** @import { LLMServices, TranscriptServices, ProcessingOptions } from '../types.js' */
 
 /**
  * Main function to process URLs from a file.
  * @param {string} filePath - The path to the file containing URLs.
- * @param {LLMOption} [llmOpt] - The selected Language Model option.
- * @param {TranscriptOption} [transcriptOpt] - The transcription service to use.
+ * @param {LLMServices} [llmServices] - The selected Language Model option.
+ * @param {TranscriptServices} [transcriptServices] - The transcription service to use.
  * @param {ProcessingOptions} options - Additional options for processing.
  * @returns {Promise<void>}
  */
-export async function processURLs(filePath, llmOpt, transcriptOpt, options) {
+export async function processURLs(filePath, llmServices, transcriptServices, options) {
   try {
     // Check for required dependencies
     await checkDependencies(['yt-dlp'])
@@ -54,7 +54,7 @@ export async function processURLs(filePath, llmOpt, transcriptOpt, options) {
     for (const [index, url] of urls.entries()) {
       console.log(`\nProcessing URL ${index + 1}/${urls.length}: ${url}`)
       try {
-        await processVideo(url, llmOpt, transcriptOpt, options)
+        await processVideo(url, llmServices, transcriptServices, options)
       } catch (error) {
         console.error(`Error processing URL ${url}: ${error.message}`)
         // Continue processing the next URL

@@ -8,7 +8,7 @@ import { runTranscription } from '../utils/runTranscription.js'
 import { runLLM } from '../utils/runLLM.js'
 import { cleanUpFiles } from '../utils/cleanUpFiles.js'
 
-/** @import { LLMOption, TranscriptOption, ProcessingOptions, RSSItem } from '../types.js' */
+/** @import { LLMServices, TranscriptServices, ProcessingOptions, RSSItem } from '../types.js' */
 
 // Initialize XML parser with specific options
 const parser = new XMLParser({
@@ -20,12 +20,12 @@ const parser = new XMLParser({
 /**
  * Process a single item from the RSS feed.
  * @param {RSSItem} item - The item to process.
- * @param {TranscriptOption} [transcriptOpt] - The transcription service to use.
- * @param {LLMOption} [llmOpt] - The selected Language Model option.
+ * @param {TranscriptServices} [transcriptServices] - The transcription service to use.
+ * @param {LLMServices} [llmServices] - The selected Language Model option.
  * @param {ProcessingOptions} options - Additional options for processing.
  * @returns {Promise<void>}
  */
-async function processItem(item, transcriptOpt, llmOpt, options) {
+async function processItem(item, transcriptServices, llmServices, options) {
   try {
     // Generate markdown for the item
     const { frontMatter, finalPath, filename } = await generateRSSMarkdown(item)
@@ -34,10 +34,10 @@ async function processItem(item, transcriptOpt, llmOpt, options) {
     await downloadAudio(item.showLink, filename)
 
     // Run transcription
-    await runTranscription(finalPath, transcriptOpt, options, frontMatter)
+    await runTranscription(finalPath, transcriptServices, options, frontMatter)
 
     // Process with Language Model
-    await runLLM(finalPath, frontMatter, llmOpt, options)
+    await runLLM(finalPath, frontMatter, llmServices, options)
 
     // Clean up temporary files if necessary
     if (!options.noCleanUp) {
@@ -54,12 +54,12 @@ async function processItem(item, transcriptOpt, llmOpt, options) {
 /**
  * Main function to process an RSS feed.
  * @param {string} rssUrl - The URL of the RSS feed to process.
- * @param {LLMOption} [llmOpt] - The selected Language Model option.
- * @param {TranscriptOption} [transcriptOpt] - The transcription service to use.
+ * @param {LLMServices} [llmServices] - The selected Language Model option.
+ * @param {TranscriptServices} [transcriptServices] - The transcription service to use.
  * @param {ProcessingOptions} options - Additional options for processing.
  * @returns {Promise<void>}
  */
-export async function processRSS(rssUrl, llmOpt, transcriptOpt, options) {
+export async function processRSS(rssUrl, llmServices, transcriptServices, options) {
   try {
     if (options.item && options.item.length > 0) {
       // If specific items are provided, list them
@@ -172,7 +172,7 @@ export async function processRSS(rssUrl, llmOpt, transcriptOpt, options) {
     // Process each item in the feed
     for (const [index, item] of itemsToProcess.entries()) {
       console.log(`\nProcessing item ${index + 1}/${itemsToProcess.length}: ${item.title}`)
-      await processItem(item, transcriptOpt, llmOpt, options)
+      await processItem(item, transcriptServices, llmServices, options)
     }
 
     console.log('\n\nRSS feed processing completed successfully.\n')

@@ -22,10 +22,10 @@ const handleFileRequest = async (request, reply) => {
     }
 
     // Map request data to processing options
-    const { options, llmOpt, transcriptOpt } = reqToOpts(requestData)
-    console.log('\nCalling processFile with params:', { filePath, llmOpt, transcriptOpt, options })
+    const { options, llmServices, transcriptServices } = reqToOpts(requestData)
+    console.log('\nCalling processFile with params:', { filePath, llmServices, transcriptServices, options })
 
-    await processFile(filePath, llmOpt, transcriptOpt, options)
+    await processFile(filePath, llmServices, transcriptServices, options)
 
     console.log('\nprocessFile completed successfully')
     reply.send({ message: 'File processed successfully.' })

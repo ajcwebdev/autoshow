@@ -287,7 +287,7 @@ const requests = [
   {
     data: {
       youtubeUrl: 'https://www.youtube.com/watch?v=MORMZXEaONk',
-      transcriptService: 'deepgram',
+      transcriptServices: 'deepgram',
     },
     endpoint: '/video',
     outputFiles: ['FILE_33.md'],
@@ -295,7 +295,7 @@ const requests = [
   {
     data: {
       youtubeUrl: 'https://www.youtube.com/watch?v=MORMZXEaONk',
-      transcriptService: 'deepgram',
+      transcriptServices: 'deepgram',
       llm: 'llama',
     },
     endpoint: '/video',
@@ -304,7 +304,7 @@ const requests = [
   {
     data: {
       youtubeUrl: 'https://www.youtube.com/watch?v=MORMZXEaONk',
-      transcriptService: 'assembly',
+      transcriptServices: 'assembly',
     },
     endpoint: '/video',
     outputFiles: ['FILE_35.md'],
@@ -312,7 +312,7 @@ const requests = [
   {
     data: {
       youtubeUrl: 'https://www.youtube.com/watch?v=MORMZXEaONk',
-      transcriptService: 'assembly',
+      transcriptServices: 'assembly',
       llm: 'llama',
     },
     endpoint: '/video',
@@ -321,7 +321,7 @@ const requests = [
   {
     data: {
       youtubeUrl: 'https://ajc.pics/audio/fsjam-short.mp3',
-      transcriptService: 'assembly',
+      transcriptServices: 'assembly',
       speakerLabels: true,
     },
     endpoint: '/video',
@@ -330,7 +330,7 @@ const requests = [
   {
     data: {
       youtubeUrl: 'https://ajc.pics/audio/fsjam-short.mp3',
-      transcriptService: 'assembly',
+      transcriptServices: 'assembly',
       speakerLabels: true,
       llm: 'llama',
     },

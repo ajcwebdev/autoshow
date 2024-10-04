@@ -3,19 +3,9 @@
 import { writeFile } from 'node:fs/promises'
 import { env } from 'node:process'
 import { Mistral } from '@mistralai/mistralai'
+import { MISTRAL_MODELS } from '../types.js'
 
 /** @import { LLMFunction, MistralModelType } from '../types.js' */
-
-/**
- * Map of Mistral model identifiers to their API names
- * @type {Record<MistralModelType, string>}
- */
-const mistralModel = {
-  MIXTRAL_8x7b: "open-mixtral-8x7b",
-  MIXTRAL_8x22b: "open-mixtral-8x22b",
-  MISTRAL_LARGE: "mistral-large-latest",
-  MISTRAL_NEMO: "open-mistral-nemo"
-}
 
 /** @type {LLMFunction} */
 /**
@@ -36,7 +26,7 @@ export async function callMistral(promptAndTranscript, tempPath, model = 'MISTRA
   
   try {
     // Select the actual model to use, defaulting to MISTRAL_NEMO if the specified model is not found
-    const actualModel = mistralModel[model] || mistralModel.MISTRAL_NEMO
+    const actualModel = MISTRAL_MODELS[model] || MISTRAL_MODELS.MISTRAL_NEMO
     console.log(`\nUsing Mistral model: ${actualModel}`)
     
     // Make API call to Mistral AI for chat completion

@@ -207,35 +207,35 @@ const TEST_REQ_32 = {
 
 const TEST_REQ_33 = {
   "youtubeUrl": "https://www.youtube.com/watch?v=MORMZXEaONk",
-  "transcriptService": "deepgram"
+  "transcriptServices": "deepgram"
 }
 
 const TEST_REQ_34 = {
   "youtubeUrl": "https://www.youtube.com/watch?v=MORMZXEaONk",
-  "transcriptService": "deepgram",
+  "transcriptServices": "deepgram",
   "llm": "llama"
 }
 
 const TEST_REQ_35 = {
   "youtubeUrl": "https://www.youtube.com/watch?v=MORMZXEaONk",
-  "transcriptService": "assembly"
+  "transcriptServices": "assembly"
 }
 
 const TEST_REQ_36 = {
   "youtubeUrl": "https://www.youtube.com/watch?v=MORMZXEaONk",
-  "transcriptService": "assembly",
+  "transcriptServices": "assembly",
   "llm": "llama"
 }
 
 const TEST_REQ_37 = {
   "youtubeUrl": "https://ajc.pics/audio/fsjam-short.mp3",
-  "transcriptService": "assembly",
+  "transcriptServices": "assembly",
   "speakerLabels": true
 }
 
 const TEST_REQ_38 = {
   "youtubeUrl": "https://ajc.pics/audio/fsjam-short.mp3",
-  "transcriptService": "assembly",
+  "transcriptServices": "assembly",
   "speakerLabels": true,
   "llm": "llama"
 }

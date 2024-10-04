@@ -4,17 +4,17 @@ import { writeFile } from 'node:fs/promises'
 import { env } from 'node:process'
 import { AssemblyAI } from 'assemblyai'
 
-/** @import { TranscriptOption, ProcessingOptions } from '../types.js' */
+/** @import { TranscriptServices, ProcessingOptions } from '../types.js' */
 
 /**
  * Main function to handle transcription using AssemblyAI.
  * @param {string} finalPath - The identifier used for naming output files.
- * @param {TranscriptOption} transcriptOpt - The transcription service to use.
+ * @param {TranscriptServices} transcriptServices - The transcription service to use.
  * @param {ProcessingOptions} options - Additional processing options.
  * @returns {Promise<string>} - Returns the formatted transcript content.
  * @throws {Error} - If an error occurs during transcription.
  */
-export async function callAssembly(finalPath, transcriptOpt, options) {
+export async function callAssembly(finalPath, transcriptServices, options) {
   // Check if the ASSEMBLY_API_KEY environment variable is set
   if (!env.ASSEMBLY_API_KEY) {
     throw new Error('ASSEMBLY_API_KEY environment variable is not set. Please set it to your AssemblyAI API key.')
@@ -26,7 +26,7 @@ export async function callAssembly(finalPath, transcriptOpt, options) {
   try {
     const { speakerLabels } = options
     console.log(`Parameters passed to callAssembly:`)
-    console.log(`  - finalPath: ${finalPath}\n  - transcriptOpt: ${transcriptOpt}\n  - speakerLabels: ${speakerLabels}`)
+    console.log(`  - finalPath: ${finalPath}\n  - transcriptServices: ${transcriptServices}\n  - speakerLabels: ${speakerLabels}`)
     // Request transcription from AssemblyAI
     const transcript = await client.transcripts.transcribe({
       audio: `${finalPath}.wav`,  // The audio file to transcribe

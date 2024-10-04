@@ -3,22 +3,9 @@
 import { writeFile } from 'node:fs/promises'
 import { env } from 'node:process'
 import { OctoAIClient } from '@octoai/sdk'
+import { OCTO_MODELS } from '../types.js'
 
 /** @import { LLMFunction, OctoModelType } from '../types.js' */
-
-/**
- * Map of OctoAI model identifiers to their API names
- * @type {Record<OctoModelType, string>}
- */
-const octoModel = {
-  LLAMA_3_1_8B: "meta-llama-3.1-8b-instruct",
-  LLAMA_3_1_70B: "meta-llama-3.1-70b-instruct",
-  LLAMA_3_1_405B: "meta-llama-3.1-405b-instruct",
-  MISTRAL_7B: "mistral-7b-instruct",
-  MIXTRAL_8X_7B: "mixtral-8x7b-instruct",
-  NOUS_HERMES_MIXTRAL_8X_7B: "nous-hermes-2-mixtral-8x7b-dpo",
-  WIZARD_2_8X_22B: "wizardlm-2-8x22b",
-}
 
 /** @type {LLMFunction} */
 /**
@@ -39,7 +26,7 @@ export async function callOcto(promptAndTranscript, tempPath, model = 'LLAMA_3_1
   
   try {
     // Select the actual model to use, defaulting to LLAMA_3_1_70B if the specified model is not found
-    const actualModel = octoModel[model] || octoModel.LLAMA_3_1_70B
+    const actualModel = OCTO_MODELS[model] || OCTO_MODELS.LLAMA_3_1_70B
     console.log(`\nUsing OctoAI model: ${actualModel}`)
     
     // Make API call to OctoAI for text generation

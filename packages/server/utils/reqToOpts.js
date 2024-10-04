@@ -3,7 +3,7 @@
 // Function to map request data to processing options
 function reqToOpts(requestData) {
   // Define possible options
-  const [llmOptions, transcriptOptions, otherOptions] = [
+  const [llmServices, transcriptServices, otherOptions] = [
     // List of supported LLM options
     ['chatgpt', 'claude', 'cohere', 'mistral', 'octo', 'llama', 'ollama', 'gemini'],
     // List of supported transcript services
@@ -14,33 +14,29 @@ function reqToOpts(requestData) {
 
   // Initialize options object
   const options = {}
-  // Initialize llm option
-  let llmOpt = null
-  // Initialize transcript option
-  let transcriptOpt = null
 
   // Check if LLM is provided and valid
-  if (requestData.llm && llmOptions.includes(requestData.llm)) {
-    // Set llmOpt
-    llmOpt = requestData.llm
+  if (requestData.llm && llmServices.includes(requestData.llm)) {
+    // Set llmServices
+    llmServices = requestData.llm
     // Set LLM model or true
-    options[llmOpt] = requestData.llmModel || true
+    options[llmServices] = requestData.llmModel || true
   }
 
   // Determine transcript service and default to 'whisper' if not specified
-  transcriptOpt = transcriptOptions.includes(requestData.transcriptService)
-    ? requestData.transcriptService
+  transcriptServices = transcriptServices.includes(requestData.transcriptServices)
+    ? requestData.transcriptServices
     : 'whisper'
 
   // Set transcript options
-  if (transcriptOpt === 'whisper') {
+  if (transcriptServices === 'whisper') {
     // Set whisper model
     options.whisperModel = requestData.whisperModel || 'base'
     // Enable whisper option
     options.whisper = options.whisperModel
   } else {
     // Enable selected transcript service
-    options[transcriptOpt] = true
+    options[transcriptServices] = true
   }
 
   // Map other options from request data
@@ -52,7 +48,7 @@ function reqToOpts(requestData) {
   }
 
   // Return mapped options
-  return { options, llmOpt, transcriptOpt }
+  return { options, llmServices, transcriptServices }
 }
 
 export { reqToOpts }

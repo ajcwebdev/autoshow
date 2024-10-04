@@ -5,47 +5,21 @@ import { getLlama, LlamaChatSession } from "node-llama-cpp"
 import { existsSync } from 'node:fs'
 import { exec } from 'node:child_process'
 import { promisify } from 'node:util'
+import { LLAMA_MODELS } from '../types.js'
 
 const execAsync = promisify(exec)
 
-/** @import { LLMFunction, LlamaModelType } from '../types.js' */
-
-/**
- * Map of local model identifiers to their filenames and URLs
- * @type {Record<LlamaModelType, {filename: string, url: string}>}
- */
-const localModels = {
-  // LLAMA_3_2_1B_Q6_MODEL: {
-  //   filename: "Llama-3.2-1B.i1-Q6_K.gguf",
-  //   url: "https://huggingface.co/mradermacher/Llama-3.2-1B-i1-GGUF/resolve/main/Llama-3.2-1B.i1-Q6_K.gguf"
-  // },
-  LLAMA_3_1_8B_Q4_MODEL: {
-    filename: "Meta-Llama-3.1-8B-Instruct.IQ4_XS.gguf",
-    url: "https://huggingface.co/mradermacher/Meta-Llama-3.1-8B-Instruct-GGUF/resolve/main/Meta-Llama-3.1-8B-Instruct.IQ4_XS.gguf"
-  },
-  LLAMA_3_1_8B_Q6_MODEL: {
-    filename: "Meta-Llama-3.1-8B-Instruct.Q6_K.gguf",
-    url: "https://huggingface.co/mradermacher/Meta-Llama-3.1-8B-Instruct-GGUF/resolve/main/Meta-Llama-3.1-8B-Instruct.Q6_K.gguf"
-  },
-  GEMMA_2_2B_Q4_MODEL: {
-    filename: "gemma-2-2b-it-IQ4_XS.gguf",
-    url: "https://huggingface.co/lmstudio-community/gemma-2-2b-it-GGUF/resolve/main/gemma-2-2b-it-IQ4_XS.gguf"
-  },
-  GEMMA_2_2B_Q6_MODEL: {
-    filename: "gemma-2-2b-it-Q6_K.gguf",
-    url: "https://huggingface.co/lmstudio-community/gemma-2-2b-it-GGUF/resolve/main/gemma-2-2b-it-Q6_K.gguf"
-  }
-}
+/** @import { LlamaModelType } from '../types.js' */
 
 /**
  * Function to download the model if it doesn't exist.
- * @param {LlamaModelType} [modelName='GEMMA_2_2B_Q4_MODEL'] - The name of the model to use.
+ * @param {LlamaModelType} [modelName='GEMMA_2_2B'] - The name of the model to use.
  * @returns {Promise<string>} - The path to the downloaded model.
  * @throws {Error} - If the model download fails.
  */
-async function downloadModel(modelName = 'GEMMA_2_2B_Q4_MODEL') {
-  // Get the model object from localModels using the provided modelName or default to GEMMA_2_2B_Q4_MODEL
-  const model = localModels[modelName] || localModels.GEMMA_2_2B_Q4_MODEL
+async function downloadModel(modelName = 'GEMMA_2_2B') {
+  // Get the model object from LLAMA_MODELS using the provided modelName or default to GEMMA_2_2B
+  const model = LLAMA_MODELS[modelName] || LLAMA_MODELS.GEMMA_2_2B
   console.log(`  - ${model.filename} model selected.`)
 
   // If no valid model is found, throw an error
@@ -96,7 +70,7 @@ async function downloadModel(modelName = 'GEMMA_2_2B_Q4_MODEL') {
 export async function callLlama(promptAndTranscript, tempPath, modelName = true) {
   try {
     // If modelName is true or not provided, use the default model
-    const actualModelName = modelName === true ? 'GEMMA_2_2B_Q4_MODEL' : modelName
+    const actualModelName = modelName === true ? 'GEMMA_2_2B' : modelName
 
     // Ensure the model is downloaded
     const modelPath = await downloadModel(actualModelName)

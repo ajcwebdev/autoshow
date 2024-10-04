@@ -3,19 +3,9 @@
 import { writeFile } from 'node:fs/promises'
 import { env } from 'node:process'
 import { Anthropic } from '@anthropic-ai/sdk'
+import { CLAUDE_MODELS } from '../types.js'
 
 /** @import { LLMFunction, ClaudeModelType } from '../types.js' */
-
-/**
- * Map of Claude model identifiers to their API names
- * @type {Record<ClaudeModelType, string>}
- */
-const claudeModel = {
-  CLAUDE_3_5_SONNET: "claude-3-5-sonnet-20240620",
-  CLAUDE_3_OPUS: "claude-3-opus-20240229",
-  CLAUDE_3_SONNET: "claude-3-sonnet-20240229",
-  CLAUDE_3_HAIKU: "claude-3-haiku-20240307",
-}
 
 /** @type {LLMFunction} */
 /**
@@ -37,7 +27,7 @@ export async function callClaude(promptAndTranscript, tempPath, model = 'CLAUDE_
   
   try {
     // Select the actual model to use, defaulting to CLAUDE_3_HAIKU if not specified
-    const actualModel = claudeModel[model] || claudeModel.CLAUDE_3_HAIKU
+    const actualModel = CLAUDE_MODELS[model] || CLAUDE_MODELS.CLAUDE_3_HAIKU
     
     // Call the Anthropic messages API to create a chat completion
     const response = await anthropic.messages.create({

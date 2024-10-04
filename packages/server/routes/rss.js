@@ -22,10 +22,10 @@ const handleRSSRequest = async (request, reply) => {
     }
 
     // Map request data to processing options
-    const { options, llmOpt, transcriptOpt } = reqToOpts(requestData)
-    console.log('\nCalling processRSS with params:', { rssUrl, llmOpt, transcriptOpt, options })
+    const { options, llmServices, transcriptServices } = reqToOpts(requestData)
+    console.log('\nCalling processRSS with params:', { rssUrl, llmServices, transcriptServices, options })
 
-    await processRSS(rssUrl, llmOpt, transcriptOpt, options)
+    await processRSS(rssUrl, llmServices, transcriptServices, options)
 
     console.log('\nprocessRSS completed successfully')
     reply.send({ message: 'RSS feed processed successfully.' })

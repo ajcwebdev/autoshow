@@ -3,17 +3,9 @@
 import { writeFile } from 'node:fs/promises'
 import { env } from 'node:process'
 import { CohereClient } from 'cohere-ai'
+import { COHERE_MODELS } from '../types.js'
 
 /** @import { LLMFunction, CohereModelType } from '../types.js' */
-
-/**
- * Map of Cohere model identifiers to their API names
- * @type {Record<CohereModelType, string>}
- */
-const cohereModel = {
-  COMMAND_R: "command-r", // Standard Command model
-  COMMAND_R_PLUS: "command-r-plus" // Enhanced Command model
-}
 
 /** @type {LLMFunction} */
 /**
@@ -35,7 +27,7 @@ export async function callCohere(promptAndTranscript, tempPath, model = 'COMMAND
   
   try {
     // Select the actual model to use, defaulting to COMMAND_R if not specified
-    const actualModel = cohereModel[model] || cohereModel.COMMAND_R
+    const actualModel = COHERE_MODELS[model] || COHERE_MODELS.COMMAND_R
     
     // Call the Cohere chat API
     const response = await cohere.chat({

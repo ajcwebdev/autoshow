@@ -7,19 +7,19 @@ import { promisify } from 'node:util'
 import { extractVideoMetadata } from '../utils/generateMarkdown.js'
 import { checkDependencies } from '../utils/checkDependencies.js'
 
-/** @import { LLMOption, TranscriptOption, ProcessingOptions } from '../types.js' */
+/** @import { LLMServices, TranscriptServices, ProcessingOptions } from '../types.js' */
 
 const execFilePromise = promisify(execFile)
 
 /**
  * Main function to process a YouTube playlist.
  * @param {string} playlistUrl - The URL of the YouTube playlist to process.
- * @param {LLMOption} [llmOpt] - The selected Language Model option.
- * @param {TranscriptOption} [transcriptOpt] - The transcription service to use.
+ * @param {LLMServices} [llmServices] - The selected Language Model option.
+ * @param {TranscriptServices} [transcriptServices] - The transcription service to use.
  * @param {ProcessingOptions} options - Additional options for processing.
  * @returns {Promise<void>}
  */
-export async function processPlaylist(playlistUrl, llmOpt, transcriptOpt, options) {
+export async function processPlaylist(playlistUrl, llmServices, transcriptServices, options) {
   try {
     // Check for required dependencies
     await checkDependencies(['yt-dlp'])
@@ -63,7 +63,7 @@ export async function processPlaylist(playlistUrl, llmOpt, transcriptOpt, option
     for (const [index, url] of urls.entries()) {
       console.log(`\nProcessing video ${index + 1}/${urls.length}: ${url}`)
       try {
-        await processVideo(url, llmOpt, transcriptOpt, options)
+        await processVideo(url, llmServices, transcriptServices, options)
       } catch (error) {
         console.error(`Error processing video ${url}: ${error.message}`)
         // Continue processing the next video

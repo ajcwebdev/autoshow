@@ -1,8 +1,9 @@
-// src/transcription/whisper.js
+// src/transcription/whisperDocker.js
 
-import { readFile, writeFile, access } from 'node:fs/promises'
+import { readFile, writeFile } from 'node:fs/promises'
 import { exec } from 'node:child_process'
 import { promisify } from 'node:util'
+import { basename, join } from 'node:path'
 import { WHISPER_MODELS } from '../types.js'
 
 const execPromise = promisify(exec)
@@ -10,13 +11,13 @@ const execPromise = promisify(exec)
 /** @import { ProcessingOptions } from '../types.js' */
 
 /**
- * Main function to handle transcription using Whisper.
+ * Main function to handle transcription using Whisper Docker.
  * @param {string} finalPath - The base path for the files.
  * @param {ProcessingOptions} options - Additional processing options.
  * @returns {Promise<string>} - Returns the formatted transcript content.
  * @throws {Error} - If an error occurs during transcription.
  */
-export async function callWhisper(finalPath, options) {
+export async function callWhisperDocker(finalPath, options) {
   try {
     const whisperModel = options.whisperModel || 'base'
     
@@ -26,20 +27,23 @@ export async function callWhisper(finalPath, options) {
 
     const modelName = WHISPER_MODELS[whisperModel]
     const downloadModelName = whisperModel === 'large' ? 'large-v2' : whisperModel
-    const modelPath = `./whisper.cpp/models/${modelName}`
 
-    // Setup Whisper
-    await access('./whisper.cpp').catch(async () => {
-      await execPromise('git clone https://github.com/ggerganov/whisper.cpp.git && make -C whisper.cpp && cp .github/whisper.Dockerfile whisper.cpp/Dockerfile')
-    })
+    const CONTAINER_NAME = 'autoshow-whisper-1'
+    const modelPathContainer = `/app/models/${modelName}`
+
+    // Ensure container is running
+    await execPromise(`docker ps | grep ${CONTAINER_NAME}`)
+      .catch(() => execPromise('docker-compose up -d whisper'))
 
     // Ensure model is downloaded
-    await access(modelPath).catch(async () => {
-      await execPromise(`bash ./whisper.cpp/models/download-ggml-model.sh ${downloadModelName}`)
-    })
+    await execPromise(`docker exec ${CONTAINER_NAME} test -f ${modelPathContainer}`)
+      .catch(() => execPromise(`docker exec ${CONTAINER_NAME} /app/models/download-ggml-model.sh ${downloadModelName}`))
 
     // Run transcription
-    await execPromise(`./whisper.cpp/main -m "whisper.cpp/models/${modelName}" -f "${finalPath}.wav" -of "${finalPath}" --output-lrc`)
+    const fileName = basename(finalPath)
+    await execPromise(
+      `docker exec ${CONTAINER_NAME} /app/main -m ${modelPathContainer} -f ${join(`/app/content`, `${fileName}.wav`)} -of ${join(`/app/content`, fileName)} --output-lrc`
+    )
     console.log(`  - Transcript LRC file completed at ${finalPath}.lrc`)
 
     // Process transcript
@@ -54,7 +58,7 @@ export async function callWhisper(finalPath, options) {
     
     return txtContent
   } catch (error) {
-    console.error('Error in callWhisper:', error)
+    console.error('Error in callWhisperDocker:', error)
     process.exit(1)
   }
 }

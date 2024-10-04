@@ -22,10 +22,10 @@ const handleURLsRequest = async (request, reply) => {
     }
 
     // Map request data to processing options
-    const { options, llmOpt, transcriptOpt } = reqToOpts(requestData)
-    console.log('\nCalling processURLs with params:', { filePath, llmOpt, transcriptOpt, options })
+    const { options, llmServices, transcriptServices } = reqToOpts(requestData)
+    console.log('\nCalling processURLs with params:', { filePath, llmServices, transcriptServices, options })
 
-    await processURLs(filePath, llmOpt, transcriptOpt, options)
+    await processURLs(filePath, llmServices, transcriptServices, options)
 
     console.log('\nprocessURLs completed successfully')
     reply.send({ message: 'URLs processed successfully.' })

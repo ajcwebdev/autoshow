@@ -3,18 +3,9 @@
 import { writeFile } from 'node:fs/promises'
 import { env } from 'node:process'
 import { GoogleGenerativeAI } from "@google/generative-ai"
+import { GEMINI_MODELS } from '../types.js'
 
 /** @import { LLMFunction, GeminiModelType } from '../types.js' */
-
-/**
- * Map of Gemini model identifiers to their API names
- * @type {Record<GeminiModelType, string>}
- */
-const geminiModel = {
-  GEMINI_1_5_FLASH: "gemini-1.5-flash",
-  // GEMINI_1_5_PRO: "gemini-1.5-pro",
-  GEMINI_1_5_PRO: "gemini-1.5-pro-exp-0827",
-}
 
 /**
  * Utility function to introduce a delay
@@ -41,7 +32,7 @@ export async function callGemini(promptAndTranscript, tempPath, model = 'GEMINI_
   const genAI = new GoogleGenerativeAI(env.GEMINI_API_KEY)
   
   // Select the actual model to use, defaulting to GEMINI_1_5_FLASH if not specified
-  const actualModel = geminiModel[model] || geminiModel.GEMINI_1_5_FLASH
+  const actualModel = GEMINI_MODELS[model] || GEMINI_MODELS.GEMINI_1_5_FLASH
   
   const maxRetries = 3 // Maximum number of retry attempts
   

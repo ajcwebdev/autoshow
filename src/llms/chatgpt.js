@@ -3,19 +3,9 @@
 import { writeFile } from 'node:fs/promises'
 import { env } from 'node:process'
 import { OpenAI } from 'openai'
+import { GPT_MODELS } from '../types.js'
 
 /** @import { LLMFunction, ChatGPTModelType } from '../types.js' */
-
-/**
- * Map of ChatGPT model identifiers to their API names
- * @type {Record<ChatGPTModelType, string>}
- */
-const gptModel = {
-  GPT_4o_MINI: "gpt-4o-mini",
-  GPT_4o: "gpt-4o",
-  GPT_4_TURBO: "gpt-4-turbo",
-  GPT_4: "gpt-4",
-}
 
 /** @type {LLMFunction} */
 /**
@@ -37,7 +27,7 @@ export async function callChatGPT(promptAndTranscript, tempPath, model = 'GPT_4o
   
   try {
     // Select the actual model to use, defaulting to GPT_4o_MINI if not specified
-    const actualModel = gptModel[model] || gptModel.GPT_4o_MINI
+    const actualModel = GPT_MODELS[model] || GPT_MODELS.GPT_4o_MINI
     
     // Call the OpenAI chat completions API
     const response = await openai.chat.completions.create({

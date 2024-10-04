@@ -7,17 +7,17 @@ import { runTranscription } from '../utils/runTranscription.js'
 import { runLLM } from '../utils/runLLM.js'
 import { cleanUpFiles } from '../utils/cleanUpFiles.js'
 
-/** @import { LLMOption, TranscriptOption, ProcessingOptions } from '../types.js' */
+/** @import { LLMServices, TranscriptServices, ProcessingOptions } from '../types.js' */
 
 /**
  * Main function to process a single video.
  * @param {string} url - The URL of the video to process.
- * @param {LLMOption} [llmOpt] - The selected Language Model option.
- * @param {TranscriptOption} [transcriptOpt] - The transcription service to use.
+ * @param {LLMServices} [llmServices] - The selected Language Model option.
+ * @param {TranscriptServices} [transcriptServices] - The transcription service to use.
  * @param {ProcessingOptions} options - Additional options for processing.
  * @returns {Promise<void>}
  */
-export async function processVideo(url, llmOpt, transcriptOpt, options) {
+export async function processVideo(url, llmServices, transcriptServices, options) {
   try {
     // Check for required dependencies
     await checkDependencies(['yt-dlp'])
@@ -29,10 +29,10 @@ export async function processVideo(url, llmOpt, transcriptOpt, options) {
     await downloadAudio(url, filename)
 
     // Run transcription on the audio
-    await runTranscription(finalPath, transcriptOpt, options, frontMatter)
+    await runTranscription(finalPath, frontMatter, transcriptServices, options)
 
     // Process the transcript with the selected Language Model
-    await runLLM(finalPath, frontMatter, llmOpt, options)
+    await runLLM(finalPath, frontMatter, llmServices, options)
 
     // Clean up temporary files if the noCleanUp option is not set
     if (!options.noCleanUp) {

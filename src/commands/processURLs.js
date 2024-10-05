@@ -64,7 +64,7 @@ export async function processURLs(filePath, llmServices, transcriptServices, opt
       }
     }
 
-    log(final('\nURL file processing completed successfully.'))
+    log(final('\nURL file processing completed successfully.\n'))
   } catch (error) {
     console.error(`Error reading or processing file ${filePath}: ${error.message}`)
     process.exit(1) // Exit with an error code

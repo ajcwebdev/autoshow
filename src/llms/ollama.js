@@ -2,7 +2,7 @@
 
 import { writeFile } from 'node:fs/promises'
 import { env } from 'node:process'
-import { OLLAMA_MODELS } from '../types.js'
+import { OLLAMA_MODELS } from '../models.js'
 import { log, wait } from '../types.js'
 
 /** @import { LLMFunction, OllamaModelType } from '../types.js' */

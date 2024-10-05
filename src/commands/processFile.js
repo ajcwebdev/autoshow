@@ -28,7 +28,7 @@ export async function processFile(filePath, llmServices, transcriptServices, opt
     await downloadFileAudio(filePath, filename)
 
     // Run transcription on the file
-    await runTranscription(finalPath, transcriptServices, options, frontMatter)
+    await runTranscription(finalPath, frontMatter, transcriptServices, options)
 
     // Process the transcript with the selected Language Model
     await runLLM(finalPath, frontMatter, llmServices, options)

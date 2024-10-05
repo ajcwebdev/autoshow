@@ -3,9 +3,9 @@
 import { readFile, writeFile } from 'node:fs/promises'
 import { exec } from 'node:child_process'
 import { promisify } from 'node:util'
-import { basename, join } from 'node:path'
-import { WHISPER_MODELS } from '../types.js'
-import { log, wait } from '../types.js'
+import { join } from 'node:path'
+import { WHISPER_MODELS } from '../models.js'
+import { log, wait, opts } from '../types.js'
 
 const execPromise = promisify(exec)
 
@@ -23,7 +23,7 @@ export async function callWhisperDocker(finalPath, options) {
   // log(options)
   try {
     // Get the whisper model from options or use 'base' as default
-    const whisperModel = options.whisper || 'base'
+    const whisperModel = options.whisperDocker || 'base'
     
     if (!(whisperModel in WHISPER_MODELS)) {
       throw new Error(`Unknown model type: ${whisperModel}`)
@@ -31,13 +31,10 @@ export async function callWhisperDocker(finalPath, options) {
 
     // Get the model ggml file name
     const modelGGMLName = WHISPER_MODELS[whisperModel]
-
-    log(wait(`    - whisperModel: ${whisperModel}`))
-    log(wait(`    - modelGGMLName: ${modelGGMLName}`))
-
     const CONTAINER_NAME = 'autoshow-whisper-1'
     const modelPathContainer = `/app/models/${modelGGMLName}`
-
+    log(wait(`    - whisperModel: ${whisperModel}`))
+    log(wait(`    - modelGGMLName: ${modelGGMLName}`))
     log(wait(`    - CONTAINER_NAME: ${CONTAINER_NAME}`))
     log(wait(`    - modelPathContainer: ${modelPathContainer}`))
 
@@ -47,12 +44,11 @@ export async function callWhisperDocker(finalPath, options) {
 
     // Ensure model is downloaded
     await execPromise(`docker exec ${CONTAINER_NAME} test -f ${modelPathContainer}`)
-      .catch(() => execPromise(`docker exec ${CONTAINER_NAME} /app/models/download-ggml-model.sh ${downloadModelName}`))
+      .catch(() => execPromise(`docker exec ${CONTAINER_NAME} /app/models/download-ggml-model.sh ${whisperModel}`))
 
     // Run transcription
-    const fileName = basename(finalPath)
     await execPromise(
-      `docker exec ${CONTAINER_NAME} /app/main -m ${modelPathContainer} -f ${join(`/app/content`, `${fileName}.wav`)} -of ${join(`/app/content`, fileName)} --output-lrc`
+      `docker exec ${CONTAINER_NAME} /app/main -m ${modelPathContainer} -f ${join(`/app`, `${finalPath}.wav`)} -of ${join(`/app`, finalPath)} --output-lrc`
     )
     log(wait(`\n  Transcript LRC file successfully completed...\n    - ${finalPath}.lrc\n`))
 

@@ -37,7 +37,7 @@ async function processItem(item, transcriptServices, llmServices, options) {
     await downloadAudio(item.showLink, filename)
 
     // Run transcription
-    await runTranscription(finalPath, transcriptServices, options, frontMatter)
+    await runTranscription(finalPath, frontMatter, transcriptServices, options)
 
     // Process with Language Model
     await runLLM(finalPath, frontMatter, llmServices, options)
@@ -66,10 +66,44 @@ export async function processRSS(rssUrl, llmServices, transcriptServices, option
   // log(opts(`Options received:\n`))
   // log(options)
   try {
+    // Validate that --last is a positive integer if provided
+    if (options.last !== undefined) {
+      if (!Number.isInteger(options.last) || options.last < 1) {
+        console.error('Error: The --last option must be a positive integer.')
+        process.exit(1)
+      }
+      // Ensure --last is not used with --skip or --order
+      if (options.skip !== undefined || options.order !== undefined) {
+        console.error('Error: The --last option cannot be used with --skip or --order.')
+        process.exit(1)
+      }
+    }
+
+    // Validate that --skip is a non-negative integer if provided
+    if (options.skip !== undefined) {
+      if (!Number.isInteger(options.skip) || options.skip < 0) {
+        console.error('Error: The --skip option must be a non-negative integer.')
+        process.exit(1)
+      }
+    }
+
+    // Validate that --order is either 'newest' or 'oldest' if provided
+    if (options.order !== undefined) {
+      if (!['newest', 'oldest'].includes(options.order)) {
+        console.error("Error: The --order option must be either 'newest' or 'oldest'.")
+        process.exit(1)
+      }
+    }
+
+    // Log the processing action
     if (options.item && options.item.length > 0) {
       // If specific items are provided, list them
       log(wait('\nProcessing specific items:'))
       options.item.forEach((url) => log(`  - ${url}`))
+    } else if (options.last) {
+      console.log(`\nProcessing the last ${options.last} items`)
+    } else {
+      console.log(`  - Skipping first ${options.skip || 0} items`)
     }
 
     // Fetch the RSS feed with a timeout
@@ -163,13 +197,19 @@ export async function processRSS(rssUrl, llmServices, transcriptServices, option
         process.exit(1) // Exit with an error code
       }
       itemsToProcess = matchedItems
+      log(wait(`  Found ${items.length} items in the RSS feed.`))
+      log(wait(`  - Processing ${itemsToProcess.length} specified items.`))
+    } else if (options.last) {
+      // Process the most recent N items
+      itemsToProcess = items.slice(0, options.last)
+      log(wait(`  Found ${items.length} items in the RSS feed.`))
+      log(wait(`  - Processing the last ${options.last} items.`))
     } else {
       // Sort items based on the specified order and apply skip
-      const sortedItems = options.order === 'newest' ? items : [...items].reverse()
-      itemsToProcess = sortedItems.slice(options.skip)
-
-      log(wait(`  Found ${sortedItems.length} items in the RSS feed.`))
-      log(wait(`  - Processing ${itemsToProcess.length} items after skipping ${options.skip}.\n`))
+      const sortedItems = options.order === 'oldest' ? items.slice().reverse() : items
+      itemsToProcess = sortedItems.slice(options.skip || 0)
+      log(wait(`  Found ${items.length} items in the RSS feed.`))
+      log(wait(`  - Processing ${itemsToProcess.length} items after skipping ${options.skip || 0}.\n`))
     }
 
     // Process each item in the feed

@@ -4,8 +4,8 @@ import { readFile, writeFile } from 'node:fs/promises'
 import { exec } from 'node:child_process'
 import { promisify } from 'node:util'
 import { existsSync } from 'node:fs'
-import { WHISPER_MODELS } from '../types.js'
-import { log, success, wait } from '../types.js'
+import { WHISPER_MODELS } from '../models.js'
+import { log, success, wait, opts } from '../types.js'
 
 const execPromise = promisify(exec)
 

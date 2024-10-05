@@ -84,6 +84,14 @@ Process RSS feed from newest to oldest (default behavior):
 npm run as -- --rss "https://ajcwebdev.substack.com/feed"
 ```
 
+Process a certain number of the most recent items, for example the last three episodes released on the feed:
+
+```bash
+npm run as -- \
+  --rss "https://feeds.transistor.fm/fsjam-podcast/" \
+  --last 3
+```
+
 Process RSS feed from oldest to newest:
 
 ```bash
@@ -247,6 +255,17 @@ npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --llama
 
 ```bash
 npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --ollama
+```
+
+Select Ollama model:
+
+```bash
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --ollama LLAMA_3_2_1B
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --ollama LLAMA_3_2_3B
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --ollama GEMMA_2_2B
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --ollama PHI_3_5
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --ollama QWEN_2_5_1B
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --ollama QWEN_2_5_3B
 ```
 
 ## Transcription Options

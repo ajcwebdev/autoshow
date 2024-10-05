@@ -3,7 +3,7 @@
 import { writeFile } from 'node:fs/promises'
 import { env } from 'node:process'
 import { OctoAIClient } from '@octoai/sdk'
-import { OCTO_MODELS } from '../types.js'
+import { OCTO_MODELS } from '../models.js'
 import { log, wait } from '../types.js'
 
 /** @import { LLMFunction, OctoModelType } from '../types.js' */

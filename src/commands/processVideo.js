@@ -42,7 +42,7 @@ export async function processVideo(url, llmServices, transcriptServices, options
       await cleanUpFiles(finalPath)
     }
 
-    log(final('\nVideo processing completed successfully.'))
+    log(final('\nVideo processing completed successfully.\n'))
   } catch (error) {
     // Log any errors that occur during video processing
     console.error('Error processing video:', error.message)

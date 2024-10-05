@@ -5,7 +5,7 @@ import { getLlama, LlamaChatSession } from "node-llama-cpp"
 import { existsSync } from 'node:fs'
 import { exec } from 'node:child_process'
 import { promisify } from 'node:util'
-import { LLAMA_MODELS } from '../types.js'
+import { LLAMA_MODELS } from '../models.js'
 import { log, wait } from '../types.js'
 
 const execAsync = promisify(exec)

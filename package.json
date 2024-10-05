@@ -27,6 +27,8 @@
     "u": "node --env-file=.env --no-warnings src/autoshow.js --whisper large-v2 --urls",
     "p": "node --env-file=.env --no-warnings src/autoshow.js --whisper large-v2 --playlist",
     "f": "node --env-file=.env --no-warnings src/autoshow.js --whisper large-v2 --file",
+    "r": "node --env-file=.env --no-warnings src/autoshow.js --whisper large-v2 --rss",
+    "last3": "node --env-file=.env --no-warnings src/autoshow.js --whisper large-v2 --last 3 --rss",
     "serve": "node --env-file=.env --no-warnings --watch packages/server/index.js",
     "fetch-local": "node --env-file=.env --no-warnings packages/server/tests/fetch-local.js",
     "fetch-all": "node --env-file=.env --no-warnings packages/server/tests/fetch-all.js",

@@ -3,7 +3,7 @@
 import { writeFile } from 'node:fs/promises'
 import { env } from 'node:process'
 import { GoogleGenerativeAI } from "@google/generative-ai"
-import { GEMINI_MODELS } from '../types.js'
+import { GEMINI_MODELS } from '../models.js'
 import { log, wait } from '../types.js'
 
 /** @import { LLMFunction, GeminiModelType } from '../types.js' */

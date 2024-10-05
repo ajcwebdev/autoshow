@@ -4,6 +4,7 @@ import { writeFile } from 'node:fs/promises'
 import { env } from 'node:process'
 import { Mistral } from '@mistralai/mistralai'
 import { MISTRAL_MODELS } from '../types.js'
+import { log, wait } from '../types.js'
 
 /** @import { LLMFunction, MistralModelType } from '../types.js' */
 
@@ -27,7 +28,7 @@ export async function callMistral(promptAndTranscript, tempPath, model = 'MISTRA
   try {
     // Select the actual model to use, defaulting to MISTRAL_NEMO if the specified model is not found
     const actualModel = MISTRAL_MODELS[model] || MISTRAL_MODELS.MISTRAL_NEMO
-    console.log(`\nUsing Mistral model: ${actualModel}`)
+    log(wait(`\n  Using Mistral model:\n    - ${actualModel}`))
     
     // Make API call to Mistral AI for chat completion
     const response = await mistral.chat.complete({
@@ -46,8 +47,8 @@ export async function callMistral(promptAndTranscript, tempPath, model = 'MISTRA
     // Write the generated content to the specified output file
     await writeFile(tempPath, content)
     // Log finish reason, used model, and token usage
-    console.log(`\nFinish Reason: ${finishReason}\nModel Used: ${usedModel}`)
-    console.log(`Token Usage:\n  - ${promptTokens} prompt tokens\n  - ${completionTokens} completion tokens\n  - ${totalTokens} total tokens`)
+    log(wait(`\n  Finish Reason: ${finishReason}\n  Model Used: ${usedModel}`))
+    log(wait(`  Token Usage:\n    - ${promptTokens} prompt tokens\n    - ${completionTokens} completion tokens\n    - ${totalTokens} total tokens`))
     
   } catch (error) {
     // Log any errors that occur during the process

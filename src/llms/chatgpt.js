@@ -4,6 +4,7 @@ import { writeFile } from 'node:fs/promises'
 import { env } from 'node:process'
 import { OpenAI } from 'openai'
 import { GPT_MODELS } from '../types.js'
+import { log, wait } from '../types.js'
 
 /** @import { LLMFunction, ChatGPTModelType } from '../types.js' */
 
@@ -45,8 +46,8 @@ export async function callChatGPT(promptAndTranscript, tempPath, model = 'GPT_4o
     
     // Write the generated content to the output file
     await writeFile(tempPath, content)
-    console.log(`  - Finish Reason: ${finish_reason}\n  - ChatGPT Model: ${usedModel}`)
-    console.log(`  - Token Usage:\n    - ${prompt_tokens} prompt tokens\n    - ${completion_tokens} completion tokens\n    - ${total_tokens} total tokens`)
+    log(wait(`  - Finish Reason: ${finish_reason}\n  - ChatGPT Model: ${usedModel}`))
+    log(wait(`  - Token Usage:\n    - ${prompt_tokens} prompt tokens\n    - ${completion_tokens} completion tokens\n    - ${total_tokens} total tokens`))
     
   } catch (error) {
     console.error(`Error in callChatGPT: ${error.message}`)

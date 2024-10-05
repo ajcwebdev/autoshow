@@ -6,6 +6,7 @@ import { downloadAudio } from '../utils/downloadAudio.js'
 import { runTranscription } from '../utils/runTranscription.js'
 import { runLLM } from '../utils/runLLM.js'
 import { cleanUpFiles } from '../utils/cleanUpFiles.js'
+import { log, final } from '../types.js'
 
 /** @import { LLMServices, TranscriptServices, ProcessingOptions } from '../types.js' */
 
@@ -18,6 +19,8 @@ import { cleanUpFiles } from '../utils/cleanUpFiles.js'
  * @returns {Promise<void>}
  */
 export async function processVideo(url, llmServices, transcriptServices, options) {
+  // log(opts(`\nOptions passed to processVideo:\n`))
+  // log(options)
   try {
     // Check for required dependencies
     await checkDependencies(['yt-dlp'])
@@ -39,7 +42,7 @@ export async function processVideo(url, llmServices, transcriptServices, options
       await cleanUpFiles(finalPath)
     }
 
-    console.log('\nVideo processing completed successfully.\n')
+    log(final('\nVideo processing completed successfully.'))
   } catch (error) {
     // Log any errors that occur during video processing
     console.error('Error processing video:', error.message)

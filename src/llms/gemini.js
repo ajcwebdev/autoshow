@@ -4,6 +4,7 @@ import { writeFile } from 'node:fs/promises'
 import { env } from 'node:process'
 import { GoogleGenerativeAI } from "@google/generative-ai"
 import { GEMINI_MODELS } from '../types.js'
+import { log, wait } from '../types.js'
 
 /** @import { LLMFunction, GeminiModelType } from '../types.js' */
 
@@ -55,7 +56,7 @@ export async function callGemini(promptAndTranscript, tempPath, model = 'GEMINI_
       
       // Write the generated text to the output file
       await writeFile(tempPath, text)
-      console.log(`\nModel: ${actualModel}`)
+      log(wait(`\nModel: ${actualModel}`))
       
       return
     } catch (error) {

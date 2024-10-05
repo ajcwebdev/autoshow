@@ -1,5 +1,16 @@
 // src/types.js
 
+import chalk from 'chalk'
+
+export const step = chalk.bold.underline
+export const dim = chalk.dim
+export const success = chalk.bold.blue
+export const opts = chalk.magentaBright.bold
+export const wait = chalk.cyan.dim
+export const final = chalk.bold.italic
+
+export const log = console.log
+
 /**
  * @file This file contains all the custom type definitions used across the Autoshow project.
  */
@@ -146,7 +157,7 @@
 
 /**
  * Represents the available Whisper model types.
- * @typedef {'tiny' | 'tiny.en' | 'base' | 'base.en' | 'small' | 'small.en' | 'medium' | 'medium.en' | 'large' | 'large-v1' | 'large-v2'} WhisperModelType
+ * @typedef {'tiny' | 'tiny.en' | 'base' | 'base.en' | 'small' | 'small.en' | 'medium' | 'medium.en' | 'large-v1' | 'large-v2'} WhisperModelType
  *
  * - tiny: Smallest multilingual model.
  * - tiny.en: Smallest English-only model.
@@ -156,7 +167,6 @@
  * - small.en: Small English-only model.
  * - medium: Medium multilingual model.
  * - medium.en: Medium English-only model.
- * - large: Largest multilingual model (same as 'large-v2').
  * - large-v1: Large multilingual model version 1.
  * - large-v2: Large multilingual model version 2.
  */
@@ -166,17 +176,16 @@
  * @type {Record<WhisperModelType, string>}
  */
 export const WHISPER_MODELS = {
-    tiny: 'ggml-tiny.bin',
+    'tiny': 'ggml-tiny.bin',
     'tiny.en': 'ggml-tiny.en.bin',
-    base: 'ggml-base.bin',
+    'base': 'ggml-base.bin',
     'base.en': 'ggml-base.en.bin',
-    small: 'ggml-small.bin',
+    'small': 'ggml-small.bin',
     'small.en': 'ggml-small.en.bin',
-    medium: 'ggml-medium.bin',
+    'medium': 'ggml-medium.bin',
     'medium.en': 'ggml-medium.en.bin',
     'large-v1': 'ggml-large-v1.bin',
     'large-v2': 'ggml-large-v2.bin',
-    large: 'ggml-large-v2.bin',
   }
 
 /**

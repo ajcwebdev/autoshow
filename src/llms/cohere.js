@@ -4,6 +4,7 @@ import { writeFile } from 'node:fs/promises'
 import { env } from 'node:process'
 import { CohereClient } from 'cohere-ai'
 import { COHERE_MODELS } from '../types.js'
+import { log, wait } from '../types.js'
 
 /** @import { LLMFunction, CohereModelType } from '../types.js' */
 
@@ -45,9 +46,8 @@ export async function callCohere(promptAndTranscript, tempPath, model = 'COMMAND
     
     // Write the generated text to the output file
     await writeFile(tempPath, text)
-    // console.log(`\nCohere response:\n\n${JSON.stringify(response, null, 2)}`) // Commented out detailed response logging
-    console.log(`\nFinish Reason: ${finishReason}\nModel: ${actualModel}`)
-    console.log(`Token Usage:\n  - ${inputTokens} input tokens\n  - ${outputTokens} output tokens`)
+    log(wait(`\n  Finish Reason: ${finishReason}\n  Model: ${actualModel}`))
+    log(wait(`  Token Usage:\n    - ${inputTokens} input tokens\n    - ${outputTokens} output tokens`))
     
   } catch (error) {
     console.error(`Error in callCohere: ${error.message}`)

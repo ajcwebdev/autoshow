@@ -81,7 +81,7 @@ npm run as -- --file "content/audio.mp3"
 Process RSS feed from newest to oldest (default behavior):
 
 ```bash
-npm run as -- --rss "https://feeds.transistor.fm/fsjam-podcast/"
+npm run as -- --rss "https://ajcwebdev.substack.com/feed"
 ```
 
 Process RSS feed from oldest to newest:
@@ -269,7 +269,7 @@ npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --whisper sm
 npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --whisper medium
 
 # large-v2 model
-npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --whisper large
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --whisper large-v2
 ```
 
 Run `whisper.cpp` in a Docker container with `--whisperDocker`:

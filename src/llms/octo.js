@@ -4,6 +4,7 @@ import { writeFile } from 'node:fs/promises'
 import { env } from 'node:process'
 import { OctoAIClient } from '@octoai/sdk'
 import { OCTO_MODELS } from '../types.js'
+import { log, wait } from '../types.js'
 
 /** @import { LLMFunction, OctoModelType } from '../types.js' */
 
@@ -27,7 +28,7 @@ export async function callOcto(promptAndTranscript, tempPath, model = 'LLAMA_3_1
   try {
     // Select the actual model to use, defaulting to LLAMA_3_1_70B if the specified model is not found
     const actualModel = OCTO_MODELS[model] || OCTO_MODELS.LLAMA_3_1_70B
-    console.log(`\nUsing OctoAI model: ${actualModel}`)
+    log(wait(`\n  Using OctoAI model:\n    - ${actualModel}`))
     
     // Make API call to OctoAI for text generation
     const response = await octoai.textGen.createChatCompletion({
@@ -45,11 +46,11 @@ export async function callOcto(promptAndTranscript, tempPath, model = 'LLAMA_3_1
     
     // Write the generated content to the specified output file
     await writeFile(tempPath, content)
-    console.log(`\nOctoAI response saved to ${tempPath}`)
+    log(wait(`\n  OctoAI response saved to ${tempPath}`))
     
     // Log finish reason, used model, and token usage
-    console.log(`\nFinish Reason: ${finishReason}\nModel Used: ${usedModel}`)
-    console.log(`Token Usage:\n  - ${promptTokens} prompt tokens\n  - ${completionTokens} completion tokens\n  - ${totalTokens} total tokens`)
+    log(wait(`\n  Finish Reason: ${finishReason}\n  Model Used: ${usedModel}`))
+    log(wait(`  Token Usage:\n    - ${promptTokens} prompt tokens\n    - ${completionTokens} completion tokens\n    - ${totalTokens} total tokens`))
     
   } catch (error) {
     // Log any errors that occur during the process

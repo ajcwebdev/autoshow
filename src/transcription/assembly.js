@@ -3,18 +3,20 @@
 import { writeFile } from 'node:fs/promises'
 import { env } from 'node:process'
 import { AssemblyAI } from 'assemblyai'
+import { log, wait } from '../types.js'
 
 /** @import { TranscriptServices, ProcessingOptions } from '../types.js' */
 
 /**
  * Main function to handle transcription using AssemblyAI.
  * @param {string} finalPath - The identifier used for naming output files.
- * @param {TranscriptServices} transcriptServices - The transcription service to use.
  * @param {ProcessingOptions} options - Additional processing options.
  * @returns {Promise<string>} - Returns the formatted transcript content.
  * @throws {Error} - If an error occurs during transcription.
  */
-export async function callAssembly(finalPath, transcriptServices, options) {
+export async function callAssembly(finalPath, options) {
+  // log(opts(`Options received:\n`))
+  // log(options)
   // Check if the ASSEMBLY_API_KEY environment variable is set
   if (!env.ASSEMBLY_API_KEY) {
     throw new Error('ASSEMBLY_API_KEY environment variable is not set. Please set it to your AssemblyAI API key.')
@@ -25,8 +27,6 @@ export async function callAssembly(finalPath, transcriptServices, options) {
 
   try {
     const { speakerLabels } = options
-    console.log(`Parameters passed to callAssembly:`)
-    console.log(`  - finalPath: ${finalPath}\n  - transcriptServices: ${transcriptServices}\n  - speakerLabels: ${speakerLabels}`)
     // Request transcription from AssemblyAI
     const transcript = await client.transcripts.transcribe({
       audio: `${finalPath}.wav`,  // The audio file to transcribe
@@ -75,7 +75,7 @@ export async function callAssembly(finalPath, transcriptServices, options) {
 
     // Write the formatted transcript to a file
     await writeFile(`${finalPath}.txt`, txtContent)
-    console.log(`\nTranscript saved:\n  - ${finalPath}.txt`)
+    log(wait(`\n  Transcript saved...\n  - ${finalPath}.txt\n`))
     return txtContent
   } catch (error) {
     // Log any errors that occur during the transcription process

@@ -20,6 +20,7 @@ import { processURLs } from './commands/processURLs.js'
 import { processFile } from './commands/processFile.js'
 import { processRSS } from './commands/processRSS.js'
 import { argv, exit } from 'node:process'
+import { log, opts } from './types.js'
 
 /** @import { ProcessingOptions, HandlerFunction, LLMServices, TranscriptServices } from './types.js' */
 
@@ -77,7 +78,9 @@ Report Issues: https://github.com/ajcwebdev/autoshow/issues
  * @returns {Promise<void>}
  */
 program.action(async (options) => {
-  console.log(`Options received: ${JSON.stringify(options, null, 2)}`)
+  log(opts(`Options received:\n`))
+  log(options)
+  log(``)
 
   /**
    * Map actions to their respective handler functions

@@ -3,6 +3,7 @@
 import { writeFile } from 'node:fs/promises'
 import { env } from 'node:process'
 import { OLLAMA_MODELS } from '../types.js'
+import { log, wait } from '../types.js'
 
 /** @import { LLMFunction, OllamaModelType } from '../types.js' */
 
@@ -25,10 +26,10 @@ export async function callOllama(promptAndTranscript, tempPath, modelName = 'LLA
     // Get host and port from environment variables or use defaults
     const ollamaHost = env.OLLAMA_HOST || 'ollama'
     const ollamaPort = env.OLLAMA_PORT || '11434'
-    console.log(`  - Using Ollama model: ${ollamaModelName} at http://${ollamaHost}:${ollamaPort}`)
+    log(wait(`  - Using Ollama model: ${ollamaModelName} at http://${ollamaHost}:${ollamaPort}`))
     
     // Call the Ollama chat API
-    console.log(`  - Sending chat request to Ollama...`)
+    log(wait(`  - Sending chat request to Ollama...`))
     const response = await fetch(`http://${ollamaHost}:${ollamaPort}/api/chat`, {
       method: 'POST',
       headers: {
@@ -49,9 +50,9 @@ export async function callOllama(promptAndTranscript, tempPath, modelName = 'LLA
     
     // Extract the assistant's reply and write the response to the output file
     const assistantReply = data.message.content
-    console.log(`  - Received response from Ollama.`)
+    log(wait(`  - Received response from Ollama.`))
     await writeFile(tempPath, assistantReply)
-    console.log(`\nResponse saved to ${tempPath}`)
+    log(wait(`\n  Transcript saved to temporary file:\n    - ${tempPath}`))
   } catch (error) {
     console.error(`Error in callOllama: ${error.message}`)
     console.error(`Stack Trace: ${error.stack}`)

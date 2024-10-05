@@ -1,6 +1,7 @@
 // src/inquirer.js
 
 import inquirer from 'inquirer'
+import { log } from './types.js'
 
 /** @import { ProcessingOptions, InquirerAnswers, InquirerQuestions, WhisperModelType } from './types.js' */
 
@@ -113,7 +114,7 @@ const INQUIRER_PROMPT = [
     type: 'list',
     name: 'whisperModel',
     message: 'Select the Whisper model type:',
-    choices: ['tiny', 'tiny.en', 'base', 'base.en', 'small', 'small.en', 'medium', 'medium.en', 'large', 'large-v1', 'large-v2'],
+    choices: ['tiny', 'tiny.en', 'base', 'base.en', 'small', 'small.en', 'medium', 'medium.en', 'large-v1', 'large-v2'],
     when: (answers) => answers.transcriptServices === 'whisper' || answers.transcriptServices === 'whisperDocker',
     default: 'large-v2',
   },
@@ -164,7 +165,7 @@ export async function handleInteractivePrompt(options) {
 
   // If user cancels the action
   if (!answers.confirmAction) {
-    console.log('Operation cancelled.')
+    log('Operation cancelled.')
     process.exit(0)
   }
 

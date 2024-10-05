@@ -5,6 +5,7 @@ import { exec } from 'node:child_process'
 import { promisify } from 'node:util'
 import { basename, join } from 'node:path'
 import { WHISPER_MODELS } from '../types.js'
+import { log, wait } from '../types.js'
 
 const execPromise = promisify(exec)
 
@@ -18,18 +19,27 @@ const execPromise = promisify(exec)
  * @throws {Error} - If an error occurs during transcription.
  */
 export async function callWhisperDocker(finalPath, options) {
+  // log(opts(`Options passed to callWhisperDocker:\n`))
+  // log(options)
   try {
-    const whisperModel = options.whisperModel || 'base'
+    // Get the whisper model from options or use 'base' as default
+    const whisperModel = options.whisper || 'base'
     
     if (!(whisperModel in WHISPER_MODELS)) {
       throw new Error(`Unknown model type: ${whisperModel}`)
     }
 
-    const modelName = WHISPER_MODELS[whisperModel]
-    const downloadModelName = whisperModel === 'large' ? 'large-v2' : whisperModel
+    // Get the model ggml file name
+    const modelGGMLName = WHISPER_MODELS[whisperModel]
+
+    log(wait(`    - whisperModel: ${whisperModel}`))
+    log(wait(`    - modelGGMLName: ${modelGGMLName}`))
 
     const CONTAINER_NAME = 'autoshow-whisper-1'
-    const modelPathContainer = `/app/models/${modelName}`
+    const modelPathContainer = `/app/models/${modelGGMLName}`
+
+    log(wait(`    - CONTAINER_NAME: ${CONTAINER_NAME}`))
+    log(wait(`    - modelPathContainer: ${modelPathContainer}`))
 
     // Ensure container is running
     await execPromise(`docker ps | grep ${CONTAINER_NAME}`)
@@ -44,7 +54,7 @@ export async function callWhisperDocker(finalPath, options) {
     await execPromise(
       `docker exec ${CONTAINER_NAME} /app/main -m ${modelPathContainer} -f ${join(`/app/content`, `${fileName}.wav`)} -of ${join(`/app/content`, fileName)} --output-lrc`
     )
-    console.log(`  - Transcript LRC file completed at ${finalPath}.lrc`)
+    log(wait(`\n  Transcript LRC file successfully completed...\n    - ${finalPath}.lrc\n`))
 
     // Process transcript
     const lrcContent = await readFile(`${finalPath}.lrc`, 'utf8')
@@ -54,7 +64,7 @@ export async function callWhisperDocker(finalPath, options) {
       .join('\n')
 
     await writeFile(`${finalPath}.txt`, txtContent)
-    console.log(`  - Transcript transformation completed at ${finalPath}.txt`)
+    log(wait(`  Transcript transformation successfully completed...\n    - ${finalPath}.txt\n`))
     
     return txtContent
   } catch (error) {

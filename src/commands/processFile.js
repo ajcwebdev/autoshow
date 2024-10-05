@@ -5,6 +5,7 @@ import { downloadFileAudio } from '../utils/downloadAudio.js'
 import { runTranscription } from '../utils/runTranscription.js'
 import { runLLM } from '../utils/runLLM.js'
 import { cleanUpFiles } from '../utils/cleanUpFiles.js'
+import { log, final } from '../types.js'
 
 /** @import { LLMServices, TranscriptServices, ProcessingOptions } from '../types.js' */
 
@@ -17,6 +18,8 @@ import { cleanUpFiles } from '../utils/cleanUpFiles.js'
  * @returns {Promise<void>}
  */
 export async function processFile(filePath, llmServices, transcriptServices, options) {
+  // log(opts(`Options received:\n`))
+  // log(options)
   try {
     // Generate markdown for the file
     const { frontMatter, finalPath, filename } = await generateFileMarkdown(filePath)
@@ -35,7 +38,7 @@ export async function processFile(filePath, llmServices, transcriptServices, opt
       await cleanUpFiles(finalPath)
     }
 
-    console.log('\n\nLocal file processing completed successfully.\n')
+    log(final('\nLocal file processing completed successfully.\n'))
   } catch (error) {
     console.error(`Error processing file: ${error.message}`)
     process.exit(1) // Exit with an error code

@@ -6,6 +6,7 @@ import { execFile } from 'node:child_process'
 import { promisify } from 'node:util'
 import { extractVideoMetadata } from '../utils/generateMarkdown.js'
 import { checkDependencies } from '../utils/checkDependencies.js'
+import { log, final, wait } from '../types.js'
 
 /** @import { LLMServices, TranscriptServices, ProcessingOptions } from '../types.js' */
 
@@ -20,6 +21,8 @@ const execFilePromise = promisify(execFile)
  * @returns {Promise<void>}
  */
 export async function processPlaylist(playlistUrl, llmServices, transcriptServices, options) {
+  // log(opts(`Options received:\n`))
+  // log(options)
   try {
     // Check for required dependencies
     await checkDependencies(['yt-dlp'])
@@ -43,7 +46,7 @@ export async function processPlaylist(playlistUrl, llmServices, transcriptServic
       process.exit(1) // Exit with an error code
     }
 
-    console.log(`\nFound ${urls.length} videos in the playlist`)
+    log(wait(`  Found ${urls.length} videos in the playlist...`))
 
     // Extract metadata for all videos
     const metadataPromises = urls.map(extractVideoMetadata)
@@ -55,13 +58,13 @@ export async function processPlaylist(playlistUrl, llmServices, transcriptServic
       const jsonContent = JSON.stringify(validMetadata, null, 2)
       const jsonFilePath = 'content/playlist_info.json'
       await writeFile(jsonFilePath, jsonContent)
-      console.log(`Playlist information saved to: ${jsonFilePath}`)
+      log(wait(`Playlist information saved to: ${jsonFilePath}`))
       return
     }
 
     // Process each video in the playlist
     for (const [index, url] of urls.entries()) {
-      console.log(`\nProcessing video ${index + 1}/${urls.length}: ${url}`)
+      log(wait(`\n  Processing video ${index + 1}/${urls.length}:\n    - ${url}\n`))
       try {
         await processVideo(url, llmServices, transcriptServices, options)
       } catch (error) {
@@ -70,7 +73,7 @@ export async function processPlaylist(playlistUrl, llmServices, transcriptServic
       }
     }
 
-    console.log('\nPlaylist processing completed successfully.\n')
+    log(final('\nPlaylist processing completed successfully.\n'))
   } catch (error) {
     console.error(`Error processing playlist: ${error.message}`)
     process.exit(1) // Exit with an error code

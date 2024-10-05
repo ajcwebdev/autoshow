@@ -4,6 +4,7 @@ import { writeFile } from 'node:fs/promises'
 import { env } from 'node:process'
 import { Anthropic } from '@anthropic-ai/sdk'
 import { CLAUDE_MODELS } from '../types.js'
+import { log, wait } from '../types.js'
 
 /** @import { LLMFunction, ClaudeModelType } from '../types.js' */
 
@@ -46,9 +47,8 @@ export async function callClaude(promptAndTranscript, tempPath, model = 'CLAUDE_
     
     // Write the generated text to the output file
     await writeFile(tempPath, text)
-    // console.log(`\nClaude response:\n\n${JSON.stringify(response, null, 2)}`) // Commented out detailed response logging
-    console.log(`  - Stop Reason: ${stop_reason}\n  - Model: ${usedModel}`)
-    console.log(`  - Token Usage:\n    - ${input_tokens} input tokens\n    - ${output_tokens} output tokens`)
+    log(wait(`  - Stop Reason: ${stop_reason}\n  - Model: ${usedModel}`))
+    log(wait(`  - Token Usage:\n    - ${input_tokens} input tokens\n    - ${output_tokens} output tokens`))
     
   } catch (error) {
     console.error(`Error in callClaude: ${error.message}`)

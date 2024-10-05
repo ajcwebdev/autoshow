@@ -6,6 +6,7 @@ import { existsSync } from 'node:fs'
 import { exec } from 'node:child_process'
 import { promisify } from 'node:util'
 import { LLAMA_MODELS } from '../types.js'
+import { log, wait } from '../types.js'
 
 const execAsync = promisify(exec)
 
@@ -20,7 +21,7 @@ const execAsync = promisify(exec)
 async function downloadModel(modelName = 'GEMMA_2_2B') {
   // Get the model object from LLAMA_MODELS using the provided modelName or default to GEMMA_2_2B
   const model = LLAMA_MODELS[modelName] || LLAMA_MODELS.GEMMA_2_2B
-  console.log(`  - ${model.filename} model selected.`)
+  log(wait(`    - Model selected: ${model.filename}`))
 
   // If no valid model is found, throw an error
   if (!model) {
@@ -32,12 +33,12 @@ async function downloadModel(modelName = 'GEMMA_2_2B') {
 
   // Check if the model file already exists
   if (existsSync(modelPath)) {
-    console.log(`  - Model already exists at ${modelPath}`)
+    log(wait(`    - Model path: ${modelPath}`))
     // Return the path if the model already exists
     return modelPath
   }
 
-  console.log(`\nDownloading ${model.filename}...`)
+  log(wait(`\nDownloading ${model.filename}...`))
   try {
     // Create the directory for storing models if it doesn't exist
     await mkdir('./src/llms/models', { recursive: true })
@@ -46,8 +47,8 @@ async function downloadModel(modelName = 'GEMMA_2_2B') {
     const { stderr } = await execAsync(`curl -L ${model.url} -o ${modelPath}`)
 
     // If there's any stderr output, log it
-    if (stderr) console.log(stderr)
-    console.log('Download completed')
+    if (stderr) log(stderr)
+    log('Download completed')
 
     // Return the path to the downloaded model
     return modelPath

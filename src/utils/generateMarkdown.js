@@ -5,6 +5,7 @@ import { execFile } from 'node:child_process'
 import { promisify } from 'node:util'
 import { writeFile } from 'node:fs/promises'
 import { basename, extname } from 'node:path'
+import { log, dim, step, success } from '../types.js'
 
 /** @import { MarkdownData, RSSItem, VideoMetadata } from '../types.js' */
 
@@ -17,7 +18,6 @@ const execFilePromise = promisify(execFile)
  * @returns {Promise<VideoMetadata>} - The video metadata.
  */
 export async function extractVideoMetadata(url) {
-  console.log('\nStep 0 - Generating metadata...')
   try {
     // Check for required dependencies
     await checkDependencies(['yt-dlp'])
@@ -63,7 +63,6 @@ export async function extractVideoMetadata(url) {
  */
 export async function generateRSSMarkdown(item) {
   try {
-    console.log('\nStep 1 - Generating RSS markdown...')
     // Destructure the item object
     const { publishDate, title, coverImage, showLink, channel, channelURL } = item
 
@@ -87,7 +86,9 @@ export async function generateRSSMarkdown(item) {
 
     // Write the front matter to the markdown file
     await writeFile(`${finalPath}.md`, frontMatter)
-    console.log(`  - ${finalPath}.md\n  - Front matter successfully created and saved.`)
+    log(dim(frontMatter))
+    log(step('\nStep 1 - Generating RSS markdown...\n'))
+    log(success(`  Front matter successfully created and saved:\n    - ${finalPath}.md`))
     return { frontMatter, finalPath, filename }
   } catch (error) {
     console.error(`Error generating markdown for RSS item: ${error.message}`)
@@ -103,7 +104,6 @@ export async function generateRSSMarkdown(item) {
  */
 export async function generateFileMarkdown(filePath) {
   try {
-    console.log('\nStep 1 - Generating file markdown...')
     // Extract the original filename from the full file path
     const originalFilename = basename(filePath)
 
@@ -133,7 +133,9 @@ export async function generateFileMarkdown(filePath) {
     await writeFile(`${finalPath}.md`, frontMatter)
 
     // Log the creation of the markdown file
-    console.log(`  - ${finalPath}.md\n  - Front matter successfully created and saved.`)
+    log(dim(frontMatter))
+    log(step('\nStep 1 - Generating file markdown...\n'))
+    log(success(`  Front matter successfully created and saved:\n    - ${finalPath}.md`))
 
     // Return an object with the generated data
     return { frontMatter, finalPath, filename: sanitizedFilename }
@@ -153,7 +155,6 @@ export async function generateFileMarkdown(filePath) {
  */
 export async function generateMarkdown(url) {
   try {
-    console.log('\nStep 1 - Generating video markdown...')
     // Check for required dependencies
     await checkDependencies(['yt-dlp'])
 
@@ -199,7 +200,9 @@ export async function generateMarkdown(url) {
 
     // Write the front matter to the markdown file
     await writeFile(`${finalPath}.md`, frontMatter)
-    console.log(`  - ${finalPath}.md\n  - Front matter successfully created and saved.`)
+    log(dim(frontMatter))
+    log(step('\nStep 1 - Generating video markdown...\n'))
+    log(success(`  Front matter successfully created and saved:\n    - ${finalPath}.md`))
     return { frontMatter, finalPath, filename }
   } catch (error) {
     console.error(`Error generating markdown for video: ${error.message}`)

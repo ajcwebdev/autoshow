@@ -7,6 +7,7 @@ import { downloadAudio } from '../utils/downloadAudio.js'
 import { runTranscription } from '../utils/runTranscription.js'
 import { runLLM } from '../utils/runLLM.js'
 import { cleanUpFiles } from '../utils/cleanUpFiles.js'
+import { log, final, wait } from '../types.js'
 
 /** @import { LLMServices, TranscriptServices, ProcessingOptions, RSSItem } from '../types.js' */
 
@@ -26,6 +27,8 @@ const parser = new XMLParser({
  * @returns {Promise<void>}
  */
 async function processItem(item, transcriptServices, llmServices, options) {
+  // log(opts(`\nItem parameter passed to processItem:\n`))
+  // log(item)
   try {
     // Generate markdown for the item
     const { frontMatter, finalPath, filename } = await generateRSSMarkdown(item)
@@ -44,7 +47,7 @@ async function processItem(item, transcriptServices, llmServices, options) {
       await cleanUpFiles(finalPath)
     }
 
-    console.log(`\nItem processing completed successfully: ${item.title}`)
+    log(final(`\nItem processing completed successfully: ${item.title}`))
   } catch (error) {
     console.error(`Error processing item ${item.title}: ${error.message}`)
     // Continue processing the next item
@@ -60,13 +63,13 @@ async function processItem(item, transcriptServices, llmServices, options) {
  * @returns {Promise<void>}
  */
 export async function processRSS(rssUrl, llmServices, transcriptServices, options) {
+  // log(opts(`Options received:\n`))
+  // log(options)
   try {
     if (options.item && options.item.length > 0) {
       // If specific items are provided, list them
-      console.log('\nProcessing specific items:')
-      options.item.forEach((url) => console.log(`  - ${url}`))
-    } else {
-      console.log(`  - Skipping first ${options.skip} items`)
+      log(wait('\nProcessing specific items:'))
+      options.item.forEach((url) => log(`  - ${url}`))
     }
 
     // Fetch the RSS feed with a timeout
@@ -147,7 +150,7 @@ export async function processRSS(rssUrl, llmServices, transcriptServices, option
       const jsonContent = JSON.stringify(items, null, 2)
       const jsonFilePath = 'content/rss_info.json'
       await writeFile(jsonFilePath, jsonContent)
-      console.log(`RSS feed information saved to: ${jsonFilePath}`)
+      log(wait(`RSS feed information saved to: ${jsonFilePath}`))
       return
     }
 
@@ -165,17 +168,17 @@ export async function processRSS(rssUrl, llmServices, transcriptServices, option
       const sortedItems = options.order === 'newest' ? items : [...items].reverse()
       itemsToProcess = sortedItems.slice(options.skip)
 
-      console.log(`  - Found ${sortedItems.length} items in the RSS feed.`)
-      console.log(`  - Processing ${itemsToProcess.length} items after skipping ${options.skip}.`)
+      log(wait(`  Found ${sortedItems.length} items in the RSS feed.`))
+      log(wait(`  - Processing ${itemsToProcess.length} items after skipping ${options.skip}.\n`))
     }
 
     // Process each item in the feed
     for (const [index, item] of itemsToProcess.entries()) {
-      console.log(`\nProcessing item ${index + 1}/${itemsToProcess.length}: ${item.title}`)
+      log(wait(`  Processing item ${index + 1}/${itemsToProcess.length}:\n    - ${item.title}\n`))
       await processItem(item, transcriptServices, llmServices, options)
     }
 
-    console.log('\n\nRSS feed processing completed successfully.\n')
+    log(final('\nRSS feed processing completed successfully.\n'))
   } catch (error) {
     console.error(`Error processing RSS feed: ${error.message}`)
     process.exit(1) // Exit with an error code

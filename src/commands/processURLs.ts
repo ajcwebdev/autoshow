@@ -3,9 +3,9 @@
 import { readFile, writeFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import { processVideo } from './processVideo.js'
-import { extractVideoMetadata } from '../utils/generateMarkdown.js'
+import { extractVideoMetadata } from '../utils/extractVideoMetadata.js'
 import { checkDependencies } from '../utils/checkDependencies.js'
-import { log, final, wait } from '../types.js'
+import { log, final, wait } from '../models.js'
 import type { LLMServices, TranscriptServices, ProcessingOptions } from '../types.js'
 
 /**
@@ -21,8 +21,11 @@ export async function processURLs(
   llmServices?: LLMServices,
   transcriptServices?: TranscriptServices
 ): Promise<void> {
-  // log(opts(`Options received:\n`))
+  // log(`Options received in processURLs:\n`)
   // log(options)
+  // log(`filePath:`, filePath)
+  // log(`llmServices:`, llmServices)
+  // log(`transcriptServices:`, transcriptServices)
   try {
     // Check for required dependencies
     await checkDependencies(['yt-dlp'])

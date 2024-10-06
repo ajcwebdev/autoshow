@@ -2,12 +2,12 @@
 
 import { writeFile } from 'node:fs/promises'
 import { XMLParser } from 'fast-xml-parser'
-import { generateRSSMarkdown } from '../utils/generateMarkdown.js'
+import { generateMarkdown } from '../utils/generateMarkdown.js'
 import { downloadAudio } from '../utils/downloadAudio.js'
 import { runTranscription } from '../utils/runTranscription.js'
 import { runLLM } from '../utils/runLLM.js'
 import { cleanUpFiles } from '../utils/cleanUpFiles.js'
-import { log, final, wait } from '../types.js'
+import { log, final, wait } from '../models.js'
 
 import type { LLMServices, TranscriptServices, ProcessingOptions, RSSItem } from '../types.js'
 
@@ -32,14 +32,17 @@ async function processItem(
   llmServices?: LLMServices,
   transcriptServices?: TranscriptServices
 ): Promise<void> {
-  // log(opts(`\nItem parameter passed to processItem:\n`))
-  // log(item)
+  // log(`Options received in processItem:\n`)
+  // log(options)
+  // log(`item\n\n`, item)
+  // log(`llmServices:`, llmServices)
+  // log(`transcriptServices:`, transcriptServices)
   try {
     // Generate markdown for the item
-    const { frontMatter, finalPath, filename } = await generateRSSMarkdown(item)
+    const { frontMatter, finalPath, filename } = await generateMarkdown(options, item)
 
     // Download audio
-    await downloadAudio(item.showLink, filename)
+    await downloadAudio(options, item.showLink, filename)
 
     // Run transcription
     await runTranscription(options, finalPath, frontMatter, transcriptServices)
@@ -73,8 +76,11 @@ export async function processRSS(
   llmServices?: LLMServices,
   transcriptServices?: TranscriptServices
 ): Promise<void> {
-  // log(opts(`Options received:\n`))
-  // log(options)
+  log(`Options received in processRSS:\n`)
+  log(options)
+  log(`rssUrl:`, rssUrl)
+  log(`llmServices:`, llmServices)
+  log(`transcriptServices:`, transcriptServices)
   try {
     // Validate that --last is a positive integer if provided
     if (options.last !== undefined) {

@@ -1,11 +1,11 @@
 // src/commands/processFile.ts
 
-import { generateFileMarkdown } from '../utils/generateMarkdown.js'
-import { downloadFileAudio } from '../utils/downloadAudio.js'
+import { generateMarkdown } from '../utils/generateMarkdown.js'
+import { downloadAudio } from '../utils/downloadAudio.js'
 import { runTranscription } from '../utils/runTranscription.js'
 import { runLLM } from '../utils/runLLM.js'
 import { cleanUpFiles } from '../utils/cleanUpFiles.js'
-import { log, final } from '../types.js'
+import { log, final } from '../models.js'
 import type { LLMServices, TranscriptServices, ProcessingOptions } from '../types.js'
 
 /**
@@ -22,14 +22,17 @@ export async function processFile(
   llmServices?: LLMServices,
   transcriptServices?: TranscriptServices
 ): Promise<void> {
-  // log(opts(`Options received:\n`))
+  // log(`Options received in processFile:\n`)
   // log(options)
+  // log(`filePath:`, filePath)
+  // log(`llmServices:`, llmServices)
+  // log(`transcriptServices:`, transcriptServices)
   try {
     // Generate markdown for the file
-    const { frontMatter, finalPath, filename } = await generateFileMarkdown(filePath)
+    const { frontMatter, finalPath, filename } = await generateMarkdown(options, filePath)
 
     // Convert the audio or video file to the required format
-    await downloadFileAudio(filePath, filename)
+    await downloadAudio(options, filePath, filename)
 
     // Run transcription on the file
     await runTranscription(options, finalPath, frontMatter, transcriptServices)

@@ -5,7 +5,7 @@ import { callWhisper } from '../transcription/whisper.js'
 import { callWhisperDocker } from '../transcription/whisperDocker.js'
 import { callDeepgram } from '../transcription/deepgram.js'
 import { callAssembly } from '../transcription/assembly.js'
-import { log, step, success, wait } from '../types.js'
+import { log, step, success, wait } from '../models.js'
 import type { TranscriptServices, ProcessingOptions } from '../types.js'
 
 /**
@@ -30,23 +30,19 @@ export async function runTranscription(
     // Choose the transcription service based on the provided option
     switch (transcriptServices) {
       case 'deepgram':
-        log(wait('\n  Using Deepgram for transcription...'))
         txtContent = await callDeepgram(options, finalPath)
         break
 
       case 'assembly':
-        log(wait('\n  Using AssemblyAI for transcription...'))
         txtContent = await callAssembly(options, finalPath)
         break
       
       case 'whisperDocker':
-        log(wait('\n  Using Whisper Docker for transcription...'))
         txtContent = await callWhisperDocker(options, finalPath)
         break  
 
       case 'whisper':
       default:
-        log(wait('\n  Using Whisper for transcription...'))
         txtContent = await callWhisper(options, finalPath)
         break
     }

@@ -6,7 +6,7 @@ import { existsSync } from 'node:fs'
 import { exec } from 'node:child_process'
 import { promisify } from 'node:util'
 import { LLAMA_MODELS } from '../models.js'
-import { log, wait } from '../types.js'
+import { log, wait } from '../models.js'
 
 import type { LlamaModelType, LLMFunction } from '../types.js'
 

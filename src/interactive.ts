@@ -2,7 +2,7 @@
 
 import inquirer from 'inquirer'
 import type { ProcessingOptions, InquirerAnswers, WhisperModelType } from './types.js'
-import { log } from './types.js'
+import { log } from './models.js'
 
 /**
  * Prompts the user for input if interactive mode is selected.

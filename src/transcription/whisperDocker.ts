@@ -5,7 +5,7 @@ import { exec } from 'node:child_process'
 import { promisify } from 'node:util'
 import { join } from 'node:path'
 import { WHISPER_MODELS } from '../models.js'
-import { log, wait } from '../types.js'
+import { log, wait } from '../models.js'
 import type { ProcessingOptions } from '../types.js'
 
 const execPromise = promisify(exec)
@@ -18,6 +18,7 @@ const execPromise = promisify(exec)
  * @throws {Error} - If an error occurs during transcription.
  */
 export async function callWhisperDocker(options: ProcessingOptions, finalPath: string): Promise<string> {
+  log(wait('\n  Using Whisper Docker for transcription...'))
   try {
     // Get the whisper model from options or use 'base' as default
     const whisperModel = options.whisperDocker || 'base'

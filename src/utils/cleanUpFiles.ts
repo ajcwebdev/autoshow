@@ -1,8 +1,7 @@
 // src/utils/cleanUpFiles.ts
 
 import { unlink } from 'node:fs/promises'
-import { log, step, success } from '../types.js'
-import type { CleanUpFunction } from '../types.js'
+import { log, step, success } from '../models.js'
 
 /**
  * Asynchronous function to clean up temporary files.

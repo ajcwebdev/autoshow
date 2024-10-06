@@ -1,6 +1,17 @@
 // src/models.ts
 
+import chalk from 'chalk'
+import type { ChalkInstance } from 'chalk'
 import type { WhisperModelType, ChatGPTModelType, ClaudeModelType, CohereModelType, GeminiModelType, MistralModelType, OctoModelType, LlamaModelType, OllamaModelType } from './types.js'
+
+export const step: ChalkInstance = chalk.bold.underline
+export const dim: ChalkInstance = chalk.dim
+export const success: ChalkInstance = chalk.bold.blue
+export const opts: ChalkInstance = chalk.magentaBright.bold
+export const wait: ChalkInstance = chalk.cyan.dim
+export const final: ChalkInstance = chalk.bold.italic
+
+export const log: typeof console.log = console.log
 
 /**
  * Define available Whisper models

@@ -1,19 +1,5 @@
 // src/types.ts
 
-import type { ChalkInstance } from 'chalk'
-// import type { BuiltInQuestion } from 'inquirer'
-// import BuiltInQuestion from 'inquirer'
-import chalk from 'chalk'
-
-export const step: ChalkInstance = chalk.bold.underline
-export const dim: ChalkInstance = chalk.dim
-export const success: ChalkInstance = chalk.bold.blue
-export const opts: ChalkInstance = chalk.magentaBright.bold
-export const wait: ChalkInstance = chalk.cyan.dim
-export const final: ChalkInstance = chalk.bold.italic
-
-export const log: typeof console.log = console.log
-
 /**
  * @file This file contains all the custom type definitions used across the Autoshow project.
  */

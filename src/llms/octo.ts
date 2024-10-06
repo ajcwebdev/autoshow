@@ -4,7 +4,7 @@ import { writeFile } from 'node:fs/promises'
 import { env } from 'node:process'
 import { OctoAIClient } from '@octoai/sdk'
 import { OCTO_MODELS } from '../models.js'
-import { log, wait } from '../types.js'
+import { log, wait } from '../models.js'
 
 import type { LLMFunction, OctoModelType } from '../types.js'
 

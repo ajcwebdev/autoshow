@@ -20,7 +20,7 @@ import { processURLs } from './commands/processURLs.js'
 import { processFile } from './commands/processFile.js'
 import { processRSS } from './commands/processRSS.js'
 import { argv, exit } from 'node:process'
-import { log, opts } from './types.js'
+import { log, opts } from './models.js'
 import type { ProcessingOptions, HandlerFunction, LLMServices, TranscriptServices } from './types.js'
 
 // Initialize the command-line interface
@@ -78,7 +78,7 @@ Report Issues: https://github.com/ajcwebdev/autoshow/issues
  * @returns {Promise<void>}
  */
 program.action(async (options: ProcessingOptions) => {
-  log(opts(`Options received:\n`))
+  log(opts(`Options received at beginning of command:\n`))
   log(options)
   log(``)
 

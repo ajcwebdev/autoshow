@@ -10,7 +10,7 @@ import { callCohere } from '../llms/cohere.js'
 import { callMistral } from '../llms/mistral.js'
 import { callOcto } from '../llms/octo.js'
 import { generatePrompt } from '../llms/prompt.js'
-import { log, step, success, wait } from '../types.js'
+import { log, step, success, wait } from '../models.js'
 import type { LLMServices, ProcessingOptions, LLMFunction, LLMFunctions } from '../types.js'
 
 /**

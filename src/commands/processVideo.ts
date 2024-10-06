@@ -6,7 +6,7 @@ import { downloadAudio } from '../utils/downloadAudio.js'
 import { runTranscription } from '../utils/runTranscription.js'
 import { runLLM } from '../utils/runLLM.js'
 import { cleanUpFiles } from '../utils/cleanUpFiles.js'
-import { log, final } from '../types.js'
+import { log, final } from '../models.js'
 import type { LLMServices, TranscriptServices, ProcessingOptions } from '../types.js'
 
 /**
@@ -20,28 +20,29 @@ import type { LLMServices, TranscriptServices, ProcessingOptions } from '../type
 export async function processVideo(
   options: ProcessingOptions,
   url: string,
-  llmServices?: LLMServices, // Make this optional
-  transcriptServices?: TranscriptServices // Make this optional
+  llmServices?: LLMServices,
+  transcriptServices?: TranscriptServices
 ): Promise<void> {
+  // log(`Options received in processVideo:\n`)
+  // log(options)
+  // log(`url:`, url)
+  // log(`llmServices:`, llmServices)
+  // log(`transcriptServices:`, transcriptServices)
   try {
     // Check for required dependencies
     await checkDependencies(['yt-dlp'])
 
     // Generate markdown with video metadata
-    const { frontMatter, finalPath, filename } = await generateMarkdown(url)
+    const { frontMatter, finalPath, filename } = await generateMarkdown(options, url)
 
     // Download audio from the video
-    await downloadAudio(url, filename)
+    await downloadAudio(options, url, filename)
 
-    // Run transcription on the audio if transcriptServices is defined
-    if (transcriptServices) {
-      await runTranscription(options, finalPath, frontMatter, transcriptServices)
-    }
+    // Run transcription on the audio
+    await runTranscription(options, finalPath, frontMatter, transcriptServices)
 
-    // Process the transcript with the selected Language Model if llmServices is defined
-    if (llmServices) {
-      await runLLM(options, finalPath, frontMatter, llmServices)
-    }
+    // Process transcript with an LLM if llmServices is defined, concatenate prompt and transcript if undefined
+    await runLLM(options, finalPath, frontMatter, llmServices)
 
     // Clean up temporary files if the noCleanUp option is not set
     if (!options.noCleanUp) {

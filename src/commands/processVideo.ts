@@ -1,4 +1,4 @@
-// src/commands/processVideo.js
+// src/commands/processVideo.ts
 
 import { checkDependencies } from '../utils/checkDependencies.js'
 import { generateMarkdown } from '../utils/generateMarkdown.js'
@@ -7,20 +7,22 @@ import { runTranscription } from '../utils/runTranscription.js'
 import { runLLM } from '../utils/runLLM.js'
 import { cleanUpFiles } from '../utils/cleanUpFiles.js'
 import { log, final } from '../types.js'
-
-/** @import { LLMServices, TranscriptServices, ProcessingOptions } from '../types.js' */
+import type { LLMServices, TranscriptServices, ProcessingOptions } from '../types.js'
 
 /**
  * Main function to process a single video.
- * @param {string} url - The URL of the video to process.
- * @param {LLMServices} [llmServices] - The selected Language Model option.
- * @param {TranscriptServices} [transcriptServices] - The transcription service to use.
- * @param {ProcessingOptions} options - Additional options for processing.
- * @returns {Promise<void>}
+ * @param url - The URL of the video to process.
+ * @param llmServices - The selected Language Model option.
+ * @param transcriptServices - The transcription service to use.
+ * @param options - Additional options for processing.
+ * @returns A promise that resolves when processing is complete.
  */
-export async function processVideo(url, llmServices, transcriptServices, options) {
-  // log(opts(`\nOptions passed to processVideo:\n`))
-  // log(options)
+export async function processVideo(
+  options: ProcessingOptions,
+  url: string,
+  llmServices?: LLMServices, // Make this optional
+  transcriptServices?: TranscriptServices // Make this optional
+): Promise<void> {
   try {
     // Check for required dependencies
     await checkDependencies(['yt-dlp'])
@@ -31,11 +33,15 @@ export async function processVideo(url, llmServices, transcriptServices, options
     // Download audio from the video
     await downloadAudio(url, filename)
 
-    // Run transcription on the audio
-    await runTranscription(finalPath, frontMatter, transcriptServices, options)
+    // Run transcription on the audio if transcriptServices is defined
+    if (transcriptServices) {
+      await runTranscription(options, finalPath, frontMatter, transcriptServices)
+    }
 
-    // Process the transcript with the selected Language Model
-    await runLLM(finalPath, frontMatter, llmServices, options)
+    // Process the transcript with the selected Language Model if llmServices is defined
+    if (llmServices) {
+      await runLLM(options, finalPath, frontMatter, llmServices)
+    }
 
     // Clean up temporary files if the noCleanUp option is not set
     if (!options.noCleanUp) {
@@ -45,7 +51,7 @@ export async function processVideo(url, llmServices, transcriptServices, options
     log(final('\nVideo processing completed successfully.\n'))
   } catch (error) {
     // Log any errors that occur during video processing
-    console.error('Error processing video:', error.message)
+    console.error('Error processing video:', (error as Error).message)
     throw error // Re-throw to be handled by caller
   }
 }

@@ -1,15 +1,14 @@
-// src/transcription/whisper.js
+// src/transcription/whisper.ts
 
 import { readFile, writeFile } from 'node:fs/promises'
 import { exec } from 'node:child_process'
 import { promisify } from 'node:util'
 import { existsSync } from 'node:fs'
 import { WHISPER_MODELS } from '../models.js'
-import { log, success, wait, opts } from '../types.js'
+import { log, success, wait } from '../types.js'
+import type { ProcessingOptions } from '../types.js'
 
 const execPromise = promisify(exec)
-
-/** @import { ProcessingOptions } from '../types.js' */
 
 /**
  * Main function to handle transcription using Whisper.
@@ -18,9 +17,7 @@ const execPromise = promisify(exec)
  * @returns {Promise<string>} - Returns the formatted transcript content.
  * @throws {Error} - If an error occurs during transcription.
  */
-export async function callWhisper(finalPath, options) {
-  // log(opts(`Options passed to callWhisper:\n`))
-  // log(options)
+export async function callWhisper(options: ProcessingOptions, finalPath: string): Promise<string> {
   try {
     // Get the whisper model from options or use 'base' as default
     const whisperModel = options.whisper || 'base'

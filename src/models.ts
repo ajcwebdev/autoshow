@@ -1,12 +1,12 @@
-// src/models.js
+// src/models.ts
 
-/** @import { WhisperModelType, ChatGPTModelType, ClaudeModelType, CohereModelType, GeminiModelType, MistralModelType, OctoModelType, LlamaModelType, OllamaModelType } from './types.js' */
+import type { WhisperModelType, ChatGPTModelType, ClaudeModelType, CohereModelType, GeminiModelType, MistralModelType, OctoModelType, LlamaModelType, OllamaModelType } from './types.js'
 
 /**
  * Define available Whisper models
  * @type {Record<WhisperModelType, string>}
  */
-export const WHISPER_MODELS = {
+export const WHISPER_MODELS: Record<WhisperModelType, string> = {
   'tiny': 'ggml-tiny.bin',
   'tiny.en': 'ggml-tiny.en.bin',
   'base': 'ggml-base.bin',
@@ -23,7 +23,7 @@ export const WHISPER_MODELS = {
  * Map of ChatGPT model identifiers to their API names
  * @type {Record<ChatGPTModelType, string>}
  */
-export const GPT_MODELS = {
+export const GPT_MODELS: Record<ChatGPTModelType, string> = {
   GPT_4o_MINI: "gpt-4o-mini",
   GPT_4o: "gpt-4o",
   GPT_4_TURBO: "gpt-4-turbo",
@@ -34,7 +34,7 @@ export const GPT_MODELS = {
  * Map of Claude model identifiers to their API names
  * @type {Record<ClaudeModelType, string>}
  */
-export const CLAUDE_MODELS = {
+export const CLAUDE_MODELS: Record<ClaudeModelType, string> = {
   CLAUDE_3_5_SONNET: "claude-3-5-sonnet-20240620",
   CLAUDE_3_OPUS: "claude-3-opus-20240229",
   CLAUDE_3_SONNET: "claude-3-sonnet-20240229",
@@ -45,7 +45,7 @@ export const CLAUDE_MODELS = {
  * Map of Cohere model identifiers to their API names
  * @type {Record<CohereModelType, string>}
  */
-export const COHERE_MODELS = {
+export const COHERE_MODELS: Record<CohereModelType, string> = {
   COMMAND_R: "command-r", // Standard Command model
   COMMAND_R_PLUS: "command-r-plus" // Enhanced Command model
 }
@@ -54,7 +54,7 @@ export const COHERE_MODELS = {
  * Map of Gemini model identifiers to their API names
  * @type {Record<GeminiModelType, string>}
  */
-export const GEMINI_MODELS = {
+export const GEMINI_MODELS: Record<GeminiModelType, string> = {
   GEMINI_1_5_FLASH: "gemini-1.5-flash",
   // GEMINI_1_5_PRO: "gemini-1.5-pro",
   GEMINI_1_5_PRO: "gemini-1.5-pro-exp-0827",
@@ -64,7 +64,7 @@ export const GEMINI_MODELS = {
  * Map of Mistral model identifiers to their API names
  * @type {Record<MistralModelType, string>}
  */
-export const MISTRAL_MODELS = {
+export const MISTRAL_MODELS: Record<MistralModelType, string> = {
   MIXTRAL_8x7b: "open-mixtral-8x7b",
   MIXTRAL_8x22b: "open-mixtral-8x22b",
   MISTRAL_LARGE: "mistral-large-latest",
@@ -75,7 +75,7 @@ export const MISTRAL_MODELS = {
  * Map of OctoAI model identifiers to their API names
  * @type {Record<OctoModelType, string>}
  */
-export const OCTO_MODELS = {
+export const OCTO_MODELS: Record<OctoModelType, string> = {
   LLAMA_3_1_8B: "meta-llama-3.1-8b-instruct",
   LLAMA_3_1_70B: "meta-llama-3.1-70b-instruct",
   LLAMA_3_1_405B: "meta-llama-3.1-405b-instruct",
@@ -89,7 +89,7 @@ export const OCTO_MODELS = {
  * Map of local model identifiers to their filenames and URLs
  * @type {Record<LlamaModelType, {filename: string, url: string}>}
  */
-export const LLAMA_MODELS = {
+export const LLAMA_MODELS: Record<LlamaModelType, {filename: string, url: string}> = {
   QWEN_2_5_3B: {
     filename: "qwen2.5-3b-instruct-q6_k.gguf",
     url: "https://huggingface.co/Qwen/Qwen2.5-3B-Instruct-GGUF/resolve/main/qwen2.5-3b-instruct-q6_k.gguf"
@@ -112,7 +112,7 @@ export const LLAMA_MODELS = {
  * Map of model identifiers to their corresponding names in Ollama
  * @type {Record<OllamaModelType, string>}
  */
-export const OLLAMA_MODELS = {
+export const OLLAMA_MODELS: Record<OllamaModelType, string> = {
   LLAMA_3_2_1B: 'llama3.2:1b',
   LLAMA_3_2_3B: 'llama3.2:3b',
   GEMMA_2_2B: 'gemma2:2b',

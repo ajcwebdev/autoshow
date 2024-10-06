@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-// src/autoshow.js
+// src/autoshow.ts
 
 /**
  * Autoshow CLI Application
@@ -13,7 +13,7 @@
  */
 
 import { Command } from 'commander'
-import { handleInteractivePrompt } from './inquirer.js'
+import { handleInteractivePrompt } from './interactive.js'
 import { processVideo } from './commands/processVideo.js'
 import { processPlaylist } from './commands/processPlaylist.js'
 import { processURLs } from './commands/processURLs.js'
@@ -21,8 +21,7 @@ import { processFile } from './commands/processFile.js'
 import { processRSS } from './commands/processRSS.js'
 import { argv, exit } from 'node:process'
 import { log, opts } from './types.js'
-
-/** @import { ProcessingOptions, HandlerFunction, LLMServices, TranscriptServices } from './types.js' */
+import type { ProcessingOptions, HandlerFunction, LLMServices, TranscriptServices } from './types.js'
 
 // Initialize the command-line interface
 const program = new Command()
@@ -78,16 +77,12 @@ Report Issues: https://github.com/ajcwebdev/autoshow/issues
  * @param {ProcessingOptions} options - The command-line options provided by the user.
  * @returns {Promise<void>}
  */
-program.action(async (options) => {
+program.action(async (options: ProcessingOptions) => {
   log(opts(`Options received:\n`))
   log(options)
   log(``)
 
-  /**
-   * Map actions to their respective handler functions
-   * @type {Object.<string, HandlerFunction>}
-   */
-  const PROCESS_HANDLERS = {
+  const PROCESS_HANDLERS: Record<string, HandlerFunction> = {
     video: processVideo,
     playlist: processPlaylist,
     urls: processURLs,
@@ -99,14 +94,10 @@ program.action(async (options) => {
   const LLM_OPTIONS = ['chatgpt', 'claude', 'cohere', 'mistral', 'octo', 'llama', 'ollama', 'gemini']
   const TRANSCRIPT_OPTIONS = ['whisper', 'whisperDocker', 'deepgram', 'assembly']
 
-  // Determine if no action options were provided
   const { video, playlist, urls, file, rss, interactive } = options
   const noActionProvided = [video, playlist, urls, file, rss].every((opt) => !opt)
 
-  // If interactive mode is selected
-  if (interactive) {
-    options = await handleInteractivePrompt(options)
-  } else if (noActionProvided) {
+  if (interactive || noActionProvided) {
     options = await handleInteractivePrompt(options)
   }
 
@@ -115,34 +106,42 @@ program.action(async (options) => {
     options.item = [options.item]
   }
 
-  const actionsProvided = ACTION_OPTIONS.filter((opt) => options[opt])
+  const actionsProvided = ACTION_OPTIONS.filter((opt) => options[opt as keyof ProcessingOptions])
   if (actionsProvided.length > 1) {
     console.error(`Error: Multiple input options provided (${actionsProvided.join(', ')}). Please specify only one input option.`)
     exit(1)
   }
 
-  const selectedLLMs = LLM_OPTIONS.filter((opt) => options[opt])
+  const selectedLLMs = LLM_OPTIONS.filter((opt) => options[opt as keyof ProcessingOptions])
   if (selectedLLMs.length > 1) {
     console.error(`Error: Multiple LLM options provided (${selectedLLMs.join(', ')}). Please specify only one LLM option.`)
     exit(1)
   }
-  const llmServices = /** @type {LLMServices | undefined} */ (selectedLLMs[0])
+  const llmServices = selectedLLMs[0] as LLMServices | undefined
 
-  const selectedTranscripts = TRANSCRIPT_OPTIONS.filter((opt) => options[opt])
+  const selectedTranscripts = TRANSCRIPT_OPTIONS.filter((opt) => options[opt as keyof ProcessingOptions])
   if (selectedTranscripts.length > 1) {
     console.error(`Error: Multiple transcription options provided (${selectedTranscripts.join(', ')}). Please specify only one transcription option.`)
     exit(1)
   }
-  const transcriptServices = /** @type {TranscriptServices | undefined} */ (selectedTranscripts[0])
+  const transcriptServices = selectedTranscripts[0] as TranscriptServices | undefined
+
+  // Set default transcription service if not provided
+  const finalTranscriptServices: TranscriptServices = transcriptServices || 'whisper'
+
+  // Set default Whisper model if not provided
+  if (finalTranscriptServices === 'whisper' && !options.whisper) {
+    options.whisper = 'base'
+  }
 
   // Execute the appropriate handler based on the action
   for (const [key, handler] of Object.entries(PROCESS_HANDLERS)) {
-    if (options[key]) {
+    if (options[key as keyof ProcessingOptions]) {
       try {
-        await handler(options[key], llmServices, transcriptServices, options)
-        exit(0) // Successful execution
+        await handler(options, options[key as keyof ProcessingOptions] as string, llmServices, finalTranscriptServices)
+        exit(0)
       } catch (error) {
-        console.error(`Error processing ${key}:`, error.message)
+        console.error(`Error processing ${key}:`, (error as Error).message)
         exit(1)
       }
     }

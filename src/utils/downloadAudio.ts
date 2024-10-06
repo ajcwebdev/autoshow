@@ -1,14 +1,13 @@
-// src/utils/downloadAudio.js
+// src/utils/downloadAudio.ts
 
-import { checkDependencies } from './checkDependencies.js'
 import { exec, execFile } from 'node:child_process'
 import { promisify } from 'node:util'
 import { readFile, access } from 'node:fs/promises'
 import { fileTypeFromBuffer } from 'file-type'
 import ffmpeg from 'ffmpeg-static'
+import { checkDependencies } from './checkDependencies.js'
 import { log, step, success, wait } from '../types.js'
-
-/** @import { SupportedFileType } from '../types.js' */
+import type { SupportedFileType } from '../types.js'
 
 const execFilePromise = promisify(execFile)
 const execPromise = promisify(exec)
@@ -20,7 +19,7 @@ const execPromise = promisify(exec)
  * @returns {Promise<string>} - Returns the path to the downloaded WAV file.
  * @throws {Error} - If there is an error during the download process.
  */
-export async function downloadAudio(url, filename) {
+export async function downloadAudio(url: string, filename: string): Promise<string> {
   log(step('\nStep 2 - Downloading URL audio...\n'))
   try {
     // Check for required dependencies
@@ -51,7 +50,7 @@ export async function downloadAudio(url, filename) {
     log(success(`  Audio downloaded successfully:\n    - ${downloadedFile}`))
     return downloadedFile
   } catch (error) {
-    console.error(`Error downloading audio: ${error.message}`)
+    console.error(`Error downloading audio: ${error instanceof Error ? (error as Error).message : String(error)}`)
     throw error
   }
 }
@@ -63,11 +62,10 @@ export async function downloadAudio(url, filename) {
  * @returns {Promise<string>} - Returns the final path to the processed WAV file.
  * @throws {Error} - If the file type is unsupported or processing fails.
  */
-export async function downloadFileAudio(filePath, sanitizedFilename) {
+export async function downloadFileAudio(filePath: string, sanitizedFilename: string): Promise<string> {
   log(step('\nStep 2 - Downloading file audio...\n'))
   // Define supported audio and video formats
-  /** @type {Set<SupportedFileType>} */
-  const supportedFormats = new Set([
+  const supportedFormats: Set<SupportedFileType> = new Set([
     'wav', 'mp3', 'm4a', 'aac', 'ogg', 'flac', 'mp4', 'mkv', 'avi', 'mov', 'webm',
   ])
   try {
@@ -79,7 +77,7 @@ export async function downloadFileAudio(filePath, sanitizedFilename) {
 
     // Determine the file type
     const fileType = await fileTypeFromBuffer(buffer)
-    if (!fileType || !supportedFormats.has(/** @type {SupportedFileType} */ (fileType.ext))) {
+    if (!fileType || !supportedFormats.has(fileType.ext as SupportedFileType)) {
       throw new Error(
         fileType ? `Unsupported file type: ${fileType.ext}` : 'Unable to determine file type'
       )
@@ -96,7 +94,7 @@ export async function downloadFileAudio(filePath, sanitizedFilename) {
 
     return outputPath
   } catch (error) {
-    console.error(`Error processing local file: ${error.message}`)
+    console.error(`Error processing local file: ${error instanceof Error ? (error as Error).message : String(error)}`)
     throw error
   }
 }

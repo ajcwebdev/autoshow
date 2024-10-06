@@ -1,4 +1,4 @@
-// src/commands/processRSS.js
+// src/commands/processRSS.ts
 
 import { writeFile } from 'node:fs/promises'
 import { XMLParser } from 'fast-xml-parser'
@@ -9,7 +9,7 @@ import { runLLM } from '../utils/runLLM.js'
 import { cleanUpFiles } from '../utils/cleanUpFiles.js'
 import { log, final, wait } from '../types.js'
 
-/** @import { LLMServices, TranscriptServices, ProcessingOptions, RSSItem } from '../types.js' */
+import type { LLMServices, TranscriptServices, ProcessingOptions, RSSItem } from '../types.js'
 
 // Initialize XML parser with specific options
 const parser = new XMLParser({
@@ -26,7 +26,12 @@ const parser = new XMLParser({
  * @param {ProcessingOptions} options - Additional options for processing.
  * @returns {Promise<void>}
  */
-async function processItem(item, transcriptServices, llmServices, options) {
+async function processItem(
+  options: ProcessingOptions,
+  item: RSSItem,
+  llmServices?: LLMServices,
+  transcriptServices?: TranscriptServices
+): Promise<void> {
   // log(opts(`\nItem parameter passed to processItem:\n`))
   // log(item)
   try {
@@ -37,10 +42,10 @@ async function processItem(item, transcriptServices, llmServices, options) {
     await downloadAudio(item.showLink, filename)
 
     // Run transcription
-    await runTranscription(finalPath, frontMatter, transcriptServices, options)
+    await runTranscription(options, finalPath, frontMatter, transcriptServices)
 
     // Process with Language Model
-    await runLLM(finalPath, frontMatter, llmServices, options)
+    await runLLM(options, finalPath, frontMatter, llmServices)
 
     // Clean up temporary files if necessary
     if (!options.noCleanUp) {
@@ -49,7 +54,7 @@ async function processItem(item, transcriptServices, llmServices, options) {
 
     log(final(`\nItem processing completed successfully: ${item.title}`))
   } catch (error) {
-    console.error(`Error processing item ${item.title}: ${error.message}`)
+    console.error(`Error processing item ${item.title}: ${(error as Error).message}`)
     // Continue processing the next item
   }
 }
@@ -62,7 +67,12 @@ async function processItem(item, transcriptServices, llmServices, options) {
  * @param {ProcessingOptions} options - Additional options for processing.
  * @returns {Promise<void>}
  */
-export async function processRSS(rssUrl, llmServices, transcriptServices, options) {
+export async function processRSS(
+  options: ProcessingOptions,
+  rssUrl: string,
+  llmServices?: LLMServices,
+  transcriptServices?: TranscriptServices
+): Promise<void> {
   // log(opts(`Options received:\n`))
   // log(options)
   try {
@@ -112,7 +122,7 @@ export async function processRSS(rssUrl, llmServices, transcriptServices, option
       controller.abort()
     }, 10000) // 10 seconds timeout
 
-    let response
+    let response: Response
     try {
       response = await fetch(rssUrl, {
         method: 'GET',
@@ -123,10 +133,10 @@ export async function processRSS(rssUrl, llmServices, transcriptServices, option
       })
       clearTimeout(timeout)
     } catch (error) {
-      if (error.name === 'AbortError') {
+      if ((error as Error).name === 'AbortError') {
         console.error('Error: Fetch request timed out.')
       } else {
-        console.error(`Error fetching RSS feed: ${error.message}`)
+        console.error(`Error fetching RSS feed: ${(error as Error).message}`)
       }
       process.exit(1) // Exit with an error code
     }
@@ -156,7 +166,7 @@ export async function processRSS(rssUrl, llmServices, transcriptServices, option
     const feedItemsArray = Array.isArray(feedItems) ? feedItems : [feedItems]
 
     // Filter and map feed items
-    const items = feedItemsArray
+    const items: RSSItem[] = feedItemsArray
       .filter((item) => {
         // Ensure the item has an enclosure with a valid type
         if (!item.enclosure || !item.enclosure.type) return false
@@ -188,10 +198,10 @@ export async function processRSS(rssUrl, llmServices, transcriptServices, option
       return
     }
 
-    let itemsToProcess = []
+    let itemsToProcess: RSSItem[] = []
     if (options.item && options.item.length > 0) {
       // Find the items matching the provided audio URLs
-      const matchedItems = items.filter((item) => options.item.includes(item.showLink))
+      const matchedItems = items.filter((item) => options.item!.includes(item.showLink))
       if (matchedItems.length === 0) {
         console.error('Error: No matching items found for the provided URLs.')
         process.exit(1) // Exit with an error code
@@ -215,12 +225,12 @@ export async function processRSS(rssUrl, llmServices, transcriptServices, option
     // Process each item in the feed
     for (const [index, item] of itemsToProcess.entries()) {
       log(wait(`  Processing item ${index + 1}/${itemsToProcess.length}:\n    - ${item.title}\n`))
-      await processItem(item, transcriptServices, llmServices, options)
+      await processItem(options, item, llmServices, transcriptServices)
     }
 
     log(final('\nRSS feed processing completed successfully.\n'))
   } catch (error) {
-    console.error(`Error processing RSS feed: ${error.message}`)
+    console.error(`Error processing RSS feed: ${(error as Error).message}`)
     process.exit(1) // Exit with an error code
   }
 }

@@ -1,4 +1,4 @@
-// src/llms/octo.js
+// src/llms/octo.ts
 
 import { writeFile } from 'node:fs/promises'
 import { env } from 'node:process'
@@ -6,18 +6,17 @@ import { OctoAIClient } from '@octoai/sdk'
 import { OCTO_MODELS } from '../models.js'
 import { log, wait } from '../types.js'
 
-/** @import { LLMFunction, OctoModelType } from '../types.js' */
+import type { LLMFunction, OctoModelType } from '../types.js'
 
-/** @type {LLMFunction} */
 /**
  * Main function to call OctoAI API.
- * @param {string} promptAndTranscript - The combined prompt and transcript text to process.
- * @param {string} tempPath - The temporary file path to write the LLM output.
- * @param {OctoModelType} [model='LLAMA_3_1_70B'] - The OctoAI model to use.
- * @returns {Promise<void>}
+ * @param promptAndTranscript - The combined prompt and transcript text to process.
+ * @param tempPath - The temporary file path to write the LLM output.
+ * @param model - The OctoAI model to use.
+ * @returns A Promise that resolves when the API call is complete.
  * @throws {Error} - If an error occurs during the API call.
  */
-export async function callOcto(promptAndTranscript, tempPath, model = 'LLAMA_3_1_70B') {
+export const callOcto: LLMFunction = async (promptAndTranscript: string, tempPath: string, model: string = 'LLAMA_3_1_70B') => {
   // Check if the OCTOAI_API_KEY environment variable is set
   if (!env.OCTOAI_API_KEY) {
     throw new Error('OCTOAI_API_KEY environment variable is not set. Please set it to your OctoAI API key.')
@@ -27,7 +26,7 @@ export async function callOcto(promptAndTranscript, tempPath, model = 'LLAMA_3_1
   
   try {
     // Select the actual model to use, defaulting to LLAMA_3_1_70B if the specified model is not found
-    const actualModel = OCTO_MODELS[model] || OCTO_MODELS.LLAMA_3_1_70B
+    const actualModel = OCTO_MODELS[model as OctoModelType] || OCTO_MODELS.LLAMA_3_1_70B
     log(wait(`\n  Using OctoAI model:\n    - ${actualModel}`))
     
     // Make API call to OctoAI for text generation
@@ -36,13 +35,11 @@ export async function callOcto(promptAndTranscript, tempPath, model = 'LLAMA_3_1
       // max_tokens: ?,  // Uncomment and set if you want to limit the response length
       messages: [{ role: "user", content: promptAndTranscript }]
     })
-    
-    // Destructure the response to extract relevant information
-    const {
-      choices: [{ message: { content }, finishReason }],
-      model: usedModel,
-      usage: { promptTokens, completionTokens, totalTokens }
-    } = response
+
+    const content = response.choices[0].message.content as string
+    const finishReason = response.choices[0].finishReason
+    const usedModel = response.model
+    const { promptTokens, completionTokens, totalTokens } = response.usage ?? {}
     
     // Write the generated content to the specified output file
     await writeFile(tempPath, content)
@@ -54,7 +51,7 @@ export async function callOcto(promptAndTranscript, tempPath, model = 'LLAMA_3_1
     
   } catch (error) {
     // Log any errors that occur during the process
-    console.error(`Error in callOcto: ${error.message}`)
+    console.error(`Error in callOcto: ${(error as Error).message}`)
     throw error  // Re-throw the error for handling by the caller
   }
 }

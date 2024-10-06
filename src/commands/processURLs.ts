@@ -1,4 +1,4 @@
-// src/commands/processURLs.js
+// src/commands/processURLs.ts
 
 import { readFile, writeFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
@@ -6,18 +6,21 @@ import { processVideo } from './processVideo.js'
 import { extractVideoMetadata } from '../utils/generateMarkdown.js'
 import { checkDependencies } from '../utils/checkDependencies.js'
 import { log, final, wait } from '../types.js'
-
-/** @import { LLMServices, TranscriptServices, ProcessingOptions } from '../types.js' */
+import type { LLMServices, TranscriptServices, ProcessingOptions } from '../types.js'
 
 /**
  * Main function to process URLs from a file.
- * @param {string} filePath - The path to the file containing URLs.
- * @param {LLMServices} [llmServices] - The selected Language Model option.
- * @param {TranscriptServices} [transcriptServices] - The transcription service to use.
- * @param {ProcessingOptions} options - Additional options for processing.
- * @returns {Promise<void>}
+ * @param filePath - The path to the file containing URLs.
+ * @param llmServices - The selected Language Model option.
+ * @param transcriptServices - The transcription service to use.
+ * @param options - Additional options for processing.
  */
-export async function processURLs(filePath, llmServices, transcriptServices, options) {
+export async function processURLs(
+  options: ProcessingOptions,
+  filePath: string,
+  llmServices?: LLMServices,
+  transcriptServices?: TranscriptServices
+): Promise<void> {
   // log(opts(`Options received:\n`))
   // log(options)
   try {
@@ -57,16 +60,16 @@ export async function processURLs(filePath, llmServices, transcriptServices, opt
     for (const [index, url] of urls.entries()) {
       log(wait(`\n  Processing URL ${index + 1}/${urls.length}:\n    - ${url}\n`))
       try {
-        await processVideo(url, llmServices, transcriptServices, options)
+        await processVideo(options, url, llmServices, transcriptServices)
       } catch (error) {
-        console.error(`Error processing URL ${url}: ${error.message}`)
+        console.error(`Error processing URL ${url}: ${(error as Error).message}`)
         // Continue processing the next URL
       }
     }
 
     log(final('\nURL file processing completed successfully.\n'))
   } catch (error) {
-    console.error(`Error reading or processing file ${filePath}: ${error.message}`)
+    console.error(`Error reading or processing file ${filePath}: ${(error as Error).message}`)
     process.exit(1) // Exit with an error code
   }
 }

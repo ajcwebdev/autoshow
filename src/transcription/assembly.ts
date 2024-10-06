@@ -1,11 +1,10 @@
-// src/transcription/assembly.js
+// src/transcription/assembly.ts
 
 import { writeFile } from 'node:fs/promises'
 import { env } from 'node:process'
 import { AssemblyAI } from 'assemblyai'
 import { log, wait } from '../types.js'
-
-/** @import { TranscriptServices, ProcessingOptions } from '../types.js' */
+import type { ProcessingOptions } from '../types.js'
 
 /**
  * Main function to handle transcription using AssemblyAI.
@@ -14,9 +13,7 @@ import { log, wait } from '../types.js'
  * @returns {Promise<string>} - Returns the formatted transcript content.
  * @throws {Error} - If an error occurs during transcription.
  */
-export async function callAssembly(finalPath, options) {
-  // log(opts(`Options received:\n`))
-  // log(options)
+export async function callAssembly(options: ProcessingOptions, finalPath: string): Promise<string> {
   // Check if the ASSEMBLY_API_KEY environment variable is set
   if (!env.ASSEMBLY_API_KEY) {
     throw new Error('ASSEMBLY_API_KEY environment variable is not set. Please set it to your AssemblyAI API key.')
@@ -40,7 +37,7 @@ export async function callAssembly(finalPath, options) {
     let txtContent = ''
 
     // Helper function to format timestamps
-    const formatTime = (timestamp) => {
+    const formatTime = (timestamp: number): string => {
       const totalSeconds = Math.floor(timestamp / 1000)
       return `${Math.floor(totalSeconds / 60).toString().padStart(2, '0')}:${(totalSeconds % 60).toString().padStart(2, '0')}`
     }
@@ -79,7 +76,7 @@ export async function callAssembly(finalPath, options) {
     return txtContent
   } catch (error) {
     // Log any errors that occur during the transcription process
-    console.error(`Error processing the transcription: ${error.message}`)
+    console.error(`Error processing the transcription: ${(error as Error).message}`)
     throw error // Re-throw the error for handling in the calling function
   }
 }

@@ -1,23 +1,22 @@
-// src/utils/generateMarkdown.js
+// src/utils/generateMarkdown.ts
 
-import { checkDependencies } from './checkDependencies.js'
 import { execFile } from 'node:child_process'
 import { promisify } from 'node:util'
 import { writeFile } from 'node:fs/promises'
 import { basename, extname } from 'node:path'
+import { checkDependencies } from './checkDependencies.js'
 import { log, dim, step, success } from '../types.js'
-
-/** @import { MarkdownData, RSSItem, VideoMetadata } from '../types.js' */
+import type { MarkdownData, RSSItem, VideoMetadata } from '../types.js'
 
 // Promisify the execFile function for use with async/await
 const execFilePromise = promisify(execFile)
 
 /**
  * Extract metadata for a single video URL.
- * @param {string} url - The URL of the video.
- * @returns {Promise<VideoMetadata>} - The video metadata.
+ * @param url - The URL of the video.
+ * @returns The video metadata.
  */
-export async function extractVideoMetadata(url) {
+export async function extractVideoMetadata(url: string): Promise<VideoMetadata> {
   try {
     // Check for required dependencies
     await checkDependencies(['yt-dlp'])
@@ -50,18 +49,18 @@ export async function extractVideoMetadata(url) {
       coverImage,
     }
   } catch (error) {
-    console.error(`Error extracting metadata for ${url}: ${error.message}`)
+    console.error(`Error extracting metadata for ${url}: ${error instanceof Error ? (error as Error).message : String(error)}`)
     throw error
   }
 }
 
 /**
  * Function to generate markdown for RSS feed items.
- * @param {RSSItem} item - The RSS feed item object.
- * @returns {Promise<MarkdownData>} - Returns an object with frontMatter, finalPath, and filename.
- * @throws {Error} - If markdown generation fails.
+ * @param item - The RSS feed item object.
+ * @returns An object with frontMatter, finalPath, and filename.
+ * @throws {Error} If markdown generation fails.
  */
-export async function generateRSSMarkdown(item) {
+export async function generateRSSMarkdown(item: RSSItem): Promise<MarkdownData> {
   try {
     // Destructure the item object
     const { publishDate, title, coverImage, showLink, channel, channelURL } = item
@@ -91,18 +90,18 @@ export async function generateRSSMarkdown(item) {
     log(success(`  Front matter successfully created and saved:\n    - ${finalPath}.md`))
     return { frontMatter, finalPath, filename }
   } catch (error) {
-    console.error(`Error generating markdown for RSS item: ${error.message}`)
+    console.error(`Error generating markdown for RSS item: ${error instanceof Error ? (error as Error).message : String(error)}`)
     throw error
   }
 }
 
 /**
  * Function to generate markdown for local audio or video files.
- * @param {string} filePath - The path to the local file.
- * @returns {Promise<MarkdownData>} - Returns an object with frontMatter, finalPath, and filename.
- * @throws {Error} - If markdown generation fails.
+ * @param filePath - The path to the local file.
+ * @returns An object with frontMatter, finalPath, and filename.
+ * @throws {Error} If markdown generation fails.
  */
-export async function generateFileMarkdown(filePath) {
+export async function generateFileMarkdown(filePath: string): Promise<MarkdownData> {
   try {
     // Extract the original filename from the full file path
     const originalFilename = basename(filePath)
@@ -141,7 +140,7 @@ export async function generateFileMarkdown(filePath) {
     return { frontMatter, finalPath, filename: sanitizedFilename }
   } catch (error) {
     // Log any errors that occur during the process
-    console.error(`Error generating markdown for file: ${error.message}`)
+    console.error(`Error generating markdown for file: ${error instanceof Error ? (error as Error).message : String(error)}`)
     // Re-throw the error to be handled by the calling function
     throw error
   }
@@ -149,11 +148,11 @@ export async function generateFileMarkdown(filePath) {
 
 /**
  * Function to generate markdown for YouTube videos.
- * @param {string} url - The URL of the YouTube video.
- * @returns {Promise<MarkdownData>} - An object containing front matter, final path, and filename.
- * @throws {Error} - If markdown generation fails.
+ * @param url - The URL of the YouTube video.
+ * @returns An object containing front matter, final path, and filename.
+ * @throws {Error} If markdown generation fails.
  */
-export async function generateMarkdown(url) {
+export async function generateMarkdown(url: string): Promise<MarkdownData> {
   try {
     // Check for required dependencies
     await checkDependencies(['yt-dlp'])
@@ -205,17 +204,17 @@ export async function generateMarkdown(url) {
     log(success(`  Front matter successfully created and saved:\n    - ${finalPath}.md`))
     return { frontMatter, finalPath, filename }
   } catch (error) {
-    console.error(`Error generating markdown for video: ${error.message}`)
+    console.error(`Error generating markdown for video: ${error instanceof Error ? (error as Error).message : String(error)}`)
     throw error
   }
 }
 
 /**
  * Sanitize the title to create a safe filename.
- * @param {string} title - The title to sanitize.
- * @returns {string} - The sanitized title.
+ * @param title - The title to sanitize.
+ * @returns The sanitized title.
  */
-function sanitizeTitle(title) {
+function sanitizeTitle(title: string): string {
   return title
     .replace(/[^\w\s-]/g, '')
     .trim()

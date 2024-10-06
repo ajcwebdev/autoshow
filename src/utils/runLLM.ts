@@ -1,4 +1,4 @@
-// src/utils/runLLM.js
+// src/utils/runLLM.ts
 
 import { readFile, writeFile, unlink } from 'node:fs/promises'
 import { callLlama } from '../llms/llama.js'
@@ -11,8 +11,7 @@ import { callMistral } from '../llms/mistral.js'
 import { callOcto } from '../llms/octo.js'
 import { generatePrompt } from '../llms/prompt.js'
 import { log, step, success, wait } from '../types.js'
-
-/** @import { LLMServices, ProcessingOptions, LLMFunction, LLMFunctions } from '../types.js' */
+import type { LLMServices, ProcessingOptions, LLMFunction, LLMFunctions } from '../types.js'
 
 /**
  * Main function to run the selected Language Model.
@@ -23,12 +22,14 @@ import { log, step, success, wait } from '../types.js'
  * @returns {Promise<void>}
  * @throws {Error} - If the LLM processing fails or an error occurs during execution.
  */
-export async function runLLM(finalPath, frontMatter, llmServices, options) {
+export async function runLLM(
+  options: ProcessingOptions,
+  finalPath: string,
+  frontMatter: string,
+  llmServices?: LLMServices
+): Promise<void> {
   log(step(`\nStep 4 - Running LLM processing on transcript...\n`))
-  // log(opts(`Options passed to runLLM:\n`))
-  // log(options)
-  /** @type {LLMFunctions} */
-  const LLM_FUNCTIONS = {
+  const LLM_FUNCTIONS: LLMFunctions = {
     llama: callLlama,
     ollama: callOllama,
     chatgpt: callChatGPT,
@@ -50,10 +51,7 @@ export async function runLLM(finalPath, frontMatter, llmServices, options) {
 
     if (llmServices) {
       log(wait(`  Processing with ${llmServices} Language Model...`))
-      /** Get the appropriate LLM function based on the option
-       * @type {LLMFunction}
-       */
-      const llmFunction = LLM_FUNCTIONS[llmServices]
+      const llmFunction: LLMFunction = LLM_FUNCTIONS[llmServices]
       if (!llmFunction) {
         throw new Error(`Invalid LLM option: ${llmServices}`)
       }
@@ -74,7 +72,7 @@ export async function runLLM(finalPath, frontMatter, llmServices, options) {
       log(success(`\n  Prompt and transcript saved to markdown file:\n    - ${finalPath}-prompt.md`))
     }
   } catch (error) {
-    console.error(`Error running Language Model: ${error.message}`)
+    console.error(`Error running Language Model: ${(error as Error).message}`)
     throw error
   }
 }

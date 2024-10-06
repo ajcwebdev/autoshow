@@ -1,4 +1,4 @@
-// src/commands/processFile.js
+// src/commands/processFile.ts
 
 import { generateFileMarkdown } from '../utils/generateMarkdown.js'
 import { downloadFileAudio } from '../utils/downloadAudio.js'
@@ -6,8 +6,7 @@ import { runTranscription } from '../utils/runTranscription.js'
 import { runLLM } from '../utils/runLLM.js'
 import { cleanUpFiles } from '../utils/cleanUpFiles.js'
 import { log, final } from '../types.js'
-
-/** @import { LLMServices, TranscriptServices, ProcessingOptions } from '../types.js' */
+import type { LLMServices, TranscriptServices, ProcessingOptions } from '../types.js'
 
 /**
  * Main function to process a local audio or video file.
@@ -17,7 +16,12 @@ import { log, final } from '../types.js'
  * @param {ProcessingOptions} options - Additional options for processing.
  * @returns {Promise<void>}
  */
-export async function processFile(filePath, llmServices, transcriptServices, options) {
+export async function processFile(
+  options: ProcessingOptions,
+  filePath: string,
+  llmServices?: LLMServices,
+  transcriptServices?: TranscriptServices
+): Promise<void> {
   // log(opts(`Options received:\n`))
   // log(options)
   try {
@@ -28,10 +32,10 @@ export async function processFile(filePath, llmServices, transcriptServices, opt
     await downloadFileAudio(filePath, filename)
 
     // Run transcription on the file
-    await runTranscription(finalPath, frontMatter, transcriptServices, options)
+    await runTranscription(options, finalPath, frontMatter, transcriptServices)
 
     // Process the transcript with the selected Language Model
-    await runLLM(finalPath, frontMatter, llmServices, options)
+    await runLLM(options, finalPath, frontMatter, llmServices)
 
     // Clean up temporary files if the noCleanUp option is not set
     if (!options.noCleanUp) {
@@ -40,7 +44,7 @@ export async function processFile(filePath, llmServices, transcriptServices, opt
 
     log(final('\nLocal file processing completed successfully.\n'))
   } catch (error) {
-    console.error(`Error processing file: ${error.message}`)
+    console.error(`Error processing file: ${(error as Error).message}`)
     process.exit(1) // Exit with an error code
   }
 }

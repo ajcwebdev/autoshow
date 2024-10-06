@@ -1,4 +1,4 @@
-// src/llms/cohere.js
+// src/llms/cohere.ts
 
 import { writeFile } from 'node:fs/promises'
 import { env } from 'node:process'
@@ -6,18 +6,21 @@ import { CohereClient } from 'cohere-ai'
 import { COHERE_MODELS } from '../models.js'
 import { log, wait } from '../types.js'
 
-/** @import { LLMFunction, CohereModelType } from '../types.js' */
+import type { LLMFunction, CohereModelType } from '../types.js'
 
-/** @type {LLMFunction} */
 /**
  * Main function to call Cohere API.
- * @param {string} promptAndTranscript - The combined prompt and transcript text to process.
- * @param {string} tempPath - The temporary file path to write the LLM output.
- * @param {CohereModelType} [model='COMMAND_R'] - The Cohere model to use.
- * @returns {Promise<void>}
- * @throws {Error} - If an error occurs during the API call.
+ * @param promptAndTranscript - The combined prompt and transcript text to process.
+ * @param tempPath - The temporary file path to write the LLM output.
+ * @param model - The Cohere model to use.
+ * @returns A Promise that resolves when the API call is complete.
+ * @throws {Error} If an error occurs during the API call.
  */
-export async function callCohere(promptAndTranscript, tempPath, model = 'COMMAND_R') {
+export const callCohere: LLMFunction = async (
+  promptAndTranscript: string,
+  tempPath: string,
+  model: string = 'COMMAND_R'
+): Promise<void> => {
   // Check if the COHERE_API_KEY environment variable is set
   if (!env.COHERE_API_KEY) {
     throw new Error('COHERE_API_KEY environment variable is not set. Please set it to your Cohere API key.')
@@ -28,7 +31,7 @@ export async function callCohere(promptAndTranscript, tempPath, model = 'COMMAND
   
   try {
     // Select the actual model to use, defaulting to COMMAND_R if not specified
-    const actualModel = COHERE_MODELS[model] || COHERE_MODELS.COMMAND_R
+    const actualModel = COHERE_MODELS[model as CohereModelType] || COHERE_MODELS.COMMAND_R
     
     // Call the Cohere chat API
     const response = await cohere.chat({
@@ -40,17 +43,29 @@ export async function callCohere(promptAndTranscript, tempPath, model = 'COMMAND
     // Destructure the response to get relevant information
     const {
       text, // The generated text
-      meta: { tokens: { inputTokens, outputTokens } }, // Token usage information
+      meta, // Metadata including token usage
       finishReason // Reason why the generation stopped
     } = response
     
     // Write the generated text to the output file
-    await writeFile(tempPath, text)
+    if (text) {
+      await writeFile(tempPath, text)
+    } else {
+      throw new Error('No text content generated from the API')
+    }
+    
     log(wait(`\n  Finish Reason: ${finishReason}\n  Model: ${actualModel}`))
-    log(wait(`  Token Usage:\n    - ${inputTokens} input tokens\n    - ${outputTokens} output tokens`))
+    
+    // Check if token usage information is available
+    if (meta && meta.tokens) {
+      const { inputTokens, outputTokens } = meta.tokens
+      log(wait(`  Token Usage:\n    - ${inputTokens} input tokens\n    - ${outputTokens} output tokens`))
+    } else {
+      log(wait("  - Token usage information not available"))
+    }
     
   } catch (error) {
-    console.error(`Error in callCohere: ${error.message}`)
+    console.error(`Error in callCohere: ${(error as Error).message}`)
     throw error // Re-throw the error for handling in the calling function
   }
 }

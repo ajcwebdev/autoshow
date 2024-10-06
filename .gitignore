@@ -10,3 +10,4 @@ build
 deno.lock
 out
 types
+dist

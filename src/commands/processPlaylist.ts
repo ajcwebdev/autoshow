@@ -1,26 +1,29 @@
-// src/commands/processPlaylist.js
+// src/commands/processPlaylist.ts
 
 import { writeFile } from 'node:fs/promises'
-import { processVideo } from './processVideo.js'
 import { execFile } from 'node:child_process'
 import { promisify } from 'node:util'
+import { processVideo } from './processVideo.js'
 import { extractVideoMetadata } from '../utils/generateMarkdown.js'
 import { checkDependencies } from '../utils/checkDependencies.js'
 import { log, final, wait } from '../types.js'
-
-/** @import { LLMServices, TranscriptServices, ProcessingOptions } from '../types.js' */
+import type { LLMServices, TranscriptServices, ProcessingOptions } from '../types.js'
 
 const execFilePromise = promisify(execFile)
 
 /**
  * Main function to process a YouTube playlist.
- * @param {string} playlistUrl - The URL of the YouTube playlist to process.
- * @param {LLMServices} [llmServices] - The selected Language Model option.
- * @param {TranscriptServices} [transcriptServices] - The transcription service to use.
- * @param {ProcessingOptions} options - Additional options for processing.
- * @returns {Promise<void>}
+ * @param playlistUrl - The URL of the YouTube playlist to process.
+ * @param llmServices - The selected Language Model option.
+ * @param transcriptServices - The transcription service to use.
+ * @param options - Additional options for processing.
  */
-export async function processPlaylist(playlistUrl, llmServices, transcriptServices, options) {
+export async function processPlaylist(
+  options: ProcessingOptions,
+  playlistUrl: string,
+  llmServices?: LLMServices,
+  transcriptServices?: TranscriptServices
+): Promise<void> {
   // log(opts(`Options received:\n`))
   // log(options)
   try {
@@ -66,16 +69,16 @@ export async function processPlaylist(playlistUrl, llmServices, transcriptServic
     for (const [index, url] of urls.entries()) {
       log(wait(`\n  Processing video ${index + 1}/${urls.length}:\n    - ${url}\n`))
       try {
-        await processVideo(url, llmServices, transcriptServices, options)
+        await processVideo(options, url, llmServices, transcriptServices)
       } catch (error) {
-        console.error(`Error processing video ${url}: ${error.message}`)
+        console.error(`Error processing video ${url}: ${(error as Error).message}`)
         // Continue processing the next video
       }
     }
 
     log(final('\nPlaylist processing completed successfully.\n'))
   } catch (error) {
-    console.error(`Error processing playlist: ${error.message}`)
+    console.error(`Error processing playlist: ${(error as Error).message}`)
     process.exit(1) // Exit with an error code
   }
 }

@@ -33,6 +33,7 @@
     "serve": "npm run build && node --env-file=.env --no-warnings --watch packages/server/index.js",
     "fetch-local": "npm run build && node --env-file=.env --no-warnings packages/server/tests/fetch-local.js",
     "fetch-all": "npm run build && node --env-file=.env --no-warnings packages/server/tests/fetch-all.js",
+    "t": "npm run build && node --test test/local.test.js",
     "test-local": "npm run build && node --test test/local.test.js",
     "test-all": "npm run build && node --test test/all.test.js"
   },
@@ -53,7 +54,7 @@
     "ffmpeg-static": "^5.2.0",
     "file-type": "^19.4.1",
     "inquirer": "^10.2.2",
-    "node-llama-cpp": "^3.0.0-beta.44",
+    "node-llama-cpp": "^3.1.0",
     "ollama": "^0.5.9",
     "openai": "^4.55.7",
     "typescript": "^5.6.2"

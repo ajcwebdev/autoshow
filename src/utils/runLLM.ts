@@ -50,7 +50,7 @@ export async function runLLM(
     const promptAndTranscript = `${prompt}${transcript}`
 
     if (llmServices) {
-      log(wait(`  Processing with ${llmServices} Language Model...`))
+      log(wait(`  Processing with ${llmServices} Language Model...\n`))
       const llmFunction: LLMFunction = LLM_FUNCTIONS[llmServices]
       if (!llmFunction) {
         throw new Error(`Invalid LLM option: ${llmServices}`)

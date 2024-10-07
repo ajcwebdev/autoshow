@@ -23,9 +23,7 @@ export async function generateMarkdown(
   options: ProcessingOptions,
   input: string | RSSItem
 ): Promise<MarkdownData> {
-  // log(`Options received in generateMarkdown:\n`)
-  // log(options)
-  // log(`input:`, input)
+  // log(`  - input: ${input}\n`)
   /**
    * Sanitizes a title string for use in filenames.
    * 
@@ -35,11 +33,11 @@ export async function generateMarkdown(
   function sanitizeTitle(title: string): string {
     return title
       .replace(/[^\w\s-]/g, '') // Remove all non-word chars except spaces and hyphens
-      .trim() // Remove leading and trailing whitespace
-      .replace(/[\s_]+/g, '-') // Replace spaces and underscores with a single hyphen
-      .replace(/-+/g, '-') // Replace multiple hyphens with a single hyphen
-      .toLowerCase() // Convert to lowercase
-      .slice(0, 200) // Limit to 200 characters
+      .trim()                   // Remove leading and trailing whitespace
+      .replace(/[\s_]+/g, '-')  // Replace spaces and underscores with a single hyphen
+      .replace(/-+/g, '-')      // Replace multiple hyphens with a single hyphen
+      .toLowerCase()            // Convert to lowercase
+      .slice(0, 200)            // Limit to 200 characters
   }
 
   // Declare variables to store generated content
@@ -88,9 +86,6 @@ export async function generateMarkdown(
         `coverImage: "${thumbnail}"`,
         '---\n',
       ]
-
-      // Log progress
-      log(step('\nStep 1 - Generating video markdown...\n'))
       break
 
     case !!options.file:
@@ -114,9 +109,6 @@ export async function generateMarkdown(
         `coverImage: ""`,
         '---\n',
       ]
-
-      // Log progress
-      log(step('\nStep 1 - Generating file markdown...\n'))
       break
 
     case !!options.rss:
@@ -140,9 +132,6 @@ export async function generateMarkdown(
         `coverImage: "${coverImage}"`,
         '---\n',
       ]
-
-      // Log progress
-      log(step('\nStep 1 - Generating RSS markdown...\n'))
       break
 
     default:
@@ -158,6 +147,7 @@ export async function generateMarkdown(
 
   // Log the generated front matter and success message
   log(dim(frontMatterContent))
+  log(step('\nStep 1 - Generating markdown...\n'))
   log(success(`  Front matter successfully created and saved:\n    - ${finalPath}.md`))
 
   // Return the generated markdown data

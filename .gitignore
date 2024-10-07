@@ -11,3 +11,5 @@ deno.lock
 out
 types
 dist
+NEW.md
+TODO.md

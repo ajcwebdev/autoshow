@@ -325,6 +325,24 @@ export type LlamaModelType = 'QWEN_2_5_3B' | 'PHI_3_5' | 'LLAMA_3_2_1B' | 'GEMMA
 /** Define local model with Ollama. */
 export type OllamaModelType = 'LLAMA_3_2_1B' | 'LLAMA_3_2_3B' | 'GEMMA_2_2B' | 'PHI_3_5' | 'QWEN_2_5_1B' | 'QWEN_2_5_3B'
 
+// Define the expected structure of the response from Ollama API
+export type OllamaResponse = {
+  model: string
+  created_at: string
+  message: {
+    role: string
+    content: string
+  }
+  done_reason: string
+  done: boolean
+  total_duration: number
+  load_duration: number
+  prompt_eval_count: number
+  prompt_eval_duration: number
+  eval_count: number
+  eval_duration: number
+}
+
 /**
  * Represents the function signature for cleaning up temporary files.
  */

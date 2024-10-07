@@ -5,7 +5,7 @@ import { exec } from 'node:child_process'
 import { promisify } from 'node:util'
 import { existsSync } from 'node:fs'
 import { WHISPER_MODELS } from '../models.js'
-import { log, success, wait } from '../models.js'
+import { log, wait } from '../models.js'
 import type { ProcessingOptions } from '../types.js'
 
 const execPromise = promisify(exec)
@@ -30,8 +30,7 @@ export async function callWhisper(options: ProcessingOptions, finalPath: string)
     // Get the model ggml file name
     const modelGGMLName = WHISPER_MODELS[whisperModel]
 
-    log(wait(`    - whisperModel: ${whisperModel}`))
-    log(wait(`    - modelGGMLName: ${modelGGMLName}`))
+    log(wait(`\n    - whisperModel: ${whisperModel}\n    - modelGGMLName: ${modelGGMLName}`))
 
     // Setup Whisper
     if (!existsSync('./whisper.cpp')) {
@@ -42,14 +41,14 @@ export async function callWhisper(options: ProcessingOptions, finalPath: string)
 
     // Ensure model is downloaded
     if (!existsSync(`./whisper.cpp/models/ggml-${whisperModel}.bin`)) {
-      log(wait(`    - Model not found, downloading: ${whisperModel}...\n`))
+      log(wait(`  Model not found, downloading...\n    - ${whisperModel}\n`))
       await execPromise(`bash ./whisper.cpp/models/download-ggml-model.sh ${whisperModel}`)
-      log(success('  Model download completed.\n'))
+      log(wait('  Model download completed, running transcription...\n'))
     }
 
     // Run transcription
     await execPromise(`./whisper.cpp/main -m "whisper.cpp/models/${modelGGMLName}" -f "${finalPath}.wav" -of "${finalPath}" --output-lrc`)
-    log(wait(`\n  Transcript LRC file successfully completed...\n    - ${finalPath}.lrc\n`))
+    log(wait(`\n  Transcript LRC file successfully completed...\n    - ${finalPath}.lrc`))
 
     // Read the generated LRC file
     const lrcContent = await readFile(`${finalPath}.lrc`, 'utf8')

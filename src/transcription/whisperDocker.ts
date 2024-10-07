@@ -31,6 +31,7 @@ export async function callWhisperDocker(options: ProcessingOptions, finalPath: s
     const modelGGMLName = WHISPER_MODELS[whisperModel]
     const CONTAINER_NAME = 'autoshow-whisper-1'
     const modelPathContainer = `/app/models/${modelGGMLName}`
+
     log(wait(`    - whisperModel: ${whisperModel}`))
     log(wait(`    - modelGGMLName: ${modelGGMLName}`))
     log(wait(`    - CONTAINER_NAME: ${CONTAINER_NAME}`))
@@ -52,14 +53,17 @@ export async function callWhisperDocker(options: ProcessingOptions, finalPath: s
 
     // Process transcript
     const lrcContent = await readFile(`${finalPath}.lrc`, 'utf8')
+    // Process and format the LRC content
     const txtContent = lrcContent.split('\n')
       .filter(line => !line.startsWith('[by:whisper.cpp]'))
       .map(line => line.replace(/\[(\d{2,3}):(\d{2})\.(\d{2})\]/g, (_, p1, p2) => `[${p1}:${p2}]`))
       .join('\n')
 
+    // Write the formatted content to a text file
     await writeFile(`${finalPath}.txt`, txtContent)
     log(wait(`  Transcript transformation successfully completed...\n    - ${finalPath}.txt\n`))
     
+    // Return the processed content
     return txtContent
   } catch (error) {
     console.error('Error in callWhisperDocker:', error)

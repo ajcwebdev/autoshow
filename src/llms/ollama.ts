@@ -5,14 +5,7 @@ import { env } from 'node:process'
 import { OLLAMA_MODELS } from '../models.js'
 import { log, wait } from '../models.js'
 
-import type { LLMFunction, OllamaModelType } from '../types.js'
-
-// Define the expected structure of the response from Ollama API
-interface OllamaResponse {
-  message: {
-    content: string
-  }
-}
+import type { LLMFunction, OllamaModelType, OllamaResponse } from '../types.js'
 
 /**
  * Main function to call the Llama model using the Ollama REST API.

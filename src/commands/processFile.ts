@@ -5,7 +5,7 @@ import { downloadAudio } from '../utils/downloadAudio.js'
 import { runTranscription } from '../utils/runTranscription.js'
 import { runLLM } from '../utils/runLLM.js'
 import { cleanUpFiles } from '../utils/cleanUpFiles.js'
-import { log, final } from '../models.js'
+import { log, opts, wait } from '../models.js'
 import type { LLMServices, TranscriptServices, ProcessingOptions } from '../types.js'
 
 /**
@@ -22,30 +22,16 @@ export async function processFile(
   llmServices?: LLMServices,
   transcriptServices?: TranscriptServices
 ): Promise<void> {
-  // log(`Options received in processFile:\n`)
-  // log(options)
-  // log(`filePath:`, filePath)
-  // log(`llmServices:`, llmServices)
-  // log(`transcriptServices:`, transcriptServices)
+  log(opts('Parameters passed to processFile:\n'))
+  log(wait(`  - llmServices: ${llmServices}\n  - transcriptServices: ${transcriptServices}\n`))
   try {
-    // Generate markdown for the file
-    const { frontMatter, finalPath, filename } = await generateMarkdown(options, filePath)
-
-    // Convert the audio or video file to the required format
-    await downloadAudio(options, filePath, filename)
-
-    // Run transcription on the file
-    await runTranscription(options, finalPath, frontMatter, transcriptServices)
-
-    // Process the transcript with the selected Language Model
-    await runLLM(options, finalPath, frontMatter, llmServices)
-
-    // Clean up temporary files if the noCleanUp option is not set
-    if (!options.noCleanUp) {
+    const { frontMatter, finalPath, filename } = await generateMarkdown(options, filePath)  // Generate markdown for the file
+    await downloadAudio(options, filePath, filename)                                        // Convert the audio or video file to the required format
+    await runTranscription(options, finalPath, frontMatter, transcriptServices)             // Run transcription on the file
+    await runLLM(options, finalPath, frontMatter, llmServices)                              // Process the transcript with the selected Language Model
+    if (!options.noCleanUp) {                                                               // Clean up temporary files if the noCleanUp option is not set
       await cleanUpFiles(finalPath)
     }
-
-    log(final('\nLocal file processing completed successfully.\n'))
   } catch (error) {
     console.error(`Error processing file: ${(error as Error).message}`)
     process.exit(1) // Exit with an error code

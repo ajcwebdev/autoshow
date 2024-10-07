@@ -6,7 +6,7 @@ import { downloadAudio } from '../utils/downloadAudio.js'
 import { runTranscription } from '../utils/runTranscription.js'
 import { runLLM } from '../utils/runLLM.js'
 import { cleanUpFiles } from '../utils/cleanUpFiles.js'
-import { log, final } from '../models.js'
+import { log, opts, wait } from '../models.js'
 import type { LLMServices, TranscriptServices, ProcessingOptions } from '../types.js'
 
 /**
@@ -23,36 +23,19 @@ export async function processVideo(
   llmServices?: LLMServices,
   transcriptServices?: TranscriptServices
 ): Promise<void> {
-  // log(`Options received in processVideo:\n`)
-  // log(options)
-  // log(`url:`, url)
-  // log(`llmServices:`, llmServices)
-  // log(`transcriptServices:`, transcriptServices)
+  log(opts('Parameters passed to processVideo:\n'))
+  log(wait(`  - llmServices: ${llmServices}\n  - transcriptServices: ${transcriptServices}\n`))
   try {
-    // Check for required dependencies
-    await checkDependencies(['yt-dlp'])
-
-    // Generate markdown with video metadata
-    const { frontMatter, finalPath, filename } = await generateMarkdown(options, url)
-
-    // Download audio from the video
-    await downloadAudio(options, url, filename)
-
-    // Run transcription on the audio
-    await runTranscription(options, finalPath, frontMatter, transcriptServices)
-
-    // Process transcript with an LLM if llmServices is defined, concatenate prompt and transcript if undefined
-    await runLLM(options, finalPath, frontMatter, llmServices)
-
-    // Clean up temporary files if the noCleanUp option is not set
-    if (!options.noCleanUp) {
+    await checkDependencies(['yt-dlp'])                                                // Check for required dependencies.
+    const { frontMatter, finalPath, filename } = await generateMarkdown(options, url)  // Generate markdown with video metadata.
+    await downloadAudio(options, url, filename)                                        // Download audio from the video.
+    await runTranscription(options, finalPath, frontMatter, transcriptServices)        // Run transcription on the audio.
+    await runLLM(options, finalPath, frontMatter, llmServices)                         // If llmServices is set, process with LLM. If llmServices is undefined, bypass LLM processing.
+    if (!options.noCleanUp) {                                                          // Clean up temporary files if the noCleanUp option is not set.
       await cleanUpFiles(finalPath)
     }
-
-    log(final('\nVideo processing completed successfully.\n'))
   } catch (error) {
-    // Log any errors that occur during video processing
-    console.error('Error processing video:', (error as Error).message)
-    throw error // Re-throw to be handled by caller
+    console.error('Error processing video:', (error as Error).message)                 // Log any errors that occur during video processing
+    throw error                                                                        // Re-throw to be handled by caller
   }
 }

@@ -14,7 +14,7 @@ export async function cleanUpFiles(id: string): Promise<void> {
   // Array of file extensions to delete
   const extensions = ['.wav', '.txt', '.md', '.lrc']
 
-  log(success(`  Deleted:`))
+  log(success(`  Temporary files deleted:`))
   for (const ext of extensions) {
     try {
       await unlink(`${id}${ext}`)

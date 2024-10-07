@@ -20,7 +20,7 @@ import { processURLs } from './commands/processURLs.js'
 import { processFile } from './commands/processFile.js'
 import { processRSS } from './commands/processRSS.js'
 import { argv, exit } from 'node:process'
-import { log, opts } from './models.js'
+import { log, opts, final, ACTION_OPTIONS, LLM_OPTIONS, TRANSCRIPT_OPTIONS } from './models.js'
 import type { ProcessingOptions, HandlerFunction, LLMServices, TranscriptServices } from './types.js'
 
 // Initialize the command-line interface
@@ -73,6 +73,22 @@ Report Issues: https://github.com/ajcwebdev/autoshow/issues
   )
 
 /**
+ * Helper function to validate that only one option from a list is provided.
+ * @param {string[]} optionKeys - The list of option keys to check.
+ * @param {ProcessingOptions} options - The options object.
+ * @param {string} errorMessage - The prefix of the error message.
+ * @returns {string | undefined} - The selected option or undefined.
+ */
+function getSingleOption(optionKeys: string[], options: ProcessingOptions, errorMessage: string): string | undefined {
+  const selectedOptions = optionKeys.filter((opt) => options[opt as keyof ProcessingOptions])
+  if (selectedOptions.length > 1) {
+    console.error(`Error: Multiple ${errorMessage} provided (${selectedOptions.join(', ')}). Please specify only one.`)
+    exit(1)
+  }
+  return selectedOptions[0] as string | undefined
+}
+
+/**
  * Main action for the program.
  * @param {ProcessingOptions} options - The command-line options provided by the user.
  * @returns {Promise<void>}
@@ -90,12 +106,8 @@ program.action(async (options: ProcessingOptions) => {
     rss: processRSS,
   }
 
-  const ACTION_OPTIONS = ['video', 'playlist', 'urls', 'file', 'rss']
-  const LLM_OPTIONS = ['chatgpt', 'claude', 'cohere', 'mistral', 'octo', 'llama', 'ollama', 'gemini']
-  const TRANSCRIPT_OPTIONS = ['whisper', 'whisperDocker', 'deepgram', 'assembly']
-
-  const { video, playlist, urls, file, rss, interactive } = options
-  const noActionProvided = [video, playlist, urls, file, rss].every((opt) => !opt)
+  const { interactive } = options
+  const noActionProvided = ACTION_OPTIONS.every((opt) => !options[opt as keyof ProcessingOptions])
 
   if (interactive || noActionProvided) {
     options = await handleInteractivePrompt(options)
@@ -106,25 +118,16 @@ program.action(async (options: ProcessingOptions) => {
     options.item = [options.item]
   }
 
-  const actionsProvided = ACTION_OPTIONS.filter((opt) => options[opt as keyof ProcessingOptions])
-  if (actionsProvided.length > 1) {
-    console.error(`Error: Multiple input options provided (${actionsProvided.join(', ')}). Please specify only one input option.`)
-    exit(1)
-  }
+  // Validate and retrieve single action option
+  const action = getSingleOption(ACTION_OPTIONS, options, 'input option')
+  
+  // Validate and retrieve single LLM option
+  const llmKey = getSingleOption(LLM_OPTIONS, options, 'LLM option')
+  const llmServices = llmKey as LLMServices | undefined
 
-  const selectedLLMs = LLM_OPTIONS.filter((opt) => options[opt as keyof ProcessingOptions])
-  if (selectedLLMs.length > 1) {
-    console.error(`Error: Multiple LLM options provided (${selectedLLMs.join(', ')}). Please specify only one LLM option.`)
-    exit(1)
-  }
-  const llmServices = selectedLLMs[0] as LLMServices | undefined
-
-  const selectedTranscripts = TRANSCRIPT_OPTIONS.filter((opt) => options[opt as keyof ProcessingOptions])
-  if (selectedTranscripts.length > 1) {
-    console.error(`Error: Multiple transcription options provided (${selectedTranscripts.join(', ')}). Please specify only one transcription option.`)
-    exit(1)
-  }
-  const transcriptServices = selectedTranscripts[0] as TranscriptServices | undefined
+  // Validate and retrieve single transcription option
+  const transcriptKey = getSingleOption(TRANSCRIPT_OPTIONS, options, 'transcription option')
+  const transcriptServices: TranscriptServices | undefined = transcriptKey as TranscriptServices | undefined
 
   // Set default transcription service if not provided
   const finalTranscriptServices: TranscriptServices = transcriptServices || 'whisper'
@@ -134,16 +137,21 @@ program.action(async (options: ProcessingOptions) => {
     options.whisper = 'base'
   }
 
-  // Execute the appropriate handler based on the action
-  for (const [key, handler] of Object.entries(PROCESS_HANDLERS)) {
-    if (options[key as keyof ProcessingOptions]) {
-      try {
-        await handler(options, options[key as keyof ProcessingOptions] as string, llmServices, finalTranscriptServices)
-        exit(0)
-      } catch (error) {
-        console.error(`Error processing ${key}:`, (error as Error).message)
-        exit(1)
-      }
+  if (action) {
+    try {
+      await PROCESS_HANDLERS[action](
+        options,
+        options[action as keyof ProcessingOptions] as string,
+        llmServices,
+        finalTranscriptServices
+      )
+      log(final(`\n==================================================`))
+      log(final(`  ${action} Processing Completed Successfully.`))
+      log(final(`==================================================\n`))
+      exit(0)
+    } catch (error) {
+      console.error(`Error processing ${action}:`, (error as Error).message)
+      exit(1)
     }
   }
 })

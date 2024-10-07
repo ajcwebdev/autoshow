@@ -6,7 +6,7 @@ import { existsSync } from 'node:fs'
 import { exec } from 'node:child_process'
 import { promisify } from 'node:util'
 import { LLAMA_MODELS } from '../models.js'
-import { log, wait } from '../models.js'
+import { log, success, wait } from '../models.js'
 
 import type { LlamaModelType, LLMFunction } from '../types.js'
 
@@ -20,11 +20,15 @@ const execAsync = promisify(exec)
  * @returns A Promise that resolves when the processing is complete.
  * @throws {Error} - If an error occurs during processing.
  */
-export const callLlama: LLMFunction = async (promptAndTranscript: string, tempPath: string, model?: string) => {
+export const callLlama: LLMFunction = async (
+  promptAndTranscript: string,
+  tempPath: string,
+  model?: string
+) => {
   try {
     // Get the model object from LLAMA_MODELS using the provided model name or default to GEMMA_2_2B
     const selectedModel = LLAMA_MODELS[model as LlamaModelType] || LLAMA_MODELS.GEMMA_2_2B
-    log(wait(`    - Model selected: ${selectedModel.filename}`))
+    log(wait(`  - filename: ${selectedModel.filename}\n  - url: ${selectedModel.url}\n`))
 
     // If no valid model is found, throw an error
     if (!selectedModel) {
@@ -36,7 +40,7 @@ export const callLlama: LLMFunction = async (promptAndTranscript: string, tempPa
 
     // Check if the model file already exists, if not, download it
     if (!existsSync(modelPath)) {
-      log(wait(`\nDownloading ${selectedModel.filename}...`))
+      log(success(`\nDownloading ${selectedModel.filename}...`))
 
       try {
         // Create the directory for storing models if it doesn't exist
@@ -45,16 +49,15 @@ export const callLlama: LLMFunction = async (promptAndTranscript: string, tempPa
         // Download the model using curl
         const { stderr } = await execAsync(`curl -L ${selectedModel.url} -o ${modelPath}`)
 
-        // If there's any stderr output, log it
-        if (stderr) log(stderr)
-        log('Download completed')
+        // If there's any stderr output, log completed
+        if (stderr) log(success('Download completed'))
       } catch (err) {
         // If an error occurs during download, log it and throw a new error
         console.error(`Download failed: ${err instanceof Error ? err.message : String(err)}`)
         throw new Error('Failed to download the model')
       }
     } else {
-      log(wait(`    - Model path: ${modelPath}`))
+      log(wait(`  modelPath found:\n    - ${modelPath}`))
     }
 
     // Initialize Llama and load the local model

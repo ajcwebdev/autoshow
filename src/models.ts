@@ -8,10 +8,14 @@ export const step: ChalkInstance = chalk.bold.underline
 export const dim: ChalkInstance = chalk.dim
 export const success: ChalkInstance = chalk.bold.blue
 export const opts: ChalkInstance = chalk.magentaBright.bold
-export const wait: ChalkInstance = chalk.cyan.dim
+export const wait: ChalkInstance = chalk.bold.cyan
 export const final: ChalkInstance = chalk.bold.italic
 
 export const log: typeof console.log = console.log
+
+export const ACTION_OPTIONS = ['video', 'playlist', 'urls', 'file', 'rss']
+export const LLM_OPTIONS = ['chatgpt', 'claude', 'cohere', 'mistral', 'octo', 'llama', 'ollama', 'gemini']
+export const TRANSCRIPT_OPTIONS = ['whisper', 'whisperDocker', 'deepgram', 'assembly']
 
 /**
  * Define available Whisper models

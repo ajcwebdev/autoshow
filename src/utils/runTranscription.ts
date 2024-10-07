@@ -1,52 +1,50 @@
-// src/utils/runTranscription.js
+// src/utils/runTranscription.ts
 
 import { readFile, writeFile } from 'node:fs/promises'
 import { callWhisper } from '../transcription/whisper.js'
+import { callWhisperDocker } from '../transcription/whisperDocker.js'
 import { callDeepgram } from '../transcription/deepgram.js'
 import { callAssembly } from '../transcription/assembly.js'
-
-/** @import { TranscriptOption, ProcessingOptions } from '../types.js' */
+import { log, step, success, wait } from '../models.js'
+import type { TranscriptServices, ProcessingOptions } from '../types.js'
 
 /**
  * Main function to run transcription.
  * @param {string} finalPath - The base path for the files.
- * @param {TranscriptOption} transcriptOpt - The transcription service to use.
- * @param {ProcessingOptions} [options={}] - Additional processing options.
- * @param {string} [frontMatter=''] - Optional front matter content for the markdown file.
+ * @param {string} frontMatter - Optional front matter content for the markdown file.
+ * @param {TranscriptServices} transcriptServices - The transcription service to use.
+ * @param {ProcessingOptions} [options] - Additional processing options.
  * @returns {Promise<string>} - Returns the final content including markdown and transcript.
  * @throws {Error} - If the transcription service fails or an error occurs during processing.
  */
 export async function runTranscription(
-  finalPath,
-  transcriptOpt = 'whisper',
-  options = {},
-  frontMatter = ''
-) {
+  options: ProcessingOptions,
+  finalPath: string,
+  frontMatter: string,
+  transcriptServices?: TranscriptServices
+): Promise<string> {
+  log(step(`\nStep 3 - Running transcription on audio file...`))
   try {
-    let txtContent
+    let txtContent: string
 
     // Choose the transcription service based on the provided option
-    switch (transcriptOpt) {
+    switch (transcriptServices) {
       case 'deepgram':
-        console.log('\nStep 3 - Using Deepgram for transcription...')
-        await callDeepgram(`${finalPath}.wav`, finalPath)
-        txtContent = await readFile(`${finalPath}.txt`, 'utf8')
+        txtContent = await callDeepgram(options, finalPath)
         break
 
       case 'assembly':
-        console.log('\nStep 3 - Using AssemblyAI for transcription...')
-        txtContent = await callAssembly(finalPath, transcriptOpt, options)
+        txtContent = await callAssembly(options, finalPath)
         break
-
+      
       case 'whisperDocker':
-      case 'whisper':
-        console.log('\nStep 3 - Using Whisper for transcription...')
-        txtContent = await callWhisper(finalPath, transcriptOpt, options)
-        break
+        txtContent = await callWhisperDocker(options, finalPath)
+        break  
 
+      case 'whisper':
       default:
-        console.error(`Error: Unsupported transcription option '${transcriptOpt}'.`)
-        throw new Error('Unsupported transcription option.')
+        txtContent = await callWhisper(options, finalPath)
+        break
     }
 
     let mdContent = frontMatter
@@ -55,8 +53,8 @@ export async function runTranscription(
       const existingContent = await readFile(`${finalPath}.md`, 'utf8')
       mdContent += existingContent
     } catch (error) {
-      if (error.code !== 'ENOENT') {
-        console.error(`Error reading markdown file: ${error.message}`)
+      if ((error as NodeJS.ErrnoException).code !== 'ENOENT') {
+        console.error(`Error reading markdown file: ${(error as Error).message}`)
         throw error
       }
       // If the file does not exist, proceed without appending
@@ -67,11 +65,11 @@ export async function runTranscription(
 
     // Write final markdown file, including existing content and the new transcript
     await writeFile(`${finalPath}.md`, finalContent)
-    console.log(`  - Markdown file updated with transcript at ${finalPath}.md`)
+    log(success(`  Markdown file successfully updated with transcript:\n    - ${finalPath}.md`))
 
     return finalContent
   } catch (error) {
-    console.error(`Error in transcription process: ${error.message}`)
+    console.error(`Error in transcription process: ${(error as Error).message}`)
     throw error
   }
 }

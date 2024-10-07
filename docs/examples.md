@@ -81,7 +81,15 @@ npm run as -- --file "content/audio.mp3"
 Process RSS feed from newest to oldest (default behavior):
 
 ```bash
-npm run as -- --rss "https://feeds.transistor.fm/fsjam-podcast/"
+npm run as -- --rss "https://ajcwebdev.substack.com/feed"
+```
+
+Process a certain number of the most recent items, for example the last three episodes released on the feed:
+
+```bash
+npm run as -- \
+  --rss "https://feeds.transistor.fm/fsjam-podcast/" \
+  --last 3
 ```
 
 Process RSS feed from oldest to newest:
@@ -243,6 +251,32 @@ npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --octo WIZAR
 npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --llama
 ```
 
+Select Llama model:
+
+```bash
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --llama GEMMA_2_2B
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --llama LLAMA_3_2_1B
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --llama PHI_3_5
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --llama QWEN_2_5_3B
+```
+
+### Ollama
+
+```bash
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --ollama
+```
+
+Select Ollama model:
+
+```bash
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --ollama LLAMA_3_2_1B
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --ollama LLAMA_3_2_3B
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --ollama GEMMA_2_2B
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --ollama PHI_3_5
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --ollama QWEN_2_5_1B
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --ollama QWEN_2_5_3B
+```
+
 ## Transcription Options
 
 ### Whisper.cpp
@@ -263,7 +297,7 @@ npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --whisper sm
 npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --whisper medium
 
 # large-v2 model
-npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --whisper large
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --whisper large-v2
 ```
 
 Run `whisper.cpp` in a Docker container with `--whisperDocker`:
@@ -357,7 +391,7 @@ npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --prompt tit
 This will run both `whisper.cpp` and the AutoShow Commander CLI in their own Docker containers.
 
 ```bash
-docker-compose run autoshow --video "https://www.youtube.com/watch?v=MORMZXEaONk" --whisperDocker base
+docker compose run autoshow --video "https://www.youtube.com/watch?v=MORMZXEaONk" --whisperDocker base
 ```
 
 Currently working on the `llama.cpp` Docker integration so the entire project can be encapsulated in one local Docker Compose file.
@@ -426,6 +460,7 @@ export MD="LLM.md" && export COMMANDS="src/commands" && export UTILS="src/utils"
   echo ''$CLOSE'### Call Cohere'$OPEN'' >> $MD && cat $LLMS/cohere.js >> $MD && \
   echo ''$CLOSE'### Call Gemini'$OPEN'' >> $MD && cat $LLMS/gemini.js >> $MD && \
   echo ''$CLOSE'### Call Llama.cpp'$OPEN'' >> $MD && cat $LLMS/llama.js >> $MD && \
+  echo ''$CLOSE'### Call Ollama'$OPEN'' >> $MD && cat $LLMS/ollama.js >> $MD && \
   echo ''$CLOSE'### Call Mistral'$OPEN'' >> $MD && cat $LLMS/mistral.js >> $MD && \
   echo ''$CLOSE'### Call Octo'$OPEN'' >> $MD && cat $LLMS/octo.js >> $MD && \
   echo ''$CLOSE'## Docker Files\n\n```Dockerfile' >> $MD && cat .github/whisper.Dockerfile >> $MD && \

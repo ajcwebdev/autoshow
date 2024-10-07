@@ -26,7 +26,7 @@ async function start() {
   // Log each incoming request
   fastify.addHook('onRequest', async (request, reply) => {
     console.log(
-      `[${new Date().toISOString()}] Received ${request.method} request for ${request.url}`
+      `\n[${new Date().toISOString()}] Received ${request.method} request for ${request.url}\n`
     )
   })
 
@@ -39,7 +39,7 @@ async function start() {
 
   try {
     await fastify.listen({ port })
-    console.log(`Server running at http://localhost:${port}`)
+    console.log(`\nServer running at http://localhost:${port}\n`)
   } catch (err) {
     fastify.log.error(err)
     process.exit(1)

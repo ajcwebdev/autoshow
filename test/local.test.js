@@ -10,85 +10,95 @@ const commands = [
   {
     cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk"',
     expectedFile: '2024-09-24-ep0-fsjam-podcast-prompt.md',
-    newName: '01---2024-09-24-ep0-fsjam-podcast-prompt.md'
+    newName: 'FILE_01.md'
   },
   {
     cmd: 'npm run as -- --playlist "https://www.youtube.com/playlist?list=PLCVnrVv4KhXPz0SoAVu8Rc1emAdGPbSbr"',
     expectedFiles: [
-      { file: '2024-09-24-ep1-fsjam-podcast-prompt.md', newName: '02---2024-09-24-ep1-fsjam-podcast-prompt.md' },
-      { file: '2024-09-24-ep0-fsjam-podcast-prompt.md', newName: '03---2024-09-24-ep0-fsjam-podcast-prompt.md' }
+      { file: '2024-09-24-ep1-fsjam-podcast-prompt.md', newName: 'FILE_02A.md' },
+      { file: '2024-09-24-ep0-fsjam-podcast-prompt.md', newName: 'FILE_02B.md' }
     ]
   },
   {
     cmd: 'npm run as -- --urls "content/example-urls.md"',
     expectedFiles: [
-      { file: '2024-09-24-ep1-fsjam-podcast-prompt.md', newName: '04---2024-09-24-ep1-fsjam-podcast-prompt.md' },
-      { file: '2024-09-24-ep0-fsjam-podcast-prompt.md', newName: '05---2024-09-24-ep0-fsjam-podcast-prompt.md' }
+      { file: '2024-09-24-ep1-fsjam-podcast-prompt.md', newName: 'FILE_03A.md' },
+      { file: '2024-09-24-ep0-fsjam-podcast-prompt.md', newName: 'FILE_03B.md' }
     ]
   },
   {
     cmd: 'npm run as -- --file "content/audio.mp3"',
     expectedFile: 'audio-prompt.md',
-    newName: '06---audio-prompt.md'
-  },
-  {
-    cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --llama',
-    expectedFile: '2024-09-24-ep0-fsjam-podcast-llama-shownotes.md',
-    newName: '07---2024-09-24-ep0-fsjam-podcast-llama-shownotes.md'
-  },
-  {
-    cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --whisper tiny',
-    expectedFile: '2024-09-24-ep0-fsjam-podcast-prompt.md',
-    newName: '08---2024-09-24-ep0-fsjam-podcast-prompt.md'
-  },
-  {
-    cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --prompt titles',
-    expectedFile: '2024-09-24-ep0-fsjam-podcast-prompt.md',
-    newName: '09---2024-09-24-ep0-fsjam-podcast-prompt.md'
-  },
-  {
-    cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --prompt titles summary mediumChapters takeaways questions',
-    expectedFile: '2024-09-24-ep0-fsjam-podcast-prompt.md',
-    newName: '10---2024-09-24-ep0-fsjam-podcast-prompt.md'
-  },
-  {
-    cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --prompt titles summary shortChapters takeaways questions --whisper tiny --llama',
-    expectedFile: '2024-09-24-ep0-fsjam-podcast-llama-shownotes.md',
-    newName: '11---2024-09-24-ep0-fsjam-podcast-llama-shownotes.md'
-  },
-  {
-    cmd: 'npm run as -- --playlist "https://www.youtube.com/playlist?list=PLCVnrVv4KhXPz0SoAVu8Rc1emAdGPbSbr" --prompt titles --whisper tiny --llama',
-    expectedFiles: [
-      { file: '2024-09-24-ep1-fsjam-podcast-llama-shownotes.md', newName: '12---2024-09-24-ep1-fsjam-podcast-llama-shownotes.md' },
-      { file: '2024-09-24-ep0-fsjam-podcast-llama-shownotes.md', newName: '13---2024-09-24-ep0-fsjam-podcast-llama-shownotes.md' }
-    ]
-  },
-  {
-    cmd: 'npm run as -- --urls "content/example-urls.md" --prompt titles --whisper tiny --llama',
-    expectedFiles: [
-      { file: '2024-09-24-ep1-fsjam-podcast-llama-shownotes.md', newName: '14---2024-09-24-ep1-fsjam-podcast-llama-shownotes.md' },
-      { file: '2024-09-24-ep0-fsjam-podcast-llama-shownotes.md', newName: '15---2024-09-24-ep0-fsjam-podcast-llama-shownotes.md' }
-    ]
+    newName: 'FILE_04.md'
   },
   {
     cmd: 'npm run as -- --file "content/audio.mp3" --prompt titles --whisper tiny --llama',
     expectedFile: 'audio-llama-shownotes.md',
-    newName: '16---audio-llama-shownotes.md'
+    newName: 'FILE_05.md'
+  },
+  {
+    cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --llama',
+    expectedFile: '2024-09-24-ep0-fsjam-podcast-llama-shownotes.md',
+    newName: 'FILE_06.md'
+  },
+  {
+    cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --ollama',
+    expectedFile: '2024-09-24-ep0-fsjam-podcast-ollama-shownotes.md',
+    newName: 'FILE_07.md'
+  },
+  {
+    cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --whisper tiny',
+    expectedFile: '2024-09-24-ep0-fsjam-podcast-prompt.md',
+    newName: 'FILE_08.md'
+  },
+  {
+    cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --whisperDocker tiny',
+    expectedFile: '2024-09-24-ep0-fsjam-podcast-prompt.md',
+    newName: 'FILE_09.md'
+  },
+  {
+    cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --prompt titles',
+    expectedFile: '2024-09-24-ep0-fsjam-podcast-prompt.md',
+    newName: 'FILE_10.md'
+  },
+  {
+    cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --prompt titles summary mediumChapters takeaways questions',
+    expectedFile: '2024-09-24-ep0-fsjam-podcast-prompt.md',
+    newName: 'FILE_11.md'
+  },
+  {
+    cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --prompt titles summary shortChapters takeaways questions --whisper tiny --llama',
+    expectedFile: '2024-09-24-ep0-fsjam-podcast-llama-shownotes.md',
+    newName: 'FILE_12.md'
+  },
+  {
+    cmd: 'npm run as -- --playlist "https://www.youtube.com/playlist?list=PLCVnrVv4KhXPz0SoAVu8Rc1emAdGPbSbr" --prompt titles --whisper tiny --llama',
+    expectedFiles: [
+      { file: '2024-09-24-ep1-fsjam-podcast-llama-shownotes.md', newName: 'FILE_13A.md' },
+      { file: '2024-09-24-ep0-fsjam-podcast-llama-shownotes.md', newName: 'FILE_13B.md' }
+    ]
+  },
+  {
+    cmd: 'npm run as -- --urls "content/example-urls.md" --prompt titles --whisper tiny --ollama',
+    expectedFiles: [
+      { file: '2024-09-24-ep1-fsjam-podcast-ollama-shownotes.md', newName: 'FILE_14A.md' },
+      { file: '2024-09-24-ep0-fsjam-podcast-ollama-shownotes.md', newName: 'FILE_14B.md' }
+    ]
   },
   {
     cmd: 'npm run as -- --rss "https://ajcwebdev.substack.com/feed"',
     expectedFile: '2021-05-10-thoughts-on-lambda-school-layoffs-prompt.md',
-    newName: '17---2021-05-10-thoughts-on-lambda-school-layoffs-prompt.md'
+    newName: 'FILE_15.md'
   },
   {
-    cmd: 'npm run as -- --rss "https://feeds.transistor.fm/fsjam-podcast/" --order newest --skip 94 --whisper tiny',
-    expectedFile: '2020-10-27-episode-0-the-fullstack-jamstack-podcast-with-anthony-campolo-and-christopher-burns-prompt.md',
-    newName: '18---2020-10-27-episode-0-the-fullstack-jamstack-podcast-with-anthony-campolo-and-christopher-burns-prompt.md'
+    cmd: 'npm run as -- --rss "https://ajcwebdev.substack.com/feed" --item "https://api.substack.com/feed/podcast/36236609/fd1f1532d9842fe1178de1c920442541.mp3" --whisper tiny --llama --prompt titles summary longChapters takeaways questions',
+    expectedFile: '2021-05-10-thoughts-on-lambda-school-layoffs-llama-shownotes.md',
+    newName: 'FILE_16.md',
   },
   {
-    cmd: 'npm run as -- --rss "https://feeds.transistor.fm/fsjam-podcast/" --order oldest --skip 94 --whisper tiny',
-    expectedFile: '2023-06-28-episode-94-clerk-with-james-perkins-prompt.md',
-    newName: '19---2023-06-28-episode-94-clerk-with-james-perkins-prompt.md'
+    cmd: 'npm run as -- --rss "https://ajcwebdev.substack.com/feed" --info',
+    expectedFile: 'rss_info.json',
+    newName: 'FILE_17_rss_info.json',
   }
 ]
 

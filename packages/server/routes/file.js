@@ -5,12 +5,12 @@ import { reqToOpts } from '../utils/reqToOpts.js'
 
 // Handler for /file route
 const handleFileRequest = async (request, reply) => {
-  console.log('Entered handleFileRequest')
+  console.log('\nEntered handleFileRequest')
 
   try {
     // Access parsed request body
     const requestData = request.body
-    console.log('Parsed request body:', requestData)
+    console.log('\nParsed request body:', requestData)
 
     // Extract file path
     const { filePath } = requestData
@@ -22,12 +22,12 @@ const handleFileRequest = async (request, reply) => {
     }
 
     // Map request data to processing options
-    const { options, llmOpt, transcriptOpt } = reqToOpts(requestData)
-    console.log('Calling processFile with params:', { filePath, llmOpt, transcriptOpt, options })
+    const { options, llmServices, transcriptServices } = reqToOpts(requestData)
+    console.log('\nCalling processFile with params:', { filePath, llmServices, transcriptServices, options })
 
-    await processFile(filePath, llmOpt, transcriptOpt, options)
+    await processFile(filePath, llmServices, transcriptServices, options)
 
-    console.log('processFile completed successfully')
+    console.log('\nprocessFile completed successfully')
     reply.send({ message: 'File processed successfully.' })
   } catch (error) {
     console.error('Error processing file:', error)

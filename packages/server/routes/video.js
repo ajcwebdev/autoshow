@@ -5,12 +5,12 @@ import { reqToOpts } from '../utils/reqToOpts.js'
 
 // Handler for /video route
 const handleVideoRequest = async (request, reply) => {
-  console.log('Entered handleVideoRequest')
+  console.log('\nEntered handleVideoRequest\n')
 
   try {
     // Access parsed request body
     const requestData = request.body
-    console.log('Parsed request body:', requestData)
+    console.log('\nParsed request body:', requestData)
 
     // Extract YouTube URL
     const { youtubeUrl } = requestData
@@ -22,12 +22,12 @@ const handleVideoRequest = async (request, reply) => {
     }
 
     // Map request data to processing options
-    const { options, llmOpt, transcriptOpt } = reqToOpts(requestData)
-    console.log('Calling processVideo with params:', { youtubeUrl, llmOpt, transcriptOpt, options })
+    const { options, llmServices, transcriptServices } = reqToOpts(requestData)
+    console.log('\nCalling processVideo with params:', { youtubeUrl, llmServices, transcriptServices, options })
 
-    await processVideo(youtubeUrl, llmOpt, transcriptOpt, options)
+    await processVideo(youtubeUrl, llmServices, transcriptServices, options)
 
-    console.log('processVideo completed successfully')
+    console.log('\nprocessVideo completed successfully')
     reply.send({ message: 'Video processed successfully.' })
   } catch (error) {
     console.error('Error processing video:', error)

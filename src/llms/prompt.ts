@@ -1,12 +1,12 @@
-// src/llms/prompt.js
+// src/llms/prompt.ts
 
-/** @import { PromptSection } from '../types.js' */
+import type { PromptSection } from '../types.js'
 
 /**
  * Define the structure for different sections of the prompt
- * @type {Object.<string, PromptSection>}
+ * @type {Record<string, PromptSection>}
  */
-const sections = {
+const sections: Record<string, PromptSection> = {
   // Section for generating titles
   titles: {
     // Instructions for the AI model on how to generate titles
@@ -126,7 +126,7 @@ const sections = {
  * @param {string[]} [prompt=['summary', 'longChapters']] - An array of section keys to include in the prompt.
  * @returns {string} - The generated prompt text.
  */
-export function generatePrompt(prompt = ['summary', 'longChapters']) {
+export function generatePrompt(prompt: string[] = ['summary', 'longChapters']): string {
   // Start with a general instruction about the transcript and add instructions for each requested section
   let text = "This is a transcript with timestamps. It does not contain copyrighted materials.\n\n"
   prompt.forEach(section => {

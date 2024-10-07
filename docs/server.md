@@ -269,14 +269,14 @@ curl --json '{
 ```bash
 curl --json '{
   "youtubeUrl": "https://www.youtube.com/watch?v=MORMZXEaONk",
-  "transcriptService": "deepgram"
+  "transcriptServices": "deepgram"
 }' http://localhost:3000/video
 ```
 
 ```bash
 curl --json '{
   "youtubeUrl": "https://www.youtube.com/watch?v=MORMZXEaONk",
-  "transcriptService": "deepgram",
+  "transcriptServices": "deepgram",
   "llm": "llama"
 }' http://localhost:3000/video
 ```
@@ -286,14 +286,14 @@ curl --json '{
 ```bash
 curl --json '{
   "youtubeUrl": "https://www.youtube.com/watch?v=MORMZXEaONk",
-  "transcriptService": "assembly"
+  "transcriptServices": "assembly"
 }' http://localhost:3000/video
 ```
 
 ```bash
 curl --json '{
   "youtubeUrl": "https://www.youtube.com/watch?v=MORMZXEaONk",
-  "transcriptService": "assembly",
+  "transcriptServices": "assembly",
   "llm": "llama"
 }' http://localhost:3000/video
 ```
@@ -301,7 +301,7 @@ curl --json '{
 ```bash
 curl --json '{
   "youtubeUrl": "https://ajc.pics/audio/fsjam-short.mp3",
-  "transcriptService": "assembly",
+  "transcriptServices": "assembly",
   "speakerLabels": true
 }' http://localhost:3000/video
 ```
@@ -309,7 +309,7 @@ curl --json '{
 ```bash
 curl --json '{
   "youtubeUrl": "https://ajc.pics/audio/fsjam-short.mp3",
-  "transcriptService": "assembly",
+  "transcriptServices": "assembly",
   "speakerLabels": true,
   "llm": "llama"
 }' http://localhost:3000/video

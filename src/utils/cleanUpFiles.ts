@@ -1,6 +1,7 @@
-// src/utils/cleanUpFiles.js
+// src/utils/cleanUpFiles.ts
 
 import { unlink } from 'node:fs/promises'
+import { log, step, success } from '../models.js'
 
 /**
  * Asynchronous function to clean up temporary files.
@@ -8,20 +9,19 @@ import { unlink } from 'node:fs/promises'
  * @returns {Promise<void>}
  * @throws {Error} - If an error occurs while deleting files.
  */
-export async function cleanUpFiles(id) {
+export async function cleanUpFiles(id: string): Promise<void> {
+  log(step('\nStep 5 - Cleaning up temporary files...\n'))
   // Array of file extensions to delete
   const extensions = ['.wav', '.txt', '.md', '.lrc']
 
-  // Log the start of the cleanup process
-  console.log('\nStep 5 - Cleaning up temporary files...')
-
+  log(success(`  Temporary files deleted:`))
   for (const ext of extensions) {
     try {
       await unlink(`${id}${ext}`)
-      console.log(`  - Deleted: ${id}${ext}`)
+      log(success(`    - ${id}${ext}`))
     } catch (error) {
-      if (error.code !== 'ENOENT') {
-        console.error(`Error deleting file ${id}${ext}: ${error.message}`)
+      if (error instanceof Error && (error as Error).message !== 'ENOENT') {
+        console.error(`Error deleting file ${id}${ext}: ${(error as Error).message}`)
       }
       // If the file does not exist, silently continue
     }

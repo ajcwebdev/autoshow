@@ -142,10 +142,7 @@ export async function processRSS(
 
     // Extract channel and item information
     const {
-      title: channelTitle,
-      link: channelLink,
-      image: channelImageObject,
-      item: feedItems,
+      title: channelTitle, link: channelLink, image: channelImageObject, item: feedItems,
     } = feed.rss.channel
 
     // Extract channel image URL safely
@@ -213,13 +210,13 @@ export async function processRSS(
 
     // Process each item in the feed
     for (const [index, item] of itemsToProcess.entries()) {
-      log(opts(`\n==============================================================`))
-      log(opts(`  Item ${index + 1}/${itemsToProcess.length} processing: ${item.title}`))
-      log(opts(`==============================================================\n`))
+      log(opts(`\n========================================================================================`))
+      log(opts(`  Item ${index + 1}/${itemsToProcess.length} processing:\n\n${item.title}`))
+      log(opts(`========================================================================================\n`))
       await processItem(options, item, llmServices, transcriptServices)
-      log(final(`\n==============================================================`))
+      log(final(`\n========================================================================================`))
       log(final(`  ${index + 1}/${itemsToProcess.length} item processing completed successfully`))
-      log(final(`==============================================================\n`))
+      log(final(`========================================================================================\n`))
     }
   } catch (error) {
     console.error(`Error processing RSS feed: ${(error as Error).message}`)

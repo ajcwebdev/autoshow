@@ -251,6 +251,15 @@ npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --octo WIZAR
 npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --llama
 ```
 
+Select Llama model:
+
+```bash
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --llama GEMMA_2_2B
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --llama LLAMA_3_2_1B
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --llama PHI_3_5
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --llama QWEN_2_5_3B
+```
+
 ### Ollama
 
 ```bash

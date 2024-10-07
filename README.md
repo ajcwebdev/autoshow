@@ -48,8 +48,6 @@ See [`docs/roadmap.md`](/docs/roadmap.md) for details about current development 
 cp .env.example .env
 ```
 
-This sets a default model for Llama.cpp which ensures `--llama` doesn't fail if you haven't downloaded a model yet. Before trying to run local LLM inference with Llama.cpp, `callLlama` checks for a model and downloads one if none is detected.
-
 ### Install Local Dependencies
 
 Install `yt-dlp`, `ffmpeg`, and run `npm i`.

@@ -105,6 +105,10 @@ export const OCTO_MODELS: Record<OctoModelType, string> = {
  * @type {Record<LlamaModelType, {filename: string, url: string}>}
  */
 export const LLAMA_MODELS: Record<LlamaModelType, {filename: string, url: string}> = {
+  QWEN_2_5_1B: {
+    filename: "qwen2.5-1.5b-instruct-q6_k.gguf",
+    url: "https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct-GGUF/resolve/main/qwen2.5-1.5b-instruct-q6_k.gguf"
+  },
   QWEN_2_5_3B: {
     filename: "qwen2.5-3b-instruct-q6_k.gguf",
     url: "https://huggingface.co/Qwen/Qwen2.5-3B-Instruct-GGUF/resolve/main/qwen2.5-3b-instruct-q6_k.gguf"

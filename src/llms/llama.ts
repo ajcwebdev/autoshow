@@ -27,8 +27,8 @@ export const callLlama: LLMFunction = async (
   modelName?: string
 ) => {
   try {
-    // Get the model object from LLAMA_MODELS using the provided model name or default to QWEN_2_5_3B
-    const selectedModel = LLAMA_MODELS[modelName as LlamaModelType] || LLAMA_MODELS.QWEN_2_5_3B
+    // Get the model object from LLAMA_MODELS using the provided model name or default to QWEN_2_5_1B
+    const selectedModel = LLAMA_MODELS[modelName as LlamaModelType] || LLAMA_MODELS.QWEN_2_5_1B
     log(wait(`  - filename: ${selectedModel.filename}\n  - url: ${selectedModel.url}\n`))
 
     // If no valid model is found, throw an error
@@ -42,14 +42,14 @@ export const callLlama: LLMFunction = async (
 
     // Check if the model file already exists, if not, download it
     if (!existsSync(modelPath)) {
-      log(success(`\nDownloading ${selectedModel.filename}...`))
+      log(wait(`\n  No model detected, downloading ${selectedModel.filename}...`))
       try {
         const downloader = await createModelDownloader({
           modelUri: selectedModel.url,
           dirPath: modelDir
         })
         await downloader.download()
-        log(success('Download completed'))
+        log(success('  Download completed'))
       } catch (err) {
         console.error(`Download failed: ${err instanceof Error ? err.message : String(err)}`)
         throw new Error('Failed to download the model')
@@ -80,7 +80,7 @@ export const callLlama: LLMFunction = async (
     // Write the response to the temporary file
     await writeFile(tempPath, response)
 
-    log(success('LLM processing completed'))
+    log(wait('  \nLLM processing completed'))
   } catch (error) {
     console.error(`Error in callLlama: ${error instanceof Error ? (error as Error).message : String(error)}`)
     throw error

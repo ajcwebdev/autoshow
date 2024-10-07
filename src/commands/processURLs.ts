@@ -36,7 +36,7 @@ export async function processURLs(
       console.error('Error: No URLs found in the file.')
       process.exit(1)
     }
-    log(opts(`\n===  Found ${urls.length} URLs in the file...  ===`))
+    log(opts(`\nFound ${urls.length} URLs in the file...`))
 
     // Extract metadata for all videos
     const metadataPromises = urls.map(extractVideoMetadata)
@@ -54,9 +54,9 @@ export async function processURLs(
 
     // Process each URL
     for (const [index, url] of urls.entries()) {
-      log(opts(`\n============================================================`))
+      log(opts(`\n================================================================================================`))
       log(opts(`  Processing URL ${index + 1}/${urls.length}: ${url}`))
-      log(opts(`============================================================\n`))
+      log(opts(`================================================================================================\n`))
       try {
         await processVideo(options, url, llmServices, transcriptServices)
       } catch (error) {

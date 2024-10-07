@@ -145,9 +145,9 @@ program.action(async (options: ProcessingOptions) => {
         llmServices,
         finalTranscriptServices
       )
-      log(final(`\n==================================================`))
+      log(final(`\n================================================================================================`))
       log(final(`  ${action} Processing Completed Successfully.`))
-      log(final(`==================================================\n`))
+      log(final(`================================================================================================\n`))
       exit(0)
     } catch (error) {
       console.error(`Error processing ${action}:`, (error as Error).message)

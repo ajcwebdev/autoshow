@@ -19,23 +19,25 @@
   },
   "scripts": {
     "setup": "bash ./setup.sh",
-    "build": "npx tsc",
-    "autoshow": "npm run build && node --env-file=.env --no-warnings dist/autoshow.js",
-    "as": "npm run build && node --env-file=.env --no-warnings dist/autoshow.js",
-    "bun-as": "npm run build && bun --env-file=.env --no-warnings dist/autoshow.js",
-    "deno-as": "npm run build && deno run --allow-sys --allow-read --allow-run --allow-write --allow-env dist/autoshow.js",
-    "v": "npm run build && node --env-file=.env --no-warnings dist/autoshow.js --whisper large-v2 --video",
-    "u": "npm run build && node --env-file=.env --no-warnings dist/autoshow.js --whisper large-v2 --urls",
-    "p": "npm run build && node --env-file=.env --no-warnings dist/autoshow.js --whisper large-v2 --playlist",
-    "f": "npm run build && node --env-file=.env --no-warnings dist/autoshow.js --whisper large-v2 --file",
-    "r": "npm run build && node --env-file=.env --no-warnings dist/autoshow.js --whisper large-v2 --rss",
-    "last3": "npm run build && node --env-file=.env --no-warnings dist/autoshow.js --whisper large-v2 --last 3 --rss",
-    "serve": "npm run build && node --env-file=.env --no-warnings --watch packages/server/index.js",
-    "fetch-local": "npm run build && node --env-file=.env --no-warnings packages/server/tests/fetch-local.js",
-    "fetch-all": "npm run build && node --env-file=.env --no-warnings packages/server/tests/fetch-all.js",
-    "t": "npm run build && node --test test/local.test.js",
-    "test-local": "npm run build && node --test test/local.test.js",
-    "test-all": "npm run build && node --test test/all.test.js"
+    "autoshow": "tsx --env-file=.env --no-warnings src/autoshow.ts",
+    "as": "tsx --env-file=.env --no-warnings src/autoshow.ts",
+    "docker": "docker compose run --remove-orphans autoshow",
+    "docker-up": "docker compose up --build -d --remove-orphans --no-start",
+    "ds": "docker compose images && docker compose ls",
+    "v": "node --env-file=.env --no-warnings src/autoshow.ts --whisper large-v2 --video",
+    "u": "node --env-file=.env --no-warnings src/autoshow.ts --whisper large-v2 --urls",
+    "p": "node --env-file=.env --no-warnings src/autoshow.ts --whisper large-v2 --playlist",
+    "f": "node --env-file=.env --no-warnings src/autoshow.ts --whisper large-v2 --file",
+    "r": "node --env-file=.env --no-warnings src/autoshow.ts --whisper large-v2 --rss",
+    "last3": "node --env-file=.env --no-warnings src/autoshow.ts --whisper large-v2 --last 3 --rss",
+    "serve": "node --env-file=.env --no-warnings --watch packages/server/index.ts",
+    "fetch-local": "node --env-file=.env --no-warnings packages/server/tests/fetch-local.ts",
+    "fetch-all": "node --env-file=.env --no-warnings packages/server/tests/fetch-all.ts",
+    "t": "npm run test-local",
+    "test-local": "node --test test/local.test.js",
+    "test-all": "node --test test/all.test.js",
+    "bun-as": "bun --env-file=.env --no-warnings src/autoshow.ts",
+    "deno-as": "deno run --allow-sys --allow-read --allow-run --allow-write --allow-env src/autoshow.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.26.0",
@@ -44,7 +46,6 @@
     "@google/generative-ai": "^0.17.1",
     "@mistralai/mistralai": "^1.0.2",
     "@octoai/sdk": "^1.5.1",
-    "@types/inquirer": "^9.0.7",
     "assemblyai": "^4.6.1",
     "chalk": "^5.3.0",
     "cohere-ai": "^7.12.0",
@@ -56,10 +57,12 @@
     "inquirer": "^10.2.2",
     "node-llama-cpp": "^3.1.0",
     "ollama": "^0.5.9",
-    "openai": "^4.55.7",
-    "typescript": "^5.6.2"
+    "openai": "^4.55.7"
   },
   "devDependencies": {
+    "@types/inquirer": "^9.0.7",
+    "@types/node": "^22.7.5",
+    "tsx": "^4.19.1",
     "typescript": "^5.6.2"
   }
 }

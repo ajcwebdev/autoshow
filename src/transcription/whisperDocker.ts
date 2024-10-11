@@ -6,7 +6,7 @@ import { promisify } from 'node:util'
 import { join } from 'node:path'
 import { WHISPER_MODELS } from '../models.js'
 import { log, wait } from '../models.js'
-import type { ProcessingOptions } from '../types.js'
+import type { ProcessingOptions, WhisperModelType } from '../types.js'
 
 const execPromise = promisify(exec)
 
@@ -21,14 +21,19 @@ export async function callWhisperDocker(options: ProcessingOptions, finalPath: s
   log(wait('\n  Using Whisper Docker for transcription...'))
   try {
     // Get the whisper model from options or use 'base' as default
-    const whisperModel = options.whisperDocker || 'base'
+    let whisperModel = 'base'
+    if (typeof options.whisperDocker === 'string') {
+      whisperModel = options.whisperDocker
+    } else if (options.whisperDocker !== true) {
+      throw new Error('Invalid whisperDocker option')
+    }
     
     if (!(whisperModel in WHISPER_MODELS)) {
       throw new Error(`Unknown model type: ${whisperModel}`)
     }
 
     // Get the model ggml file name
-    const modelGGMLName = WHISPER_MODELS[whisperModel]
+    const modelGGMLName = WHISPER_MODELS[whisperModel as WhisperModelType]
     const CONTAINER_NAME = 'autoshow-whisper-1'
     const modelPathContainer = `/app/models/${modelGGMLName}`
 

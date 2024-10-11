@@ -80,7 +80,7 @@ export const callLlama: LLMFunction = async (
     // Write the response to the temporary file
     await writeFile(tempPath, response)
 
-    log(wait('  \nLLM processing completed'))
+    log(wait('\n  LLM processing completed'))
   } catch (error) {
     console.error(`Error in callLlama: ${error instanceof Error ? (error as Error).message : String(error)}`)
     throw error

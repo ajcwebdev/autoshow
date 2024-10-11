@@ -343,6 +343,24 @@ export type OllamaResponse = {
   eval_duration: number
 }
 
+export type OllamaTagsResponse = {
+  models: Array<{
+    name: string
+    model: string
+    modified_at: string
+    size: number
+    digest: string
+    details: {
+      parent_model: string
+      format: string
+      family: string
+      families: string[]
+      parameter_size: string
+      quantization_level: string
+    }
+  }>
+}
+
 /**
  * Represents the function signature for cleaning up temporary files.
  */

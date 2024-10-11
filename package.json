@@ -18,7 +18,7 @@
     "autoshow": "./dist/autoshow.js"
   },
   "scripts": {
-    "setup": "bash ./setup.sh",
+    "setup": "bash ./scripts/setup.sh",
     "autoshow": "tsx --env-file=.env --no-warnings src/autoshow.ts",
     "as": "tsx --env-file=.env --no-warnings src/autoshow.ts",
     "docker": "docker compose run --remove-orphans autoshow",

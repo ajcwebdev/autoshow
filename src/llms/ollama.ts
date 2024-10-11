@@ -23,7 +23,7 @@ export const callOllama: LLMFunction = async (promptAndTranscript: string, tempP
     const ollamaModelName = OLLAMA_MODELS[modelName as OllamaModelType] || 'llama3.2:1b'
     
     // Get host and port from environment variables or use defaults
-    const ollamaHost = env.OLLAMA_HOST || 'ollama'
+    const ollamaHost = env.OLLAMA_HOST || 'localhost'
     const ollamaPort = env.OLLAMA_PORT || '11434'
     log(wait(`  - Using Ollama model: ${ollamaModelName} at http://${ollamaHost}:${ollamaPort}`))
     
@@ -46,7 +46,8 @@ export const callOllama: LLMFunction = async (promptAndTranscript: string, tempP
     }
 
     // Type assertion to enforce the structure of the response
-    const data = (await response.json()) as OllamaResponse
+    // const data = await response.json() as any
+    const data = await response.json() as OllamaResponse
 
     // Extract the assistant's reply and write the response to the output file
     const assistantReply = data.message.content

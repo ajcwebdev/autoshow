@@ -211,12 +211,12 @@ export async function processRSS(
     // Process each item in the feed
     for (const [index, item] of itemsToProcess.entries()) {
       log(opts(`\n========================================================================================`))
-      log(opts(`  Item ${index + 1}/${itemsToProcess.length} processing:\n\n${item.title}`))
+      log(opts(`  Item ${index + 1}/${itemsToProcess.length} processing: ${item.title}`))
       log(opts(`========================================================================================\n`))
       await processItem(options, item, llmServices, transcriptServices)
-      log(final(`\n========================================================================================`))
-      log(final(`  ${index + 1}/${itemsToProcess.length} item processing completed successfully`))
-      log(final(`========================================================================================\n`))
+      log(opts(`\n========================================================================================`))
+      log(opts(`  ${index + 1}/${itemsToProcess.length} item processing completed successfully`))
+      log(opts(`========================================================================================\n`))
     }
   } catch (error) {
     console.error(`Error processing RSS feed: ${(error as Error).message}`)

@@ -321,7 +321,7 @@ export type MistralModelType = 'MIXTRAL_8x7b' | 'MIXTRAL_8x22b' | 'MISTRAL_LARGE
 /** Define available OctoAI models. */
 export type OctoModelType = 'LLAMA_3_1_8B' | 'LLAMA_3_1_70B' | 'LLAMA_3_1_405B' | 'MISTRAL_7B' | 'MIXTRAL_8X_7B' | 'NOUS_HERMES_MIXTRAL_8X_7B' | 'WIZARD_2_8X_22B'
 /** Define local model configurations. */
-export type LlamaModelType = 'QWEN_2_5_3B' | 'PHI_3_5' | 'LLAMA_3_2_1B' | 'GEMMA_2_2B'
+export type LlamaModelType = 'QWEN_2_5_1B' | 'QWEN_2_5_3B' | 'PHI_3_5' | 'LLAMA_3_2_1B' | 'GEMMA_2_2B'
 /** Define local model with Ollama. */
 export type OllamaModelType = 'LLAMA_3_2_1B' | 'LLAMA_3_2_3B' | 'GEMMA_2_2B' | 'PHI_3_5' | 'QWEN_2_5_1B' | 'QWEN_2_5_3B'
 

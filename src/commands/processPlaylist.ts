@@ -67,9 +67,9 @@ export async function processPlaylist(
 
     // Process each video in the playlist
     for (const [index, url] of urls.entries()) {
-      log(opts(`\n==============================================================`))
+      log(opts(`\n================================================================================================`))
       log(opts(`  Processing video ${index + 1}/${urls.length}: ${url}`))
-      log(opts(`==============================================================\n`))
+      log(opts(`================================================================================================\n`))
       try {
         await processVideo(options, url, llmServices, transcriptServices)
       } catch (error) {

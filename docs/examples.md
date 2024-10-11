@@ -388,13 +388,26 @@ npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --prompt tit
 
 ### Docker Compose
 
-This will run both `whisper.cpp` and the AutoShow Commander CLI in their own Docker containers.
+This will start both `whisper.cpp` and the AutoShow Commander CLI in their own Docker containers.
 
 ```bash
-docker compose run autoshow --video "https://www.youtube.com/watch?v=MORMZXEaONk" --whisperDocker base
+npm run docker-up
 ```
 
-Currently working on the `llama.cpp` Docker integration so the entire project can be encapsulated in one local Docker Compose file.
+Replace `as` with `docker` to run most other commands explained in this document.
+
+- Does not support all commands at this time, notably `--llama` and `--ollama`.
+- Currently working on the `llama.cpp` Docker integration so the entire project can be encapsulated in one local Docker Compose file.
+
+```bash
+npm run docker -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --whisperDocker base
+```
+
+To reset your Docker images and containers, run:
+
+```bash
+docker system prune -af --volumes
+```
 
 ### Bun
 

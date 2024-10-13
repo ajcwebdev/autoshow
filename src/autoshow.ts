@@ -45,6 +45,7 @@ program
   .option('--info', 'Generate JSON file with RSS feed information instead of processing items')
   .option('--whisper [model]', 'Use Whisper.cpp for transcription with optional model specification')
   .option('--whisperDocker [model]', 'Use Whisper.cpp in Docker for transcription with optional model specification')
+  .option('--whisperPython [model]', 'Use openai-whisper for transcription with optional model specification')
   .option('--deepgram', 'Use Deepgram for transcription')
   .option('--assembly', 'Use AssemblyAI for transcription')
   .option('--speakerLabels', 'Use speaker labels for AssemblyAI transcription')

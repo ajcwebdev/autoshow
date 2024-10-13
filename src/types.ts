@@ -26,6 +26,8 @@ export type ProcessingOptions = {
   noCleanUp?: boolean
   /** The Whisper model to use (e.g., 'tiny', 'base'). */
   whisper?: WhisperModelType
+  /** The Whisper Python model to use (e.g., 'tiny', 'base'). */
+  whisperPython?: WhisperModelType
   /** The Whisper model to use with Docker (e.g., 'tiny', 'base'). */
   whisperDocker?: WhisperModelType
   /** Flag to use Deepgram for transcription. */
@@ -231,7 +233,7 @@ export type SupportedFileType = 'wav' | 'mp3' | 'm4a' | 'aac' | 'ogg' | 'flac' |
  * - deepgram: Use Deepgram's transcription service.
  * - assembly: Use AssemblyAI's transcription service.
  */
-export type TranscriptServices = 'whisper' | 'whisperDocker' | 'deepgram' | 'assembly'
+export type TranscriptServices = 'whisper' | 'whisperDocker' | 'whisperPython' | 'deepgram' | 'assembly'
 
 /**
  * Represents the available Whisper model types.
@@ -247,7 +249,7 @@ export type TranscriptServices = 'whisper' | 'whisperDocker' | 'deepgram' | 'ass
  * - large-v1: Large multilingual model version 1.
  * - large-v2: Large multilingual model version 2.
  */
-export type WhisperModelType = 'tiny' | 'tiny.en' | 'base' | 'base.en' | 'small' | 'small.en' | 'medium' | 'medium.en' | 'large-v1' | 'large-v2'
+export type WhisperModelType = 'tiny' | 'tiny.en' | 'base' | 'base.en' | 'small' | 'small.en' | 'medium' | 'medium.en' | 'large-v1' | 'large-v2' | 'turbo'
 
 /**
  * Represents the object containing the different prompts, their instructions to the LLM, and their expected example output.

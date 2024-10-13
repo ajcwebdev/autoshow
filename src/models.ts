@@ -15,13 +15,13 @@ export const log: typeof console.log = console.log
 
 export const ACTION_OPTIONS = ['video', 'playlist', 'urls', 'file', 'rss']
 export const LLM_OPTIONS = ['chatgpt', 'claude', 'cohere', 'mistral', 'octo', 'llama', 'ollama', 'gemini']
-export const TRANSCRIPT_OPTIONS = ['whisper', 'whisperDocker', 'deepgram', 'assembly']
+export const TRANSCRIPT_OPTIONS = ['whisper', 'whisperDocker', 'whisperPython', 'deepgram', 'assembly']
 
 /**
- * Define available Whisper models
+ * Define available Whisper models for whisper.cpp
  * @type {Record<WhisperModelType, string>}
  */
-export const WHISPER_MODELS: Record<WhisperModelType, string> = {
+export const WHISPER_MODELS: Record<string, string> = {
   'tiny': 'ggml-tiny.bin',
   'tiny.en': 'ggml-tiny.en.bin',
   'base': 'ggml-base.bin',
@@ -32,6 +32,24 @@ export const WHISPER_MODELS: Record<WhisperModelType, string> = {
   'medium.en': 'ggml-medium.en.bin',
   'large-v1': 'ggml-large-v1.bin',
   'large-v2': 'ggml-large-v2.bin',
+}
+
+/**
+ * Define available Whisper models for openai-whisper
+ * @type {Record<WhisperModelType, string>}
+ */
+export const WHISPER_PYTHON_MODELS: Record<WhisperModelType, string> = {
+  tiny: 'tiny',
+  'tiny.en': 'tiny.en',
+  base: 'base',
+  'base.en': 'base.en',
+  small: 'small',
+  'small.en': 'small.en',
+  medium: 'medium',
+  'medium.en': 'medium.en',
+  'large-v1': 'large-v1',
+  'large-v2': 'large-v2',
+  turbo: 'turbo',
 }
 
 /**

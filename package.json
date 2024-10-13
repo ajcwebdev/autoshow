@@ -36,6 +36,7 @@
     "t": "npm run test-local",
     "test-local": "node --test test/local.test.js",
     "test-all": "node --test test/all.test.js",
+    "clean": "tsx scripts/cleanContent.ts",
     "bun-as": "bun --env-file=.env --no-warnings src/autoshow.ts",
     "deno-as": "deno run --allow-sys --allow-read --allow-run --allow-write --allow-env src/autoshow.ts"
   },

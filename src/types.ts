@@ -46,6 +46,10 @@ export type ProcessingOptions = {
   mistral?: string
   /** OctoAI model to use (e.g., 'LLAMA_3_1_8B'). */
   octo?: string
+  /**  Fireworks model to use (e.g., ''). */
+  fireworks?: string
+  /**  Together model to use (e.g., ''). */
+  together?: string
   /** Ollama model to use for local inference (e.g., 'LLAMA_3_2_1B'). */
   ollama?: string
   /** Llama model to use for local inference (e.g., 'LLAMA_3_1_8B'). */
@@ -273,7 +277,7 @@ export type PromptSection = {
  * - ollama: Use Ollama for processing.
  * - gemini: Use Google's Gemini models.
  */
-export type LLMServices = 'chatgpt' | 'claude' | 'cohere' | 'mistral' | 'octo' | 'llama' | 'ollama' | 'gemini'
+export type LLMServices = 'chatgpt' | 'claude' | 'cohere' | 'mistral' | 'octo' | 'llama' | 'ollama' | 'gemini' | 'fireworks' | 'together'
 
 /**
  * Represents the options for LLM processing.

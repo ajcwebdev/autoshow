@@ -245,6 +245,18 @@ npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --octo NOUS_
 npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --octo WIZARD_2_8X_22B
 ```
 
+### Fireworks
+
+```bash
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --fireworks
+```
+
+### Together
+
+```bash
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --together
+```
+
 ### Llama.cpp
 
 ```bash

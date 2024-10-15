@@ -64,24 +64,49 @@ export async function callWhisperDiarization(options: ProcessingOptions, finalPa
     // Execute the command
     await execPromise(command)
 
-    await unlink(`${finalPath}.txt`)
-    log(wait(`\n  Extra TXT file deleted:\n    - ${finalPath}.txt\n`))
-
     // Read the generated transcript file
-    const transcriptContent = await readFile(`${finalPath}.srt`, 'utf8')
-
-    // Write the transcript to the expected output file
-    await writeFile(`${finalPath}.txt`, transcriptContent)
-
+    const srtContent = await readFile(`${finalPath}.srt`, 'utf8')
+    
+    // Process and format the SRT content
+    const blocks = srtContent.split('\n\n')
+    
+    const txtContent = blocks
+      .map(block => {
+        const lines = block.split('\n').filter(line => line.trim() !== '')
+        if (lines.length >= 2) {
+          // lines[0] is the sequence number
+          // lines[1] is the timestamp line
+          // lines[2...] are the subtitle text lines
+          const timestampLine = lines[1]
+          const textLines = lines.slice(2)
+          const match = timestampLine.match(/(\d{2}):(\d{2}):(\d{2}),\d{3}/)
+          if (match) {
+            const hours = parseInt(match[1], 10)
+            const minutes = parseInt(match[2], 10)
+            const seconds = match[3]
+            const totalMinutes = hours * 60 + minutes
+            const timestamp = `[${String(totalMinutes).padStart(2, '0')}:${seconds}]`
+            const text = textLines.join(' ')
+            return `${timestamp} ${text}`
+          }
+        }
+        return null
+      })
+      .filter(line => line !== null)
+      .join('\n')
+    
+    // Write the formatted content to a text file
+    await writeFile(`${finalPath}.txt`, txtContent)
+    log(wait(`\n  Transcript transformation successfully completed...\n    - ${finalPath}.txt\n`))
+    
     // Create an empty LRC file to prevent cleanup errors and unlink SRT file
     await writeFile(`${finalPath}.lrc`, '')
     log(wait(`\n  Empty LRC file created:\n    - ${finalPath}.lrc\n`))
     await unlink(`${finalPath}.srt`)
     log(wait(`\n  SRT file deleted:\n    - ${finalPath}.srt\n`))
-
-    log(wait(`\n  Transcript successfully completed:\n    - ${finalPath}.txt\n`))
-
-    return transcriptContent
+    
+    // Return the processed content
+    return txtContent
 
   } catch (error) {
     console.error('Error in callWhisperDiarization:', (error as Error).message)

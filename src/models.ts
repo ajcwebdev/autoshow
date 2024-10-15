@@ -2,7 +2,7 @@
 
 import chalk from 'chalk'
 import type { ChalkInstance } from 'chalk'
-import type { WhisperModelType, ChatGPTModelType, ClaudeModelType, CohereModelType, GeminiModelType, MistralModelType, OctoModelType, LlamaModelType, OllamaModelType } from './types.js'
+import type { WhisperModelType, ChatGPTModelType, ClaudeModelType, CohereModelType, GeminiModelType, MistralModelType, OctoModelType, LlamaModelType, OllamaModelType, TogetherModelType, FireworksModelType } from './types.js'
 
 export const step: ChalkInstance = chalk.bold.underline
 export const dim: ChalkInstance = chalk.dim
@@ -116,6 +116,34 @@ export const OCTO_MODELS: Record<OctoModelType, string> = {
   MIXTRAL_8X_7B: "mixtral-8x7b-instruct",
   NOUS_HERMES_MIXTRAL_8X_7B: "nous-hermes-2-mixtral-8x7b-dpo",
   WIZARD_2_8X_22B: "wizardlm-2-8x22b",
+}
+
+/**
+ * Map of Fireworks model identifiers to their API names
+ * @type {Record<FireworksModelType, string>}
+ */
+export const FIREWORKS_MODELS: Record<FireworksModelType, string> = {
+  LLAMA_3_1_405B: "accounts/fireworks/models/llama-v3p1-405b-instruct",
+  LLAMA_3_1_70B: "accounts/fireworks/models/llama-v3p1-70b-instruct",
+  LLAMA_3_1_8B: "accounts/fireworks/models/llama-v3p1-8b-instruct",
+  LLAMA_3_2_3B: "accounts/fireworks/models/llama-v3p2-3b-instruct",
+  LLAMA_3_2_1B: "accounts/fireworks/models/llama-v3p2-1b-instruct",
+  QWEN_2_5_72B: "accounts/fireworks/models/qwen2p5-72b-instruct",
+}
+
+/**
+ * Map of Together model identifiers to their API names
+ * @type {Record<TogetherModelType, string>}
+ */
+export const TOGETHER_MODELS: Record<TogetherModelType, string> = {
+  LLAMA_3_2_3B: "meta-llama/Llama-3.2-3B-Instruct-Turbo",
+  LLAMA_3_1_405B: "meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo",
+  LLAMA_3_1_70B: "meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo",
+  LLAMA_3_1_8B: "meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo",
+  GEMMA_2_27B: "google/gemma-2-27b-it",
+  GEMMA_2_9B: "google/gemma-2-9b-it",
+  QWEN_2_5_72B: "Qwen/Qwen2.5-72B-Instruct-Turbo",
+  QWEN_2_5_7B: "Qwen/Qwen2.5-7B-Instruct-Turbo",
 }
 
 /**

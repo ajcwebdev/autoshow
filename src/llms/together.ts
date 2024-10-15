@@ -2,9 +2,8 @@
 
 import { writeFile } from 'node:fs/promises'
 import { env } from 'node:process'
-import fetch from 'node-fetch'
-import { log, wait } from '../models.js'
-import type { LLMFunction } from '../types.js'
+import { log, wait, TOGETHER_MODELS } from '../models.js'
+import type { LLMFunction, TogetherModelType, TogetherResponse } from '../types.js'
 
 /**
  * Main function to call Together AI API.
@@ -17,7 +16,7 @@ import type { LLMFunction } from '../types.js'
 export const callTogether: LLMFunction = async (
   promptAndTranscript: string,
   tempPath: string,
-  model: string = 'meta-llama/Llama-3.2-3B-Instruct-Turbo'
+  model: string = 'LLAMA_3_2_3B'
 ): Promise<void> => {
   // Check if the TOGETHER_API_KEY environment variable is set
   if (!env.TOGETHER_API_KEY) {
@@ -25,19 +24,19 @@ export const callTogether: LLMFunction = async (
   }
 
   try {
-    log(wait(`\n  Using Together AI model:\n    - ${model}`))
+    const actualModel = TOGETHER_MODELS[model as TogetherModelType] || TOGETHER_MODELS.LLAMA_3_2_3B
 
     // Prepare the request body
     const requestBody = {
-      model: 'meta-llama/Llama-3.2-3B-Instruct-Turbo',
+      model: actualModel,
       messages: [
         {
           role: 'user',
           content: promptAndTranscript,
         },
       ],
-      max_tokens: 2000,
-      temperature: 0.7,
+      // max_tokens: 2000,
+      // temperature: 0.7,
     }
 
     // Make API call to Together AI
@@ -57,7 +56,7 @@ export const callTogether: LLMFunction = async (
       throw new Error(`Together AI API error: ${response.status} ${response.statusText} - ${errorText}`)
     }
 
-    const data = await response.json()
+    const data = await response.json() as TogetherResponse
 
     // Extract the generated content
     const content = data.choices[0]?.message?.content

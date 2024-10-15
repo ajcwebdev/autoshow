@@ -326,10 +326,80 @@ export type GeminiModelType = 'GEMINI_1_5_FLASH' | 'GEMINI_1_5_PRO'
 export type MistralModelType = 'MIXTRAL_8x7b' | 'MIXTRAL_8x22b' | 'MISTRAL_LARGE' | 'MISTRAL_NEMO'
 /** Define available OctoAI models. */
 export type OctoModelType = 'LLAMA_3_1_8B' | 'LLAMA_3_1_70B' | 'LLAMA_3_1_405B' | 'MISTRAL_7B' | 'MIXTRAL_8X_7B' | 'NOUS_HERMES_MIXTRAL_8X_7B' | 'WIZARD_2_8X_22B'
+/** Define available Fireworks models. */
+export type FireworksModelType = 'LLAMA_3_1_405B' | 'LLAMA_3_1_70B' | 'LLAMA_3_1_8B' | 'LLAMA_3_2_3B' | 'LLAMA_3_2_1B' | 'QWEN_2_5_72B'
+/** Define available Together models. */
+export type TogetherModelType = 'LLAMA_3_2_3B' | 'LLAMA_3_1_405B' | 'LLAMA_3_1_70B' | 'LLAMA_3_1_8B' | 'GEMMA_2_27B' | 'GEMMA_2_9B' | 'QWEN_2_5_72B' | 'QWEN_2_5_7B'
 /** Define local model configurations. */
 export type LlamaModelType = 'QWEN_2_5_1B' | 'QWEN_2_5_3B' | 'PHI_3_5' | 'LLAMA_3_2_1B' | 'GEMMA_2_2B'
 /** Define local model with Ollama. */
 export type OllamaModelType = 'LLAMA_3_2_1B' | 'LLAMA_3_2_3B' | 'GEMMA_2_2B' | 'PHI_3_5' | 'QWEN_2_5_1B' | 'QWEN_2_5_3B'
+
+export type FireworksResponse = {
+  id: string
+  object: string
+  created: number
+  model: string
+  prompt: any[]
+  choices: {
+    finish_reason: string
+    index: number
+    message: {
+      role: string
+      content: string
+      tool_calls: {
+        id: string
+        type: string
+        function: {
+          name: string
+          arguments: string
+        }
+      }[]
+    }
+  }[]
+  usage: {
+    prompt_tokens: number
+    completion_tokens: number
+    total_tokens: number
+  }
+}
+
+export type TogetherResponse = {
+  id: string
+  object: string
+  created: number
+  model: string
+  prompt: any[]
+  choices: {
+    text: string
+    finish_reason: string
+    seed: number
+    index: number
+    message: {
+      role: string
+      content: string
+      tool_calls: {
+        index: number
+        id: string
+        type: string
+        function: {
+          name: string
+          arguments: string
+        }
+      }[]
+    }
+    logprobs: {
+      token_ids: number[]
+      tokens: string[]
+      token_logprobs: number[]
+    }
+  }[]
+  usage: {
+    prompt_tokens: number
+    completion_tokens: number
+    total_tokens: number
+  }
+}
 
 // Define the expected structure of the response from Ollama API
 export type OllamaResponse = {
@@ -365,6 +435,40 @@ export type OllamaTagsResponse = {
       quantization_level: string
     }
   }>
+}
+
+// Define types for Deepgram API response
+export type DeepgramResponse = {
+  metadata: {
+    transaction_key: string
+    request_id: string
+    sha256: string
+    created: string
+    duration: number
+    channels: number
+    models: string[]
+    model_info: {
+      [key: string]: {
+        name: string
+        version: string
+        arch: string
+      }
+    }
+  }
+  results: {
+    channels: Array<{
+      alternatives: Array<{
+        transcript: string
+        confidence: number
+        words: Array<{
+          word: string
+          start: number
+          end: number
+          confidence: number
+        }>
+      }>
+    }>
+  }
 }
 
 /**

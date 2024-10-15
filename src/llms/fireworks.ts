@@ -2,9 +2,8 @@
 
 import { writeFile } from 'node:fs/promises'
 import { env } from 'node:process'
-import fetch from 'node-fetch'
-import { log, wait } from '../models.js'
-import type { LLMFunction } from '../types.js'
+import { log, wait, FIREWORKS_MODELS } from '../models.js'
+import type { LLMFunction, FireworksModelType, FireworksResponse } from '../types.js'
 
 /**
  * Main function to call Fireworks AI API.
@@ -17,7 +16,7 @@ import type { LLMFunction } from '../types.js'
 export const callFireworks: LLMFunction = async (
   promptAndTranscript: string,
   tempPath: string,
-  model: string = 'accounts/fireworks/models/llama-v3p2-3b-instruct'
+  model: string = 'LLAMA_3_2_3B'
 ): Promise<void> => {
   // Check if the FIREWORKS_API_KEY environment variable is set
   if (!env.FIREWORKS_API_KEY) {
@@ -25,11 +24,11 @@ export const callFireworks: LLMFunction = async (
   }
 
   try {
-    log(wait(`\n  Using Fireworks model:\n    - ${model}`))
+    const actualModel = FIREWORKS_MODELS[model as FireworksModelType] || FIREWORKS_MODELS.LLAMA_3_2_3B
 
     // Prepare the request body
     const requestBody = {
-      model: "accounts/fireworks/models/llama-v3p2-3b-instruct",
+      model: actualModel,
       messages: [
         {
           role: 'user',
@@ -54,7 +53,7 @@ export const callFireworks: LLMFunction = async (
       throw new Error(`Fireworks API error: ${response.status} ${response.statusText} - ${errorText}`)
     }
 
-    const data = await response.json()
+    const data = await response.json() as FireworksResponse
 
     // Extract the generated content
     const content = data.choices[0]?.message?.content

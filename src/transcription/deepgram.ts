@@ -3,41 +3,7 @@
 import { writeFile, readFile } from 'node:fs/promises'
 import { env } from 'node:process'
 import { log, wait } from '../models.js'
-import type { ProcessingOptions } from '../types.js'
-
-// Define types for Deepgram API response
-type DeepgramResponse = {
-  metadata: {
-    transaction_key: string
-    request_id: string
-    sha256: string
-    created: string
-    duration: number
-    channels: number
-    models: string[]
-    model_info: {
-      [key: string]: {
-        name: string
-        version: string
-        arch: string
-      }
-    }
-  }
-  results: {
-    channels: Array<{
-      alternatives: Array<{
-        transcript: string
-        confidence: number
-        words: Array<{
-          word: string
-          start: number
-          end: number
-          confidence: number
-        }>
-      }>
-    }>
-  }
-}
+import type { ProcessingOptions, DeepgramResponse } from '../types.js'
 
 /**
  * Main function to handle transcription using Deepgram API.

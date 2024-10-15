@@ -3,6 +3,7 @@
 import { callWhisper } from '../transcription/whisper.js'
 import { callWhisperPython } from '../transcription/whisperPython.js'
 import { callWhisperDocker } from '../transcription/whisperDocker.js'
+import { callWhisperDiarization } from '../transcription/whisperDiarization.js'
 import { callDeepgram } from '../transcription/deepgram.js'
 import { callAssembly } from '../transcription/assembly.js'
 import { log, step } from '../models.js'
@@ -39,6 +40,9 @@ export async function runTranscription(
       break
     case 'whisperPython':
       await callWhisperPython(options, finalPath)
+      break
+    case 'whisperDiarization':
+      await callWhisperDiarization(options, finalPath)
       break
     default:
       throw new Error(`Unknown transcription service: ${transcriptServices}`)

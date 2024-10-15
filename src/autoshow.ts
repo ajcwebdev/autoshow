@@ -46,6 +46,7 @@ program
   .option('--whisper [model]', 'Use Whisper.cpp for transcription with optional model specification')
   .option('--whisperDocker [model]', 'Use Whisper.cpp in Docker for transcription with optional model specification')
   .option('--whisperPython [model]', 'Use openai-whisper for transcription with optional model specification')
+  .option('--whisperDiarization [model]', 'Use whisper-diarization for transcription with optional model specification')
   .option('--deepgram', 'Use Deepgram for transcription')
   .option('--assembly', 'Use AssemblyAI for transcription')
   .option('--speakerLabels', 'Use speaker labels for AssemblyAI transcription')

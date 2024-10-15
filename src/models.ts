@@ -15,7 +15,7 @@ export const log: typeof console.log = console.log
 
 export const ACTION_OPTIONS = ['video', 'playlist', 'urls', 'file', 'rss']
 export const LLM_OPTIONS = ['chatgpt', 'claude', 'cohere', 'mistral', 'octo', 'llama', 'ollama', 'gemini', 'fireworks', 'together']
-export const TRANSCRIPT_OPTIONS = ['whisper', 'whisperDocker', 'whisperPython', 'deepgram', 'assembly']
+export const TRANSCRIPT_OPTIONS = ['whisper', 'whisperDocker', 'whisperPython', 'whisperDiarization', 'deepgram', 'assembly']
 
 /**
  * Define available Whisper models for whisper.cpp

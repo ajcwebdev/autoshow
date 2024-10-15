@@ -28,6 +28,8 @@ export type ProcessingOptions = {
   whisper?: WhisperModelType
   /** The Whisper Python model to use (e.g., 'tiny', 'base'). */
   whisperPython?: WhisperModelType
+  /** The Whisper Diarization model to use (e.g., 'tiny', 'base'). */
+  whisperDiarization?: WhisperModelType
   /** The Whisper model to use with Docker (e.g., 'tiny', 'base'). */
   whisperDocker?: WhisperModelType
   /** Flag to use Deepgram for transcription. */
@@ -237,7 +239,7 @@ export type SupportedFileType = 'wav' | 'mp3' | 'm4a' | 'aac' | 'ogg' | 'flac' |
  * - deepgram: Use Deepgram's transcription service.
  * - assembly: Use AssemblyAI's transcription service.
  */
-export type TranscriptServices = 'whisper' | 'whisperDocker' | 'whisperPython' | 'deepgram' | 'assembly'
+export type TranscriptServices = 'whisper' | 'whisperDocker' | 'whisperPython' | 'whisperDiarization' | 'deepgram' | 'assembly'
 
 /**
  * Represents the available Whisper model types.

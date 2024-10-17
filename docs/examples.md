@@ -245,6 +245,42 @@ npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --octo NOUS_
 npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --octo WIZARD_2_8X_22B
 ```
 
+### Fireworks
+
+```bash
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --fireworks
+```
+
+Select Fireworks model:
+
+```bash
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --fireworks LLAMA_3_1_405B
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --fireworks LLAMA_3_1_70B
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --fireworks LLAMA_3_1_8B
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --fireworks LLAMA_3_2_3B
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --fireworks LLAMA_3_2_1B
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --fireworks QWEN_2_5_72B
+```
+
+### Together
+
+```bash
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --together
+```
+
+Select Together model:
+
+```bash
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --together LLAMA_3_2_3B
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --together LLAMA_3_1_405B
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --together LLAMA_3_1_70B
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --together LLAMA_3_1_8B
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --together GEMMA_2_27B
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --together GEMMA_2_9B
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --together QWEN_2_5_72B
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --together QWEN_2_5_7B
+```
+
 ### Llama.cpp
 
 ```bash

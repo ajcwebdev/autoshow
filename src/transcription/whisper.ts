@@ -6,7 +6,7 @@ import { promisify } from 'node:util'
 import { existsSync } from 'node:fs'
 import { WHISPER_MODELS } from '../models.js'
 import { log, wait } from '../models.js'
-import type { ProcessingOptions } from '../types.js'
+import type { ProcessingOptions, WhisperModelType } from '../types.js'
 
 const execPromise = promisify(exec)
 
@@ -21,29 +21,34 @@ export async function callWhisper(options: ProcessingOptions, finalPath: string)
   log(wait('\n  Using Whisper for transcription...'))
   try {
     // Get the whisper model from options or use 'base' as default
-    const whisperModel = options.whisper || 'base'
-    
+    let whisperModel = 'base'
+    if (typeof options.whisper === 'string') {
+      whisperModel = options.whisper
+    } else if (options.whisper !== true) {
+      throw new Error('Invalid whisper option')
+    }
+
     if (!(whisperModel in WHISPER_MODELS)) {
       throw new Error(`Unknown model type: ${whisperModel}`)
     }
 
     // Get the model ggml file name
-    const modelGGMLName = WHISPER_MODELS[whisperModel]
+    const modelGGMLName = WHISPER_MODELS[whisperModel as WhisperModelType]
 
     log(wait(`\n    - whisperModel: ${whisperModel}\n    - modelGGMLName: ${modelGGMLName}`))
 
     // Setup Whisper
     if (!existsSync('./whisper.cpp')) {
-      log(`\nNo whisper.cpp repo found, running git clone and make...\n`)
+      log(`\n  No whisper.cpp repo found, running git clone and make...\n`)
       await execPromise('git clone https://github.com/ggerganov/whisper.cpp.git && make -C whisper.cpp && cp .github/whisper.Dockerfile whisper.cpp/Dockerfile')
-      log(`\nwhisper.cpp clone and make commands complete.\n`)
+      log(`\n    - whisper.cpp clone and make commands complete.\n`)
     }
 
     // Ensure model is downloaded
     if (!existsSync(`./whisper.cpp/models/ggml-${whisperModel}.bin`)) {
-      log(wait(`  Model not found, downloading...\n    - ${whisperModel}\n`))
+      log(wait(`\n  Model not found, downloading...\n    - ${whisperModel}\n`))
       await execPromise(`bash ./whisper.cpp/models/download-ggml-model.sh ${whisperModel}`)
-      log(wait('  Model download completed, running transcription...\n'))
+      log(wait('    - Model download completed, running transcription...\n'))
     }
 
     // Run transcription

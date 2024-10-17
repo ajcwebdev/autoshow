@@ -1,4 +1,5 @@
 #!/bin/bash
+# scripts/setup.sh
 
 # Function to check if a command exists
 command_exists() {
@@ -21,45 +22,73 @@ else
     echo "yt-dlp is already installed."
 fi
 
+# Function to check if Ollama server is running
+check_ollama_server() {
+    if curl -s "http://127.0.0.1:11434" &> /dev/null; then
+        echo "Ollama server is already running."
+    else
+        echo "Ollama server is not running. Starting Ollama server..."
+        ollama serve > ollama.log 2>&1 &
+        OLLAMA_PID=$!
+        echo "Ollama server started with PID $OLLAMA_PID"
+        sleep 5
+    fi
+}
+
+# Function to check if a model is available, and pull it if not
+check_and_pull_model() {
+    local model=$1
+    if ollama list | grep -q "$model"; then
+        echo "Model $model is already available."
+    else
+        echo "Model $model is not available. Pulling the model..."
+        ollama pull "$model"
+    fi
+}
+
 # Check if Ollama is installed
 if ! command_exists ollama; then
     echo "Ollama is not installed, refer to installation instructions here:"
     echo "https://github.com/ollama/ollama"
 else
     echo "Ollama is installed."
-fi
-
-# Check if Ollama server is running
-if ! curl -s "http://127.0.0.1:11434" &> /dev/null; then
-    echo "Ollama server is not running. Starting Ollama server..."
-    ollama serve > ollama.log 2>&1 &
-    OLLAMA_PID=$!
-    echo "Ollama server started with PID $OLLAMA_PID"
-    sleep 5
-else
-    echo "Ollama server is already running."
+    
+    # Check if Ollama server is running
+    check_ollama_server
+    
+    # Check and pull required models
+    check_and_pull_model "llama3.2:1b"
 fi
 
 # Install npm dependencies
 npm i
 
-# Clone whisper.cpp repository
-git clone https://github.com/ggerganov/whisper.cpp.git
+# Check if whisper.cpp directory exists
+if [ -d "whisper.cpp" ]; then
+    echo "whisper.cpp directory already exists. Skipping clone and setup."
+else
+    echo "Cloning whisper.cpp repository..."
+    git clone https://github.com/ggerganov/whisper.cpp.git
+    
+    # Download whisper models
+    echo "Downloading whisper models..."
+    bash ./whisper.cpp/models/download-ggml-model.sh base
+    
+    # Compile whisper.cpp
+    echo "Compiling whisper.cpp..."
+    make -C whisper.cpp
+    
+    # Copy Dockerfile
+    echo "Copying Dockerfile..."
+    cp .github/whisper.Dockerfile whisper.cpp/Dockerfile
+fi
 
-# Download whisper models
-bash ./whisper.cpp/models/download-ggml-model.sh base
-bash ./whisper.cpp/models/download-ggml-model.sh large-v2
-
-# Compile whisper.cpp
-make -C whisper.cpp
-
-# Copy Dockerfile
-cp .github/whisper.Dockerfile whisper.cpp/Dockerfile
-
-# Download Qwen 2.5 1.5B model for Llama.cpp
-curl -L "https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct-GGUF/resolve/main/qwen2.5-1.5b-instruct-q6_k.gguf" -o "./src/llms/models/qwen2.5-1.5b-instruct-q6_k.gguf"
-
-# Pull Llama 3.1 1B model using Ollama
-ollama pull llama3.2:1b
+# Check if Qwen 2.5 1.5B model exists
+if [ -f "./src/llms/models/qwen2.5-1.5b-instruct-q6_k.gguf" ]; then
+    echo "Qwen 2.5 1.5B model already exists. Skipping download."
+else
+    echo "Downloading Qwen 2.5 1.5B model..."
+    curl -L "https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct-GGUF/resolve/main/qwen2.5-1.5b-instruct-q6_k.gguf" -o "./src/llms/models/qwen2.5-1.5b-instruct-q6_k.gguf"
+fi
 
 echo "Setup completed successfully!"

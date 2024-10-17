@@ -26,6 +26,10 @@ export type ProcessingOptions = {
   noCleanUp?: boolean
   /** The Whisper model to use (e.g., 'tiny', 'base'). */
   whisper?: WhisperModelType
+  /** The Whisper Python model to use (e.g., 'tiny', 'base'). */
+  whisperPython?: WhisperModelType
+  /** The Whisper Diarization model to use (e.g., 'tiny', 'base'). */
+  whisperDiarization?: WhisperModelType
   /** The Whisper model to use with Docker (e.g., 'tiny', 'base'). */
   whisperDocker?: WhisperModelType
   /** Flag to use Deepgram for transcription. */
@@ -44,6 +48,10 @@ export type ProcessingOptions = {
   mistral?: string
   /** OctoAI model to use (e.g., 'LLAMA_3_1_8B'). */
   octo?: string
+  /**  Fireworks model to use (e.g., ''). */
+  fireworks?: string
+  /**  Together model to use (e.g., ''). */
+  together?: string
   /** Ollama model to use for local inference (e.g., 'LLAMA_3_2_1B'). */
   ollama?: string
   /** Llama model to use for local inference (e.g., 'LLAMA_3_1_8B'). */
@@ -231,7 +239,7 @@ export type SupportedFileType = 'wav' | 'mp3' | 'm4a' | 'aac' | 'ogg' | 'flac' |
  * - deepgram: Use Deepgram's transcription service.
  * - assembly: Use AssemblyAI's transcription service.
  */
-export type TranscriptServices = 'whisper' | 'whisperDocker' | 'deepgram' | 'assembly'
+export type TranscriptServices = 'whisper' | 'whisperDocker' | 'whisperPython' | 'whisperDiarization' | 'deepgram' | 'assembly'
 
 /**
  * Represents the available Whisper model types.
@@ -247,7 +255,7 @@ export type TranscriptServices = 'whisper' | 'whisperDocker' | 'deepgram' | 'ass
  * - large-v1: Large multilingual model version 1.
  * - large-v2: Large multilingual model version 2.
  */
-export type WhisperModelType = 'tiny' | 'tiny.en' | 'base' | 'base.en' | 'small' | 'small.en' | 'medium' | 'medium.en' | 'large-v1' | 'large-v2'
+export type WhisperModelType = 'tiny' | 'tiny.en' | 'base' | 'base.en' | 'small' | 'small.en' | 'medium' | 'medium.en' | 'large-v1' | 'large-v2' | 'turbo'
 
 /**
  * Represents the object containing the different prompts, their instructions to the LLM, and their expected example output.
@@ -271,7 +279,7 @@ export type PromptSection = {
  * - ollama: Use Ollama for processing.
  * - gemini: Use Google's Gemini models.
  */
-export type LLMServices = 'chatgpt' | 'claude' | 'cohere' | 'mistral' | 'octo' | 'llama' | 'ollama' | 'gemini'
+export type LLMServices = 'chatgpt' | 'claude' | 'cohere' | 'mistral' | 'octo' | 'llama' | 'ollama' | 'gemini' | 'fireworks' | 'together'
 
 /**
  * Represents the options for LLM processing.
@@ -320,10 +328,80 @@ export type GeminiModelType = 'GEMINI_1_5_FLASH' | 'GEMINI_1_5_PRO'
 export type MistralModelType = 'MIXTRAL_8x7b' | 'MIXTRAL_8x22b' | 'MISTRAL_LARGE' | 'MISTRAL_NEMO'
 /** Define available OctoAI models. */
 export type OctoModelType = 'LLAMA_3_1_8B' | 'LLAMA_3_1_70B' | 'LLAMA_3_1_405B' | 'MISTRAL_7B' | 'MIXTRAL_8X_7B' | 'NOUS_HERMES_MIXTRAL_8X_7B' | 'WIZARD_2_8X_22B'
+/** Define available Fireworks models. */
+export type FireworksModelType = 'LLAMA_3_1_405B' | 'LLAMA_3_1_70B' | 'LLAMA_3_1_8B' | 'LLAMA_3_2_3B' | 'LLAMA_3_2_1B' | 'QWEN_2_5_72B'
+/** Define available Together models. */
+export type TogetherModelType = 'LLAMA_3_2_3B' | 'LLAMA_3_1_405B' | 'LLAMA_3_1_70B' | 'LLAMA_3_1_8B' | 'GEMMA_2_27B' | 'GEMMA_2_9B' | 'QWEN_2_5_72B' | 'QWEN_2_5_7B'
 /** Define local model configurations. */
 export type LlamaModelType = 'QWEN_2_5_1B' | 'QWEN_2_5_3B' | 'PHI_3_5' | 'LLAMA_3_2_1B' | 'GEMMA_2_2B'
 /** Define local model with Ollama. */
 export type OllamaModelType = 'LLAMA_3_2_1B' | 'LLAMA_3_2_3B' | 'GEMMA_2_2B' | 'PHI_3_5' | 'QWEN_2_5_1B' | 'QWEN_2_5_3B'
+
+export type FireworksResponse = {
+  id: string
+  object: string
+  created: number
+  model: string
+  prompt: any[]
+  choices: {
+    finish_reason: string
+    index: number
+    message: {
+      role: string
+      content: string
+      tool_calls: {
+        id: string
+        type: string
+        function: {
+          name: string
+          arguments: string
+        }
+      }[]
+    }
+  }[]
+  usage: {
+    prompt_tokens: number
+    completion_tokens: number
+    total_tokens: number
+  }
+}
+
+export type TogetherResponse = {
+  id: string
+  object: string
+  created: number
+  model: string
+  prompt: any[]
+  choices: {
+    text: string
+    finish_reason: string
+    seed: number
+    index: number
+    message: {
+      role: string
+      content: string
+      tool_calls: {
+        index: number
+        id: string
+        type: string
+        function: {
+          name: string
+          arguments: string
+        }
+      }[]
+    }
+    logprobs: {
+      token_ids: number[]
+      tokens: string[]
+      token_logprobs: number[]
+    }
+  }[]
+  usage: {
+    prompt_tokens: number
+    completion_tokens: number
+    total_tokens: number
+  }
+}
 
 // Define the expected structure of the response from Ollama API
 export type OllamaResponse = {
@@ -341,6 +419,58 @@ export type OllamaResponse = {
   prompt_eval_duration: number
   eval_count: number
   eval_duration: number
+}
+
+export type OllamaTagsResponse = {
+  models: Array<{
+    name: string
+    model: string
+    modified_at: string
+    size: number
+    digest: string
+    details: {
+      parent_model: string
+      format: string
+      family: string
+      families: string[]
+      parameter_size: string
+      quantization_level: string
+    }
+  }>
+}
+
+// Define types for Deepgram API response
+export type DeepgramResponse = {
+  metadata: {
+    transaction_key: string
+    request_id: string
+    sha256: string
+    created: string
+    duration: number
+    channels: number
+    models: string[]
+    model_info: {
+      [key: string]: {
+        name: string
+        version: string
+        arch: string
+      }
+    }
+  }
+  results: {
+    channels: Array<{
+      alternatives: Array<{
+        transcript: string
+        confidence: number
+        words: Array<{
+          word: string
+          start: number
+          end: number
+          confidence: number
+        }>
+      }>
+    }>
+  }
 }
 
 /**

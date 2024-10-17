@@ -2,6 +2,7 @@ node_modules
 .DS_Store
 /content
 whisper.cpp
+whisper-diarization
 package-lock.json
 .env
 src/llms/models
@@ -13,3 +14,4 @@ types
 dist
 NEW.md
 TODO.md
+nemo_msdd_configs

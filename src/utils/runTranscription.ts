@@ -1,75 +1,50 @@
 // src/utils/runTranscription.ts
 
-import { readFile, writeFile } from 'node:fs/promises'
 import { callWhisper } from '../transcription/whisper.js'
+import { callWhisperPython } from '../transcription/whisperPython.js'
 import { callWhisperDocker } from '../transcription/whisperDocker.js'
+import { callWhisperDiarization } from '../transcription/whisperDiarization.js'
 import { callDeepgram } from '../transcription/deepgram.js'
 import { callAssembly } from '../transcription/assembly.js'
-import { log, step, success, wait } from '../models.js'
-import type { TranscriptServices, ProcessingOptions } from '../types.js'
+import { log, step } from '../models.js'
+import { TranscriptServices, ProcessingOptions } from '../types.js'
 
 /**
- * Main function to run transcription.
+ * Manages the transcription process based on the selected service.
+ * @param {ProcessingOptions} options - The processing options.
+ * * @param {TranscriptServices} transcriptServices - The transcription service to use.
  * @param {string} finalPath - The base path for the files.
- * @param {string} frontMatter - Optional front matter content for the markdown file.
- * @param {TranscriptServices} transcriptServices - The transcription service to use.
- * @param {ProcessingOptions} [options] - Additional processing options.
- * @returns {Promise<string>} - Returns the final content including markdown and transcript.
- * @throws {Error} - If the transcription service fails or an error occurs during processing.
+ * @returns {Promise<void>}
  */
 export async function runTranscription(
   options: ProcessingOptions,
   finalPath: string,
   frontMatter: string,
   transcriptServices?: TranscriptServices
-): Promise<string> {
-  log(step(`\nStep 3 - Running transcription on audio file...`))
-  try {
-    let txtContent: string
+): Promise<void> {
+  log(step(`\nStep 3 - Running transcription on audio file using ${transcriptServices}...`))
 
-    // Choose the transcription service based on the provided option
-    switch (transcriptServices) {
-      case 'deepgram':
-        txtContent = await callDeepgram(options, finalPath)
-        break
-
-      case 'assembly':
-        txtContent = await callAssembly(options, finalPath)
-        break
-      
-      case 'whisperDocker':
-        txtContent = await callWhisperDocker(options, finalPath)
-        break  
-
-      case 'whisper':
-      default:
-        txtContent = await callWhisper(options, finalPath)
-        break
-    }
-
-    let mdContent = frontMatter
-    try {
-      // Attempt to read existing markdown content
-      const existingContent = await readFile(`${finalPath}.md`, 'utf8')
-      mdContent += existingContent
-    } catch (error) {
-      if ((error as NodeJS.ErrnoException).code !== 'ENOENT') {
-        console.error(`Error reading markdown file: ${(error as Error).message}`)
-        throw error
-      }
-      // If the file does not exist, proceed without appending
-    }
-
-    // Combine existing markdown content with the transcript
-    const finalContent = `${mdContent}\n## Transcript\n\n${txtContent}`
-
-    // Write final markdown file, including existing content and the new transcript
-    await writeFile(`${finalPath}.md`, finalContent)
-    log(success(`  Markdown file successfully updated with transcript:\n    - ${finalPath}.md`))
-
-    return finalContent
-  } catch (error) {
-    console.error(`Error in transcription process: ${(error as Error).message}`)
-    throw error
+  // Choose the transcription service based on the provided option
+  switch (transcriptServices) {
+    case 'deepgram':
+      await callDeepgram(options, finalPath)
+      break
+    case 'assembly':
+      await callAssembly(options, finalPath)
+      break
+    case 'whisper':
+      await callWhisper(options, finalPath)
+      break
+    case 'whisperDocker':
+      await callWhisperDocker(options, finalPath)
+      break
+    case 'whisperPython':
+      await callWhisperPython(options, finalPath)
+      break
+    case 'whisperDiarization':
+      await callWhisperDiarization(options, finalPath)
+      break
+    default:
+      throw new Error(`Unknown transcription service: ${transcriptServices}`)
   }
 }

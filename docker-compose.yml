@@ -11,10 +11,9 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     depends_on:
       - whisper
-    #   - ollama
-    # environment:
-    #   - OLLAMA_HOST=ollama
-    #   - OLLAMA_PORT=11434
+      - ollama
+    environment:
+      - OLLAMA_HOST=ollama
     networks:
       - autoshownet
   whisper:
@@ -29,20 +28,16 @@ services:
     stdin_open: true
     networks:
       - autoshownet
-  # ollama:
-  #   image: ollama/ollama
-  #   command: ["ollama", "serve", "--address", "0.0.0.0"]  # Listen on all interfaces
-  #   ports:
-  #     - "11434:11434"
-  #   volumes:
-  #     - ./ollama:/root/.ollama
-  #   healthcheck:
-  #     test: ["CMD", "curl", "-f", "http://localhost:11434/healthz"]
-  #     interval: 10s
-  #     timeout: 5s
-  #     retries: 5
-  #   networks:
-  #     - autoshownet
+  ollama:
+    image: ollama/ollama
+    volumes:
+      - ollama:/root/.ollama
+    environment:
+      - OLLAMA_HOST=0.0.0.0
+    networks:
+      - autoshownet
 networks:
   autoshownet:
     driver: bridge
+volumes:
+  ollama:

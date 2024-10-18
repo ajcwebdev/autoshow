@@ -41,25 +41,31 @@ export const callOllama: LLMFunction = async (promptAndTranscript: string, tempP
     if (await checkServer()) {
       log(wait('    - Ollama server is already running.'))
     } else {
-      log(wait('    - Ollama server is not running. Attempting to start...'))
-      const ollamaProcess = spawn('ollama', ['serve'], {
-        detached: true,
-        stdio: 'ignore'
-      })
-      ollamaProcess.unref()
+      if (ollamaHost === 'ollama') {
+        // Running inside Docker, do not attempt to start the server
+        throw new Error('Ollama server is not running. Please ensure the Ollama server is running and accessible.')
+      } else {
+        // Not running in Docker, attempt to start the server
+        log(wait('    - Ollama server is not running. Attempting to start...'))
+        const ollamaProcess = spawn('ollama', ['serve'], {
+          detached: true,
+          stdio: 'ignore'
+        })
+        ollamaProcess.unref()
 
-      // Wait for the server to be ready
-      let attempts = 0
-      while (attempts < 30) {  // Increased to 30 attempts, 30 seconds total
-        if (await checkServer()) {
-          log(wait('    - Ollama server is now ready.'))
-          break
+        // Wait for the server to be ready
+        let attempts = 0
+        while (attempts < 30) {  // Wait up to 30 seconds
+          if (await checkServer()) {
+            log(wait('    - Ollama server is now ready.'))
+            break
+          }
+          await new Promise(resolve => setTimeout(resolve, 1000))
+          attempts++
         }
-        await new Promise(resolve => setTimeout(resolve, 1000))
-        attempts++
-      }
-      if (attempts === 30) {
-        throw new Error('Ollama server failed to become ready in time.')
+        if (attempts === 30) {
+          throw new Error('Ollama server failed to become ready in time.')
+        }
       }
     }
     
@@ -174,7 +180,7 @@ export const callOllama: LLMFunction = async (promptAndTranscript: string, tempP
     // Write the full content to the output file
     await writeFile(tempPath, fullContent)
   } catch (error) {
-    console.error(`Error in callOllama: ${error instanceof Error ? (error as Error).message : String(error)}`)
+    console.error(`Error in callOllama: ${error instanceof Error ? error.message : String(error)}`)
     console.error(`Stack Trace: ${error instanceof Error ? error.stack : 'No stack trace available'}`)
     throw error
   }

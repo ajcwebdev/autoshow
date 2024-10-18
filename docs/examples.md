@@ -342,6 +342,22 @@ Run `whisper.cpp` in a Docker container with `--whisperDocker`:
 npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --whisperDocker base
 ```
 
+### Whisper Python
+
+Use the original [`openai/whisper`](https://github.com/openai/whisper) Python library with the newly released [`turbo`](https://github.com/openai/whisper/discussions/2363) model:
+
+```bash
+npm run as -- --file "content/audio.mp3" --whisperPython turbo
+```
+
+### Whisper Diarization
+
+Use [`whisper-diarization`](https://github.com/MahmoudAshraf97/whisper-diarization) to provide speaker labels:
+
+```bash
+npm run as -- --file "content/audio.mp3" --whisperDiarization tiny
+```
+
 ### Deepgram
 
 Create a `.env` file and set API key as demonstrated in `.env.example` for `DEEPGRAM_API_KEY`.
@@ -424,25 +440,29 @@ npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --prompt tit
 
 ### Docker Compose
 
-This will start both `whisper.cpp` and the AutoShow Commander CLI in their own Docker containers.
+This will start `whisper.cpp`, Ollama, and the AutoShow Commander CLI in their own Docker containers.
 
 ```bash
 npm run docker-up
 ```
 
-Replace `as` with `docker` to run most other commands explained in this document.
-
-- Does not support all commands at this time, notably `--llama` and `--ollama`.
-- Currently working on the `llama.cpp` Docker integration so the entire project can be encapsulated in one local Docker Compose file.
+Replace `as` with `docker` to run most other commands explained in this document. Does not support all options at this time, notably `--llama`, `--whisperPython`, and `--whisperDiarization`.
 
 ```bash
-npm run docker -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --whisperDocker base
+npm run docker -- --video "https://www.youtube.com/watch?v=MORMZXEaONk"
+npm run docker -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --whisperDocker tiny
+```
+
+Currently supports Ollama's official Docker image so the entire project can be encapsulated in one local Docker Compose file:
+
+```bash
+npm run docker -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --whisperDocker tiny --ollama
 ```
 
 To reset your Docker images and containers, run:
 
 ```bash
-docker system prune -af --volumes
+docker system prune -af --volumes && docker image prune -af
 ```
 
 ### Bun

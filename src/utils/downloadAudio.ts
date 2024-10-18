@@ -76,7 +76,7 @@ export async function downloadAudio(options: ProcessingOptions, input: string, f
 
       // Convert the file to WAV format
       await execPromise(
-        `${ffmpeg} -i "${input}" -ar 16000 -ac 1 -vn "${outputPath}"`
+        `${ffmpeg} -y -i "${input}" -ar 16000 -ac 1 -vn "${outputPath}"`
       )
       log(success(`  File converted to WAV format successfully:\n    - ${outputPath}`))
     } catch (error) {

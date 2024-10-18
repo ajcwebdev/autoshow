@@ -4,8 +4,7 @@ import { readFile, writeFile } from 'node:fs/promises'
 import { exec } from 'node:child_process'
 import { promisify } from 'node:util'
 import { join } from 'node:path'
-import { WHISPER_MODELS } from '../models.js'
-import { log, wait } from '../models.js'
+import { log, wait, WHISPER_MODELS } from '../models.js'
 import type { ProcessingOptions, WhisperModelType } from '../types.js'
 
 const execPromise = promisify(exec)

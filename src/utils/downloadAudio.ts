@@ -4,7 +4,6 @@ import { exec, execFile } from 'node:child_process'
 import { promisify } from 'node:util'
 import { readFile, access } from 'node:fs/promises'
 import { fileTypeFromBuffer } from 'file-type'
-import ffmpeg from 'ffmpeg-static'
 import { checkDependencies } from './checkDependencies.js'
 import { log, step, success, wait } from '../models.js'
 import type { SupportedFileType, ProcessingOptions } from '../types.js'
@@ -76,7 +75,7 @@ export async function downloadAudio(options: ProcessingOptions, input: string, f
 
       // Convert the file to WAV format
       await execPromise(
-        `${ffmpeg} -y -i "${input}" -ar 16000 -ac 1 -vn "${outputPath}"`
+        `ffmpeg -i "${input}" -ar 16000 -ac 1 -c:a pcm_s16le "${outputPath}"`
       )
       log(success(`  File converted to WAV format successfully:\n    - ${outputPath}`))
     } catch (error) {

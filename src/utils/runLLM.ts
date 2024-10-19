@@ -11,6 +11,7 @@ import { callMistral } from '../llms/mistral.js'
 import { callOcto } from '../llms/octo.js'
 import { callFireworks } from '../llms/fireworks.js'
 import { callTogether } from '../llms/together.js'
+import { callGroq } from '../llms/groq.js'
 import { generatePrompt } from '../llms/prompt.js'
 import { log, step, success, wait } from '../models.js'
 import type { LLMServices, ProcessingOptions, LLMFunction, LLMFunctions } from '../types.js'
@@ -42,6 +43,7 @@ export async function runLLM(
     octo: callOcto,
     fireworks: callFireworks,
     together: callTogether,
+    groq: callGroq,
   }
 
   try {

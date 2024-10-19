@@ -281,6 +281,22 @@ npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --together Q
 npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --together QWEN_2_5_7B
 ```
 
+### Groq
+
+```bash
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --groq
+```
+
+Select Groq model:
+
+```bash
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --groq LLAMA_3_1_70B_VERSATILE
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --groq LLAMA_3_1_8B_INSTANT
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --groq LLAMA_3_2_1B_PREVIEW
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --groq LLAMA_3_2_3B_PREVIEW
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --groq MIXTRAL_8X7B_32768
+```
+
 ### Llama.cpp
 
 ```bash

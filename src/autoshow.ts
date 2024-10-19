@@ -57,6 +57,7 @@ program
   .option('--octo [model]', 'Use Octo for processing')
   .option('--fireworks [model]', 'Use Fireworks AI for processing with optional model specification')
   .option('--together [model]', 'Use Together AI for processing with optional model specification')
+  .option('--groq [model]', 'Use Groq for processing with optional model specification')
   .option('--llama [model]', 'Use Node Llama for processing with optional model specification')
   .option('--ollama [model]', 'Use Ollama for processing with optional model specification')
   .option('--gemini [model]', 'Use Gemini for processing with optional model specification')

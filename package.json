@@ -25,6 +25,7 @@
     "docker": "docker compose run --remove-orphans --rm autoshow --whisperDocker",
     "docker-up": "docker compose up --build -d --remove-orphans --no-start",
     "ds": "docker compose images && docker compose ls",
+    "prune": "docker system prune -af --volumes && docker image prune -af && docker container prune -f && docker volume prune -af",
     "v": "tsx --env-file=.env --no-warnings src/autoshow.ts --whisper large-v2 --video",
     "u": "tsx --env-file=.env --no-warnings src/autoshow.ts --whisper large-v2 --urls",
     "p": "tsx --env-file=.env --no-warnings src/autoshow.ts --whisper large-v2 --playlist",
@@ -65,6 +66,7 @@
     "@types/inquirer": "9.0.7",
     "@types/node": "22.7.5",
     "tsx": "4.19.1",
+    "typedoc": "^0.26.10",
     "typescript": "5.6.3"
   }
 }

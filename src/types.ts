@@ -2,6 +2,7 @@
 
 /**
  * @file This file contains all the custom type definitions used across the Autoshow project.
+ * @packageDocumentation
  */
 
 /**
@@ -48,11 +49,11 @@ export type ProcessingOptions = {
   mistral?: string
   /** OctoAI model to use (e.g., 'LLAMA_3_1_8B'). */
   octo?: string
-  /**  Fireworks model to use (e.g., ''). */
+  /** Fireworks model to use (e.g., ''). */
   fireworks?: string
-  /**  Together model to use (e.g., ''). */
+  /** Together model to use (e.g., ''). */
   together?: string
-  /**  Groq model to use (e.g., ''). */
+  /** Groq model to use (e.g., ''). */
   groq?: string
   /** Ollama model to use for local inference (e.g., 'LLAMA_3_2_1B'). */
   ollama?: string
@@ -63,15 +64,15 @@ export type ProcessingOptions = {
   /** Array of prompt sections to include (e.g., ['titles', 'summary']). */
   prompt?: string[]
   /** The selected LLM option. */
-  llmServices?: LLMServices | undefined
+  llmServices?: LLMServices
   /** The selected transcription option. */
-  transcriptServices?: TranscriptServices | undefined
+  transcriptServices?: TranscriptServices
   /** Number of items to skip in RSS feed processing. */
   skip?: number
   /** Order in which to process RSS feed items ('newest' or 'oldest'). */
-  last?: number
-  /** Number of most recent items to process (overrides --order and --skip). */
   order?: string
+  /** Number of most recent items to process (overrides --order and --skip). */
+  last?: number
   /** Whether to run in interactive mode. */
   interactive?: boolean
 }
@@ -81,7 +82,7 @@ export type ProcessingOptions = {
  */
 export type InquirerAnswers = {
   /** The action selected by the user (e.g., 'video', 'playlist'). */
-  action?: string  // Make this optional
+  action?: string
   /** YouTube video URL provided by the user. */
   video?: string
   /** YouTube playlist URL provided by the user. */
@@ -96,24 +97,28 @@ export type InquirerAnswers = {
   specifyItem?: boolean
   /** Comma-separated audio URLs of specific RSS items. */
   item?: string | string[]
+  /** Whether to generate JSON file with RSS feed information instead of processing items. */
+  info?: boolean
+  /** Number of items to skip in RSS feed processing. */
+  skip?: number
+  /** Number of most recent items to process (overrides order and skip). */
+  last?: number
+  /** Order in which to process RSS feed items ('newest' or 'oldest'). */
+  order?: string
   /** LLM option selected by the user. */
-  llmServices?: LLMServices | undefined
-  /** Specific Llama model selected by the user. */
-  llamaModel?: string
+  llmServices?: LLMServices
+  /** Specific LLM model selected by the user. */
+  llmModel?: string
   /** Transcription option selected by the user. */
-  transcriptServices?: TranscriptServices | undefined
+  transcriptServices?: TranscriptServices
   /** Whisper model type selected by the user. */
-  whisperModel?: WhisperModelType  // Add whisperModel to the InquirerAnswers
+  whisperModel?: WhisperModelType
   /** Whether to use speaker labels in transcription. */
   speakerLabels?: boolean
   /** Prompt sections selected by the user. */
   prompt?: string[]
   /** Whether to keep temporary files after processing. */
   noCleanUp?: boolean
-  /** Order in which to process RSS feed items ('newest' or 'oldest'). */
-  order?: string
-  /** Number of items to skip in RSS feed processing. */
-  skip?: number
   /** Whether to proceed with the action. */
   confirmAction?: boolean
 }
@@ -129,17 +134,21 @@ export type InquirerQuestions = Array<{
   /** The message to display to the user. */
   message: string
   /** The choices available for selection (for 'list' and 'checkbox' types). */
-  choices?: Array<any> | Function
+  choices?: Array<any> | (() => Array<any>)
   /** A function to determine when to display the prompt. */
-  when?: Function
+  when?: () => boolean
   /** A function to validate the user's input. */
-  validate?: Function
+  validate?: (input: any) => boolean | string
   /** The default value for the prompt. */
   default?: any
 }>
 
 /**
  * Represents a handler function for processing different actions (e.g., video, playlist).
+ * @param options - The options containing various inputs.
+ * @param input - The specific input (URL or file path).
+ * @param llmServices - The selected LLM service (optional).
+ * @param transcriptServices - The selected transcription service (optional).
  */
 export type HandlerFunction = (
   // The options containing various inputs
@@ -147,9 +156,9 @@ export type HandlerFunction = (
   // The specific input (URL or file path)
   input: string,
   // Allow llmServices to be optional or undefined
-  llmServices?: LLMServices | undefined,
+  llmServices?: LLMServices,
   // Allow transcriptServices to be optional or undefined
-  transcriptServices?: TranscriptServices | undefined
+  transcriptServices?: TranscriptServices
 ) => Promise<void>
 
 /**
@@ -256,8 +265,9 @@ export type TranscriptServices = 'whisper' | 'whisperDocker' | 'whisperPython' |
  * - medium.en: Medium English-only model.
  * - large-v1: Large multilingual model version 1.
  * - large-v2: Large multilingual model version 2.
+ * - large-v3-turbo: Large multilingual model version 3 with new turbo model.
  */
-export type WhisperModelType = 'tiny' | 'tiny.en' | 'base' | 'base.en' | 'small' | 'small.en' | 'medium' | 'medium.en' | 'large-v1' | 'large-v2' | 'turbo'
+export type WhisperModelType = 'tiny' | 'tiny.en' | 'base' | 'base.en' | 'small' | 'small.en' | 'medium' | 'medium.en' | 'large-v1' | 'large-v2' | 'large-v3-turbo' | 'turbo'
 
 /**
  * Represents the object containing the different prompts, their instructions to the LLM, and their expected example output.
@@ -299,6 +309,9 @@ export type LLMOptions = {
 
 /**
  * Represents a function that calls an LLM for processing.
+ * @param promptAndTranscript - The combined prompt and transcript.
+ * @param tempPath - The temporary file path.
+ * @param llmModel - The specific LLM model to use (optional).
  */
 export type LLMFunction = (
   promptAndTranscript: string,
@@ -509,5 +522,6 @@ export type DeepgramResponse = {
 
 /**
  * Represents the function signature for cleaning up temporary files.
+ * @param id - The unique identifier for the temporary files.
  */
 export type CleanUpFunction = (id: string) => Promise<void>

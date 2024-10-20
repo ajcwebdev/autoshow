@@ -32,6 +32,7 @@ export const WHISPER_MODELS: Record<string, string> = {
   'medium.en': 'ggml-medium.en.bin',
   'large-v1': 'ggml-large-v1.bin',
   'large-v2': 'ggml-large-v2.bin',
+  'large-v3-turbo': 'ggml-large-v3-turbo.bin',
 }
 
 /**
@@ -50,6 +51,7 @@ export const WHISPER_PYTHON_MODELS: Record<WhisperModelType, string> = {
   'large-v1': 'large-v1',
   'large-v2': 'large-v2',
   turbo: 'turbo',
+  'large-v3-turbo': 'large-v3-turbo'
 }
 
 /**

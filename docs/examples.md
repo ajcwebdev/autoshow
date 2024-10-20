@@ -350,6 +350,9 @@ npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --whisper me
 
 # large-v2 model
 npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --whisper large-v2
+
+# large-v3-turbo model
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --whisper large-v3-turbo
 ```
 
 Run `whisper.cpp` in a Docker container with `--whisperDocker`:
@@ -478,7 +481,7 @@ npm run docker -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --whispe
 To reset your Docker images and containers, run:
 
 ```bash
-docker system prune -af --volumes && docker image prune -af
+npm run prune
 ```
 
 ### Bun

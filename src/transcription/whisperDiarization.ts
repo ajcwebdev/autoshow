@@ -3,10 +3,9 @@
 import { readFile, writeFile, unlink } from 'node:fs/promises'
 import { exec } from 'node:child_process'
 import { promisify } from 'node:util'
-// import { existsSync } from 'node:fs'
-import { log, wait } from '../models.js'
+import { existsSync } from 'node:fs'
+import { log, wait, WHISPER_PYTHON_MODELS } from '../models.js'
 import type { ProcessingOptions } from '../types.js'
-import { WHISPER_PYTHON_MODELS } from '../models.js'
 
 const execPromise = promisify(exec)
 
@@ -18,7 +17,7 @@ const execPromise = promisify(exec)
  * @throws {Error} - If an error occurs during transcription.
  */
 export async function callWhisperDiarization(options: ProcessingOptions, finalPath: string): Promise<string> {
-  log(wait('\n  Using openai-whisper Python library for transcription...'))
+  log(wait('\n  Using whisper-diarization for transcription...'))
 
   try {
     // Get the whisper model from options or use 'base' as default
@@ -26,7 +25,7 @@ export async function callWhisperDiarization(options: ProcessingOptions, finalPa
     if (typeof options.whisperDiarization === 'string') {
       whisperModel = options.whisperDiarization
     } else if (options.whisperDiarization !== true) {
-      throw new Error('Invalid whisperPython option')
+      throw new Error('Invalid whisperDiarization option')
     }
 
     if (!(whisperModel in WHISPER_PYTHON_MODELS)) {
@@ -35,34 +34,22 @@ export async function callWhisperDiarization(options: ProcessingOptions, finalPa
 
     log(wait(`\n    - whisperModel: ${whisperModel}`))
 
-    // // Check if ffmpeg is installed
-    // try {
-    //   await execPromise('ffmpeg -version')
-    // } catch (error) {
-    //   throw new Error('ffmpeg is not installed or not available in PATH')
-    // }
+    // Check if the virtual environment exists
+    const venvPythonPath = 'whisper-diarization/venv/bin/python'
+    if (!existsSync(venvPythonPath)) {
+      log(wait(`\n  Virtual environment not found, running setup script...\n`))
+      await execPromise('bash scripts/setup-python.sh')
+      log(wait(`    - whisper-diarization setup complete.\n`))
+    }
 
-    // // Check if Python is installed
-    // try {
-    //   await execPromise('python3 --version')
-    // } catch (error) {
-    //   throw new Error('Python is not installed or not available in PATH')
-    // }
-
-    // // Check if the whisper-diarization repo is cloned
-    // if (!existsSync('./whisper-diarization')) {
-    //   log(`\n  No whisper-diarization repo found, running git clone...\n`)
-    //   await execPromise('git clone https://github.com/MahmoudAshraf97/whisper-diarization.git')
-    //   log(`\n    - whisper-diarization clone complete.\n`)
-    // }
-
-    // Prepare the command to run the transcription
-    const command = `python whisper-diarization/diarize.py -a ${finalPath}.wav --whisper-model ${whisperModel}`
-
-    log(wait(`\n  Running transcription with command:\n    ${command}\n`))
+    // Prepare the command to run the transcription, example command after interpolation:
+    // whisper-diarization/venv/bin/python whisper-diarization/diarize.py -a content/audio.wav --whisper-model tiny
+    const command = `${venvPythonPath} whisper-diarization/diarize.py -a ${finalPath}.wav --whisper-model ${whisperModel}`
+    log(wait(`\n  Running transcription with command:\n\n    ${command}\n`))
 
     // Execute the command
     await execPromise(command)
+    await unlink(`${finalPath}.txt`)
 
     // Read the generated transcript file
     const srtContent = await readFile(`${finalPath}.srt`, 'utf8')
@@ -97,13 +84,13 @@ export async function callWhisperDiarization(options: ProcessingOptions, finalPa
     
     // Write the formatted content to a text file
     await writeFile(`${finalPath}.txt`, txtContent)
-    log(wait(`\n  Transcript transformation successfully completed...\n    - ${finalPath}.txt\n`))
+    log(wait(`\n  Transcript transformation successfully completed:\n    - ${finalPath}.txt\n`))
     
     // Create an empty LRC file to prevent cleanup errors and unlink SRT file
     await writeFile(`${finalPath}.lrc`, '')
-    log(wait(`\n  Empty LRC file created:\n    - ${finalPath}.lrc\n`))
+    log(wait(`  Empty LRC file created:\n    - ${finalPath}.lrc`))
     await unlink(`${finalPath}.srt`)
-    log(wait(`\n  SRT file deleted:\n    - ${finalPath}.srt\n`))
+    log(wait(`  SRT file deleted:\n    - ${finalPath}.srt`))
     
     // Return the processed content
     return txtContent

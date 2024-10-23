@@ -281,6 +281,22 @@ npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --together Q
 npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --together QWEN_2_5_7B
 ```
 
+### Groq
+
+```bash
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --groq
+```
+
+Select Groq model:
+
+```bash
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --groq LLAMA_3_1_70B_VERSATILE
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --groq LLAMA_3_1_8B_INSTANT
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --groq LLAMA_3_2_1B_PREVIEW
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --groq LLAMA_3_2_3B_PREVIEW
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --groq MIXTRAL_8X7B_32768
+```
+
 ### Llama.cpp
 
 ```bash
@@ -334,12 +350,31 @@ npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --whisper me
 
 # large-v2 model
 npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --whisper large-v2
+
+# large-v3-turbo model
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --whisper large-v3-turbo
 ```
 
 Run `whisper.cpp` in a Docker container with `--whisperDocker`:
 
 ```bash
 npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --whisperDocker base
+```
+
+### Whisper Python
+
+Use the original [`openai/whisper`](https://github.com/openai/whisper) Python library with the newly released [`turbo`](https://github.com/openai/whisper/discussions/2363) model:
+
+```bash
+npm run as -- --file "content/audio.mp3" --whisperPython turbo
+```
+
+### Whisper Diarization
+
+Use [`whisper-diarization`](https://github.com/MahmoudAshraf97/whisper-diarization) to provide speaker labels:
+
+```bash
+npm run as -- --file "content/audio.mp3" --whisperDiarization tiny
 ```
 
 ### Deepgram
@@ -424,25 +459,29 @@ npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --prompt tit
 
 ### Docker Compose
 
-This will start both `whisper.cpp` and the AutoShow Commander CLI in their own Docker containers.
+This will start `whisper.cpp`, Ollama, and the AutoShow Commander CLI in their own Docker containers.
 
 ```bash
 npm run docker-up
 ```
 
-Replace `as` with `docker` to run most other commands explained in this document.
-
-- Does not support all commands at this time, notably `--llama` and `--ollama`.
-- Currently working on the `llama.cpp` Docker integration so the entire project can be encapsulated in one local Docker Compose file.
+Replace `as` with `docker` to run most other commands explained in this document. Does not support all options at this time, notably `--llama`, `--whisperPython`, and `--whisperDiarization`.
 
 ```bash
-npm run docker -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --whisperDocker base
+npm run docker -- --video "https://www.youtube.com/watch?v=MORMZXEaONk"
+npm run docker -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --whisperDocker tiny
+```
+
+Currently supports Ollama's official Docker image so the entire project can be encapsulated in one local Docker Compose file:
+
+```bash
+npm run docker -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --whisperDocker tiny --ollama
 ```
 
 To reset your Docker images and containers, run:
 
 ```bash
-docker system prune -af --volumes
+npm run prune
 ```
 
 ### Bun

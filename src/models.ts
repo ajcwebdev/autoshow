@@ -2,7 +2,7 @@
 
 import chalk from 'chalk'
 import type { ChalkInstance } from 'chalk'
-import type { WhisperModelType, ChatGPTModelType, ClaudeModelType, CohereModelType, GeminiModelType, MistralModelType, OctoModelType, LlamaModelType, OllamaModelType, TogetherModelType, FireworksModelType } from './types.js'
+import type { WhisperModelType, ChatGPTModelType, ClaudeModelType, CohereModelType, GeminiModelType, MistralModelType, OctoModelType, LlamaModelType, OllamaModelType, TogetherModelType, FireworksModelType, GroqModelType } from './types.js'
 
 export const step: ChalkInstance = chalk.bold.underline
 export const dim: ChalkInstance = chalk.dim
@@ -14,7 +14,7 @@ export const final: ChalkInstance = chalk.bold.italic
 export const log: typeof console.log = console.log
 
 export const ACTION_OPTIONS = ['video', 'playlist', 'urls', 'file', 'rss']
-export const LLM_OPTIONS = ['chatgpt', 'claude', 'cohere', 'mistral', 'octo', 'llama', 'ollama', 'gemini', 'fireworks', 'together']
+export const LLM_OPTIONS = ['chatgpt', 'claude', 'cohere', 'mistral', 'octo', 'llama', 'ollama', 'gemini', 'fireworks', 'together', 'groq']
 export const TRANSCRIPT_OPTIONS = ['whisper', 'whisperDocker', 'whisperPython', 'whisperDiarization', 'deepgram', 'assembly']
 
 /**
@@ -32,6 +32,7 @@ export const WHISPER_MODELS: Record<string, string> = {
   'medium.en': 'ggml-medium.en.bin',
   'large-v1': 'ggml-large-v1.bin',
   'large-v2': 'ggml-large-v2.bin',
+  'large-v3-turbo': 'ggml-large-v3-turbo.bin',
 }
 
 /**
@@ -50,6 +51,7 @@ export const WHISPER_PYTHON_MODELS: Record<WhisperModelType, string> = {
   'large-v1': 'large-v1',
   'large-v2': 'large-v2',
   turbo: 'turbo',
+  'large-v3-turbo': 'large-v3-turbo'
 }
 
 /**
@@ -144,6 +146,18 @@ export const TOGETHER_MODELS: Record<TogetherModelType, string> = {
   GEMMA_2_9B: "google/gemma-2-9b-it",
   QWEN_2_5_72B: "Qwen/Qwen2.5-72B-Instruct-Turbo",
   QWEN_2_5_7B: "Qwen/Qwen2.5-7B-Instruct-Turbo",
+}
+
+/**
+ * Map of Groq model identifiers to their API names.
+ * @type {Record<GroqModelType, string>}
+ */
+export const GROQ_MODELS: Record<GroqModelType, string> = {
+  LLAMA_3_1_70B_VERSATILE: 'llama-3.1-70b-versatile',
+  LLAMA_3_1_8B_INSTANT: 'llama-3.1-8b-instant',
+  LLAMA_3_2_1B_PREVIEW: 'llama-3.2-1b-preview',
+  LLAMA_3_2_3B_PREVIEW: 'llama-3.2-3b-preview',
+  MIXTRAL_8X7B_32768: 'mixtral-8x7b-32768',
 }
 
 /**

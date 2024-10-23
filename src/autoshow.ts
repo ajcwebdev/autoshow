@@ -8,8 +8,7 @@
  * Automate processing of audio and video content from various sources.
  * Supports processing YouTube videos, playlists, local files, and podcast RSS feeds.
  *
- * Documentation: https://github.com/ajcwebdev/autoshow#readme
- * Report Issues: https://github.com/ajcwebdev/autoshow/issues
+ * @packageDocumentation
  */
 
 import { Command } from 'commander'
@@ -26,7 +25,9 @@ import type { ProcessingOptions, HandlerFunction, LLMServices, TranscriptService
 // Initialize the command-line interface
 const program = new Command()
 
-// Define command-line options and their descriptions
+/**
+ * Defines the command-line interface options and descriptions.
+ */
 program
   .name('autoshow')
   .version('0.0.1')
@@ -57,6 +58,7 @@ program
   .option('--octo [model]', 'Use Octo for processing')
   .option('--fireworks [model]', 'Use Fireworks AI for processing with optional model specification')
   .option('--together [model]', 'Use Together AI for processing with optional model specification')
+  .option('--groq [model]', 'Use Groq for processing with optional model specification')
   .option('--llama [model]', 'Use Node Llama for processing with optional model specification')
   .option('--ollama [model]', 'Use Ollama for processing with optional model specification')
   .option('--gemini [model]', 'Use Gemini for processing with optional model specification')
@@ -78,12 +80,16 @@ Report Issues: https://github.com/ajcwebdev/autoshow/issues
 
 /**
  * Helper function to validate that only one option from a list is provided.
- * @param {string[]} optionKeys - The list of option keys to check.
- * @param {ProcessingOptions} options - The options object.
- * @param {string} errorMessage - The prefix of the error message.
- * @returns {string | undefined} - The selected option or undefined.
+ * @param optionKeys - The list of option keys to check.
+ * @param options - The options object.
+ * @param errorMessage - The prefix of the error message.
+ * @returns The selected option or undefined.
  */
-function getSingleOption(optionKeys: string[], options: ProcessingOptions, errorMessage: string): string | undefined {
+function getSingleOption(
+  optionKeys: string[],
+  options: ProcessingOptions,
+  errorMessage: string
+): string | undefined {
   const selectedOptions = optionKeys.filter((opt) => options[opt as keyof ProcessingOptions])
   if (selectedOptions.length > 1) {
     console.error(`Error: Multiple ${errorMessage} provided (${selectedOptions.join(', ')}). Please specify only one.`)
@@ -94,8 +100,7 @@ function getSingleOption(optionKeys: string[], options: ProcessingOptions, error
 
 /**
  * Main action for the program.
- * @param {ProcessingOptions} options - The command-line options provided by the user.
- * @returns {Promise<void>}
+ * @param options - The command-line options provided by the user.
  */
 program.action(async (options: ProcessingOptions) => {
   log(opts(`Options received at beginning of command:\n`))

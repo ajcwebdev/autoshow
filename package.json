@@ -36,6 +36,8 @@
     "fetch-local": "tsx --env-file=.env --no-warnings packages/server/tests/fetch-local.ts",
     "fetch-all": "tsx --env-file=.env --no-warnings packages/server/tests/fetch-all.ts",
     "t": "npm run test-local",
+    "bench": "tsx --test test/bench.test.ts",
+    "test-bench": "tsx --test test/bench.test.ts",
     "test-local": "tsx --test test/local.test.ts",
     "test-docker": "tsx --test test/docker.test.ts",
     "test-integrations": "tsx --test test/integrations.test.ts",

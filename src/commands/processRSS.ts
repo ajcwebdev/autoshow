@@ -7,7 +7,7 @@ import { downloadAudio } from '../utils/downloadAudio.js'
 import { runTranscription } from '../utils/runTranscription.js'
 import { runLLM } from '../utils/runLLM.js'
 import { cleanUpFiles } from '../utils/cleanUpFiles.js'
-import { log, final, wait, opts } from '../models.js'
+import { log, wait, opts } from '../models.js'
 
 import type { LLMServices, TranscriptServices, ProcessingOptions, RSSItem } from '../types.js'
 
@@ -63,7 +63,7 @@ export async function processRSS(
   transcriptServices?: TranscriptServices
 ): Promise<void> {
   log(opts('Parameters passed to processRSS:\n'))
-  log(`  - llmServices: ${llmServices}\n  - transcriptServices: ${transcriptServices}`)
+  log(wait(`  - llmServices: ${llmServices}\n  - transcriptServices: ${transcriptServices}`))
   try {
     // Validate that --last is a positive integer if provided
     if (options.last !== undefined) {

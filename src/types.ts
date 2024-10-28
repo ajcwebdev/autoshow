@@ -1,12 +1,13 @@
 // src/types.ts
 
 /**
- * @file This file contains all the custom type definitions used across the Autoshow project.
+ * @file Custom type definitions used across the Autoshow project.
  * @packageDocumentation
  */
 
+// Core Processing Types
 /**
- * Represents the processing options passed through command-line arguments or interactive prompts.
+ * Processing options passed through command-line arguments or interactive prompts.
  */
 export type ProcessingOptions = {
   /** URL of the YouTube video to process. */
@@ -77,8 +78,9 @@ export type ProcessingOptions = {
   interactive?: boolean
 }
 
+// Interactive CLI Types
 /**
- * Represents the answers received from inquirer prompts in interactive mode.
+ * Answers received from inquirer prompts in interactive mode.
  */
 export type InquirerAnswers = {
   /** The action selected by the user (e.g., 'video', 'playlist'). */
@@ -124,7 +126,7 @@ export type InquirerAnswers = {
 }
 
 /**
- * Represents the structure of the inquirer prompt questions.
+ * Structure of the inquirer prompt questions.
  */
 export type InquirerQuestions = Array<{
   /** The type of the prompt (e.g., 'input', 'list', 'confirm', 'checkbox'). */
@@ -143,26 +145,25 @@ export type InquirerQuestions = Array<{
   default?: any
 }>
 
+// Handler and Processing Types
 /**
- * Represents a handler function for processing different actions (e.g., video, playlist).
- * @param options - The options containing various inputs.
- * @param input - The specific input (URL or file path).
- * @param llmServices - The selected LLM service (optional).
- * @param transcriptServices - The selected transcription service (optional).
+ * Handler function for processing different actions (e.g., video, playlist).
+ * 
+ * @param options - The options containing various inputs
+ * @param input - The specific input (URL or file path)
+ * @param llmServices - The selected LLM service (optional)
+ * @param transcriptServices - The selected transcription service (optional)
  */
 export type HandlerFunction = (
-  // The options containing various inputs
   options: ProcessingOptions,
-  // The specific input (URL or file path)
   input: string,
-  // Allow llmServices to be optional or undefined
   llmServices?: LLMServices,
-  // Allow transcriptServices to be optional or undefined
   transcriptServices?: TranscriptServices
 ) => Promise<void>
 
+// Content Types
 /**
- * Represents the data structure for markdown generation.
+ * Data structure for markdown generation.
  */
 export type MarkdownData = {
   /** The front matter content for the markdown file. */
@@ -174,7 +175,7 @@ export type MarkdownData = {
 }
 
 /**
- * Represents the metadata extracted from a YouTube video.
+ * Metadata extracted from a YouTube video.
  */
 export type VideoMetadata = {
   /** The URL to the video's webpage. */
@@ -185,7 +186,7 @@ export type VideoMetadata = {
   channelURL: string
   /** The title of the video. */
   title: string
-  /** The description of the video (empty string in this case). */
+  /** The description of the video. */
   description: string
   /** The upload date in 'YYYY-MM-DD' format. */
   publishDate: string
@@ -193,8 +194,9 @@ export type VideoMetadata = {
   coverImage: string
 }
 
+// RSS Feed Types
 /**
- * Represents an item in an RSS feed.
+ * Item in an RSS feed.
  */
 export type RSSItem = {
   /** The publication date of the RSS item (e.g., '2024-09-24'). */
@@ -216,7 +218,7 @@ export type RSSItem = {
 }
 
 /**
- * Represents the options for RSS feed processing.
+ * Options for RSS feed processing.
  */
 export type RSSOptions = {
   /** The order to process items ('newest' or 'oldest'). */
@@ -225,8 +227,9 @@ export type RSSOptions = {
   skip?: number
 }
 
+// Audio Processing Types
 /**
- * Represents the options for downloading audio files.
+ * Options for downloading audio files.
  */
 export type DownloadAudioOptions = {
   /** The desired output audio format (e.g., 'wav'). */
@@ -238,39 +241,24 @@ export type DownloadAudioOptions = {
 }
 
 /**
- * Represents the supported file types for audio and video processing.
+ * Supported file types for audio and video processing.
  */
 export type SupportedFileType = 'wav' | 'mp3' | 'm4a' | 'aac' | 'ogg' | 'flac' | 'mp4' | 'mkv' | 'avi' | 'mov' | 'webm'
 
+// Transcription Service Types
 /**
- * Represents the transcription services that can be used in the application.
- *
- * - whisper: Use Whisper.cpp for transcription.
- * - whisperDocker: Use Whisper.cpp in a Docker container.
- * - deepgram: Use Deepgram's transcription service.
- * - assembly: Use AssemblyAI's transcription service.
+ * Transcription services that can be used in the application.
  */
 export type TranscriptServices = 'whisper' | 'whisperDocker' | 'whisperPython' | 'whisperDiarization' | 'deepgram' | 'assembly'
 
 /**
- * Represents the available Whisper model types.
- *
- * - tiny: Smallest multilingual model.
- * - tiny.en: Smallest English-only model.
- * - base: Base multilingual model.
- * - base.en: Base English-only model.
- * - small: Small multilingual model.
- * - small.en: Small English-only model.
- * - medium: Medium multilingual model.
- * - medium.en: Medium English-only model.
- * - large-v1: Large multilingual model version 1.
- * - large-v2: Large multilingual model version 2.
- * - large-v3-turbo: Large multilingual model version 3 with new turbo model.
+ * Available Whisper model types with varying sizes and capabilities.
  */
 export type WhisperModelType = 'tiny' | 'tiny.en' | 'base' | 'base.en' | 'small' | 'small.en' | 'medium' | 'medium.en' | 'large-v1' | 'large-v2' | 'large-v3-turbo' | 'turbo'
 
+// LLM Types
 /**
- * Represents the object containing the different prompts, their instructions to the LLM, and their expected example output.
+ * Object containing different prompts, their instructions to the LLM, and expected example output.
  */
 export type PromptSection = {
   /** The instructions for the section. */
@@ -280,21 +268,12 @@ export type PromptSection = {
 }
 
 /**
- * Represents the options for Language Models (LLMs) that can be used in the application.
- *
- * - chatgpt: Use OpenAI's ChatGPT models.
- * - claude: Use Anthropic's Claude models.
- * - cohere: Use Cohere's language models.
- * - mistral: Use Mistral AI's language models.
- * - octo: Use OctoAI's language models.
- * - llama: Use Llama models for local inference.
- * - ollama: Use Ollama for processing.
- * - gemini: Use Google's Gemini models.
+ * Options for Language Models (LLMs) that can be used in the application.
  */
 export type LLMServices = 'chatgpt' | 'claude' | 'cohere' | 'mistral' | 'octo' | 'llama' | 'ollama' | 'gemini' | 'fireworks' | 'together' | 'groq'
 
 /**
- * Represents the options for LLM processing.
+ * Options for LLM processing.
  */
 export type LLMOptions = {
   /** The sections to include in the prompt (e.g., ['titles', 'summary']). */
@@ -308,10 +287,11 @@ export type LLMOptions = {
 }
 
 /**
- * Represents a function that calls an LLM for processing.
- * @param promptAndTranscript - The combined prompt and transcript.
- * @param tempPath - The temporary file path.
- * @param llmModel - The specific LLM model to use (optional).
+ * Function that calls an LLM for processing.
+ * 
+ * @param promptAndTranscript - The combined prompt and transcript
+ * @param tempPath - The temporary file path
+ * @param llmModel - The specific LLM model to use (optional)
  */
 export type LLMFunction = (
   promptAndTranscript: string,
@@ -320,199 +300,364 @@ export type LLMFunction = (
 ) => Promise<void>
 
 /**
- * Represents a mapping of LLM option keys to their corresponding functions.
- *
- * This ensures that only valid `LLMServices` values can be used as keys in the `llmFunctions` object.
+ * Mapping of LLM option keys to their corresponding functions.
  */
 export type LLMFunctions = {
   [K in LLMServices]: LLMFunction
 }
 
+// LLM Model Types
 /**
- * Define all available LLM models.
+ * Available GPT models.
  */
-/** Define available GPT models. */
 export type ChatGPTModelType = 'GPT_4o_MINI' | 'GPT_4o' | 'GPT_4_TURBO' | 'GPT_4'
-/** Define available Claude models. */
+
+/**
+ * Available Claude models.
+ */
 export type ClaudeModelType = 'CLAUDE_3_5_SONNET' | 'CLAUDE_3_OPUS' | 'CLAUDE_3_SONNET' | 'CLAUDE_3_HAIKU'
-/** Define available Cohere models. */
+
+/**
+ * Available Cohere models.
+ */
 export type CohereModelType = 'COMMAND_R' | 'COMMAND_R_PLUS'
-/** Define available Gemini models. */
+
+/**
+ * Available Gemini models.
+ */
 export type GeminiModelType = 'GEMINI_1_5_FLASH' | 'GEMINI_1_5_PRO'
-/** Define available Mistral AI models. */
+
+/**
+ * Available Mistral AI models.
+ */
 export type MistralModelType = 'MIXTRAL_8x7b' | 'MIXTRAL_8x22b' | 'MISTRAL_LARGE' | 'MISTRAL_NEMO'
-/** Define available OctoAI models. */
+
+/**
+ * Available OctoAI models.
+ */
 export type OctoModelType = 'LLAMA_3_1_8B' | 'LLAMA_3_1_70B' | 'LLAMA_3_1_405B' | 'MISTRAL_7B' | 'MIXTRAL_8X_7B' | 'NOUS_HERMES_MIXTRAL_8X_7B' | 'WIZARD_2_8X_22B'
-/** Define available Fireworks models. */
+
+/**
+ * Available Fireworks models.
+ */
 export type FireworksModelType = 'LLAMA_3_1_405B' | 'LLAMA_3_1_70B' | 'LLAMA_3_1_8B' | 'LLAMA_3_2_3B' | 'LLAMA_3_2_1B' | 'QWEN_2_5_72B'
-/** Define available Together models. */
+
+/**
+ * Available Together models.
+ */
 export type TogetherModelType = 'LLAMA_3_2_3B' | 'LLAMA_3_1_405B' | 'LLAMA_3_1_70B' | 'LLAMA_3_1_8B' | 'GEMMA_2_27B' | 'GEMMA_2_9B' | 'QWEN_2_5_72B' | 'QWEN_2_5_7B'
-/** Define available Groq models. */
+
+/**
+ * Available Groq models.
+ */
 export type GroqModelType = 'LLAMA_3_1_70B_VERSATILE' | 'LLAMA_3_1_8B_INSTANT' | 'LLAMA_3_2_1B_PREVIEW' | 'LLAMA_3_2_3B_PREVIEW' | 'MIXTRAL_8X7B_32768'
-/** Define local model configurations. */
+
+/**
+ * Local model configurations.
+ */
 export type LlamaModelType = 'QWEN_2_5_1B' | 'QWEN_2_5_3B' | 'PHI_3_5' | 'LLAMA_3_2_1B' | 'GEMMA_2_2B'
-/** Define local model with Ollama. */
+
+/**
+ * Local model with Ollama.
+ */
 export type OllamaModelType = 'LLAMA_3_2_1B' | 'LLAMA_3_2_3B' | 'GEMMA_2_2B' | 'PHI_3_5' | 'QWEN_2_5_1B' | 'QWEN_2_5_3B'
 
+// API Response Types
+/**
+ * Response structure from Fireworks AI API.
+ */
 export type FireworksResponse = {
+  /** Unique identifier for the response */
   id: string
+  /** Type of object */
   object: string
+  /** Timestamp of creation */
   created: number
+  /** Model used for generation */
   model: string
+  /** Input prompts */
   prompt: any[]
+  /** Array of completion choices */
   choices: {
+    /** Reason for completion finish */
     finish_reason: string
+    /** Index of the choice */
     index: number
+    /** Message content and metadata */
     message: {
+      /** Role of the message author */
       role: string
+      /** Generated content */
       content: string
+      /** Tool calls made during generation */
       tool_calls: {
+        /** Tool call identifier */
         id: string
+        /** Type of tool call */
         type: string
+        /** Function call details */
         function: {
+          /** Name of the function called */
           name: string
+          /** Arguments passed to the function */
           arguments: string
         }
       }[]
     }
   }[]
+  /** Token usage statistics */
   usage: {
+    /** Number of tokens in the prompt */
     prompt_tokens: number
+    /** Number of tokens in the completion */
     completion_tokens: number
+    /** Total tokens used */
     total_tokens: number
   }
 }
 
+/**
+ * Response structure from Together AI API.
+ */
 export type TogetherResponse = {
+  /** Unique identifier for the response */
   id: string
+  /** Type of object */
   object: string
+  /** Timestamp of creation */
   created: number
+  /** Model used for generation */
   model: string
+  /** Input prompts */
   prompt: any[]
+  /** Array of completion choices */
   choices: {
+    /** Generated text */
     text: string
+    /** Reason for completion finish */
     finish_reason: string
+    /** Random seed used */
     seed: number
+    /** Choice index */
     index: number
+    /** Message content and metadata */
     message: {
+      /** Role of the message author */
       role: string
+      /** Generated content */
       content: string
+      /** Tool calls made during generation */
       tool_calls: {
+        /** Index of the tool call */
         index: number
+        /** Tool call identifier */
         id: string
+        /** Type of tool call */
         type: string
+        /** Function call details */
         function: {
+          /** Name of the function called */
           name: string
+          /** Arguments passed to the function */
           arguments: string
         }
       }[]
     }
+    /** Log probability information */
     logprobs: {
+      /** Array of token IDs */
       token_ids: number[]
+      /** Array of tokens */
       tokens: string[]
+      /** Log probabilities for tokens */
       token_logprobs: number[]
     }
   }[]
+  /** Token usage statistics */
   usage: {
+    /** Number of tokens in the prompt */
     prompt_tokens: number
+    /** Number of tokens in the completion */
     completion_tokens: number
+    /** Total tokens used */
     total_tokens: number
   }
 }
 
+/**
+ * Response structure from Groq Chat Completion API.
+ */
 export type GroqChatCompletionResponse = {
+  /** Unique identifier for the response */
   id: string
+  /** Type of object */
   object: string
-  created: number // UNIX timestamp
-  model: string // e.g., "mixtral-8x7b-32768"
-  system_fingerprint: string | null // Nullable field
+  /** Timestamp of creation */
+  created: number
+  /** Model used for generation */
+  model: string
+  /** System fingerprint */
+  system_fingerprint: string | null
+  /** Array of completion choices */
   choices: {
+    /** Choice index */
     index: number
+    /** Message content and metadata */
     message: {
-      role: 'assistant' | 'user' | 'system' // Role of the message author
-      content: string // The actual text of the message
+      /** Role of the message author */
+      role: 'assistant' | 'user' | 'system'
+      /** Generated content */
+      content: string
     }
-    finish_reason: string // Reason why the completion stopped, e.g., "stop"
+    /** Reason for completion finish */
+    finish_reason: string
+    /** Optional log probability information */
     logprobs?: {
-      tokens: string[] // Tokens generated by the model
-      token_logprobs: number[] // Log probabilities for each token
-      top_logprobs: Record<string, number>[] // Top logprobs for the tokens
-      text_offset: number[] // Text offsets for the tokens
-    } | null // Optional logprobs object
+      /** Array of tokens */
+      tokens: string[]
+      /** Log probabilities for tokens */
+      token_logprobs: number[]
+      /** Top log probabilities */
+      top_logprobs: Record<string, number>[]
+      /** Text offsets for tokens */
+      text_offset: number[]
+    } | null
   }[]
+  /** Optional usage statistics */
   usage?: {
-    prompt_tokens: number // Tokens used in the prompt
-    completion_tokens: number // Tokens used in the generated completion
-    total_tokens: number // Total tokens used
-    prompt_time?: number // Optional timing for the prompt
-    completion_time?: number // Optional timing for the completion
-    total_time?: number // Optional total time for both prompt and completion
+    /** Number of tokens in the prompt */
+    prompt_tokens: number
+    /** Number of tokens in the completion */
+    completion_tokens: number
+    /** Total tokens used */
+    total_tokens: number
+    /** Optional timing for prompt processing */
+    prompt_time?: number
+    /** Optional timing for completion generation */
+    completion_time?: number
+    /** Optional total processing time */
+    total_time?: number
   }
 }
 
-// Define the expected structure of the response from Ollama API
+/**
+ * Response structure from Ollama API.
+ */
 export type OllamaResponse = {
+  /** Model used for generation */
   model: string
+  /** Timestamp of creation */
   created_at: string
+  /** Message content and metadata */
   message: {
+    /** Role of the message author */
     role: string
+    /** Generated content */
     content: string
   }
+  /** Reason for completion */
   done_reason: string
+  /** Whether generation is complete */
   done: boolean
+  /** Total processing duration */
   total_duration: number
+  /** Model loading duration */
   load_duration: number
+  /** Number of prompt evaluations */
   prompt_eval_count: number
+  /** Duration of prompt evaluation */
   prompt_eval_duration: number
+  /** Number of evaluations */
   eval_count: number
+  /** Duration of evaluation */
   eval_duration: number
 }
 
+/**
+ * Response structure for Ollama model tags.
+ */
 export type OllamaTagsResponse = {
+  /** Array of available models */
   models: Array<{
+    /** Model name */
     name: string
+    /** Base model identifier */
     model: string
+    /** Last modification timestamp */
     modified_at: string
+    /** Model size in bytes */
     size: number
+    /** Model digest */
     digest: string
+    /** Model details */
     details: {
+      /** Parent model identifier */
       parent_model: string
+      /** Model format */
       format: string
+      /** Model family */
       family: string
+      /** Array of model families */
       families: string[]
+      /** Model parameter size */
       parameter_size: string
+      /** Quantization level */
       quantization_level: string
     }
   }>
 }
 
-// Define types for Deepgram API response
+/**
+ * Response structure from Deepgram API.
+ */
 export type DeepgramResponse = {
+  /** Metadata about the transcription */
   metadata: {
+    /** Transaction key */
     transaction_key: string
+    /** Request identifier */
     request_id: string
+    /** SHA256 hash */
     sha256: string
+    /** Creation timestamp */
     created: string
+    /** Audio duration */
     duration: number
+    /** Number of audio channels */
     channels: number
+    /** Array of models used */
     models: string[]
+    /** Information about models used */
     model_info: {
       [key: string]: {
+        /** Model name */
         name: string
+        /** Model version */
         version: string
+        /** Model architecture */
         arch: string
       }
     }
   }
+  /** Transcription results */
   results: {
+    /** Array of channel results */
     channels: Array<{
+      /** Array of alternative transcriptions */
       alternatives: Array<{
+        /** Transcribed text */
         transcript: string
+        /** Confidence score */
         confidence: number
+        /** Array of word-level details */
         words: Array<{
+          /** Individual word */
           word: string
+          /** Start time */
           start: number
+          /** End time */
           end: number
+          /** Word-level confidence */
           confidence: number
         }>
       }>
@@ -521,7 +666,8 @@ export type DeepgramResponse = {
 }
 
 /**
- * Represents the function signature for cleaning up temporary files.
- * @param id - The unique identifier for the temporary files.
+ * Function signature for cleaning up temporary files.
+ * 
+ * @param id - The unique identifier for the temporary files
  */
 export type CleanUpFunction = (id: string) => Promise<void>

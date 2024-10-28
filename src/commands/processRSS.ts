@@ -1,5 +1,10 @@
 // src/commands/processRSS.ts
 
+/**
+ * @file Process podcast episodes and other media content from RSS feeds with robust error handling and filtering options.
+ * @packageDocumentation
+ */
+
 import { writeFile } from 'node:fs/promises'
 import { XMLParser } from 'fast-xml-parser'
 import { generateMarkdown } from '../utils/generateMarkdown.js'
@@ -8,10 +13,12 @@ import { runTranscription } from '../utils/runTranscription.js'
 import { runLLM } from '../utils/runLLM.js'
 import { cleanUpFiles } from '../utils/cleanUpFiles.js'
 import { log, wait, opts } from '../models.js'
-
 import type { LLMServices, TranscriptServices, ProcessingOptions, RSSItem } from '../types.js'
 
-// Initialize XML parser with specific options
+/**
+ * Configure XML parser for RSS feed processing
+ * Handles attributes without prefixes and allows boolean values
+ */
 const parser = new XMLParser({
   ignoreAttributes: false,
   attributeNamePrefix: '',
@@ -19,12 +26,19 @@ const parser = new XMLParser({
 })
 
 /**
- * Process a single item from the RSS feed.
- * @param {RSSItem} item - The item to process.
- * @param {TranscriptServices} [transcriptServices] - The transcription service to use.
- * @param {LLMServices} [llmServices] - The selected Language Model option.
- * @param {ProcessingOptions} options - Additional options for processing.
- * @returns {Promise<void>}
+ * Processes a single RSS feed item through the content pipeline:
+ * 1. Generates markdown with item metadata
+ * 2. Downloads and processes audio content
+ * 3. Transcribes audio to text
+ * 4. Analyzes content with language model (if specified)
+ * 5. Cleans up temporary files (unless disabled)
+ * 
+ * Continues to next item if processing fails for the current item.
+ * 
+ * @param options - Configuration options for processing
+ * @param item - RSS item containing metadata and media URL
+ * @param llmServices - Optional language model service for content analysis
+ * @param transcriptServices - Optional transcription service for audio conversion
  */
 async function processItem(
   options: ProcessingOptions,
@@ -49,12 +63,42 @@ async function processItem(
 }
 
 /**
- * Main function to process an RSS feed.
- * @param {string} rssUrl - The URL of the RSS feed to process.
- * @param {LLMServices} [llmServices] - The selected Language Model option.
- * @param {TranscriptServices} [transcriptServices] - The transcription service to use.
- * @param {ProcessingOptions} options - Additional options for processing.
- * @returns {Promise<void>}
+ * Processes an RSS feed with comprehensive option handling and validation.
+ * 
+ * Key Features:
+ * - Supports multiple filtering options for item selection
+ * - Handles network timeouts and connection errors
+ * - Validates media content types
+ * - Provides detailed progress logging
+ * - Continues processing on individual item failures
+ * 
+ * Processing Options:
+ * --item: Process specific items by URL
+ * --last: Process N most recent items
+ * --skip: Skip N items before processing
+ * --order: Process items in 'newest' or 'oldest' order
+ * --info: Generate JSON feed information instead of processing
+ * 
+ * Validation:
+ * - Ensures numerical options are valid integers
+ * - Prevents incompatible option combinations
+ * - Verifies presence of audio/video content
+ * 
+ * Error Handling:
+ * - Implements network request timeout (10 seconds)
+ * - Validates RSS feed structure
+ * - Handles individual item processing failures
+ * - Provides detailed error messages
+ * 
+ * @param options - Configuration options including RSS-specific filters
+ * @param rssUrl - URL of the RSS feed to process
+ * @param llmServices - Optional language model service for content analysis
+ * @param transcriptServices - Optional transcription service for audio conversion
+ * @throws Will terminate process with exit code 1 on fatal errors:
+ *         - Invalid option values/combinations
+ *         - Network failures
+ *         - Feed parsing errors
+ *         - No valid items found
  */
 export async function processRSS(
   options: ProcessingOptions,

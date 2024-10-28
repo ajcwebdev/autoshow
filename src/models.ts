@@ -1,27 +1,79 @@
 // src/models.ts
 
+/**
+ * @file Defines constants, model mappings, and utility functions used throughout the application.
+ * @packageDocumentation
+ */
+
 import chalk from 'chalk'
 import type { ChalkInstance } from 'chalk'
 import type { WhisperModelType, ChatGPTModelType, ClaudeModelType, CohereModelType, GeminiModelType, MistralModelType, OctoModelType, LlamaModelType, OllamaModelType, TogetherModelType, FireworksModelType, GroqModelType } from './types.js'
 
+/**
+ * Chalk styling for step indicators in the CLI
+ * @type {ChalkInstance}
+ */
 export const step: ChalkInstance = chalk.bold.underline
+
+/**
+ * Chalk styling for dimmed text
+ * @type {ChalkInstance}
+ */
 export const dim: ChalkInstance = chalk.dim
+
+/**
+ * Chalk styling for success messages
+ * @type {ChalkInstance}
+ */
 export const success: ChalkInstance = chalk.bold.blue
+
+/**
+ * Chalk styling for options display
+ * @type {ChalkInstance}
+ */
 export const opts: ChalkInstance = chalk.magentaBright.bold
+
+/**
+ * Chalk styling for wait/processing messages
+ * @type {ChalkInstance}
+ */
 export const wait: ChalkInstance = chalk.bold.cyan
+
+/**
+ * Chalk styling for final messages
+ * @type {ChalkInstance}
+ */
 export const final: ChalkInstance = chalk.bold.italic
 
+/**
+ * Convenience export for console.log
+ * @type {typeof console.log}
+ */
 export const log: typeof console.log = console.log
 
+/**
+ * Available action options for content processing
+ * @type {string[]}
+ */
 export const ACTION_OPTIONS = ['video', 'playlist', 'urls', 'file', 'rss']
+
+/**
+ * Available LLM service options
+ * @type {string[]}
+ */
 export const LLM_OPTIONS = ['chatgpt', 'claude', 'cohere', 'mistral', 'octo', 'llama', 'ollama', 'gemini', 'fireworks', 'together', 'groq']
+
+/**
+ * Available transcription service options
+ * @type {string[]}
+ */
 export const TRANSCRIPT_OPTIONS = ['whisper', 'whisperDocker', 'whisperPython', 'whisperDiarization', 'deepgram', 'assembly']
 
 /**
- * Define available Whisper models for whisper.cpp
+ * Mapping of Whisper model types to their corresponding binary filenames for whisper.cpp.
  * @type {Record<WhisperModelType, string>}
  */
-export const WHISPER_MODELS: Record<string, string> = {
+export const WHISPER_MODELS: Record<WhisperModelType, string> = {
   'tiny': 'ggml-tiny.bin',
   'tiny.en': 'ggml-tiny.en.bin',
   'base': 'ggml-base.bin',
@@ -33,10 +85,11 @@ export const WHISPER_MODELS: Record<string, string> = {
   'large-v1': 'ggml-large-v1.bin',
   'large-v2': 'ggml-large-v2.bin',
   'large-v3-turbo': 'ggml-large-v3-turbo.bin',
+  'turbo': 'ggml-large-v3-turbo.bin'
 }
 
 /**
- * Define available Whisper models for openai-whisper
+ * Mapping of Whisper model types to their corresponding names for openai-whisper.
  * @type {Record<WhisperModelType, string>}
  */
 export const WHISPER_PYTHON_MODELS: Record<WhisperModelType, string> = {
@@ -55,7 +108,7 @@ export const WHISPER_PYTHON_MODELS: Record<WhisperModelType, string> = {
 }
 
 /**
- * Map of ChatGPT model identifiers to their API names
+ * Mapping of ChatGPT model identifiers to their API names.
  * @type {Record<ChatGPTModelType, string>}
  */
 export const GPT_MODELS: Record<ChatGPTModelType, string> = {
@@ -66,7 +119,7 @@ export const GPT_MODELS: Record<ChatGPTModelType, string> = {
 }
 
 /**
- * Map of Claude model identifiers to their API names
+ * Mapping of Claude model identifiers to their API names.
  * @type {Record<ClaudeModelType, string>}
  */
 export const CLAUDE_MODELS: Record<ClaudeModelType, string> = {
@@ -77,7 +130,7 @@ export const CLAUDE_MODELS: Record<ClaudeModelType, string> = {
 }
 
 /**
- * Map of Cohere model identifiers to their API names
+ * Mapping of Cohere model identifiers to their API names.
  * @type {Record<CohereModelType, string>}
  */
 export const COHERE_MODELS: Record<CohereModelType, string> = {
@@ -86,7 +139,7 @@ export const COHERE_MODELS: Record<CohereModelType, string> = {
 }
 
 /**
- * Map of Gemini model identifiers to their API names
+ * Mapping of Gemini model identifiers to their API names.
  * @type {Record<GeminiModelType, string>}
  */
 export const GEMINI_MODELS: Record<GeminiModelType, string> = {
@@ -96,7 +149,7 @@ export const GEMINI_MODELS: Record<GeminiModelType, string> = {
 }
 
 /**
- * Map of Mistral model identifiers to their API names
+ * Mapping of Mistral model identifiers to their API names.
  * @type {Record<MistralModelType, string>}
  */
 export const MISTRAL_MODELS: Record<MistralModelType, string> = {
@@ -107,7 +160,7 @@ export const MISTRAL_MODELS: Record<MistralModelType, string> = {
 }
 
 /**
- * Map of OctoAI model identifiers to their API names
+ * Mapping of OctoAI model identifiers to their API names.
  * @type {Record<OctoModelType, string>}
  */
 export const OCTO_MODELS: Record<OctoModelType, string> = {
@@ -121,7 +174,7 @@ export const OCTO_MODELS: Record<OctoModelType, string> = {
 }
 
 /**
- * Map of Fireworks model identifiers to their API names
+ * Mapping of Fireworks model identifiers to their API names.
  * @type {Record<FireworksModelType, string>}
  */
 export const FIREWORKS_MODELS: Record<FireworksModelType, string> = {
@@ -134,7 +187,7 @@ export const FIREWORKS_MODELS: Record<FireworksModelType, string> = {
 }
 
 /**
- * Map of Together model identifiers to their API names
+ * Mapping of Together model identifiers to their API names.
  * @type {Record<TogetherModelType, string>}
  */
 export const TOGETHER_MODELS: Record<TogetherModelType, string> = {
@@ -149,7 +202,7 @@ export const TOGETHER_MODELS: Record<TogetherModelType, string> = {
 }
 
 /**
- * Map of Groq model identifiers to their API names.
+ * Mapping of Groq model identifiers to their API names.
  * @type {Record<GroqModelType, string>}
  */
 export const GROQ_MODELS: Record<GroqModelType, string> = {
@@ -161,7 +214,7 @@ export const GROQ_MODELS: Record<GroqModelType, string> = {
 }
 
 /**
- * Map of local model identifiers to their filenames and URLs
+ * Mapping of local model identifiers to their filenames and download URLs.
  * @type {Record<LlamaModelType, {filename: string, url: string}>}
  */
 export const LLAMA_MODELS: Record<LlamaModelType, {filename: string, url: string}> = {
@@ -188,7 +241,7 @@ export const LLAMA_MODELS: Record<LlamaModelType, {filename: string, url: string
 }
 
 /**
- * Map of model identifiers to their corresponding names in Ollama
+ * Mapping of model identifiers to their corresponding names in Ollama.
  * @type {Record<OllamaModelType, string>}
  */
 export const OLLAMA_MODELS: Record<OllamaModelType, string> = {

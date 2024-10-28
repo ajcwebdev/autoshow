@@ -6,13 +6,18 @@ import { log } from './models.js'
 
 /**
  * Prompts the user for input if interactive mode is selected.
+ * Handles the collection and processing of user choices through a series of
+ * interactive prompts using inquirer.
+ * 
  * @param options - The initial command-line options.
  * @returns The updated options after user input.
  */
 export async function handleInteractivePrompt(
   options: ProcessingOptions
 ): Promise<ProcessingOptions> {
+  // Define all interactive prompts using inquirer
   const answers: InquirerAnswers = await inquirer.prompt([
+    // Content source selection prompt
     {
       type: 'list',
       name: 'action',
@@ -25,6 +30,7 @@ export async function handleInteractivePrompt(
         { name: 'Podcast RSS Feed', value: 'rss' },
       ],
     },
+    // Input prompts for different content sources
     {
       type: 'input',
       name: 'video',
@@ -53,6 +59,7 @@ export async function handleInteractivePrompt(
       when: (answers: InquirerAnswers) => answers.action === 'file',
       validate: (input: string) => (input ? true : 'Please enter a valid file path.'),
     },
+    // RSS feed specific prompts
     {
       type: 'input',
       name: 'rss',
@@ -77,8 +84,7 @@ export async function handleInteractivePrompt(
     {
       type: 'confirm',
       name: 'info',
-      message:
-        'Do you want to generate JSON file with RSS feed information instead of processing items?',
+      message: 'Do you want to generate JSON file with RSS feed information instead of processing items?',
       when: (answers: InquirerAnswers) => answers.action === 'rss',
       default: false,
     },
@@ -98,8 +104,7 @@ export async function handleInteractivePrompt(
       name: 'skip',
       message: 'Number of items to skip when processing RSS feed:',
       when: (answers: InquirerAnswers) => answers.action === 'rss' && !answers.info,
-      validate: (input: string) =>
-        !isNaN(Number(input)) ? true : 'Please enter a valid number.',
+      validate: (input: string) => !isNaN(Number(input)) ? true : 'Please enter a valid number.',
       filter: (input: string) => Number(input),
     },
     {
@@ -107,10 +112,10 @@ export async function handleInteractivePrompt(
       name: 'last',
       message: 'Number of most recent items to process (overrides order and skip):',
       when: (answers: InquirerAnswers) => answers.action === 'rss' && !answers.info,
-      validate: (input: string) =>
-        !isNaN(Number(input)) ? true : 'Please enter a valid number.',
+      validate: (input: string) => !isNaN(Number(input)) ? true : 'Please enter a valid number.',
       filter: (input: string) => Number(input),
     },
+    // Language Model (LLM) selection and configuration
     {
       type: 'list',
       name: 'llmServices',
@@ -130,11 +135,13 @@ export async function handleInteractivePrompt(
         { name: 'Groq', value: 'groq' },
       ],
     },
+    // Model selection based on chosen LLM service
     {
       type: 'list',
       name: 'llmModel',
       message: 'Select the model you want to use:',
       choices: (answers: InquirerAnswers) => {
+        // Return appropriate model choices based on selected LLM service
         switch (answers.llmServices) {
           case 'llama':
             return [
@@ -240,6 +247,7 @@ export async function handleInteractivePrompt(
           'gemini',
         ].includes(answers.llmServices as string),
     },
+    // Transcription service configuration
     {
       type: 'list',
       name: 'transcriptServices',
@@ -253,6 +261,7 @@ export async function handleInteractivePrompt(
         { name: 'AssemblyAI', value: 'assembly' },
       ],
     },
+    // Whisper model configuration
     {
       type: 'list',
       name: 'whisperModel',
@@ -276,6 +285,7 @@ export async function handleInteractivePrompt(
         ),
       default: 'large-v2',
     },
+    // Additional configuration options
     {
       type: 'confirm',
       name: 'speakerLabels',
@@ -311,35 +321,31 @@ export async function handleInteractivePrompt(
       default: true,
     },
   ])
-
-  // If user cancels the action
+  // Handle user cancellation
   if (!answers.confirmAction) {
     log('Operation cancelled.')
     process.exit(0)
   }
-
-  // Merge answers into options
+  // Merge user answers with existing options
   options = {
     ...options,
     ...answers,
   } as ProcessingOptions
-
-  // Handle transcription options
+  // Configure transcription service options based on user selection
   if (answers.transcriptServices) {
     if (
       ['whisper', 'whisperDocker', 'whisperPython', 'whisperDiarization'].includes(
         answers.transcriptServices
       )
     ) {
-      // Assign the Whisper model
+      // Set selected Whisper model
       (options as any)[answers.transcriptServices] = answers.whisperModel as WhisperModelType
     } else if (answers.transcriptServices === 'deepgram' || answers.transcriptServices === 'assembly') {
-      // Assign boolean true for these services
+      // Enable selected service
       (options as any)[answers.transcriptServices] = true
     }
   }
-
-  // Handle LLM options
+  // Configure LLM options based on user selection
   if (answers.llmServices) {
     if (answers.llmModel) {
       (options as any)[answers.llmServices] = answers.llmModel
@@ -347,15 +353,12 @@ export async function handleInteractivePrompt(
       (options as any)[answers.llmServices] = true
     }
   }
-
-  // Handle 'item' for RSS feed
+  // Process RSS feed item URLs if provided
   if (typeof answers.item === 'string') {
     options.item = answers.item.split(',').map((item) => item.trim())
   }
-
-  // Remove unnecessary properties
+  // Clean up temporary properties used during prompt flow
   const keysToRemove = ['action', 'specifyItem', 'confirmAction', 'llmModel', 'whisperModel']
   keysToRemove.forEach((key) => delete options[key as keyof typeof options])
-
   return options
 }

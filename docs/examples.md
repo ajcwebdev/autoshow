@@ -127,8 +127,7 @@ Process a single specific episode from a podcast RSS feed by providing the episo
 npm run as -- \
   --rss "https://ajcwebdev.substack.com/feed" \
   --item "https://api.substack.com/feed/podcast/36236609/fd1f1532d9842fe1178de1c920442541.mp3" \
-  --whisper tiny \
-  --llama \
+  --ollama \
   --prompt titles summary longChapters takeaways questions
 ```
 

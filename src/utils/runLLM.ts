@@ -67,7 +67,7 @@ export async function runLLM(
       log(wait(`\n  Transcript saved to temporary file:\n    - ${tempPath}`))
       // Read generated content and write front matter, show notes, and transcript to final markdown file
       const showNotes = await readFile(tempPath, 'utf8')
-      await writeFile(`${finalPath}-${llmServices}-shownotes.md`, `${frontMatter}\n${showNotes}\n${transcript}`)
+      await writeFile(`${finalPath}-${llmServices}-shownotes.md`, `${frontMatter}\n${showNotes}\n\n${transcript}`)
       // Remove the temporary file
       await unlink(tempPath)
       log(success(`\n  Generated show notes saved to markdown file:\n    - ${finalPath}-${llmServices}-shownotes.md`))

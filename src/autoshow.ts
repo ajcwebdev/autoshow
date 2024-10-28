@@ -156,9 +156,9 @@ program.action(async (options: ProcessingOptions) => {
   // Set default transcription service to whisper if none provided
   const finalTranscriptServices: TranscriptServices = transcriptServices || 'whisper'
 
-  // Set default Whisper model to 'base' if whisper is selected but no model specified
+  // Set default Whisper model to 'large-v3-turbo' if whisper is selected but no model specified
   if (finalTranscriptServices === 'whisper' && !options.whisper) {
-    options.whisper = 'base'
+    options.whisper = 'large-v3-turbo'
   }
 
   // Execute the appropriate handler if an action was specified

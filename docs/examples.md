@@ -30,9 +30,7 @@
   - [Docker Compose](#docker-compose)
   - [Deno](#deno)
   - [Bun](#bun)
-- [Makeshift Test Suite](#makeshift-test-suite)
-  - [Full Test Suite](#full-test-suite)
-  - [Partial Test Command for Local Services](#partial-test-command-for-local-services)
+- [Test Suite](#test-suite)
 
 ## Content and Feed Inputs
 
@@ -686,11 +684,9 @@ deno task deno-as \
   --video "https://www.youtube.com/watch?v=MORMZXEaONk"
 ```
 
-## Makeshift Test Suite
+## Test Suite
 
-Creating a robust and flexible test suite for this project is complex because of the range of network requests, file system operations, build steps, and 3rd party APIs involved. A more thought out test suite will be created at some point, but in the mean time these are hacky but functional ways to test the majority of the project in a single go.
-
-### Full Test Suite
+Integration test.
 
 - You'll need API keys for all services to make it through this entire command.
 - Mostly uses transcripts of videos around one minute long and cheaper models when possible, so the total cost of running this for any given service should be at most only a few cents.
@@ -699,10 +695,20 @@ Creating a robust and flexible test suite for this project is complex because of
 npm run test-all
 ```
 
-### Partial Test Command for Local Services
-
-This version of the test suite only uses Whisper for transcription and Llama.cpp for LLM operations.
+Local services test, only uses Whisper for transcription and Ollama for LLM operations.
 
 ```bash
 npm run test-local
+```
+
+Docker test, also uses Whisper for transcription and Ollama for LLM operations but in Docker containers.
+
+```bash
+npm run test-docker
+```
+
+Benchmark test, compares different size models for `whisper.cpp`, `openai-whisper`, and `whisper-diarization`.
+
+```bash
+npm run test-bench
 ```

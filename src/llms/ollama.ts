@@ -104,7 +104,7 @@ export const callOllama: LLMFunction = async (promptAndTranscript: string, tempP
             try {
               const response = JSON.parse(line)
               if (response.status === 'success') {
-                log(wait(`    - Model ${ollamaModelName} has been pulled successfully.`))
+                log(wait(`    - Model ${ollamaModelName} has been pulled successfully...\n`))
                 break
               }
             } catch (parseError) {
@@ -113,7 +113,7 @@ export const callOllama: LLMFunction = async (promptAndTranscript: string, tempP
           }
         }
       } else {
-        log(wait(`\n  Model ${ollamaModelName} is already available...`))
+        log(wait(`\n  Model ${ollamaModelName} is already available...\n`))
       }
     } catch (error) {
       console.error(`Error checking/pulling model: ${error instanceof Error ? error.message : String(error)}`)

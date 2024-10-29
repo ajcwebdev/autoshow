@@ -1,5 +1,10 @@
 // src/commands/processURLs.ts
 
+/**
+ * @file Process multiple YouTube videos from a list of URLs stored in a file.
+ * @packageDocumentation
+ */
+
 import { readFile, writeFile } from 'node:fs/promises'
 import { processVideo } from './processVideo.js'
 import { extractVideoMetadata } from '../utils/extractVideoMetadata.js'
@@ -8,11 +13,24 @@ import { log, wait, opts } from '../models.js'
 import type { LLMServices, TranscriptServices, ProcessingOptions } from '../types.js'
 
 /**
- * Main function to process URLs from a file.
- * @param filePath - The path to the file containing URLs.
- * @param llmServices - The selected Language Model option.
- * @param transcriptServices - The transcription service to use.
- * @param options - Additional options for processing.
+ * Processes multiple YouTube videos from a file containing URLs by:
+ * 1. Validating system dependencies
+ * 2. Reading and parsing URLs from the input file
+ *    - Skips empty lines and comments (lines starting with #)
+ * 3. Extracting metadata for all videos
+ * 4. Either:
+ *    a. Generating a JSON file with video information (if --info option is used)
+ *    b. Processing each video sequentially with error handling
+ * 
+ * Similar to processPlaylist, this function continues processing
+ * remaining URLs even if individual videos fail.
+ * 
+ * @param options - Configuration options for processing
+ * @param filePath - Path to the file containing video URLs (one per line)
+ * @param llmServices - Optional language model service for transcript processing
+ * @param transcriptServices - Optional transcription service for audio conversion
+ * @throws Will terminate the process with exit code 1 if the file cannot be read or contains no valid URLs
+ * @returns Promise that resolves when all videos have been processed or JSON info has been saved
  */
 export async function processURLs(
   options: ProcessingOptions,
@@ -20,30 +38,29 @@ export async function processURLs(
   llmServices?: LLMServices,
   transcriptServices?: TranscriptServices
 ): Promise<void> {
+  // Log the processing parameters for debugging purposes
   log(opts('Parameters passed to processURLs:\n'))
   log(wait(`  - llmServices: ${llmServices}\n  - transcriptServices: ${transcriptServices}\n`))
-  try {
-    // Check for required dependencies
-    await checkDependencies(['yt-dlp'])
 
-    // Read and parse the content of the file into an array of URLs
+  try {
+    // Verify that yt-dlp is installed and available
+    await checkDependencies(['yt-dlp'])
+    // Read the file and extract valid URLs
     const content = await readFile(filePath, 'utf8')
     const urls = content.split('\n')
       .map(line => line.trim())
       .filter(line => line && !line.startsWith('#'))
-
+    // Exit if no valid URLs were found in the file
     if (urls.length === 0) {
       console.error('Error: No URLs found in the file.')
       process.exit(1)
     }
     log(opts(`\nFound ${urls.length} URLs in the file...`))
-
-    // Extract metadata for all videos
+    // Collect metadata for all videos in parallel
     const metadataPromises = urls.map(extractVideoMetadata)
     const metadataList = await Promise.all(metadataPromises)
     const validMetadata = metadataList.filter(Boolean)
-
-    // Generate JSON file with video information if --info option is used
+    // Handle --info option: save metadata to JSON and exit
     if (options.info) {
       const jsonContent = JSON.stringify(validMetadata, null, 2)
       const jsonFilePath = 'content/urls_info.json'
@@ -51,21 +68,22 @@ export async function processURLs(
       log(wait(`Video information saved to: ${jsonFilePath}`))
       return
     }
-
-    // Process each URL
+    // Process each URL sequentially, with error handling for individual videos
     for (const [index, url] of urls.entries()) {
+      // Visual separator for each video in the console
       log(opts(`\n================================================================================================`))
       log(opts(`  Processing URL ${index + 1}/${urls.length}: ${url}`))
       log(opts(`================================================================================================\n`))
       try {
         await processVideo(options, url, llmServices, transcriptServices)
       } catch (error) {
+        // Log error but continue processing remaining URLs
         console.error(`Error processing URL ${url}: ${(error as Error).message}`)
-        // Continue processing the next URL
       }
     }
   } catch (error) {
+    // Handle fatal errors that prevent file processing
     console.error(`Error reading or processing file ${filePath}: ${(error as Error).message}`)
-    process.exit(1) // Exit with an error code
+    process.exit(1)
   }
 }

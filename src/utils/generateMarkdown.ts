@@ -1,5 +1,11 @@
 // src/utils/generateMarkdown.ts
 
+/**
+ * @file Utility for generating markdown files with front matter for different content types.
+ * Supports YouTube videos, playlists, local files, and RSS feed items.
+ * @packageDocumentation
+ */
+
 import { execFile } from 'node:child_process'
 import { promisify } from 'node:util'
 import { writeFile } from 'node:fs/promises'
@@ -12,23 +18,64 @@ import type { MarkdownData, ProcessingOptions, RSSItem } from '../types.js'
 const execFilePromise = promisify(execFile)
 
 /**
- * Generates markdown content based on the provided options and input.
+ * Generates markdown content with front matter based on the provided options and input.
+ * Handles different content types including YouTube videos, playlists, local files, and RSS items.
+ * 
+ * The function performs the following steps:
+ * 1. Sanitizes input titles for safe filename creation
+ * 2. Extracts metadata based on content type
+ * 3. Generates appropriate front matter
+ * 4. Creates and saves the markdown file
  * 
  * @param {ProcessingOptions} options - The processing options specifying the type of content to generate.
- * @param {string | RSSItem} input - The input data, either a string (for video URL or file path) or an RSSItem object.
- * @returns {Promise<MarkdownData>} A promise that resolves to an object containing the generated markdown data.
+ *                                     Valid options include: video, playlist, urls, file, and rss.
+ * @param {string | RSSItem} input - The input data to process:
+ *                                   - For video/playlist/urls: A URL string
+ *                                   - For file: A file path string
+ *                                   - For RSS: An RSSItem object containing feed item details
+ * @returns {Promise<MarkdownData>} A promise that resolves to an object containing:
+ *                                 - frontMatter: The generated front matter content
+ *                                 - finalPath: The path where the markdown file is saved
+ *                                 - filename: The sanitized filename
  * @throws {Error} If invalid options are provided or if metadata extraction fails.
+ * 
+ * @example
+ * // For a YouTube video
+ * const result = await generateMarkdown(
+ *   { video: true },
+ *   'https://www.youtube.com/watch?v=...'
+ * )
+ * 
+ * @example
+ * // For an RSS item
+ * const result = await generateMarkdown(
+ *   { rss: true },
+ *   { 
+ *     publishDate: '2024-03-21',
+ *     title: 'Episode Title',
+ *     coverImage: 'https://...',
+ *     showLink: 'https://...',
+ *     channel: 'Podcast Name',
+ *     channelURL: 'https://...'
+ *   }
+ * )
  */
 export async function generateMarkdown(
   options: ProcessingOptions,
   input: string | RSSItem
 ): Promise<MarkdownData> {
-  // log(`  - input: ${input}\n`)
   /**
-   * Sanitizes a title string for use in filenames.
+   * Sanitizes a title string for use in filenames by:
+   * - Removing special characters except spaces and hyphens
+   * - Converting spaces and underscores to hyphens
+   * - Converting to lowercase
+   * - Limiting length to 200 characters
    * 
    * @param {string} title - The title to sanitize.
-   * @returns {string} The sanitized title.
+   * @returns {string} The sanitized title safe for use in filenames.
+   * 
+   * @example
+   * sanitizeTitle('My Video Title! (2024)') // returns 'my-video-title-2024'
    */
   function sanitizeTitle(title: string): string {
     return title
@@ -45,36 +92,36 @@ export async function generateMarkdown(
   let finalPath: string
   let filename: string
 
-  // Use a switch statement to handle different content types
+  // Handle different content types using a switch statement
   switch (true) {
     case !!options.video:
     case !!options.playlist:
     case !!options.urls:
-      // Check if yt-dlp is installed
+      // Verify yt-dlp is available for video processing
       await checkDependencies(['yt-dlp'])
 
-      // Execute yt-dlp to extract video metadata
+      // Extract video metadata using yt-dlp
       const { stdout } = await execFilePromise('yt-dlp', [
         '--restrict-filenames',
-        '--print', '%(upload_date>%Y-%m-%d)s',
+        '--print', '%(upload_date>%Y-%m-%d)s',  // Format: YYYY-MM-DD
         '--print', '%(title)s',
         '--print', '%(thumbnail)s',
         '--print', '%(webpage_url)s',
         '--print', '%(channel)s',
         '--print', '%(uploader_url)s',
-        input as string, // Assert input as string for video URL
+        input as string,
       ])
 
-      // Parse the output from yt-dlp
+      // Parse the metadata output into individual fields
       const [
         formattedDate, videoTitle, thumbnail, webpage_url, videoChannel, uploader_url
       ] = stdout.trim().split('\n')
 
-      // Generate filename and path
+      // Generate filename using date and sanitized title
       filename = `${formattedDate}-${sanitizeTitle(videoTitle)}`
       finalPath = `content/${filename}`
 
-      // Create front matter for video content
+      // Create video-specific front matter
       frontMatter = [
         '---',
         `showLink: "${webpage_url}"`,
@@ -89,15 +136,15 @@ export async function generateMarkdown(
       break
 
     case !!options.file:
-      // Extract filename from the input path
+      // Extract and process local file information
       const originalFilename = basename(input as string)
       const filenameWithoutExt = originalFilename.replace(extname(originalFilename), '')
 
-      // Generate sanitized filename and path
+      // Generate sanitized filename
       filename = sanitizeTitle(filenameWithoutExt)
       finalPath = `content/${filename}`
 
-      // Create front matter for file content
+      // Create file-specific front matter with minimal metadata
       frontMatter = [
         '---',
         `showLink: "${originalFilename}"`,
@@ -112,15 +159,15 @@ export async function generateMarkdown(
       break
 
     case !!options.rss:
-      // Assert input as RSSItem and destructure its properties
+      // Process RSS feed item
       const item = input as RSSItem
       const { publishDate, title: rssTitle, coverImage, showLink, channel: rssChannel, channelURL } = item
 
-      // Generate filename and path
+      // Generate filename using date and sanitized title
       filename = `${publishDate}-${sanitizeTitle(rssTitle)}`
       finalPath = `content/${filename}`
 
-      // Create front matter for RSS content
+      // Create RSS-specific front matter
       frontMatter = [
         '---',
         `showLink: "${showLink}"`,
@@ -135,21 +182,20 @@ export async function generateMarkdown(
       break
 
     default:
-      // Throw an error if an invalid option is provided
       throw new Error('Invalid option provided for markdown generation.')
   }
 
-  // Join the front matter array into a single string
+  // Join front matter array into a single string
   const frontMatterContent = frontMatter.join('\n')
 
-  // Write the front matter content to a file
+  // Write the front matter content to a markdown file
   await writeFile(`${finalPath}.md`, frontMatterContent)
 
-  // Log the generated front matter and success message
+  // Log the generated content and success message
   log(dim(frontMatterContent))
   log(step('\nStep 1 - Generating markdown...\n'))
   log(success(`  Front matter successfully created and saved:\n    - ${finalPath}.md`))
 
-  // Return the generated markdown data
+  // Return the generated markdown data for further processing
   return { frontMatter: frontMatterContent, finalPath, filename }
 }

@@ -1,5 +1,10 @@
 // src/commands/processVideo.ts
 
+/**
+ * @file Process a single video from YouTube or other supported platforms.
+ * @packageDocumentation
+ */
+
 import { checkDependencies } from '../utils/checkDependencies.js'
 import { generateMarkdown } from '../utils/generateMarkdown.js'
 import { downloadAudio } from '../utils/downloadAudio.js'
@@ -10,12 +15,20 @@ import { log, opts, wait } from '../models.js'
 import type { LLMServices, TranscriptServices, ProcessingOptions } from '../types.js'
 
 /**
- * Main function to process a single video.
- * @param url - The URL of the video to process.
- * @param llmServices - The selected Language Model option.
- * @param transcriptServices - The transcription service to use.
- * @param options - Additional options for processing.
- * @returns A promise that resolves when processing is complete.
+ * Processes a single video by executing a series of operations:
+ * 1. Validates required system dependencies
+ * 2. Generates markdown with video metadata
+ * 3. Downloads and extracts audio
+ * 4. Transcribes the audio content
+ * 5. Processes the transcript with a language model (if specified)
+ * 6. Cleans up temporary files (unless disabled)
+ * 
+ * @param options - Configuration options for processing
+ * @param url - The URL of the video to process
+ * @param llmServices - Optional language model service to use for processing the transcript
+ * @param transcriptServices - Optional transcription service to use for converting audio to text
+ * @throws Will throw an error if any processing step fails
+ * @returns Promise that resolves when all processing is complete
  */
 export async function processVideo(
   options: ProcessingOptions,
@@ -23,19 +36,33 @@ export async function processVideo(
   llmServices?: LLMServices,
   transcriptServices?: TranscriptServices
 ): Promise<void> {
+  // Log the processing parameters for debugging purposes
   log(opts('Parameters passed to processVideo:\n'))
   log(wait(`  - llmServices: ${llmServices}\n  - transcriptServices: ${transcriptServices}\n`))
+
   try {
-    await checkDependencies(['yt-dlp'])                                                // Check for required dependencies.
-    const { frontMatter, finalPath, filename } = await generateMarkdown(options, url)  // Generate markdown with video metadata.
-    await downloadAudio(options, url, filename)                                        // Download audio from the video.
-    await runTranscription(options, finalPath, frontMatter, transcriptServices)        // Run transcription on the audio.
-    await runLLM(options, finalPath, frontMatter, llmServices)                         // If llmServices is set, process with LLM. If llmServices is undefined, bypass LLM processing.
-    if (!options.noCleanUp) {                                                          // Clean up temporary files if the noCleanUp option is not set.
+    // Verify that required system dependencies (yt-dlp) are installed
+    await checkDependencies(['yt-dlp'])
+
+    // Generate markdown file with video metadata and get file paths
+    const { frontMatter, finalPath, filename } = await generateMarkdown(options, url)
+
+    // Extract and download the audio from the video source
+    await downloadAudio(options, url, filename)
+
+    // Convert the audio to text using the specified transcription service
+    await runTranscription(options, finalPath, frontMatter, transcriptServices)
+
+    // Process the transcript with a language model if one was specified
+    await runLLM(options, finalPath, frontMatter, llmServices)
+
+    // Remove temporary files unless the noCleanUp option is set
+    if (!options.noCleanUp) {
       await cleanUpFiles(finalPath)
     }
   } catch (error) {
-    console.error('Error processing video:', (error as Error).message)                 // Log any errors that occur during video processing
-    throw error                                                                        // Re-throw to be handled by caller
+    // Log the error details and re-throw for upstream handling
+    console.error('Error processing video:', (error as Error).message)
+    throw error
   }
 }

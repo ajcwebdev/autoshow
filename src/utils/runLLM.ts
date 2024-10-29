@@ -1,5 +1,11 @@
 // src/utils/runLLM.ts
 
+/**
+ * @file Orchestrator for running Language Model (LLM) processing on transcripts.
+ * Handles prompt generation, LLM processing, and file management for multiple LLM services.
+ * @packageDocumentation
+ */
+
 import { readFile, writeFile, unlink } from 'node:fs/promises'
 import { callLlama } from '../llms/llama.js'
 import { callOllama } from '../llms/ollama.js'
@@ -17,13 +23,66 @@ import { log, step, success, wait } from '../models.js'
 import type { LLMServices, ProcessingOptions, LLMFunction, LLMFunctions } from '../types.js'
 
 /**
- * Main function to run the selected Language Model.
- * @param {string} finalPath - The base path for the files.
- * @param {string} frontMatter - The front matter content for the markdown file.
- * @param {LLMServices} llmServices - The selected Language Model option.
- * @param {ProcessingOptions} options - Additional options for processing.
- * @returns {Promise<void>}
- * @throws {Error} - If the LLM processing fails or an error occurs during execution.
+ * Processes a transcript using a specified Language Model service.
+ * Handles the complete workflow from reading the transcript to generating
+ * and saving the final markdown output.
+ * 
+ * The function performs these steps:
+ * 1. Reads the transcript file
+ * 2. Generates a prompt based on provided options
+ * 3. Processes the content with the selected LLM
+ * 4. Saves the results with front matter and original transcript
+ * 
+ * If no LLM is selected, it saves the prompt and transcript without processing.
+ * 
+ * @param {ProcessingOptions} options - Configuration options including:
+ *   - prompt: Array of prompt sections to include
+ *   - LLM-specific options (e.g., chatgpt, claude, etc.)
+ * 
+ * @param {string} finalPath - Base path for input/output files:
+ *   - Input transcript: `${finalPath}.txt`
+ *   - Temporary file: `${finalPath}-${llmServices}-temp.md`
+ *   - Final output: `${finalPath}-${llmServices}-shownotes.md`
+ * 
+ * @param {string} frontMatter - YAML front matter content to include in the output
+ * 
+ * @param {LLMServices} [llmServices] - The LLM service to use:
+ *   - llama: Node Llama for local inference
+ *   - ollama: Ollama for local inference
+ *   - chatgpt: OpenAI's ChatGPT
+ *   - claude: Anthropic's Claude
+ *   - gemini: Google's Gemini
+ *   - cohere: Cohere
+ *   - mistral: Mistral AI
+ *   - octo: OctoAI
+ *   - fireworks: Fireworks AI
+ *   - together: Together AI
+ *   - groq: Groq
+ * 
+ * @returns {Promise<void>} Resolves when processing is complete
+ * 
+ * @throws {Error} If:
+ *   - Transcript file is missing or unreadable
+ *   - Invalid LLM service is specified
+ *   - LLM processing fails
+ *   - File operations fail
+ * 
+ * @example
+ * // Process with ChatGPT
+ * await runLLM(
+ *   { prompt: ['summary', 'highlights'], chatgpt: 'GPT_4' },
+ *   'content/my-video',
+ *   '---\ntitle: My Video\n---',
+ *   'chatgpt'
+ * )
+ * 
+ * @example
+ * // Save prompt and transcript without LLM processing
+ * await runLLM(
+ *   { prompt: ['summary'] },
+ *   'content/my-video',
+ *   '---\ntitle: My Video\n---'
+ * )
  */
 export async function runLLM(
   options: ProcessingOptions,
@@ -32,48 +91,58 @@ export async function runLLM(
   llmServices?: LLMServices
 ): Promise<void> {
   log(step(`\nStep 4 - Running LLM processing on transcript...\n`))
+
+  // Map of available LLM service handlers
   const LLM_FUNCTIONS: LLMFunctions = {
-    llama: callLlama,
-    ollama: callOllama,
-    chatgpt: callChatGPT,
-    claude: callClaude,
-    gemini: callGemini,
-    cohere: callCohere,
-    mistral: callMistral,
-    octo: callOcto,
-    fireworks: callFireworks,
-    together: callTogether,
-    groq: callGroq,
+    llama: callLlama,           // Local inference with Node Llama
+    ollama: callOllama,         // Local inference with Ollama
+    chatgpt: callChatGPT,       // OpenAI's ChatGPT
+    claude: callClaude,         // Anthropic's Claude
+    gemini: callGemini,         // Google's Gemini
+    cohere: callCohere,         // Cohere
+    mistral: callMistral,       // Mistral AI
+    octo: callOcto,             // OctoAI
+    fireworks: callFireworks,    // Fireworks AI
+    together: callTogether,      // Together AI
+    groq: callGroq,             // Groq
   }
 
   try {
-    // Read the transcript file
+    // Read and format the transcript
     const tempTranscript = await readFile(`${finalPath}.txt`, 'utf8')
     const transcript = `## Transcript\n\n${tempTranscript}`
 
-    // Generate the prompt
+    // Generate and combine prompt with transcript
     const prompt = generatePrompt(options.prompt)
     const promptAndTranscript = `${prompt}${transcript}`
 
     if (llmServices) {
       log(wait(`  Processing with ${llmServices} Language Model...\n`))
+
+      // Get the appropriate LLM handler function
       const llmFunction: LLMFunction = LLM_FUNCTIONS[llmServices]
       if (!llmFunction) {
         throw new Error(`Invalid LLM option: ${llmServices}`)
       }
-      // Set up a temporary file path and call the LLM function
+
+      // Process content with selected LLM
       const tempPath = `${finalPath}-${llmServices}-temp.md`
       await llmFunction(promptAndTranscript, tempPath, options[llmServices])
       log(wait(`\n  Transcript saved to temporary file:\n    - ${tempPath}`))
-      // Read generated content and write front matter, show notes, and transcript to final markdown file
+
+      // Combine results with front matter and original transcript
       const showNotes = await readFile(tempPath, 'utf8')
-      await writeFile(`${finalPath}-${llmServices}-shownotes.md`, `${frontMatter}\n${showNotes}\n${transcript}`)
-      // Remove the temporary file
+      await writeFile(
+        `${finalPath}-${llmServices}-shownotes.md`,
+        `${frontMatter}\n${showNotes}\n\n${transcript}`
+      )
+
+      // Clean up temporary file
       await unlink(tempPath)
       log(success(`\n  Generated show notes saved to markdown file:\n    - ${finalPath}-${llmServices}-shownotes.md`))
     } else {
+      // Handle case when no LLM is selected
       log(wait('  No LLM selected, skipping processing...'))
-      // If no LLM is selected, just write the prompt and transcript
       await writeFile(`${finalPath}-prompt.md`, `${frontMatter}\n${promptAndTranscript}`)
       log(success(`\n  Prompt and transcript saved to markdown file:\n    - ${finalPath}-prompt.md`))
     }

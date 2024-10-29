@@ -1,52 +1,96 @@
-// src/utils/extractVideoMetadata.ts
+/**
+ * @file Utility for extracting metadata from YouTube videos using yt-dlp.
+ * Provides functionality to retrieve essential video information such as title,
+ * channel, publish date, and thumbnail URL.
+ * @packageDocumentation
+ */
 
 import { execFile } from 'node:child_process'
 import { promisify } from 'node:util'
 import { checkDependencies } from './checkDependencies.js'
-
 import type { VideoMetadata } from '../types.js'
 
+// Promisify execFile for async/await usage with yt-dlp
 const execFilePromise = promisify(execFile)
 
 /**
- * Extract metadata for a single video URL.
- * @param url - The URL of the video.
- * @returns The video metadata.
+ * Extracts metadata for a single video URL using yt-dlp.
+ * 
+ * This function performs the following steps:
+ * 1. Verifies yt-dlp is installed
+ * 2. Executes yt-dlp with specific format strings to extract metadata
+ * 3. Parses the output into structured video metadata
+ * 4. Validates that all required metadata fields are present
+ * 
+ * @param {string} url - The URL of the video to extract metadata from.
+ *                      Supports YouTube and other platforms compatible with yt-dlp.
+ * 
+ * @returns {Promise<VideoMetadata>} A promise that resolves to an object containing:
+ *   - showLink: Direct URL to the video
+ *   - channel: Name of the channel that published the video
+ *   - channelURL: URL to the channel's page
+ *   - title: Title of the video
+ *   - description: Video description (currently returned empty)
+ *   - publishDate: Publication date in YYYY-MM-DD format
+ *   - coverImage: URL to the video's thumbnail
+ * 
+ * @throws {Error} If:
+ *   - yt-dlp is not installed
+ *   - The video URL is invalid
+ *   - Any required metadata field is missing
+ *   - The yt-dlp command fails
+ * 
+ * @example
+ * try {
+ *   const metadata = await extractVideoMetadata('https://www.youtube.com/watch?v=...')
+ *   console.log(metadata.title) // Video title
+ *   console.log(metadata.publishDate) // YYYY-MM-DD
+ * } catch (error) {
+ *   console.error('Failed to extract video metadata:', error)
+ * }
  */
 export async function extractVideoMetadata(url: string): Promise<VideoMetadata> {
   try {
-    // Check for required dependencies
+    // Verify yt-dlp is available
     await checkDependencies(['yt-dlp'])
 
+    // Execute yt-dlp with format strings to extract specific metadata fields
     const { stdout } = await execFilePromise('yt-dlp', [
-      '--restrict-filenames',
-      '--print', '%(webpage_url)s',
-      '--print', '%(channel)s',
-      '--print', '%(uploader_url)s',
-      '--print', '%(title)s',
-      '--print', '%(upload_date>%Y-%m-%d)s',
-      '--print', '%(thumbnail)s',
+      '--restrict-filenames',                // Ensure safe filenames
+      '--print', '%(webpage_url)s',          // Direct link to video
+      '--print', '%(channel)s',              // Channel name
+      '--print', '%(uploader_url)s',         // Channel URL
+      '--print', '%(title)s',                // Video title
+      '--print', '%(upload_date>%Y-%m-%d)s', // Formatted upload date
+      '--print', '%(thumbnail)s',            // Thumbnail URL
       url,
     ])
 
+    // Split stdout into individual metadata fields
     const [showLink, channel, channelURL, title, publishDate, coverImage] = stdout.trim().split('\n')
 
-    // Ensure all metadata is present
+    // Validate that all required metadata fields are present
     if (!showLink || !channel || !channelURL || !title || !publishDate || !coverImage) {
       throw new Error('Incomplete metadata received from yt-dlp.')
     }
 
+    // Return structured video metadata
     return {
-      showLink,
-      channel,
-      channelURL,
-      title,
-      description: '',
-      publishDate,
-      coverImage,
+      showLink,        // Direct URL to the video
+      channel,         // Channel name
+      channelURL,      // Channel page URL
+      title,           // Video title
+      description: '', // Empty description to fill in with LLM output
+      publishDate,     // Publication date (YYYY-MM-DD)
+      coverImage,      // Thumbnail URL
     }
   } catch (error) {
-    console.error(`Error extracting metadata for ${url}: ${error instanceof Error ? (error as Error).message : String(error)}`)
-    throw error
+    // Enhanced error handling with type checking
+    console.error(
+      `Error extracting metadata for ${url}: ${
+        error instanceof Error ? (error as Error).message : String(error)
+      }`
+    )
+    throw error // Re-throw to allow handling by caller
   }
 }

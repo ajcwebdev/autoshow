@@ -3,8 +3,7 @@
 import { writeFile } from 'node:fs/promises'
 import { env } from 'node:process'
 import { CohereClient } from 'cohere-ai'
-import { COHERE_MODELS } from '../models.js'
-import { log, wait } from '../models.js'
+import { l, wait, err, COHERE_MODELS } from '../globals.js'
 
 import type { LLMFunction, CohereModelType } from '../types.js'
 
@@ -54,18 +53,18 @@ export const callCohere: LLMFunction = async (
       throw new Error('No text content generated from the API')
     }
     
-    log(wait(`\n  Finish Reason: ${finishReason}\n  Model: ${actualModel}`))
+    l(wait(`\n  Finish Reason: ${finishReason}\n  Model: ${actualModel}`))
     
     // Check if token usage information is available
     if (meta && meta.tokens) {
       const { inputTokens, outputTokens } = meta.tokens
-      log(wait(`  Token Usage:\n    - ${inputTokens} input tokens\n    - ${outputTokens} output tokens`))
+      l(wait(`  Token Usage:\n    - ${inputTokens} input tokens\n    - ${outputTokens} output tokens`))
     } else {
-      log(wait("  - Token usage information not available"))
+      l(wait("  - Token usage information not available"))
     }
     
   } catch (error) {
-    console.error(`Error in callCohere: ${(error as Error).message}`)
+    err(`Error in callCohere: ${(error as Error).message}`)
     throw error // Re-throw the error for handling in the calling function
   }
 }

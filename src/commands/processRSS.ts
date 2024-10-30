@@ -6,24 +6,13 @@
  */
 
 import { writeFile } from 'node:fs/promises'
-import { XMLParser } from 'fast-xml-parser'
 import { generateMarkdown } from '../utils/generateMarkdown.js'
 import { downloadAudio } from '../utils/downloadAudio.js'
 import { runTranscription } from '../utils/runTranscription.js'
 import { runLLM } from '../utils/runLLM.js'
 import { cleanUpFiles } from '../utils/cleanUpFiles.js'
-import { log, wait, opts } from '../models.js'
+import { l, err, wait, opts, parser } from '../globals.js'
 import type { LLMServices, TranscriptServices, ProcessingOptions, RSSItem } from '../types.js'
-
-/**
- * Configure XML parser for RSS feed processing
- * Handles attributes without prefixes and allows boolean values
- */
-const parser = new XMLParser({
-  ignoreAttributes: false,
-  attributeNamePrefix: '',
-  allowBooleanAttributes: true,
-})
 
 /**
  * Validates RSS processing options for consistency and correct values.
@@ -31,25 +20,25 @@ const parser = new XMLParser({
  * @param options - Configuration options to validate
  * @throws Will exit process if validation fails
  */
-function validateOptions(options: ProcessingOptions): void {
+function validateRSSOptions(options: ProcessingOptions): void {
   if (options.last !== undefined) {
     if (!Number.isInteger(options.last) || options.last < 1) {
-      console.error('Error: The --last option must be a positive integer.')
+      err('Error: The --last option must be a positive integer.')
       process.exit(1)
     }
     if (options.skip !== undefined || options.order !== undefined) {
-      console.error('Error: The --last option cannot be used with --skip or --order.')
+      err('Error: The --last option cannot be used with --skip or --order.')
       process.exit(1)
     }
   }
 
   if (options.skip !== undefined && (!Number.isInteger(options.skip) || options.skip < 0)) {
-    console.error('Error: The --skip option must be a non-negative integer.')
+    err('Error: The --skip option must be a non-negative integer.')
     process.exit(1)
   }
 
   if (options.order !== undefined && !['newest', 'oldest'].includes(options.order)) {
-    console.error("Error: The --order option must be either 'newest' or 'oldest'.")
+    err("Error: The --order option must be either 'newest' or 'oldest'.")
     process.exit(1)
   }
 }
@@ -61,12 +50,12 @@ function validateOptions(options: ProcessingOptions): void {
  */
 function logProcessingAction(options: ProcessingOptions): void {
   if (options.item && options.item.length > 0) {
-    log(wait('\nProcessing specific items:'))
-    options.item.forEach((url) => log(wait(`  - ${url}`)))
+    l(wait('\nProcessing specific items:'))
+    options.item.forEach((url) => l(wait(`  - ${url}`)))
   } else if (options.last) {
-    log(wait(`\nProcessing the last ${options.last} items`))
+    l(wait(`\nProcessing the last ${options.last} items`))
   } else if (options.skip) {
-    log(wait(`  - Skipping first ${options.skip || 0} items`))
+    l(wait(`  - Skipping first ${options.skip || 0} items`))
   }
 }
 
@@ -90,7 +79,7 @@ async function fetchRSSFeed(rssUrl: string) {
     clearTimeout(timeout)
 
     if (!response.ok) {
-      console.error(`HTTP error! status: ${response.status}`)
+      err(`HTTP error! status: ${response.status}`)
       process.exit(1)
     }
 
@@ -98,9 +87,9 @@ async function fetchRSSFeed(rssUrl: string) {
     return parser.parse(text)
   } catch (error) {
     if ((error as Error).name === 'AbortError') {
-      console.error('Error: Fetch request timed out.')
+      err('Error: Fetch request timed out.')
     } else {
-      console.error(`Error fetching RSS feed: ${(error as Error).message}`)
+      err(`Error fetching RSS feed: ${(error as Error).message}`)
     }
     process.exit(1)
   }
@@ -135,7 +124,7 @@ function extractFeedItems(feed: any): RSSItem[] {
     }))
 
   if (items.length === 0) {
-    console.error('Error: No audio/video items found in the RSS feed.')
+    err('Error: No audio/video items found in the RSS feed.')
     process.exit(1)
   }
 
@@ -151,7 +140,7 @@ async function saveFeedInfo(items: RSSItem[]): Promise<void> {
   const jsonContent = JSON.stringify(items, null, 2)
   const jsonFilePath = 'content/rss_info.json'
   await writeFile(jsonFilePath, jsonContent)
-  log(wait(`RSS feed information saved to: ${jsonFilePath}`))
+  l(wait(`RSS feed information saved to: ${jsonFilePath}`))
 }
 
 /**
@@ -166,7 +155,7 @@ function selectItemsToProcess(items: RSSItem[], options: ProcessingOptions): RSS
   if (options.item && options.item.length > 0) {
     const matchedItems = items.filter((item) => options.item!.includes(item.showLink))
     if (matchedItems.length === 0) {
-      console.error('Error: No matching items found for the provided URLs.')
+      err('Error: No matching items found for the provided URLs.')
       process.exit(1)
     }
     return matchedItems
@@ -185,14 +174,14 @@ function selectItemsToProcess(items: RSSItem[], options: ProcessingOptions): RSS
  */
 function logProcessingStatus(total: number, processing: number, options: ProcessingOptions): void {
   if (options.item && options.item.length > 0) {
-    log(wait(`\n  - Found ${total} items in the RSS feed.`))
-    log(wait(`  - Processing ${processing} specified items.`))
+    l(wait(`\n  - Found ${total} items in the RSS feed.`))
+    l(wait(`  - Processing ${processing} specified items.`))
   } else if (options.last) {
-    log(wait(`\n  - Found ${total} items in the RSS feed.`))
-    log(wait(`  - Processing the last ${options.last} items.`))
+    l(wait(`\n  - Found ${total} items in the RSS feed.`))
+    l(wait(`  - Processing the last ${options.last} items.`))
   } else {
-    log(wait(`\n  - Found ${total} item(s) in the RSS feed.`))
-    log(wait(`  - Processing ${processing} item(s) after skipping ${options.skip || 0}.\n`))
+    l(wait(`\n  - Found ${total} item(s) in the RSS feed.`))
+    l(wait(`  - Processing ${processing} item(s) after skipping ${options.skip || 0}.\n`))
   }
 }
 
@@ -210,8 +199,8 @@ async function processItem(
   llmServices?: LLMServices,
   transcriptServices?: TranscriptServices
 ): Promise<void> {
-  log(opts('Parameters passed to processItem:\n'))
-  log(wait(`  - llmServices: ${llmServices}\n  - transcriptServices: ${transcriptServices}\n`))
+  l(opts('Parameters passed to processItem:\n'))
+  l(opts(`  - llmServices: ${llmServices}\n  - transcriptServices: ${transcriptServices}\n`))
 
   try {
     const { frontMatter, finalPath, filename } = await generateMarkdown(options, item)
@@ -223,7 +212,7 @@ async function processItem(
       await cleanUpFiles(finalPath)
     }
   } catch (error) {
-    console.error(`Error processing item ${item.title}: ${(error as Error).message}`)
+    err(`Error processing item ${item.title}: ${(error as Error).message}`)
   }
 }
 
@@ -237,15 +226,15 @@ async function processItems(
   transcriptServices?: TranscriptServices
 ): Promise<void> {
   for (const [index, item] of items.entries()) {
-    log(opts(`\n========================================================================================`))
-    log(opts(`  Item ${index + 1}/${items.length} processing: ${item.title}`))
-    log(opts(`========================================================================================\n`))
+    l(opts(`\n========================================================================================`))
+    l(opts(`  Item ${index + 1}/${items.length} processing: ${item.title}`))
+    l(opts(`========================================================================================\n`))
     
     await processItem(options, item, llmServices, transcriptServices)
     
-    log(opts(`\n========================================================================================`))
-    log(opts(`  ${index + 1}/${items.length} item processing completed successfully`))
-    log(opts(`========================================================================================\n`))
+    l(opts(`\n========================================================================================`))
+    l(opts(`  ${index + 1}/${items.length} item processing completed successfully`))
+    l(opts(`========================================================================================\n`))
   }
 }
 
@@ -259,11 +248,11 @@ export async function processRSS(
   llmServices?: LLMServices,
   transcriptServices?: TranscriptServices
 ): Promise<void> {
-  log(opts('Parameters passed to processRSS:\n'))
-  log(wait(`  - llmServices: ${llmServices}\n  - transcriptServices: ${transcriptServices}`))
+  l(opts('Parameters passed to processRSS:\n'))
+  l(wait(`  - llmServices: ${llmServices}\n  - transcriptServices: ${transcriptServices}`))
 
   try {
-    validateOptions(options)
+    validateRSSOptions(options)
     logProcessingAction(options)
 
     const feed = await fetchRSSFeed(rssUrl)
@@ -278,7 +267,7 @@ export async function processRSS(
     logProcessingStatus(items.length, itemsToProcess.length, options)
     await processItems(itemsToProcess, options, llmServices, transcriptServices)
   } catch (error) {
-    console.error(`Error processing RSS feed: ${(error as Error).message}`)
+    err(`Error processing RSS feed: ${(error as Error).message}`)
     process.exit(1)
   }
 }

@@ -3,24 +3,25 @@
 import { FastifyRequest, FastifyReply } from 'fastify'
 import { processRSS } from '../../../src/commands/processRSS.js'
 import { reqToOpts } from '../utils/reqToOpts.js'
+import { l, err } from '../../../src/globals.js'
 
 // Handler for the /rss route
 export const handleRSSRequest = async (
   request: FastifyRequest,
   reply: FastifyReply
 ): Promise<void> => {
-  console.log('\nEntered handleRSSRequest')
+  l('\nEntered handleRSSRequest')
 
   try {
     // Access parsed request body
     const requestData = request.body as any
-    console.log('\nParsed request body:', requestData)
+    l('\nParsed request body:', requestData)
 
     // Extract RSS URL from the request data
     const { rssUrl } = requestData
 
     if (!rssUrl) {
-      console.log('RSS URL not provided, sending 400')
+      l('RSS URL not provided, sending 400')
       reply.status(400).send({ error: 'RSS URL is required' })
       return
     }
@@ -31,7 +32,7 @@ export const handleRSSRequest = async (
     // Set options.rss to rssUrl
     options.rss = rssUrl
 
-    console.log('\nCalling processRSS with params:', {
+    l('\nCalling processRSS with params:', {
       rssUrl,
       llmServices,
       transcriptServices,
@@ -41,10 +42,10 @@ export const handleRSSRequest = async (
     // Call processRSS with the mapped options and extracted RSS URL
     await processRSS(options, rssUrl, llmServices, transcriptServices)
 
-    console.log('\nprocessRSS completed successfully')
+    l('\nprocessRSS completed successfully')
     reply.send({ message: 'RSS feed processed successfully.' })
   } catch (error) {
-    console.error('Error processing RSS request:', error)
+    err('Error processing RSS request:', error)
     reply.status(500).send({ error: 'An error occurred while processing the RSS feed' })
   }
 }

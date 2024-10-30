@@ -5,9 +5,25 @@
  * @packageDocumentation
  */
 
+import { XMLParser } from 'fast-xml-parser'
+import { exec, execFile } from 'node:child_process'
+import { promisify } from 'node:util'
 import chalk from 'chalk'
 import type { ChalkInstance } from 'chalk'
 import type { WhisperModelType, ChatGPTModelType, ClaudeModelType, CohereModelType, GeminiModelType, MistralModelType, OllamaModelType, TogetherModelType, FireworksModelType, GroqModelType } from './types.js'
+
+export const execPromise = promisify(exec)
+export const execFilePromise = promisify(execFile)
+
+/**
+ * Configure XML parser for RSS feed processing
+ * Handles attributes without prefixes and allows boolean values
+ */
+export const parser = new XMLParser({
+  ignoreAttributes: false,
+  attributeNamePrefix: '',
+  allowBooleanAttributes: true,
+})
 
 /**
  * Chalk styling for step indicators in the CLI
@@ -49,7 +65,13 @@ export const final: ChalkInstance = chalk.bold.italic
  * Convenience export for console.log
  * @type {typeof console.log}
  */
-export const log: typeof console.log = console.log
+export const l: typeof console.log = console.log
+
+/**
+ * Convenience export for console.error
+ * @type {typeof console.log}
+ */
+export const err: typeof console.error = console.error
 
 /**
  * Available action options for content processing

@@ -7,7 +7,7 @@
 
 import { execFile } from 'node:child_process'
 import { promisify } from 'node:util'
-import { checkDependencies } from './checkDependencies.js'
+import { err } from '../globals.js'
 import type { VideoMetadata } from '../types.js'
 
 // Promisify execFile for async/await usage with yt-dlp
@@ -43,17 +43,14 @@ const execFilePromise = promisify(execFile)
  * @example
  * try {
  *   const metadata = await extractVideoMetadata('https://www.youtube.com/watch?v=...')
- *   console.log(metadata.title) // Video title
- *   console.log(metadata.publishDate) // YYYY-MM-DD
+ *   l(metadata.title) // Video title
+ *   l(metadata.publishDate) // YYYY-MM-DD
  * } catch (error) {
- *   console.error('Failed to extract video metadata:', error)
+ *   err('Failed to extract video metadata:', error)
  * }
  */
 export async function extractVideoMetadata(url: string): Promise<VideoMetadata> {
   try {
-    // Verify yt-dlp is available
-    await checkDependencies(['yt-dlp'])
-
     // Execute yt-dlp with format strings to extract specific metadata fields
     const { stdout } = await execFilePromise('yt-dlp', [
       '--restrict-filenames',                // Ensure safe filenames
@@ -67,10 +64,14 @@ export async function extractVideoMetadata(url: string): Promise<VideoMetadata> 
     ])
 
     // Split stdout into individual metadata fields
-    const [showLink, channel, channelURL, title, publishDate, coverImage] = stdout.trim().split('\n')
+    const [
+      showLink, channel, channelURL, title, publishDate, coverImage
+    ] = stdout.trim().split('\n')
 
     // Validate that all required metadata fields are present
-    if (!showLink || !channel || !channelURL || !title || !publishDate || !coverImage) {
+    if (
+      !showLink || !channel || !channelURL || !title || !publishDate || !coverImage
+    ) {
       throw new Error('Incomplete metadata received from yt-dlp.')
     }
 
@@ -86,7 +87,7 @@ export async function extractVideoMetadata(url: string): Promise<VideoMetadata> 
     }
   } catch (error) {
     // Enhanced error handling with type checking
-    console.error(
+    err(
       `Error extracting metadata for ${url}: ${
         error instanceof Error ? (error as Error).message : String(error)
       }`

@@ -3,9 +3,7 @@
 import { writeFile } from 'node:fs/promises'
 import { env } from 'node:process'
 import { GoogleGenerativeAI } from "@google/generative-ai"
-import { GEMINI_MODELS } from '../models.js'
-import { log, wait } from '../models.js'
-
+import { l, wait, err, GEMINI_MODELS } from '../globals.js'
 import type { LLMFunction, GeminiModelType } from '../types.js'
 
 /**
@@ -63,11 +61,11 @@ export const callGemini: LLMFunction = async (
       
       // Write the generated text to the output file
       await writeFile(tempPath, text)
-      log(wait(`\nModel: ${actualModel}`))
+      l(wait(`\nModel: ${actualModel}`))
       
       return
     } catch (error) {
-      console.error(`Error in callGemini (attempt ${attempt}/${maxRetries}): ${error instanceof Error ? (error as Error).message : String(error)}`)
+      err(`Error in callGemini (attempt ${attempt}/${maxRetries}): ${error instanceof Error ? (error as Error).message : String(error)}`)
       
       // If this is the last attempt, throw the error
       if (attempt === maxRetries) {

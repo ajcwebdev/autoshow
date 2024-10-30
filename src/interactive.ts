@@ -2,7 +2,7 @@
 
 import inquirer from 'inquirer'
 import type { ProcessingOptions, InquirerAnswers, WhisperModelType } from './types.js'
-import { log } from './models.js'
+import { l } from './globals.js'
 
 /**
  * Prompts the user for input if interactive mode is selected.
@@ -262,7 +262,7 @@ export async function handleInteractivePrompt(
         ['whisper', 'whisperDocker', 'whisperPython', 'whisperDiarization'].includes(
           answers.transcriptServices as string
         ),
-      default: 'large-v2',
+      default: 'large-v3-turbo',
     },
     // Additional configuration options
     {
@@ -302,7 +302,7 @@ export async function handleInteractivePrompt(
   ])
   // Handle user cancellation
   if (!answers.confirmAction) {
-    log('Operation cancelled.')
+    l('Operation cancelled.')
     process.exit(0)
   }
   // Merge user answers with existing options

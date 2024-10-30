@@ -2,6 +2,7 @@
 
 import { exec } from 'child_process'
 import { promisify } from 'util'
+import { l, err } from '../src/globals.js'
 
 const execAsync = promisify(exec)
 
@@ -11,15 +12,15 @@ async function cleanContent() {
       'find content -type f -not \\( -name ".gitkeep" -o -name "audio.mp3" -o -name "example-urls.md" \\) -delete'
     )
     if (stderr) {
-      console.error('Error:', stderr)
+      err('Error:', stderr)
       return
     }
-    console.log('Files deleted successfully')
+    l('Files deleted successfully')
     if (stdout) {
-      console.log('Output:', stdout)
+      l('Output:', stdout)
     }
   } catch (error) {
-    console.error('Execution error:', error)
+    err('Execution error:', error)
   }
 }
 

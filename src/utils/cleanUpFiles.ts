@@ -7,7 +7,7 @@
  */
 
 import { unlink } from 'node:fs/promises'
-import { log, step, success } from '../models.js'
+import { l, err, step, success } from '../globals.js'
 
 /**
  * Removes temporary files generated during content processing.
@@ -39,11 +39,11 @@ import { log, step, success } from '../models.js'
  *   // - content/my-video-2024-03-21.md
  *   // - content/my-video-2024-03-21.lrc
  * } catch (error) {
- *   console.error('Cleanup failed:', error)
+ *   err('Cleanup failed:', error)
  * }
  */
 export async function cleanUpFiles(id: string): Promise<void> {
-  log(step('\nStep 5 - Cleaning up temporary files...\n'))
+  l(step('\nStep 5 - Cleaning up temporary files...\n'))
 
   // Define extensions of temporary files to be cleaned up
   const extensions = [
@@ -53,18 +53,18 @@ export async function cleanUpFiles(id: string): Promise<void> {
     '.lrc'   // Lyrics/subtitles
   ]
 
-  log(success(`  Temporary files deleted:`))
+  l(success(`  Temporary files deleted:`))
 
   // Attempt to delete each file type
   for (const ext of extensions) {
     try {
       // Delete file and log success
       await unlink(`${id}${ext}`)
-      log(success(`    - ${id}${ext}`))
+      l(success(`    - ${id}${ext}`))
     } catch (error) {
       // Only log errors that aren't "file not found" (ENOENT)
       if (error instanceof Error && (error as Error).message !== 'ENOENT') {
-        console.error(`Error deleting file ${id}${ext}: ${(error as Error).message}`)
+        err(`Error deleting file ${id}${ext}: ${(error as Error).message}`)
       }
       // Silently continue if file doesn't exist
     }

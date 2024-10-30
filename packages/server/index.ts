@@ -7,6 +7,7 @@ import { handlePlaylistRequest } from './routes/playlist.js'
 import { handleURLsRequest } from './routes/urls.js'
 import { handleFileRequest } from './routes/file.js'
 import { handleRSSRequest } from './routes/rss.js'
+import { l } from '../../src/globals.js'
 import { env } from 'node:process'
 
 // Set the port from environment variable or default to 3000
@@ -25,7 +26,7 @@ async function start() {
 
   // Log each incoming request
   fastify.addHook('onRequest', async (request, reply) => {
-    console.log(
+    l(
       `\n[${new Date().toISOString()}] Received ${request.method} request for ${request.url}\n`
     )
   })
@@ -40,7 +41,7 @@ async function start() {
   try {
     // Start the server and listen on the specified port
     await fastify.listen({ port })
-    console.log(`\nServer running at http://localhost:${port}\n`)
+    l(`\nServer running at http://localhost:${port}\n`)
   } catch (err) {
     // Log errors and exit if the server fails to start
     fastify.log.error(err)

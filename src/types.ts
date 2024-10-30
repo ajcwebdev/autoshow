@@ -252,6 +252,11 @@ export type TranscriptServices = 'whisper' | 'whisperDocker' | 'whisperPython' |
  */
 export type WhisperModelType = 'tiny' | 'tiny.en' | 'base' | 'base.en' | 'small' | 'small.en' | 'medium' | 'medium.en' | 'large-v1' | 'large-v2' | 'large-v3-turbo' | 'turbo'
 
+/**
+ * Whisper-specific transcription services.
+ */
+export type WhisperTranscriptServices = 'whisper' | 'whisperDocker' | 'whisperPython' | 'whisperDiarization'
+
 // LLM Types
 /**
  * Object containing different prompts, their instructions to the LLM, and expected example output.

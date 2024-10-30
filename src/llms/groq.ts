@@ -2,7 +2,7 @@
 
 import { writeFile } from 'node:fs/promises'
 import { env } from 'node:process'
-import { log, wait, GROQ_MODELS } from '../models.js'
+import { l, wait, err, GROQ_MODELS } from '../globals.js'
 import type { GroqChatCompletionResponse, GroqModelType } from '../types.js'
 
 // Define the Groq API URL
@@ -66,13 +66,13 @@ export const callGroq = async (promptAndTranscript: string, tempPath: string, mo
 
     // Write the generated content to the specified output file
     await writeFile(tempPath, content)
-    log(wait(`\n  Groq response saved to ${tempPath}`))
+    l(wait(`\n  Groq response saved to ${tempPath}`))
 
     // Log finish reason, used model, and token usage
-    log(wait(`\n  Finish Reason: ${finishReason}\n  Model Used: ${usedModel}`))
+    l(wait(`\n  Finish Reason: ${finishReason}\n  Model Used: ${usedModel}`))
     if (usage) {
       const { prompt_tokens, completion_tokens, total_tokens } = usage
-      log(
+      l(
         wait(
           `  Token Usage:\n    - ${prompt_tokens} prompt tokens\n    - ${completion_tokens} completion tokens\n    - ${total_tokens} total tokens`
         )
@@ -80,7 +80,7 @@ export const callGroq = async (promptAndTranscript: string, tempPath: string, mo
     }
   } catch (error) {
     // Log any errors that occur during the process
-    console.error(`Error in callGroq: ${(error as Error).message}`)
+    err(`Error in callGroq: ${(error as Error).message}`)
     throw error // Re-throw the error for handling by the caller
   }
 }

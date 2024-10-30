@@ -10,8 +10,7 @@ import { execFile } from 'node:child_process'
 import { promisify } from 'node:util'
 import { writeFile } from 'node:fs/promises'
 import { basename, extname } from 'node:path'
-import { checkDependencies } from './checkDependencies.js'
-import { log, dim, step, success } from '../models.js'
+import { l, dim, step, success } from '../globals.js'
 import type { MarkdownData, ProcessingOptions, RSSItem } from '../types.js'
 
 // Promisify the execFile function for use with async/await
@@ -97,9 +96,6 @@ export async function generateMarkdown(
     case !!options.video:
     case !!options.playlist:
     case !!options.urls:
-      // Verify yt-dlp is available for video processing
-      await checkDependencies(['yt-dlp'])
-
       // Extract video metadata using yt-dlp
       const { stdout } = await execFilePromise('yt-dlp', [
         '--restrict-filenames',
@@ -161,7 +157,9 @@ export async function generateMarkdown(
     case !!options.rss:
       // Process RSS feed item
       const item = input as RSSItem
-      const { publishDate, title: rssTitle, coverImage, showLink, channel: rssChannel, channelURL } = item
+      const {
+        publishDate, title: rssTitle, coverImage, showLink, channel: rssChannel, channelURL
+      } = item
 
       // Generate filename using date and sanitized title
       filename = `${publishDate}-${sanitizeTitle(rssTitle)}`
@@ -192,9 +190,9 @@ export async function generateMarkdown(
   await writeFile(`${finalPath}.md`, frontMatterContent)
 
   // Log the generated content and success message
-  log(dim(frontMatterContent))
-  log(step('\nStep 1 - Generating markdown...\n'))
-  log(success(`  Front matter successfully created and saved:\n    - ${finalPath}.md`))
+  l(dim(frontMatterContent))
+  l(step('\nStep 1 - Generating markdown...\n'))
+  l(success(`  Front matter successfully created and saved:\n    - ${finalPath}.md`))
 
   // Return the generated markdown data for further processing
   return { frontMatter: frontMatterContent, finalPath, filename }

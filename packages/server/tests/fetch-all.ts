@@ -2,6 +2,7 @@
 
 import fs from 'fs/promises'
 import path from 'path'
+import { l, err } from '../../../src/globals.js'
 
 const BASE_URL = 'http://localhost:3000'
 const OUTPUT_DIR = 'content'
@@ -360,12 +361,12 @@ const fetchRequest = async (request, index) => {
       },
       body: JSON.stringify(request.data),
     })
-    console.log(`\nRequest ${index + 1} response status:`, response.status)
+    l(`\nRequest ${index + 1} response status:`, response.status)
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`)
     }
     const result = await response.json()
-    console.log(`Request ${index + 1} result: ${result.message}`)
+    l(`Request ${index + 1} result: ${result.message}`)
 
     // Wait briefly to ensure files are written
     await new Promise((resolve) => setTimeout(resolve, 1000))
@@ -387,13 +388,13 @@ const fetchRequest = async (request, index) => {
         const newFileName = outputFiles[i]
         const newFilePath = path.join(OUTPUT_DIR, newFileName)
         await fs.rename(oldFilePath, newFilePath)
-        console.log(`\nFile renamed:\n  - Old: ${oldFilePath}\n  - New: ${newFilePath}`)
+        l(`\nFile renamed:\n  - Old: ${oldFilePath}\n  - New: ${newFilePath}`)
       }
     } else {
-      console.log('No new files to rename for this request.')
+      l('No new files to rename for this request.')
     }
   } catch (error) {
-    console.error(`Error in request ${index + 1}:`, error)
+    err(`Error in request ${index + 1}:`, error)
   }
 }
 

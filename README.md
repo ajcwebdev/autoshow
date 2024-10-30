@@ -8,9 +8,6 @@
 - [Project Overview](#project-overview)
   - [Key Features](#key-features)
 - [Setup](#setup)
-  - [Copy Environment Variable File](#copy-environment-variable-file)
-  - [Install Local Dependencies](#install-local-dependencies)
-  - [Clone Whisper Repo](#clone-whisper-repo)
 - [Run Autoshow Node Scripts](#run-autoshow-node-scripts)
 - [Project Structure](#project-structure)
 
@@ -29,8 +26,10 @@ The Autoshow workflow includes the following steps:
 ### Key Features
 
 - Support for multiple input types (YouTube links, RSS feeds, local video and audio files)
-- Integration with various LLMs (ChatGPT, Claude, Cohere, Mistral) and transcription services (Whisper.cpp, Deepgram, Assembly)
-- Local LLM support (Llama 3.1, Phi 3, Qwen 2, Mistral)
+- Integration with various:
+  - LLMs (ChatGPT, Claude, Gemini, Cohere, Mistral, Fireworks, Together, Groq)
+  - Transcription services (Whisper.cpp, Deepgram, Assembly)
+- Local LLM support with Ollama
 - Customizable prompts for generating titles, summaries, chapter titles/descriptions, key takeaways, and questions to test comprehension
 - Markdown output with metadata and formatted content
 - Command-line interface for easy usage
@@ -40,35 +39,11 @@ See [`docs/roadmap.md`](/docs/roadmap.md) for details about current development 
 
 ## Setup
 
-### Copy Environment Variable File
-
-`npm run autoshow` expects a `.env` file even for commands that don't require API keys. You can create a blank `.env` file or use the default provided:
+`scripts/setup.sh` checks to ensure a `.env` file exists, Node dependencies are installed, and the `whisper.cpp` repository is cloned and built. Run the script with the `setup` script in `package.json`.
 
 ```bash
-cp .env.example .env
+npm run setup
 ```
-
-### Install Local Dependencies
-
-Install `yt-dlp`, `ffmpeg`, and run `npm i`.
-
-```bash
-brew install yt-dlp ffmpeg
-npm i
-```
-
-### Clone Whisper Repo
-
-Run the following commands to clone `whisper.cpp` and build the `base` model:
-
-```bash
-git clone https://github.com/ggerganov/whisper.cpp.git && \
-  bash ./whisper.cpp/models/download-ggml-model.sh base && \
-  make -C whisper.cpp && \
-  cp .github/whisper.Dockerfile whisper.cpp/Dockerfile
-```
-
-> Replace `base` with `large-v2` for the largest model, `medium` for a middle sized model, or `tiny` for the smallest model.
 
 ## Run Autoshow Node Scripts
 
@@ -145,10 +120,7 @@ Example commands for all available CLI options can be found in [`docs/examples.m
   - `cleanUpFiles.ts`: Removes temporary files after processing
 
 - Transcription Services (`src/transcription`)
-  - `whisper.ts`: Uses Whisper.cpp for transcription
-  - `whisperDocker.ts`: Uses Whisper.cpp in a Docker container for transcription
-  - `whisperPython.ts`: Uses the original `openai-whisper` Python package for transcription
-  - `whisperDiarization.ts`: Uses `whisper-diarization` for transcription with speaker labels
+  - `whisper.ts`: Uses Whisper.cpp, openai-whisper, or whisper-diarization for transcription
   - `deepgram.ts`: Integrates Deepgram transcription service
   - `assembly.ts`: Integrates AssemblyAI transcription service
 

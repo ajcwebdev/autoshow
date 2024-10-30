@@ -43,7 +43,7 @@ Use LLM.
 curl --json '{
   "youtubeUrl": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "whisperModel": "tiny",
-  "llm": "llama"
+  "llm": "ollama"
 }' http://localhost:3000/video
 ```
 
@@ -59,7 +59,7 @@ curl --json '{
 curl --json '{
   "playlistUrl": "https://www.youtube.com/playlist?list=PLCVnrVv4KhXPz0SoAVu8Rc1emAdGPbSbr",
   "whisperModel": "tiny",
-  "llm": "llama"
+  "llm": "ollama"
 }' http://localhost:3000/playlist
 ```
 
@@ -75,7 +75,7 @@ curl --json '{
 curl --json '{
   "filePath": "content/example-urls.md",
   "whisperModel": "tiny",
-  "llm": "llama"
+  "llm": "ollama"
 }' http://localhost:3000/urls
 ```
 
@@ -84,7 +84,7 @@ curl --json '{
   "filePath": "content/example-urls.md",
   "prompts": ["titles", "mediumChapters"],
   "whisperModel": "tiny",
-  "llm": "llama"
+  "llm": "ollama"
 }' http://localhost:3000/urls
 ```
 
@@ -100,7 +100,7 @@ curl --json '{
 curl --json '{
   "filePath": "content/audio.mp3",
   "whisperModel": "tiny",
-  "llm": "llama"
+  "llm": "ollama"
 }' http://localhost:3000/file
 ```
 
@@ -109,7 +109,7 @@ curl --json '{
   "filePath": "content/audio.mp3",
   "prompts": ["titles"],
   "whisperModel": "tiny",
-  "llm": "llama"
+  "llm": "ollama"
 }' http://localhost:3000/file
 ```
 
@@ -125,7 +125,7 @@ curl --json '{
 curl --json '{
   "rssUrl": "https://feeds.transistor.fm/fsjam-podcast/",
   "whisperModel": "tiny",
-  "llm": "llama",
+  "llm": "ollama",
   "order": "newest",
   "skip": 0
 }' http://localhost:3000/rss
@@ -236,23 +236,6 @@ curl --json '{
 }' http://localhost:3000/video
 ```
 
-### Octo
-
-```bash
-curl --json '{
-  "youtubeUrl": "https://www.youtube.com/watch?v=MORMZXEaONk",
-  "llm": "octo"
-}' http://localhost:3000/video
-```
-
-```bash
-curl --json '{
-  "youtubeUrl": "https://www.youtube.com/watch?v=MORMZXEaONk",
-  "llm": "octo",
-  "llmModel": "LLAMA_3_1_8B"
-}' http://localhost:3000/video
-```
-
 ## Transcription Options
 
 ### Whisper.cpp
@@ -277,7 +260,7 @@ curl --json '{
 curl --json '{
   "youtubeUrl": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "transcriptServices": "deepgram",
-  "llm": "llama"
+  "llm": "ollama"
 }' http://localhost:3000/video
 ```
 
@@ -294,7 +277,7 @@ curl --json '{
 curl --json '{
   "youtubeUrl": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "transcriptServices": "assembly",
-  "llm": "llama"
+  "llm": "ollama"
 }' http://localhost:3000/video
 ```
 
@@ -311,7 +294,7 @@ curl --json '{
   "youtubeUrl": "https://ajc.pics/audio/fsjam-short.mp3",
   "transcriptServices": "assembly",
   "speakerLabels": true,
-  "llm": "llama"
+  "llm": "ollama"
 }' http://localhost:3000/video
 ```
 
@@ -336,7 +319,7 @@ curl --json '{
   "youtubeUrl": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "prompts": ["titles", "summary", "shortChapters", "takeaways", "questions"],
   "whisperModel": "tiny",
-  "llm": "llama"
+  "llm": "ollama"
 }' http://localhost:3000/video
 ```
 
@@ -345,7 +328,7 @@ curl --json '{
   "playlistUrl": "https://www.youtube.com/playlist?list=PLCVnrVv4KhXPz0SoAVu8Rc1emAdGPbSbr",
   "prompts": ["titles", "mediumChapters"],
   "whisperModel": "tiny",
-  "llm": "llama"
+  "llm": "ollama"
 }' http://localhost:3000/playlist
 ```
 
@@ -354,6 +337,6 @@ curl --json '{
   "playlistUrl": "https://www.youtube.com/playlist?list=PLCVnrVv4KhXPz0SoAVu8Rc1emAdGPbSbr",
   "prompts": ["titles", "mediumChapters"],
   "whisperModel": "tiny",
-  "llm": "llama"
+  "llm": "ollama"
 }' http://localhost:3000/playlist
 ```

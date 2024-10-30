@@ -10,7 +10,7 @@ import { handleRSSRequest } from './routes/rss.js'
 import { env } from 'node:process'
 
 // Set the port from environment variable or default to 3000
-const port = env.PORT || 3000
+const port = Number(env.PORT) || 3000
 
 async function start() {
   // Create a Fastify instance with logging enabled
@@ -38,9 +38,11 @@ async function start() {
   fastify.post('/rss', handleRSSRequest)
 
   try {
+    // Start the server and listen on the specified port
     await fastify.listen({ port })
     console.log(`\nServer running at http://localhost:${port}\n`)
   } catch (err) {
+    // Log errors and exit if the server fails to start
     fastify.log.error(err)
     process.exit(1)
   }

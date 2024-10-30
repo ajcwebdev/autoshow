@@ -1,4 +1,4 @@
-// packages/server/tests/fetch-local.js
+// packages/server/tests/fetch-local.ts
 
 import fs from 'fs/promises'
 import path from 'path'
@@ -27,7 +27,7 @@ const requests = [
     data: {
       playlistUrl: 'https://www.youtube.com/playlist?list=PLCVnrVv4KhXPz0SoAVu8Rc1emAdGPbSbr',
       whisperModel: 'tiny',
-      llm: 'llama',
+      llm: 'ollama',
     },
     endpoint: '/playlist',
     outputFiles: ['FILE_03A.md', 'FILE_03B.md'],
@@ -37,7 +37,7 @@ const requests = [
       playlistUrl: 'https://www.youtube.com/playlist?list=PLCVnrVv4KhXPz0SoAVu8Rc1emAdGPbSbr',
       prompts: ['titles', 'mediumChapters'],
       whisperModel: 'tiny',
-      llm: 'llama',
+      llm: 'ollama',
     },
     endpoint: '/playlist',
     outputFiles: ['FILE_04A.md', 'FILE_04B.md'],
@@ -62,7 +62,7 @@ const requests = [
     data: {
       filePath: 'content/example-urls.md',
       whisperModel: 'tiny',
-      llm: 'llama',
+      llm: 'ollama',
     },
     endpoint: '/urls',
     outputFiles: ['FILE_07A.md', 'FILE_07B.md'],
@@ -72,7 +72,7 @@ const requests = [
       filePath: 'content/example-urls.md',
       prompts: ['titles', 'mediumChapters'],
       whisperModel: 'tiny',
-      llm: 'llama',
+      llm: 'ollama',
     },
     endpoint: '/urls',
     outputFiles: ['FILE_08A.md', 'FILE_08B.md'],
@@ -97,7 +97,7 @@ const requests = [
     data: {
       filePath: 'content/audio.mp3',
       whisperModel: 'tiny',
-      llm: 'llama',
+      llm: 'ollama',
     },
     endpoint: '/file',
     outputFiles: ['FILE_11.md'],
@@ -107,7 +107,7 @@ const requests = [
       filePath: 'content/audio.mp3',
       prompts: ['titles'],
       whisperModel: 'tiny',
-      llm: 'llama',
+      llm: 'ollama',
     },
     endpoint: '/file',
     outputFiles: ['FILE_12.md'],
@@ -132,7 +132,7 @@ const requests = [
     data: {
       rssUrl: 'https://ajcwebdev.substack.com/feed/',
       whisperModel: 'tiny',
-      llm: 'llama',
+      llm: 'ollama',
     },
     endpoint: '/rss',
     outputFiles: ['FILE_15.md'],
@@ -169,7 +169,7 @@ const requests = [
     data: {
       youtubeUrl: 'https://www.youtube.com/watch?v=MORMZXEaONk',
       whisperModel: 'tiny',
-      llm: 'llama',
+      llm: 'ollama',
     },
     endpoint: '/video',
     outputFiles: ['FILE_19.md'],
@@ -203,7 +203,7 @@ const requests = [
       youtubeUrl: 'https://www.youtube.com/watch?v=MORMZXEaONk',
       prompts: ['titles', 'summary', 'shortChapters', 'takeaways', 'questions'],
       whisperModel: 'tiny',
-      llm: 'llama',
+      llm: 'ollama',
     },
     endpoint: '/video',
     outputFiles: ['FILE_23.md'],

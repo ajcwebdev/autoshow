@@ -1,18 +1,22 @@
-// server/routes/playlist.js
+// server/routes/playlist.ts
 
+import { FastifyRequest, FastifyReply } from 'fastify'
 import { processPlaylist } from '../../../src/commands/processPlaylist.js'
 import { reqToOpts } from '../utils/reqToOpts.js'
 
-// Handler for /playlist route
-const handlePlaylistRequest = async (request, reply) => {
+// Handler for the /playlist route
+export const handlePlaylistRequest = async (
+  request: FastifyRequest,
+  reply: FastifyReply
+): Promise<void> => {
   console.log('\nEntered handlePlaylistRequest')
 
   try {
     // Access parsed request body
-    const requestData = request.body
+    const requestData = request.body as any
     console.log('\nParsed request body:', requestData)
 
-    // Extract playlist URL
+    // Extract playlist URL from the request data
     const { playlistUrl } = requestData
 
     if (!playlistUrl) {
@@ -23,9 +27,19 @@ const handlePlaylistRequest = async (request, reply) => {
 
     // Map request data to processing options
     const { options, llmServices, transcriptServices } = reqToOpts(requestData)
-    console.log('\nCalling processPlaylist with params:', { playlistUrl, llmServices, transcriptServices, options })
 
-    await processPlaylist(playlistUrl, llmServices, transcriptServices, options)
+    // Set options.playlist to playlistUrl
+    options.playlist = playlistUrl
+
+    console.log('\nCalling processPlaylist with params:', {
+      playlistUrl,
+      llmServices,
+      transcriptServices,
+      options,
+    })
+
+    // Call processPlaylist with the mapped options and extracted playlist URL
+    await processPlaylist(options, playlistUrl, llmServices, transcriptServices)
 
     console.log('\nprocessPlaylist completed successfully')
     reply.send({ message: 'Playlist processed successfully.' })
@@ -34,5 +48,3 @@ const handlePlaylistRequest = async (request, reply) => {
     reply.status(500).send({ error: 'An error occurred while processing the playlist' })
   }
 }
-
-export { handlePlaylistRequest }

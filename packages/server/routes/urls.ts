@@ -1,18 +1,22 @@
-// server/routes/urls.js
+// server/routes/urls.ts
 
+import { FastifyRequest, FastifyReply } from 'fastify'
 import { processURLs } from '../../../src/commands/processURLs.js'
 import { reqToOpts } from '../utils/reqToOpts.js'
 
-// Handler for /urls route
-const handleURLsRequest = async (request, reply) => {
+// Handler for the /urls route
+export const handleURLsRequest = async (
+  request: FastifyRequest,
+  reply: FastifyReply
+): Promise<void> => {
   console.log('\nEntered handleURLsRequest')
 
   try {
     // Access parsed request body
-    const requestData = request.body
+    const requestData = request.body as any
     console.log('\nParsed request body:', requestData)
 
-    // Extract file path
+    // Extract file path from the request data
     const { filePath } = requestData
 
     if (!filePath) {
@@ -23,9 +27,19 @@ const handleURLsRequest = async (request, reply) => {
 
     // Map request data to processing options
     const { options, llmServices, transcriptServices } = reqToOpts(requestData)
-    console.log('\nCalling processURLs with params:', { filePath, llmServices, transcriptServices, options })
 
-    await processURLs(filePath, llmServices, transcriptServices, options)
+    // Set options.urls to filePath
+    options.urls = filePath
+
+    console.log('\nCalling processURLs with params:', {
+      filePath,
+      llmServices,
+      transcriptServices,
+      options,
+    })
+
+    // Call processURLs with the mapped options and extracted file path
+    await processURLs(options, filePath, llmServices, transcriptServices)
 
     console.log('\nprocessURLs completed successfully')
     reply.send({ message: 'URLs processed successfully.' })
@@ -34,5 +48,3 @@ const handleURLsRequest = async (request, reply) => {
     reply.status(500).send({ error: 'An error occurred while processing the URLs' })
   }
 }
-
-export { handleURLsRequest }

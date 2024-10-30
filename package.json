@@ -7,7 +7,9 @@
     "ChatGPT",
     "Cohere",
     "Mistral",
-    "OctoAI",
+    "Fireworks",
+    "Together",
+    "Groq",
     "Whisper",
     "Deepgram",
     "AssemblyAI"
@@ -52,7 +54,6 @@
     "@fastify/cors": "10.0.1",
     "@google/generative-ai": "0.21.0",
     "@mistralai/mistralai": "1.1.0",
-    "@octoai/sdk": "1.11.0",
     "assemblyai": "4.7.1",
     "chalk": "5.3.0",
     "cohere-ai": "7.14.0",
@@ -61,7 +62,6 @@
     "fastify": "5.0.0",
     "file-type": "19.6.0",
     "inquirer": "12.0.1",
-    "node-llama-cpp": "3.1.1",
     "ollama": "0.5.9",
     "openai": "4.68.4"
   },

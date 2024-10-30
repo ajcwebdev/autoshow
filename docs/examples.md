@@ -143,9 +143,12 @@ Create a `.env` file and set API key as demonstrated in `.env.example` for eithe
 
 - `OPENAI_API_KEY`
 - `ANTHROPIC_API_KEY`
+- `GEMINI_API_KEY`
 - `COHERE_API_KEY`
 - `MISTRAL_API_KEY`
-- `OCTOAI_API_KEY`
+- `TOGETHER_API_KEY`
+- `FIREWORKS_API_KEY`
+- `GROQ_API_KEY`
 
 For each model available for each provider, I have collected the following details:
 
@@ -401,34 +404,6 @@ npm run as -- \
   --groq MIXTRAL_8X7B_32768
 ```
 
-### Llama.cpp
-
-```bash
-npm run as -- \
-  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
-  --llama
-```
-
-Select Llama model:
-
-```bash
-npm run as -- \
-  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
-  --llama GEMMA_2_2B
-
-npm run as -- \
-  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
-  --llama LLAMA_3_2_1B
-
-npm run as -- \
-  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
-  --llama PHI_3_5
-
-npm run as -- \
-  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
-  --llama QWEN_2_5_3B
-```
-
 ### Ollama
 
 ```bash
@@ -644,7 +619,7 @@ This will start `whisper.cpp`, Ollama, and the AutoShow Commander CLI in their o
 npm run docker-up
 ```
 
-Replace `as` with `docker` to run most other commands explained in this document. Does not support all options at this time, notably `--llama`, `--whisperPython`, and `--whisperDiarization`.
+Replace `as` with `docker` to run most other commands explained in this document. Does not support all options at this time, notably `--whisperPython` and `--whisperDiarization`.
 
 ```bash
 npm run docker -- \

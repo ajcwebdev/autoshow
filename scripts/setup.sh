@@ -83,12 +83,4 @@ else
     cp .github/whisper.Dockerfile whisper.cpp/Dockerfile
 fi
 
-# Check if Qwen 2.5 1.5B model exists
-if [ -f "./src/llms/models/qwen2.5-1.5b-instruct-q6_k.gguf" ]; then
-    echo "Qwen 2.5 1.5B model already exists. Skipping download."
-else
-    echo "Downloading Qwen 2.5 1.5B model..."
-    curl -L "https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct-GGUF/resolve/main/qwen2.5-1.5b-instruct-q6_k.gguf" -o "./src/llms/models/qwen2.5-1.5b-instruct-q6_k.gguf"
-fi
-
 echo "Setup completed successfully!"

@@ -7,14 +7,12 @@
  */
 
 import { readFile, writeFile, unlink } from 'node:fs/promises'
-import { callLlama } from '../llms/llama.js'
 import { callOllama } from '../llms/ollama.js'
 import { callChatGPT } from '../llms/chatgpt.js'
 import { callClaude } from '../llms/claude.js'
 import { callGemini } from '../llms/gemini.js'
 import { callCohere } from '../llms/cohere.js'
 import { callMistral } from '../llms/mistral.js'
-import { callOcto } from '../llms/octo.js'
 import { callFireworks } from '../llms/fireworks.js'
 import { callTogether } from '../llms/together.js'
 import { callGroq } from '../llms/groq.js'
@@ -47,14 +45,12 @@ import type { LLMServices, ProcessingOptions, LLMFunction, LLMFunctions } from '
  * @param {string} frontMatter - YAML front matter content to include in the output
  * 
  * @param {LLMServices} [llmServices] - The LLM service to use:
- *   - llama: Node Llama for local inference
  *   - ollama: Ollama for local inference
  *   - chatgpt: OpenAI's ChatGPT
  *   - claude: Anthropic's Claude
  *   - gemini: Google's Gemini
  *   - cohere: Cohere
  *   - mistral: Mistral AI
- *   - octo: OctoAI
  *   - fireworks: Fireworks AI
  *   - together: Together AI
  *   - groq: Groq
@@ -94,16 +90,14 @@ export async function runLLM(
 
   // Map of available LLM service handlers
   const LLM_FUNCTIONS: LLMFunctions = {
-    llama: callLlama,           // Local inference with Node Llama
     ollama: callOllama,         // Local inference with Ollama
     chatgpt: callChatGPT,       // OpenAI's ChatGPT
     claude: callClaude,         // Anthropic's Claude
     gemini: callGemini,         // Google's Gemini
     cohere: callCohere,         // Cohere
     mistral: callMistral,       // Mistral AI
-    octo: callOcto,             // OctoAI
-    fireworks: callFireworks,    // Fireworks AI
-    together: callTogether,      // Together AI
+    fireworks: callFireworks,   // Fireworks AI
+    together: callTogether,     // Together AI
     groq: callGroq,             // Groq
   }
 

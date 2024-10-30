@@ -122,14 +122,12 @@ export async function handleInteractivePrompt(
       message: 'Select the Language Model (LLM) you want to use:',
       choices: [
         { name: 'Skip LLM Processing', value: null },
-        { name: 'node-llama-cpp (local inference)', value: 'llama' },
         { name: 'Ollama (local inference)', value: 'ollama' },
         { name: 'OpenAI ChatGPT', value: 'chatgpt' },
         { name: 'Anthropic Claude', value: 'claude' },
         { name: 'Google Gemini', value: 'gemini' },
         { name: 'Cohere', value: 'cohere' },
         { name: 'Mistral', value: 'mistral' },
-        { name: 'OctoAI', value: 'octo' },
         { name: 'Fireworks AI', value: 'fireworks' },
         { name: 'Together AI', value: 'together' },
         { name: 'Groq', value: 'groq' },
@@ -143,13 +141,6 @@ export async function handleInteractivePrompt(
       choices: (answers: InquirerAnswers) => {
         // Return appropriate model choices based on selected LLM service
         switch (answers.llmServices) {
-          case 'llama':
-            return [
-              { name: 'LLAMA 3 8B Q4 Model', value: 'LLAMA_3_1_8B_Q4_MODEL' },
-              { name: 'LLAMA 3 8B Q6 Model', value: 'LLAMA_3_1_8B_Q6_MODEL' },
-              { name: 'GEMMA 2 2B Q4 Model', value: 'GEMMA_2_2B_Q4_MODEL' },
-              { name: 'GEMMA 2 2B Q6 Model', value: 'GEMMA_2_2B_Q6_MODEL' },
-            ]
           case 'ollama':
             return [
               { name: 'LLAMA 3 2 1B', value: 'LLAMA_3_2_1B' },
@@ -184,16 +175,6 @@ export async function handleInteractivePrompt(
               { name: 'Mixtral 8x22b', value: 'MIXTRAL_8x22b' },
               { name: 'Mistral Large', value: 'MISTRAL_LARGE' },
               { name: 'Mistral Nemo', value: 'MISTRAL_NEMO' },
-            ]
-          case 'octo':
-            return [
-              { name: 'LLAMA 3 1 8B', value: 'LLAMA_3_1_8B' },
-              { name: 'LLAMA 3 1 70B', value: 'LLAMA_3_1_70B' },
-              { name: 'LLAMA 3 1 405B', value: 'LLAMA_3_1_405B' },
-              { name: 'Mistral 7B', value: 'MISTRAL_7B' },
-              { name: 'Mixtral 8x7b', value: 'MIXTRAL_8X_7B' },
-              { name: 'Nous Hermes Mixtral 8x7b', value: 'NOUS_HERMES_MIXTRAL_8X_7B' },
-              { name: 'Wizard 2 8x22b', value: 'WIZARD_2_8X_22B' },
             ]
           case 'fireworks':
             return [
@@ -234,13 +215,11 @@ export async function handleInteractivePrompt(
       },
       when: (answers: InquirerAnswers) =>
         [
-          'llama',
           'ollama',
           'chatgpt',
           'claude',
           'cohere',
           'mistral',
-          'octo',
           'fireworks',
           'together',
           'groq',

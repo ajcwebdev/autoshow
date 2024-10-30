@@ -2,7 +2,7 @@
 
 import { writeFile, readFile } from 'node:fs/promises'
 import { env } from 'node:process'
-import { log, wait } from '../models.js'
+import { l, wait, err } from '../globals.js'
 import type { ProcessingOptions, DeepgramResponse } from '../types.js'
 
 /**
@@ -13,10 +13,10 @@ import type { ProcessingOptions, DeepgramResponse } from '../types.js'
  * @throws {Error} - If an error occurs during transcription.
  */
 export async function callDeepgram(options: ProcessingOptions, finalPath: string): Promise<string> {
-  log(wait('\n  Using Deepgram for transcription...\n'))
-  // log(`Options received in callDeepgram:\n`)
-  // log(options)
-  // log(`finalPath:`, finalPath)
+  l(wait('\n  Using Deepgram for transcription...\n'))
+  // l(`Options received in callDeepgram:\n`)
+  // l(options)
+  // l(`finalPath:`, finalPath)
 
   // Check if the DEEPGRAM_API_KEY environment variable is set
   if (!env.DEEPGRAM_API_KEY) {
@@ -77,16 +77,16 @@ export async function callDeepgram(options: ProcessingOptions, finalPath: string
 
     // Write the formatted transcript to a file
     await writeFile(`${finalPath}.txt`, txtContent)
-    log(wait(`\n  Transcript saved:\n    - ${finalPath}.txt\n`))
+    l(wait(`\n  Transcript saved:\n    - ${finalPath}.txt\n`))
 
     // Create an empty LRC file to prevent cleanup errors
     await writeFile(`${finalPath}.lrc`, '')
-    log(wait(`\n  Empty LRC file created:\n    - ${finalPath}.lrc\n`))
+    l(wait(`\n  Empty LRC file created:\n    - ${finalPath}.lrc\n`))
 
     return txtContent
   } catch (error) {
     // Log any errors that occur during the transcription process
-    console.error(`Error processing the transcription: ${(error as Error).message}`)
+    err(`Error processing the transcription: ${(error as Error).message}`)
     throw error // Re-throw the error for handling in the calling function
   }
 }

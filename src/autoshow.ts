@@ -18,8 +18,9 @@ import { processPlaylist } from './commands/processPlaylist.js'
 import { processURLs } from './commands/processURLs.js'
 import { processFile } from './commands/processFile.js'
 import { processRSS } from './commands/processRSS.js'
+import { validateOption } from './utils/validateOption.js'
 import { argv, exit } from 'node:process'
-import { log, opts, final, ACTION_OPTIONS, LLM_OPTIONS, TRANSCRIPT_OPTIONS } from './models.js'
+import { l, err, opts, final, ACTION_OPTIONS, LLM_OPTIONS, TRANSCRIPT_OPTIONS } from './globals.js'
 import type { ProcessingOptions, HandlerFunction, LLMServices, TranscriptServices } from './types.js'
 
 // Initialize the command-line interface using Commander.js
@@ -59,11 +60,9 @@ program
   .option('--claude [model]', 'Use Claude for processing with optional model specification')
   .option('--cohere [model]', 'Use Cohere for processing with optional model specification')
   .option('--mistral [model]', 'Use Mistral for processing')
-  .option('--octo [model]', 'Use Octo for processing')
   .option('--fireworks [model]', 'Use Fireworks AI for processing with optional model specification')
   .option('--together [model]', 'Use Together AI for processing with optional model specification')
   .option('--groq [model]', 'Use Groq for processing with optional model specification')
-  .option('--llama [model]', 'Use Node Llama for processing with optional model specification')
   .option('--ollama [model]', 'Use Ollama for processing with optional model specification')
   .option('--gemini [model]', 'Use Gemini for processing with optional model specification')
   // Utility options
@@ -85,31 +84,6 @@ Report Issues: https://github.com/ajcwebdev/autoshow/issues
   )
 
 /**
- * Helper function to validate that only one option from a list is provided.
- * Prevents users from specifying multiple conflicting options simultaneously.
- * 
- * @param optionKeys - The list of option keys to check.
- * @param options - The options object.
- * @param errorMessage - The prefix of the error message.
- * @returns The selected option or undefined.
- */
-function getSingleOption(
-  optionKeys: string[],
-  options: ProcessingOptions,
-  errorMessage: string
-): string | undefined {
-  // Filter out which options from the provided list are actually set
-  const selectedOptions = optionKeys.filter((opt) => options[opt as keyof ProcessingOptions])
-  
-  // If more than one option is selected, throw an error
-  if (selectedOptions.length > 1) {
-    console.error(`Error: Multiple ${errorMessage} provided (${selectedOptions.join(', ')}). Please specify only one.`)
-    exit(1)
-  }
-  return selectedOptions[0] as string | undefined
-}
-
-/**
  * Main action for the program.
  * Handles the processing of options and executes the appropriate command handler.
  * 
@@ -117,9 +91,9 @@ function getSingleOption(
  */
 program.action(async (options: ProcessingOptions) => {
   // Log received options for debugging purposes
-  log(opts(`Options received at beginning of command:\n`))
-  log(options)
-  log(``)
+  l(opts(`Options received at beginning of command:\n`))
+  l(opts(JSON.stringify(options, null, 2)))
+  l(``)
 
   // Define mapping of action types to their handler functions
   const PROCESS_HANDLERS: Record<string, HandlerFunction> = {
@@ -147,17 +121,14 @@ program.action(async (options: ProcessingOptions) => {
   }
 
   // Validate and get single options for action, LLM, and transcription
-  const action = getSingleOption(ACTION_OPTIONS, options, 'input option')
-  const llmKey = getSingleOption(LLM_OPTIONS, options, 'LLM option')
+  const action = validateOption(ACTION_OPTIONS, options, 'input option')
+  const llmKey = validateOption(LLM_OPTIONS, options, 'LLM option')
   const llmServices = llmKey as LLMServices | undefined
-  const transcriptKey = getSingleOption(TRANSCRIPT_OPTIONS, options, 'transcription option')
-  const transcriptServices: TranscriptServices | undefined = transcriptKey as TranscriptServices | undefined
-
-  // Set default transcription service to whisper if none provided
-  const finalTranscriptServices: TranscriptServices = transcriptServices || 'whisper'
+  const transcriptKey = validateOption(TRANSCRIPT_OPTIONS, options, 'transcription option')
+  const transcriptServices: TranscriptServices = (transcriptKey as TranscriptServices) || 'whisper'
 
   // Set default Whisper model to 'large-v3-turbo' if whisper is selected but no model specified
-  if (finalTranscriptServices === 'whisper' && !options.whisper) {
+  if (transcriptServices === 'whisper' && !options.whisper) {
     options.whisper = 'large-v3-turbo'
   }
 
@@ -169,16 +140,16 @@ program.action(async (options: ProcessingOptions) => {
         options,
         options[action as keyof ProcessingOptions] as string,
         llmServices,
-        finalTranscriptServices
+        transcriptServices
       )
       // Log success message
-      log(final(`\n================================================================================================`))
-      log(final(`  ${action} Processing Completed Successfully.`))
-      log(final(`================================================================================================\n`))
+      l(final(`\n================================================================================================`))
+      l(final(`  ${action} Processing Completed Successfully.`))
+      l(final(`================================================================================================\n`))
       exit(0)
     } catch (error) {
       // Log error and exit if processing fails
-      console.error(`Error processing ${action}:`, (error as Error).message)
+      err(`Error processing ${action}:`, (error as Error).message)
       exit(1)
     }
   }
@@ -186,7 +157,7 @@ program.action(async (options: ProcessingOptions) => {
 
 // Set up error handling for unknown commands
 program.on('command:*', function () {
-  console.error(`Error: Invalid command '${program.args.join(' ')}'. Use --help to see available commands.`)
+  err(`Error: Invalid command '${program.args.join(' ')}'. Use --help to see available commands.`)
   exit(1)
 })
 

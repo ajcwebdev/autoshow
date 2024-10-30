@@ -8,13 +8,10 @@
  */
 
 import { callWhisper } from '../transcription/whisper.js'
-import { callWhisperPython } from '../transcription/whisperPython.js'
-import { callWhisperDocker } from '../transcription/whisperDocker.js'
-import { callWhisperDiarization } from '../transcription/whisperDiarization.js'
 import { callDeepgram } from '../transcription/deepgram.js'
 import { callAssembly } from '../transcription/assembly.js'
-import { log, step } from '../models.js'
-import { TranscriptServices, ProcessingOptions } from '../types.js'
+import { l, step } from '../globals.js'
+import { TranscriptServices, ProcessingOptions, WhisperTranscriptServices } from '../types.js'
 
 /**
  * Orchestrates the transcription process using the specified service.
@@ -87,7 +84,7 @@ export async function runTranscription(
   frontMatter: string,
   transcriptServices?: TranscriptServices
 ): Promise<void> {
-  log(step(`\nStep 3 - Running transcription on audio file using ${transcriptServices}...`))
+  l(step(`\nStep 3 - Running transcription on audio file using ${transcriptServices}...`))
 
   // Route to appropriate transcription service
   switch (transcriptServices) {
@@ -102,23 +99,11 @@ export async function runTranscription(
       break
 
     case 'whisper':
-      // Local Whisper.cpp implementation
-      await callWhisper(options, finalPath)
-      break
-
     case 'whisperDocker':
-      // Containerized Whisper.cpp
-      await callWhisperDocker(options, finalPath)
-      break
-
     case 'whisperPython':
-      // Original Python implementation
-      await callWhisperPython(options, finalPath)
-      break
-
     case 'whisperDiarization':
-      // Whisper with speaker detection
-      await callWhisperDiarization(options, finalPath)
+      // Use the unified callWhisper function for all Whisper options
+      await callWhisper(options, finalPath, transcriptServices as WhisperTranscriptServices)
       break
 
     default:

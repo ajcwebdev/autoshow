@@ -5,13 +5,12 @@
  * @packageDocumentation
  */
 
-import { checkDependencies } from '../utils/checkDependencies.js'
 import { generateMarkdown } from '../utils/generateMarkdown.js'
 import { downloadAudio } from '../utils/downloadAudio.js'
 import { runTranscription } from '../utils/runTranscription.js'
 import { runLLM } from '../utils/runLLM.js'
 import { cleanUpFiles } from '../utils/cleanUpFiles.js'
-import { log, opts, wait } from '../models.js'
+import { l, err, opts } from '../globals.js'
 import type { LLMServices, TranscriptServices, ProcessingOptions } from '../types.js'
 
 /**
@@ -37,13 +36,10 @@ export async function processVideo(
   transcriptServices?: TranscriptServices
 ): Promise<void> {
   // Log the processing parameters for debugging purposes
-  log(opts('Parameters passed to processVideo:\n'))
-  log(wait(`  - llmServices: ${llmServices}\n  - transcriptServices: ${transcriptServices}\n`))
+  l(opts('Parameters passed to processVideo:\n'))
+  l(opts(`  - llmServices: ${llmServices}\n  - transcriptServices: ${transcriptServices}\n`))
 
   try {
-    // Verify that required system dependencies (yt-dlp) are installed
-    await checkDependencies(['yt-dlp'])
-
     // Generate markdown file with video metadata and get file paths
     const { frontMatter, finalPath, filename } = await generateMarkdown(options, url)
 
@@ -62,7 +58,7 @@ export async function processVideo(
     }
   } catch (error) {
     // Log the error details and re-throw for upstream handling
-    console.error('Error processing video:', (error as Error).message)
+    err('Error processing video:', (error as Error).message)
     throw error
   }
 }

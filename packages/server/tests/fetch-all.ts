@@ -1,7 +1,8 @@
-// packages/server/tests/fetch-local.js
+// server/fetch-all.ts
 
 import fs from 'fs/promises'
 import path from 'path'
+import { l, err } from '../../../src/globals.js'
 
 const BASE_URL = 'http://localhost:3000'
 const OUTPUT_DIR = 'content'
@@ -27,7 +28,7 @@ const requests = [
     data: {
       playlistUrl: 'https://www.youtube.com/playlist?list=PLCVnrVv4KhXPz0SoAVu8Rc1emAdGPbSbr',
       whisperModel: 'tiny',
-      llm: 'llama',
+      llm: 'ollama',
     },
     endpoint: '/playlist',
     outputFiles: ['FILE_03A.md', 'FILE_03B.md'],
@@ -37,7 +38,7 @@ const requests = [
       playlistUrl: 'https://www.youtube.com/playlist?list=PLCVnrVv4KhXPz0SoAVu8Rc1emAdGPbSbr',
       prompts: ['titles', 'mediumChapters'],
       whisperModel: 'tiny',
-      llm: 'llama',
+      llm: 'ollama',
     },
     endpoint: '/playlist',
     outputFiles: ['FILE_04A.md', 'FILE_04B.md'],
@@ -62,7 +63,7 @@ const requests = [
     data: {
       filePath: 'content/example-urls.md',
       whisperModel: 'tiny',
-      llm: 'llama',
+      llm: 'ollama',
     },
     endpoint: '/urls',
     outputFiles: ['FILE_07A.md', 'FILE_07B.md'],
@@ -72,7 +73,7 @@ const requests = [
       filePath: 'content/example-urls.md',
       prompts: ['titles', 'mediumChapters'],
       whisperModel: 'tiny',
-      llm: 'llama',
+      llm: 'ollama',
     },
     endpoint: '/urls',
     outputFiles: ['FILE_08A.md', 'FILE_08B.md'],
@@ -97,7 +98,7 @@ const requests = [
     data: {
       filePath: 'content/audio.mp3',
       whisperModel: 'tiny',
-      llm: 'llama',
+      llm: 'ollama',
     },
     endpoint: '/file',
     outputFiles: ['FILE_11.md'],
@@ -107,7 +108,7 @@ const requests = [
       filePath: 'content/audio.mp3',
       prompts: ['titles'],
       whisperModel: 'tiny',
-      llm: 'llama',
+      llm: 'ollama',
     },
     endpoint: '/file',
     outputFiles: ['FILE_12.md'],
@@ -132,7 +133,7 @@ const requests = [
     data: {
       rssUrl: 'https://ajcwebdev.substack.com/feed/',
       whisperModel: 'tiny',
-      llm: 'llama',
+      llm: 'ollama',
     },
     endpoint: '/rss',
     outputFiles: ['FILE_15.md'],
@@ -169,7 +170,7 @@ const requests = [
     data: {
       youtubeUrl: 'https://www.youtube.com/watch?v=MORMZXEaONk',
       whisperModel: 'tiny',
-      llm: 'llama',
+      llm: 'ollama',
     },
     endpoint: '/video',
     outputFiles: ['FILE_19.md'],
@@ -177,7 +178,7 @@ const requests = [
   {
     data: {
       youtubeUrl: 'https://www.youtube.com/watch?v=MORMZXEaONk',
-      whisperModel: 'tiny',
+      llm: 'chatgpt',
     },
     endpoint: '/video',
     outputFiles: ['FILE_20.md'],
@@ -185,7 +186,8 @@ const requests = [
   {
     data: {
       youtubeUrl: 'https://www.youtube.com/watch?v=MORMZXEaONk',
-      prompts: ['titles', 'mediumChapters'],
+      llm: 'chatgpt',
+      llmModel: 'GPT_4o_MINI',
     },
     endpoint: '/video',
     outputFiles: ['FILE_21.md'],
@@ -193,7 +195,7 @@ const requests = [
   {
     data: {
       youtubeUrl: 'https://www.youtube.com/watch?v=MORMZXEaONk',
-      prompts: ['titles', 'summary', 'shortChapters', 'takeaways', 'questions'],
+      llm: 'claude',
     },
     endpoint: '/video',
     outputFiles: ['FILE_22.md'],
@@ -201,12 +203,149 @@ const requests = [
   {
     data: {
       youtubeUrl: 'https://www.youtube.com/watch?v=MORMZXEaONk',
-      prompts: ['titles', 'summary', 'shortChapters', 'takeaways', 'questions'],
-      whisperModel: 'tiny',
-      llm: 'llama',
+      llm: 'claude',
+      llmModel: 'CLAUDE_3_SONNET',
     },
     endpoint: '/video',
     outputFiles: ['FILE_23.md'],
+  },
+  {
+    data: {
+      youtubeUrl: 'https://www.youtube.com/watch?v=MORMZXEaONk',
+      llm: 'gemini',
+    },
+    endpoint: '/video',
+    outputFiles: ['FILE_24.md'],
+  },
+  {
+    data: {
+      youtubeUrl: 'https://www.youtube.com/watch?v=MORMZXEaONk',
+      llm: 'gemini',
+      llmModel: 'GEMINI_1_5_FLASH',
+    },
+    endpoint: '/video',
+    outputFiles: ['FILE_25.md'],
+  },
+  {
+    data: {
+      youtubeUrl: 'https://www.youtube.com/watch?v=MORMZXEaONk',
+      llm: 'cohere',
+    },
+    endpoint: '/video',
+    outputFiles: ['FILE_26.md'],
+  },
+  {
+    data: {
+      youtubeUrl: 'https://www.youtube.com/watch?v=MORMZXEaONk',
+      llm: 'cohere',
+      llmModel: 'COMMAND_R_PLUS',
+    },
+    endpoint: '/video',
+    outputFiles: ['FILE_27.md'],
+  },
+  {
+    data: {
+      youtubeUrl: 'https://www.youtube.com/watch?v=MORMZXEaONk',
+      llm: 'mistral',
+    },
+    endpoint: '/video',
+    outputFiles: ['FILE_28.md'],
+  },
+  {
+    data: {
+      youtubeUrl: 'https://www.youtube.com/watch?v=MORMZXEaONk',
+      llm: 'mistral',
+      llmModel: 'MIXTRAL_8x7b',
+    },
+    endpoint: '/video',
+    outputFiles: ['FILE_29.md'],
+  },
+  {
+    data: {
+      youtubeUrl: 'https://www.youtube.com/watch?v=MORMZXEaONk',
+      whisperModel: 'tiny',
+    },
+    endpoint: '/video',
+    outputFiles: ['FILE_32.md'],
+  },
+  {
+    data: {
+      youtubeUrl: 'https://www.youtube.com/watch?v=MORMZXEaONk',
+      transcriptServices: 'deepgram',
+    },
+    endpoint: '/video',
+    outputFiles: ['FILE_33.md'],
+  },
+  {
+    data: {
+      youtubeUrl: 'https://www.youtube.com/watch?v=MORMZXEaONk',
+      transcriptServices: 'deepgram',
+      llm: 'ollama',
+    },
+    endpoint: '/video',
+    outputFiles: ['FILE_34.md'],
+  },
+  {
+    data: {
+      youtubeUrl: 'https://www.youtube.com/watch?v=MORMZXEaONk',
+      transcriptServices: 'assembly',
+    },
+    endpoint: '/video',
+    outputFiles: ['FILE_35.md'],
+  },
+  {
+    data: {
+      youtubeUrl: 'https://www.youtube.com/watch?v=MORMZXEaONk',
+      transcriptServices: 'assembly',
+      llm: 'ollama',
+    },
+    endpoint: '/video',
+    outputFiles: ['FILE_36.md'],
+  },
+  {
+    data: {
+      youtubeUrl: 'https://ajc.pics/audio/fsjam-short.mp3',
+      transcriptServices: 'assembly',
+      speakerLabels: true,
+    },
+    endpoint: '/video',
+    outputFiles: ['FILE_37.md'],
+  },
+  {
+    data: {
+      youtubeUrl: 'https://ajc.pics/audio/fsjam-short.mp3',
+      transcriptServices: 'assembly',
+      speakerLabels: true,
+      llm: 'ollama',
+    },
+    endpoint: '/video',
+    outputFiles: ['FILE_38.md'],
+  },
+  {
+    data: {
+      youtubeUrl: 'https://www.youtube.com/watch?v=MORMZXEaONk',
+      prompts: ['titles', 'mediumChapters'],
+    },
+    endpoint: '/video',
+    outputFiles: ['FILE_39.md'],
+  },
+  {
+    data: {
+      youtubeUrl: 'https://www.youtube.com/watch?v=MORMZXEaONk',
+      prompts: ['titles', 'summary', 'shortChapters', 'takeaways', 'questions'],
+    },
+    endpoint: '/video',
+    outputFiles: ['FILE_40.md'],
+  },
+  {
+    data: {
+      youtubeUrl: 'https://www.youtube.com/watch?v=MORMZXEaONk',
+      prompts: ['titles', 'summary', 'shortChapters', 'takeaways', 'questions'],
+      whisperModel: 'tiny',
+      llm: 'ollama',
+    },
+    endpoint: '/video',
+    outputFiles: ['FILE_41.md'],
   },
 ]
 
@@ -222,12 +361,12 @@ const fetchRequest = async (request, index) => {
       },
       body: JSON.stringify(request.data),
     })
-    console.log(`\nRequest ${index + 1} response status:`, response.status)
+    l(`\nRequest ${index + 1} response status:`, response.status)
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`)
     }
     const result = await response.json()
-    console.log(`Request ${index + 1} result: ${result.message}`)
+    l(`Request ${index + 1} result: ${result.message}`)
 
     // Wait briefly to ensure files are written
     await new Promise((resolve) => setTimeout(resolve, 1000))
@@ -249,13 +388,13 @@ const fetchRequest = async (request, index) => {
         const newFileName = outputFiles[i]
         const newFilePath = path.join(OUTPUT_DIR, newFileName)
         await fs.rename(oldFilePath, newFilePath)
-        console.log(`\nFile renamed:\n  - Old: ${oldFilePath}\n  - New: ${newFilePath}`)
+        l(`\nFile renamed:\n  - Old: ${oldFilePath}\n  - New: ${newFilePath}`)
       }
     } else {
-      console.log('No new files to rename for this request.')
+      l('No new files to rename for this request.')
     }
   } catch (error) {
-    console.error(`Error in request ${index + 1}:`, error)
+    err(`Error in request ${index + 1}:`, error)
   }
 }
 

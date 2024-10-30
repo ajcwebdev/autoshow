@@ -48,8 +48,6 @@ export type ProcessingOptions = {
   cohere?: string
   /** Mistral model to use (e.g., 'MISTRAL_LARGE'). */
   mistral?: string
-  /** OctoAI model to use (e.g., 'LLAMA_3_1_8B'). */
-  octo?: string
   /** Fireworks model to use (e.g., ''). */
   fireworks?: string
   /** Together model to use (e.g., ''). */
@@ -58,8 +56,6 @@ export type ProcessingOptions = {
   groq?: string
   /** Ollama model to use for local inference (e.g., 'LLAMA_3_2_1B'). */
   ollama?: string
-  /** Llama model to use for local inference (e.g., 'LLAMA_3_1_8B'). */
-  llama?: string
   /** Gemini model to use (e.g., 'GEMINI_1_5_FLASH'). */
   gemini?: string
   /** Array of prompt sections to include (e.g., ['titles', 'summary']). */
@@ -256,6 +252,11 @@ export type TranscriptServices = 'whisper' | 'whisperDocker' | 'whisperPython' |
  */
 export type WhisperModelType = 'tiny' | 'tiny.en' | 'base' | 'base.en' | 'small' | 'small.en' | 'medium' | 'medium.en' | 'large-v1' | 'large-v2' | 'large-v3-turbo' | 'turbo'
 
+/**
+ * Whisper-specific transcription services.
+ */
+export type WhisperTranscriptServices = 'whisper' | 'whisperDocker' | 'whisperPython' | 'whisperDiarization'
+
 // LLM Types
 /**
  * Object containing different prompts, their instructions to the LLM, and expected example output.
@@ -270,7 +271,7 @@ export type PromptSection = {
 /**
  * Options for Language Models (LLMs) that can be used in the application.
  */
-export type LLMServices = 'chatgpt' | 'claude' | 'cohere' | 'mistral' | 'octo' | 'llama' | 'ollama' | 'gemini' | 'fireworks' | 'together' | 'groq'
+export type LLMServices = 'chatgpt' | 'claude' | 'cohere' | 'mistral' | 'ollama' | 'gemini' | 'fireworks' | 'together' | 'groq'
 
 /**
  * Options for LLM processing.
@@ -333,11 +334,6 @@ export type GeminiModelType = 'GEMINI_1_5_FLASH' | 'GEMINI_1_5_PRO'
 export type MistralModelType = 'MIXTRAL_8x7b' | 'MIXTRAL_8x22b' | 'MISTRAL_LARGE' | 'MISTRAL_NEMO'
 
 /**
- * Available OctoAI models.
- */
-export type OctoModelType = 'LLAMA_3_1_8B' | 'LLAMA_3_1_70B' | 'LLAMA_3_1_405B' | 'MISTRAL_7B' | 'MIXTRAL_8X_7B' | 'NOUS_HERMES_MIXTRAL_8X_7B' | 'WIZARD_2_8X_22B'
-
-/**
  * Available Fireworks models.
  */
 export type FireworksModelType = 'LLAMA_3_1_405B' | 'LLAMA_3_1_70B' | 'LLAMA_3_1_8B' | 'LLAMA_3_2_3B' | 'LLAMA_3_2_1B' | 'QWEN_2_5_72B'
@@ -351,11 +347,6 @@ export type TogetherModelType = 'LLAMA_3_2_3B' | 'LLAMA_3_1_405B' | 'LLAMA_3_1_7
  * Available Groq models.
  */
 export type GroqModelType = 'LLAMA_3_1_70B_VERSATILE' | 'LLAMA_3_1_8B_INSTANT' | 'LLAMA_3_2_1B_PREVIEW' | 'LLAMA_3_2_3B_PREVIEW' | 'MIXTRAL_8X7B_32768'
-
-/**
- * Local model configurations.
- */
-export type LlamaModelType = 'QWEN_2_5_1B' | 'QWEN_2_5_3B' | 'PHI_3_5' | 'LLAMA_3_2_1B' | 'GEMMA_2_2B'
 
 /**
  * Local model with Ollama.

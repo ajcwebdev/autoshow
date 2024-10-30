@@ -11,8 +11,7 @@ import { exec, execFile } from 'node:child_process'
 import { promisify } from 'node:util'
 import { readFile, access } from 'node:fs/promises'
 import { fileTypeFromBuffer } from 'file-type'
-import { checkDependencies } from './checkDependencies.js'
-import { log, step, success, wait } from '../models.js'
+import { l, err, step, success, wait } from '../globals.js'
 import type { SupportedFileType, ProcessingOptions } from '../types.js'
 
 // Promisify node:child_process functions for async/await usage
@@ -86,10 +85,8 @@ export async function downloadAudio(
 
   // Handle online content (YouTube, RSS feeds, etc.)
   if (options.video || options.playlist || options.urls || options.rss) {
-    log(step('\nStep 2 - Downloading URL audio...\n'))
+    l(step('\nStep 2 - Downloading URL audio...\n'))
     try {
-      // Verify yt-dlp is available
-      await checkDependencies(['yt-dlp'])
       // Download and convert audio using yt-dlp
       const { stderr } = await execFilePromise('yt-dlp', [
         '--no-warnings',           // Suppress warning messages
@@ -103,11 +100,11 @@ export async function downloadAudio(
       ])
       // Log any non-fatal warnings from yt-dlp
       if (stderr) {
-        console.error(`yt-dlp warnings: ${stderr}`)
+        err(`yt-dlp warnings: ${stderr}`)
       }
-      log(success(`  Audio downloaded successfully:\n    - ${outputPath}`))
+      l(success(`  Audio downloaded successfully:\n    - ${outputPath}`))
     } catch (error) {
-      console.error(
+      err(
         `Error downloading audio: ${
           error instanceof Error ? (error as Error).message : String(error)
         }`
@@ -117,7 +114,7 @@ export async function downloadAudio(
   }
   // Handle local file processing
   else if (options.file) {
-    log(step('\nStep 2 - Processing file audio...\n'))
+    l(step('\nStep 2 - Processing file audio...\n'))
     // Define supported media formats
     const supportedFormats: Set<SupportedFileType> = new Set([
       // Audio formats
@@ -137,14 +134,14 @@ export async function downloadAudio(
           fileType ? `Unsupported file type: ${fileType.ext}` : 'Unable to determine file type'
         )
       }
-      log(wait(`  File type detected as ${fileType.ext}, converting to WAV...\n`))
+      l(wait(`  File type detected as ${fileType.ext}, converting to WAV...\n`))
       // Convert to standardized WAV format using ffmpeg
       await execPromise(
         `ffmpeg -i "${input}" -ar 16000 -ac 1 -c:a pcm_s16le "${outputPath}"`
       )
-      log(success(`  File converted to WAV format successfully:\n    - ${outputPath}`))
+      l(success(`  File converted to WAV format successfully:\n    - ${outputPath}`))
     } catch (error) {
-      console.error(
+      err(
         `Error processing local file: ${
           error instanceof Error ? (error as Error).message : String(error)
         }`

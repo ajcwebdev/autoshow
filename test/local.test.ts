@@ -36,14 +36,14 @@ const commands = [
     newName: 'FILE_04.md'
   },
   {
-    // Process local audio file with title prompts, Whisper 'tiny' model, and Llama.
-    cmd: 'npm run as -- --file "content/audio.mp3" --prompt titles --whisper tiny --llama',
-    expectedFile: 'audio-llama-shownotes.md',
+    // Process local audio file with title prompts, Whisper 'tiny' model, and Ollama.
+    cmd: 'npm run as -- --file "content/audio.mp3" --prompt titles --whisper tiny --ollama',
+    expectedFile: 'audio-ollama-shownotes.md',
     newName: 'FILE_05.md'
   },
   {
-    // Process a local audio file with Ollama using LLAMA_3_2_3B model.
-    cmd: 'npm run as -- --file "content/audio.mp3" --ollama LLAMA_3_2_3B',
+    // Process a local audio file with Ollama using LLAMA_3_2_1B model.
+    cmd: 'npm run as -- --file "content/audio.mp3" --ollama LLAMA_3_2_1B',
     expectedFile: 'audio-ollama-shownotes.md',
     newName: 'FILE_06.md'
   },

@@ -5,9 +5,25 @@
  * @packageDocumentation
  */
 
+import { XMLParser } from 'fast-xml-parser'
+import { exec, execFile } from 'node:child_process'
+import { promisify } from 'node:util'
 import chalk from 'chalk'
 import type { ChalkInstance } from 'chalk'
-import type { WhisperModelType, ChatGPTModelType, ClaudeModelType, CohereModelType, GeminiModelType, MistralModelType, OctoModelType, LlamaModelType, OllamaModelType, TogetherModelType, FireworksModelType, GroqModelType } from './types.js'
+import type { WhisperModelType, ChatGPTModelType, ClaudeModelType, CohereModelType, GeminiModelType, MistralModelType, OllamaModelType, TogetherModelType, FireworksModelType, GroqModelType } from './types.js'
+
+export const execPromise = promisify(exec)
+export const execFilePromise = promisify(execFile)
+
+/**
+ * Configure XML parser for RSS feed processing
+ * Handles attributes without prefixes and allows boolean values
+ */
+export const parser = new XMLParser({
+  ignoreAttributes: false,
+  attributeNamePrefix: '',
+  allowBooleanAttributes: true,
+})
 
 /**
  * Chalk styling for step indicators in the CLI
@@ -49,7 +65,13 @@ export const final: ChalkInstance = chalk.bold.italic
  * Convenience export for console.log
  * @type {typeof console.log}
  */
-export const log: typeof console.log = console.log
+export const l: typeof console.log = console.log
+
+/**
+ * Convenience export for console.error
+ * @type {typeof console.log}
+ */
+export const err: typeof console.error = console.error
 
 /**
  * Available action options for content processing
@@ -61,7 +83,7 @@ export const ACTION_OPTIONS = ['video', 'playlist', 'urls', 'file', 'rss']
  * Available LLM service options
  * @type {string[]}
  */
-export const LLM_OPTIONS = ['chatgpt', 'claude', 'cohere', 'mistral', 'octo', 'llama', 'ollama', 'gemini', 'fireworks', 'together', 'groq']
+export const LLM_OPTIONS = ['chatgpt', 'claude', 'cohere', 'mistral', 'ollama', 'gemini', 'fireworks', 'together', 'groq']
 
 /**
  * Available transcription service options
@@ -160,20 +182,6 @@ export const MISTRAL_MODELS: Record<MistralModelType, string> = {
 }
 
 /**
- * Mapping of OctoAI model identifiers to their API names.
- * @type {Record<OctoModelType, string>}
- */
-export const OCTO_MODELS: Record<OctoModelType, string> = {
-  LLAMA_3_1_8B: "meta-llama-3.1-8b-instruct",
-  LLAMA_3_1_70B: "meta-llama-3.1-70b-instruct",
-  LLAMA_3_1_405B: "meta-llama-3.1-405b-instruct",
-  MISTRAL_7B: "mistral-7b-instruct",
-  MIXTRAL_8X_7B: "mixtral-8x7b-instruct",
-  NOUS_HERMES_MIXTRAL_8X_7B: "nous-hermes-2-mixtral-8x7b-dpo",
-  WIZARD_2_8X_22B: "wizardlm-2-8x22b",
-}
-
-/**
  * Mapping of Fireworks model identifiers to their API names.
  * @type {Record<FireworksModelType, string>}
  */
@@ -211,33 +219,6 @@ export const GROQ_MODELS: Record<GroqModelType, string> = {
   LLAMA_3_2_1B_PREVIEW: 'llama-3.2-1b-preview',
   LLAMA_3_2_3B_PREVIEW: 'llama-3.2-3b-preview',
   MIXTRAL_8X7B_32768: 'mixtral-8x7b-32768',
-}
-
-/**
- * Mapping of local model identifiers to their filenames and download URLs.
- * @type {Record<LlamaModelType, {filename: string, url: string}>}
- */
-export const LLAMA_MODELS: Record<LlamaModelType, {filename: string, url: string}> = {
-  QWEN_2_5_1B: {
-    filename: "qwen2.5-1.5b-instruct-q6_k.gguf",
-    url: "https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct-GGUF/resolve/main/qwen2.5-1.5b-instruct-q6_k.gguf"
-  },
-  QWEN_2_5_3B: {
-    filename: "qwen2.5-3b-instruct-q6_k.gguf",
-    url: "https://huggingface.co/Qwen/Qwen2.5-3B-Instruct-GGUF/resolve/main/qwen2.5-3b-instruct-q6_k.gguf"
-  },
-  PHI_3_5: {
-    filename: "Phi-3.5-mini-instruct-Q6_K.gguf",
-    url: "https://huggingface.co/bartowski/Phi-3.5-mini-instruct-GGUF/resolve/main/Phi-3.5-mini-instruct-Q6_K.gguf"
-  },
-  LLAMA_3_2_1B: {
-    filename: "Llama-3.2-1B.i1-Q6_K.gguf",
-    url: "https://huggingface.co/mradermacher/Llama-3.2-1B-i1-GGUF/resolve/main/Llama-3.2-1B.i1-Q6_K.gguf"
-  },
-  GEMMA_2_2B: {
-    filename: "gemma-2-2b-it-Q6_K.gguf",
-    url: "https://huggingface.co/lmstudio-community/gemma-2-2b-it-GGUF/resolve/main/gemma-2-2b-it-Q6_K.gguf"
-  }
 }
 
 /**

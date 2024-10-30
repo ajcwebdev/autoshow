@@ -7,19 +7,17 @@
  */
 
 import { readFile, writeFile, unlink } from 'node:fs/promises'
-import { callLlama } from '../llms/llama.js'
 import { callOllama } from '../llms/ollama.js'
 import { callChatGPT } from '../llms/chatgpt.js'
 import { callClaude } from '../llms/claude.js'
 import { callGemini } from '../llms/gemini.js'
 import { callCohere } from '../llms/cohere.js'
 import { callMistral } from '../llms/mistral.js'
-import { callOcto } from '../llms/octo.js'
 import { callFireworks } from '../llms/fireworks.js'
 import { callTogether } from '../llms/together.js'
 import { callGroq } from '../llms/groq.js'
 import { generatePrompt } from '../llms/prompt.js'
-import { log, step, success, wait } from '../models.js'
+import { l, err, step, success, wait } from '../globals.js'
 import type { LLMServices, ProcessingOptions, LLMFunction, LLMFunctions } from '../types.js'
 
 /**
@@ -47,14 +45,12 @@ import type { LLMServices, ProcessingOptions, LLMFunction, LLMFunctions } from '
  * @param {string} frontMatter - YAML front matter content to include in the output
  * 
  * @param {LLMServices} [llmServices] - The LLM service to use:
- *   - llama: Node Llama for local inference
  *   - ollama: Ollama for local inference
  *   - chatgpt: OpenAI's ChatGPT
  *   - claude: Anthropic's Claude
  *   - gemini: Google's Gemini
  *   - cohere: Cohere
  *   - mistral: Mistral AI
- *   - octo: OctoAI
  *   - fireworks: Fireworks AI
  *   - together: Together AI
  *   - groq: Groq
@@ -68,9 +64,9 @@ import type { LLMServices, ProcessingOptions, LLMFunction, LLMFunctions } from '
  *   - File operations fail
  * 
  * @example
- * // Process with ChatGPT
+ * // Process with Ollama
  * await runLLM(
- *   { prompt: ['summary', 'highlights'], chatgpt: 'GPT_4' },
+ *   { prompt: ['summary', 'highlights'], ollama: 'LLAMA_3_2_1B' },
  *   'content/my-video',
  *   '---\ntitle: My Video\n---',
  *   'chatgpt'
@@ -90,20 +86,18 @@ export async function runLLM(
   frontMatter: string,
   llmServices?: LLMServices
 ): Promise<void> {
-  log(step(`\nStep 4 - Running LLM processing on transcript...\n`))
+  l(step(`\nStep 4 - Running LLM processing on transcript...\n`))
 
   // Map of available LLM service handlers
   const LLM_FUNCTIONS: LLMFunctions = {
-    llama: callLlama,           // Local inference with Node Llama
     ollama: callOllama,         // Local inference with Ollama
     chatgpt: callChatGPT,       // OpenAI's ChatGPT
     claude: callClaude,         // Anthropic's Claude
     gemini: callGemini,         // Google's Gemini
     cohere: callCohere,         // Cohere
     mistral: callMistral,       // Mistral AI
-    octo: callOcto,             // OctoAI
-    fireworks: callFireworks,    // Fireworks AI
-    together: callTogether,      // Together AI
+    fireworks: callFireworks,   // Fireworks AI
+    together: callTogether,     // Together AI
     groq: callGroq,             // Groq
   }
 
@@ -117,7 +111,7 @@ export async function runLLM(
     const promptAndTranscript = `${prompt}${transcript}`
 
     if (llmServices) {
-      log(wait(`  Processing with ${llmServices} Language Model...\n`))
+      l(wait(`  Processing with ${llmServices} Language Model...\n`))
 
       // Get the appropriate LLM handler function
       const llmFunction: LLMFunction = LLM_FUNCTIONS[llmServices]
@@ -128,7 +122,7 @@ export async function runLLM(
       // Process content with selected LLM
       const tempPath = `${finalPath}-${llmServices}-temp.md`
       await llmFunction(promptAndTranscript, tempPath, options[llmServices])
-      log(wait(`\n  Transcript saved to temporary file:\n    - ${tempPath}`))
+      l(success(`\n  Transcript saved to temporary file:\n    - ${tempPath}`))
 
       // Combine results with front matter and original transcript
       const showNotes = await readFile(tempPath, 'utf8')
@@ -139,15 +133,15 @@ export async function runLLM(
 
       // Clean up temporary file
       await unlink(tempPath)
-      log(success(`\n  Generated show notes saved to markdown file:\n    - ${finalPath}-${llmServices}-shownotes.md`))
+      l(success(`\n  Generated show notes saved to markdown file:\n    - ${finalPath}-${llmServices}-shownotes.md`))
     } else {
       // Handle case when no LLM is selected
-      log(wait('  No LLM selected, skipping processing...'))
+      l(wait('  No LLM selected, skipping processing...'))
       await writeFile(`${finalPath}-prompt.md`, `${frontMatter}\n${promptAndTranscript}`)
-      log(success(`\n  Prompt and transcript saved to markdown file:\n    - ${finalPath}-prompt.md`))
+      l(success(`\n  Prompt and transcript saved to markdown file:\n    - ${finalPath}-prompt.md`))
     }
   } catch (error) {
-    console.error(`Error running Language Model: ${(error as Error).message}`)
+    err(`Error running Language Model: ${(error as Error).message}`)
     throw error
   }
 }

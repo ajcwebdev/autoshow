@@ -10,7 +10,7 @@ import { downloadAudio } from '../utils/downloadAudio.js'
 import { runTranscription } from '../utils/runTranscription.js'
 import { runLLM } from '../utils/runLLM.js'
 import { cleanUpFiles } from '../utils/cleanUpFiles.js'
-import { log, opts, wait } from '../models.js'
+import { l, err, opts } from '../globals.js'
 import type { LLMServices, TranscriptServices, ProcessingOptions } from '../types.js'
 
 /**
@@ -38,8 +38,8 @@ export async function processFile(
   transcriptServices?: TranscriptServices
 ): Promise<void> {
   // Log the processing parameters for debugging purposes
-  log(opts('Parameters passed to processFile:\n'))
-  log(wait(`  - llmServices: ${llmServices}\n  - transcriptServices: ${transcriptServices}\n`))
+  l(opts('Parameters passed to processFile:\n'))
+  l(opts(`  - llmServices: ${llmServices}\n  - transcriptServices: ${transcriptServices}\n`))
 
   try {
     // Generate markdown file with file metadata and get file paths
@@ -60,7 +60,7 @@ export async function processFile(
     }
   } catch (error) {
     // Log the error and terminate the process with error code
-    console.error(`Error processing file: ${(error as Error).message}`)
+    err(`Error processing file: ${(error as Error).message}`)
     process.exit(1)
   }
 }

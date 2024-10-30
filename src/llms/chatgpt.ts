@@ -3,8 +3,7 @@
 import { writeFile } from 'node:fs/promises'
 import { env } from 'node:process'
 import { OpenAI } from 'openai'
-import { GPT_MODELS } from '../models.js'
-import { log, wait } from '../models.js'
+import { l, wait, err, GPT_MODELS } from '../globals.js'
 
 import type { LLMFunction, ChatGPTModelType } from '../types.js'
 
@@ -54,18 +53,18 @@ export const callChatGPT: LLMFunction = async (
       throw new Error('No content generated from the API')
     }
     
-    log(wait(`  - Finish Reason: ${finish_reason}\n  - ChatGPT Model: ${usedModel}`))
+    l(wait(`  - Finish Reason: ${finish_reason}\n  - ChatGPT Model: ${usedModel}`))
     
     // Check if usage information is available
     if (usage) {
       const { prompt_tokens, completion_tokens, total_tokens } = usage
-      log(wait(`  - Token Usage:\n    - ${prompt_tokens} prompt tokens\n    - ${completion_tokens} completion tokens\n    - ${total_tokens} total tokens`))
+      l(wait(`  - Token Usage:\n    - ${prompt_tokens} prompt tokens\n    - ${completion_tokens} completion tokens\n    - ${total_tokens} total tokens`))
     } else {
-      log(wait("  - Token usage information not available"))
+      l(wait("  - Token usage information not available"))
     }
     
   } catch (error) {
-    console.error(`Error in callChatGPT: ${(error as Error).message}`)
+    err(`Error in callChatGPT: ${(error as Error).message}`)
     throw error // Re-throw the error for handling in the calling function
   }
 }

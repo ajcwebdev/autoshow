@@ -2,10 +2,8 @@
 
 import { writeFile } from 'node:fs/promises'
 import { env } from 'node:process'
-import { OLLAMA_MODELS } from '../models.js'
-import { log, wait } from '../models.js'
+import { OLLAMA_MODELS, l, err, wait } from '../globals.js'
 import { spawn } from 'child_process'
-
 import type { LLMFunction, OllamaModelType, OllamaResponse, OllamaTagsResponse } from '../types.js'
 
 /**
@@ -18,11 +16,15 @@ import type { LLMFunction, OllamaModelType, OllamaResponse, OllamaTagsResponse }
  * @returns A Promise that resolves when the processing is complete.
  * @throws {Error} - If an error occurs during processing.
  */
-export const callOllama: LLMFunction = async (promptAndTranscript: string, tempPath: string, modelName: string = 'LLAMA_3_2_1B') => {
+export const callOllama: LLMFunction = async (
+  promptAndTranscript: string,
+  tempPath: string,
+  modelName: string = 'LLAMA_3_2_3B'
+) => {
   try {
     // Map the model name to the Ollama model identifier
-    const ollamaModelName = OLLAMA_MODELS[modelName as OllamaModelType] || 'llama3.2:1b'
-    log(wait(`    - modelName: ${modelName}\n    - ollamaModelName: ${ollamaModelName}`))
+    const ollamaModelName = OLLAMA_MODELS[modelName as OllamaModelType] || 'llama3.2:3b'
+    l(wait(`    - modelName: ${modelName}\n    - ollamaModelName: ${ollamaModelName}`))
     
     // Get host and port from environment variables or use defaults
     const ollamaHost = env.OLLAMA_HOST || 'localhost'
@@ -39,14 +41,14 @@ export const callOllama: LLMFunction = async (promptAndTranscript: string, tempP
     }
 
     if (await checkServer()) {
-      log(wait('    - Ollama server is already running.'))
+      l(wait('\n  Ollama server is already running...'))
     } else {
       if (ollamaHost === 'ollama') {
         // Running inside Docker, do not attempt to start the server
         throw new Error('Ollama server is not running. Please ensure the Ollama server is running and accessible.')
       } else {
         // Not running in Docker, attempt to start the server
-        log(wait('    - Ollama server is not running. Attempting to start...'))
+        l(wait('\n  Ollama server is not running. Attempting to start...'))
         const ollamaProcess = spawn('ollama', ['serve'], {
           detached: true,
           stdio: 'ignore'
@@ -57,7 +59,7 @@ export const callOllama: LLMFunction = async (promptAndTranscript: string, tempP
         let attempts = 0
         while (attempts < 30) {  // Wait up to 30 seconds
           if (await checkServer()) {
-            log(wait('    - Ollama server is now ready.'))
+            l(wait('    - Ollama server is now ready.'))
             break
           }
           await new Promise(resolve => setTimeout(resolve, 1000))
@@ -78,7 +80,7 @@ export const callOllama: LLMFunction = async (promptAndTranscript: string, tempP
       const tagsData = await tagsResponse.json() as OllamaTagsResponse
       const isModelAvailable = tagsData.models.some(model => model.name === ollamaModelName)
       if (!isModelAvailable) {
-        log(wait(`\n  Model ${ollamaModelName} is not available, pulling the model...`))
+        l(wait(`\n  Model ${ollamaModelName} is not available, pulling the model...`))
         const pullResponse = await fetch(`http://${ollamaHost}:${ollamaPort}/api/pull`, {
           method: 'POST',
           headers: {
@@ -104,23 +106,23 @@ export const callOllama: LLMFunction = async (promptAndTranscript: string, tempP
             try {
               const response = JSON.parse(line)
               if (response.status === 'success') {
-                log(wait(`    - Model ${ollamaModelName} has been pulled successfully...\n`))
+                l(wait(`    - Model ${ollamaModelName} has been pulled successfully...\n`))
                 break
               }
             } catch (parseError) {
-              console.error(`Error parsing JSON: ${parseError}`)
+              err(`Error parsing JSON: ${parseError}`)
             }
           }
         }
       } else {
-        log(wait(`\n  Model ${ollamaModelName} is already available...\n`))
+        l(wait(`\n  Model ${ollamaModelName} is already available...\n`))
       }
     } catch (error) {
-      console.error(`Error checking/pulling model: ${error instanceof Error ? error.message : String(error)}`)
+      err(`Error checking/pulling model: ${error instanceof Error ? error.message : String(error)}`)
       throw error
     }
     
-    log(wait(`    - Sending chat request to http://${ollamaHost}:${ollamaPort} using ${ollamaModelName} model`))
+    l(wait(`    - Sending chat request to http://${ollamaHost}:${ollamaPort} using ${ollamaModelName} model`))
     
     // Call the Ollama chat API with streaming enabled
     const response = await fetch(`http://${ollamaHost}:${ollamaPort}/api/chat`, {
@@ -162,17 +164,17 @@ export const callOllama: LLMFunction = async (promptAndTranscript: string, tempP
           const parsedResponse = JSON.parse(line) as OllamaResponse
           if (parsedResponse.message?.content) {
             if (isFirstChunk) {
-              log(wait(`    - Receiving streaming response from Ollama...`))
+              l(wait(`    - Receiving streaming response from Ollama...`))
               isFirstChunk = false
             }
             fullContent += parsedResponse.message.content
           }
 
           if (parsedResponse.done) {
-            log(wait(`    - Completed receiving response from Ollama.`))
+            l(wait(`    - Completed receiving response from Ollama.`))
           }
         } catch (parseError) {
-          console.error(`Error parsing JSON: ${parseError}`)
+          err(`Error parsing JSON: ${parseError}`)
         }
       }
     }
@@ -180,8 +182,8 @@ export const callOllama: LLMFunction = async (promptAndTranscript: string, tempP
     // Write the full content to the output file
     await writeFile(tempPath, fullContent)
   } catch (error) {
-    console.error(`Error in callOllama: ${error instanceof Error ? error.message : String(error)}`)
-    console.error(`Stack Trace: ${error instanceof Error ? error.stack : 'No stack trace available'}`)
+    err(`Error in callOllama: ${error instanceof Error ? error.message : String(error)}`)
+    err(`Stack Trace: ${error instanceof Error ? error.stack : 'No stack trace available'}`)
     throw error
   }
 }

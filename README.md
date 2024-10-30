@@ -8,9 +8,6 @@
 - [Project Overview](#project-overview)
   - [Key Features](#key-features)
 - [Setup](#setup)
-  - [Copy Environment Variable File](#copy-environment-variable-file)
-  - [Install Local Dependencies](#install-local-dependencies)
-  - [Clone Whisper Repo](#clone-whisper-repo)
 - [Run Autoshow Node Scripts](#run-autoshow-node-scripts)
 - [Project Structure](#project-structure)
 
@@ -29,8 +26,10 @@ The Autoshow workflow includes the following steps:
 ### Key Features
 
 - Support for multiple input types (YouTube links, RSS feeds, local video and audio files)
-- Integration with various LLMs (ChatGPT, Claude, Cohere, Mistral) and transcription services (Whisper.cpp, Deepgram, Assembly)
-- Local LLM support (Llama 3.1, Phi 3, Qwen 2, Mistral)
+- Integration with various:
+  - LLMs (ChatGPT, Claude, Gemini, Cohere, Mistral, Fireworks, Together, Groq)
+  - Transcription services (Whisper.cpp, Deepgram, Assembly)
+- Local LLM support with Ollama
 - Customizable prompts for generating titles, summaries, chapter titles/descriptions, key takeaways, and questions to test comprehension
 - Markdown output with metadata and formatted content
 - Command-line interface for easy usage
@@ -40,35 +39,11 @@ See [`docs/roadmap.md`](/docs/roadmap.md) for details about current development 
 
 ## Setup
 
-### Copy Environment Variable File
-
-`npm run autoshow` expects a `.env` file even for commands that don't require API keys. You can create a blank `.env` file or use the default provided:
+`scripts/setup.sh` checks to ensure a `.env` file exists, Node dependencies are installed, and the `whisper.cpp` repository is cloned and built. Run the script with the `setup` script in `package.json`.
 
 ```bash
-cp .env.example .env
+npm run setup
 ```
-
-### Install Local Dependencies
-
-Install `yt-dlp`, `ffmpeg`, and run `npm i`.
-
-```bash
-brew install yt-dlp ffmpeg
-npm i
-```
-
-### Clone Whisper Repo
-
-Run the following commands to clone `whisper.cpp` and build the `base` model:
-
-```bash
-git clone https://github.com/ggerganov/whisper.cpp.git && \
-  bash ./whisper.cpp/models/download-ggml-model.sh base && \
-  make -C whisper.cpp && \
-  cp .github/whisper.Dockerfile whisper.cpp/Dockerfile
-```
-
-> Replace `base` with `large-v2` for the largest model, `medium` for a middle sized model, or `tiny` for the smallest model.
 
 ## Run Autoshow Node Scripts
 
@@ -105,7 +80,7 @@ npm run as -- --rss "https://ajcwebdev.substack.com/feed"
 Use local LLM.
 
 ```bash
-npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --llama
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --ollama
 ```
 
 Use 3rd party LLM providers.
@@ -116,45 +91,49 @@ npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --claude CLA
 npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --gemini GEMINI_1_5_PRO
 npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --cohere COMMAND_R_PLUS
 npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --mistral MISTRAL_LARGE
-npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --octo LLAMA_3_1_405B
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --fireworks
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --together
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --groq
 ```
 
 Example commands for all available CLI options can be found in [`docs/examples.md`](/docs/examples.md).
 
 ## Project Structure
 
-- Main Entry Point (`src/autoshow.js`)
+- Main Entry Point (`src/autoshow.ts`)
   - Defines the command-line interface using Commander.js
   - Handles various input options (video, playlist, URLs, file, RSS)
   - Manages LLM and transcription options
 
 - Command Processors (`src/commands`)
-  - `processVideo.js`: Handles single YouTube video processing
-  - `processPlaylist.js`: Processes all videos in a YouTube playlist
-  - `processURLs.js`: Processes videos from a list of URLs in a file
-  - `processFile.js`: Handles local audio/video file processing
-  - `processRSS.js`: Processes podcast RSS feeds
+  - `processVideo.ts`: Handles single YouTube video processing
+  - `processPlaylist.ts`: Processes all videos in a YouTube playlist
+  - `processURLs.ts`: Processes videos from a list of URLs in a file
+  - `processFile.ts`: Handles local audio/video file processing
+  - `processRSS.ts`: Processes podcast RSS feeds
 
 - Utility Functions (`src/utils`)
-  - `downloadAudio.js`: Downloads audio from YouTube videos
-  - `runTranscription.js`: Manages the transcription process
-  - `runLLM.js`: Handles LLM processing for summarization and chapter generation
-  - `generateMarkdown.js`: Creates initial markdown files with metadata
-  - `cleanUpFiles.js`: Removes temporary files after processing
+  - `downloadAudio.ts`: Downloads audio from YouTube videos
+  - `runTranscription.ts`: Manages the transcription process
+  - `runLLM.ts`: Handles LLM processing for summarization and chapter generation
+  - `generateMarkdown.ts`: Creates initial markdown files with metadata
+  - `cleanUpFiles.ts`: Removes temporary files after processing
 
 - Transcription Services (`src/transcription`)
-  - `whisper.js`: Uses Whisper.cpp for transcription
-  - `deepgram.js`: Integrates Deepgram transcription service
-  - `assembly.js`: Integrates AssemblyAI transcription service
+  - `whisper.ts`: Uses Whisper.cpp, openai-whisper, or whisper-diarization for transcription
+  - `deepgram.ts`: Integrates Deepgram transcription service
+  - `assembly.ts`: Integrates AssemblyAI transcription service
 
 - Language Models (`src/llms`)
-  - `chatgpt.js`: Integrates OpenAI's GPT models
-  - `claude.js`: Integrates Anthropic's Claude models
-  - `cohere.js`: Integrates Cohere's language models
-  - `mistral.js`: Integrates Mistral AI's language models
-  - `octo.js`: Integrates OctoAI's language models
-  - `llama.js`: Integrates Llama models (local inference)
-  - `prompt.js`: Defines the prompt structure for summarization and chapter generation
+  - `chatgpt.ts`: Integrates OpenAI's GPT models
+  - `claude.ts`: Integrates Anthropic's Claude models
+  - `gemini.ts`: Integrates Google's Gemini models
+  - `cohere.ts`: Integrates Cohere's language models
+  - `mistral.ts`: Integrates Mistral AI's language models
+  - `fireworks.ts`: Integrates Fireworks's open source models
+  - `together.ts`: Integrates Together's open source models
+  - `groq.ts`: Integrates Groq's open source models
+  - `prompt.ts`: Defines the prompt structure for summarization and chapter generation
 
 - Web Interface (`web`) and Server (`server`)
   - Web interface built with React and Vite

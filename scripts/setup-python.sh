@@ -6,6 +6,7 @@
 if [ ! -d "whisper-diarization" ]; then
   echo "Cloning the whisper-diarization repository..."
   git clone https://github.com/MahmoudAshraf97/whisper-diarization.git
+  rm -rf whisper-diarization/.git
 else
   echo "whisper-diarization repository already exists. Skipping clone."
 fi

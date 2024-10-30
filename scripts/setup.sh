@@ -57,7 +57,7 @@ else
     check_ollama_server
     
     # Check and pull required models
-    check_and_pull_model "llama3.2:1b"
+    check_and_pull_model "llama3.2:1b" && check_and_pull_model "llama3.2:3b"
 fi
 
 # Install npm dependencies
@@ -72,7 +72,9 @@ else
     
     # Download whisper models
     echo "Downloading whisper models..."
+    bash ./whisper.cpp/models/download-ggml-model.sh tiny
     bash ./whisper.cpp/models/download-ggml-model.sh base
+    bash ./whisper.cpp/models/download-ggml-model.sh large-v3-turbo
     
     # Compile whisper.cpp
     echo "Compiling whisper.cpp..."
@@ -81,14 +83,7 @@ else
     # Copy Dockerfile
     echo "Copying Dockerfile..."
     cp .github/whisper.Dockerfile whisper.cpp/Dockerfile
-fi
-
-# Check if Qwen 2.5 1.5B model exists
-if [ -f "./src/llms/models/qwen2.5-1.5b-instruct-q6_k.gguf" ]; then
-    echo "Qwen 2.5 1.5B model already exists. Skipping download."
-else
-    echo "Downloading Qwen 2.5 1.5B model..."
-    curl -L "https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct-GGUF/resolve/main/qwen2.5-1.5b-instruct-q6_k.gguf" -o "./src/llms/models/qwen2.5-1.5b-instruct-q6_k.gguf"
+    rm -rf whisper.cpp/.git
 fi
 
 echo "Setup completed successfully!"

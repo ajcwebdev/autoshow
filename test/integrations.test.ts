@@ -76,46 +76,52 @@ const commands = [
     newName: '11---ep0-fsjam-podcast-mistral-shownotes.md'
   },
   {
-    // Process a video using OctoAI for LLM operations
-    cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --octo',
-    expectedFile: '2024-09-24-ep0-fsjam-podcast-octo-shownotes.md',
-    newName: '12---ep0-fsjam-podcast-octo-shownotes.md'
+    // Process a video using Fireworks for LLM operations
+    cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --fireworks',
+    expectedFile: '2024-09-24-ep0-fsjam-podcast-fireworks-shownotes.md',
+    newName: '12---ep0-fsjam-podcast-fireworks-shownotes.md'
   },
   {
-    // Process video with Octo using LLAMA_3_1_8B model.
-    cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --octo LLAMA_3_1_8B',
-    expectedFile: '2024-09-24-ep0-fsjam-podcast-octo-shownotes.md',
-    newName: '13---ep0-fsjam-podcast-octo-shownotes.md'
+    // Process a video using Together for LLM operations
+    cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --together',
+    expectedFile: '2024-09-24-ep0-fsjam-podcast-together-shownotes.md',
+    newName: '13---ep0-fsjam-podcast-together-shownotes.md'
+  },
+  {
+    // Process a video using BLANK for LLM operations
+    cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --groq',
+    expectedFile: '2024-09-24-ep0-fsjam-podcast-groq-shownotes.md',
+    newName: '14---ep0-fsjam-podcast-groq-shownotes.md'
   },
   {
     // Process a video using Deepgram for transcription
     cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --deepgram',
     expectedFile: '2024-09-24-ep0-fsjam-podcast-prompt.md',
-    newName: '14---ep0-fsjam-podcast-prompt.md'
+    newName: '15---ep0-fsjam-podcast-prompt.md'
   },
   {
     // Process video using Deepgram and Llama.
     cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --deepgram --ollama',
     expectedFile: '2024-09-24-ep0-fsjam-podcast-ollama-shownotes.md',
-    newName: '15---ep0-fsjam-podcast-ollama-shownotes.md'
+    newName: '16---ep0-fsjam-podcast-ollama-shownotes.md'
   },
   {
     // Process a video using AssemblyAI for transcription
     cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --assembly',
     expectedFile: '2024-09-24-ep0-fsjam-podcast-prompt.md',
-    newName: '16---ep0-fsjam-podcast-prompt.md'
+    newName: '17---ep0-fsjam-podcast-prompt.md'
   },
   {
     // Process video using AssemblyAI and Llama.
     cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --assembly --ollama',
     expectedFile: '2024-09-24-ep0-fsjam-podcast-ollama-shownotes.md',
-    newName: '17---ep0-fsjam-podcast-ollama-shownotes.md'
+    newName: '18---ep0-fsjam-podcast-ollama-shownotes.md'
   },
   {
     // Process an audio file using AssemblyAI with speaker labels
     cmd: 'npm run as -- --video "https://ajc.pics/audio/fsjam-short.mp3" --assembly --speakerLabels',
     expectedFile: '2024-05-08-fsjam-short-prompt.md',
-    newName: '18---fsjam-short-prompt.md'
+    newName: '19---fsjam-short-prompt.md'
   }
 ]
 

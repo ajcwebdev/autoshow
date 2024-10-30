@@ -2,7 +2,7 @@ import { createReadStream } from 'node:fs'
 import { writeFile } from 'node:fs/promises'
 import { env } from 'node:process'
 import fetch from 'node-fetch'
-import { log, wait, success } from '../models.js'
+import { l, wait, success, err } from '../globals.js'
 import type { ProcessingOptions } from '../types.js'
 
 const BASE_URL = 'https://api.assemblyai.com/v2'
@@ -15,7 +15,7 @@ const BASE_URL = 'https://api.assemblyai.com/v2'
  * @throws {Error} - If an error occurs during transcription.
  */
 export async function callAssembly(options: ProcessingOptions, finalPath: string): Promise<string> {
-  log(wait('\n  Using AssemblyAI for transcription...'))
+  l(wait('\n  Using AssemblyAI for transcription...'))
   // Check if the ASSEMBLY_API_KEY environment variable is set
   if (!env.ASSEMBLY_API_KEY) {
     throw new Error('ASSEMBLY_API_KEY environment variable is not set. Please set it to your AssemblyAI API key.')
@@ -31,7 +31,7 @@ export async function callAssembly(options: ProcessingOptions, finalPath: string
     const audioFilePath = `${finalPath}.wav`
 
     // Step 1: Upload the audio file
-    log(wait('\n  Uploading audio file to AssemblyAI...'))
+    l(wait('\n  Uploading audio file to AssemblyAI...'))
     const uploadUrl = `${BASE_URL}/upload`
     const fileStream = createReadStream(audioFilePath)
 
@@ -54,7 +54,7 @@ export async function callAssembly(options: ProcessingOptions, finalPath: string
     if (!upload_url) {
       throw new Error('Upload URL not returned by AssemblyAI.')
     }
-    log(success('  Audio file uploaded successfully.'))
+    l(success('  Audio file uploaded successfully.'))
 
     // Step 2: Request transcription
     const response = await fetch(`${BASE_URL}/transcript`, {
@@ -129,16 +129,16 @@ export async function callAssembly(options: ProcessingOptions, finalPath: string
 
     // Write the formatted transcript to a file
     await writeFile(`${finalPath}.txt`, txtContent)
-    log(wait(`\n  Transcript saved...\n  - ${finalPath}.txt\n`))
+    l(wait(`\n  Transcript saved...\n  - ${finalPath}.txt\n`))
 
     // Create an empty LRC file to prevent cleanup errors
     await writeFile(`${finalPath}.lrc`, '')
-    log(wait(`\n  Empty LRC file created:\n    - ${finalPath}.lrc\n`))
+    l(wait(`\n  Empty LRC file created:\n    - ${finalPath}.lrc\n`))
 
     return txtContent
   } catch (error) {
     // Log any errors that occur during the transcription process
-    console.error(`Error processing the transcription: ${(error as Error).message}`)
+    err(`Error processing the transcription: ${(error as Error).message}`)
     throw error // Re-throw the error for handling in the calling function
   }
 }

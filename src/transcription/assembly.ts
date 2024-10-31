@@ -1,9 +1,19 @@
+// src/transcription/assembly.ts
+
 import { createReadStream } from 'node:fs'
 import { writeFile } from 'node:fs/promises'
 import { env } from 'node:process'
-import fetch from 'node-fetch'
 import { l, wait, success, err } from '../globals.js'
 import type { ProcessingOptions } from '../types.js'
+import type {
+  AssemblyAITranscriptionOptions,
+  AssemblyAIErrorResponse,
+  AssemblyAIUploadResponse,
+  AssemblyAITranscript,
+  AssemblyAIPollingResponse,
+  AssemblyAIUtterance,
+  AssemblyAIWord
+} from '../types.js'
 
 const BASE_URL = 'https://api.assemblyai.com/v2'
 
@@ -42,42 +52,45 @@ export async function callAssembly(options: ProcessingOptions, finalPath: string
         'Content-Type': 'application/octet-stream',
       },
       body: fileStream,
+      duplex: 'half',
     })
 
     if (!uploadResponse.ok) {
-      const errorData = await uploadResponse.json()
+      const errorData = await uploadResponse.json() as AssemblyAIErrorResponse
       throw new Error(`File upload failed: ${errorData.error || uploadResponse.statusText}`)
     }
 
-    const uploadData = await uploadResponse.json()
-    const upload_url: string = uploadData.upload_url
+    const uploadData = await uploadResponse.json() as AssemblyAIUploadResponse
+    const { upload_url } = uploadData
     if (!upload_url) {
       throw new Error('Upload URL not returned by AssemblyAI.')
     }
     l(success('  Audio file uploaded successfully.'))
 
     // Step 2: Request transcription
+    const transcriptionOptions: AssemblyAITranscriptionOptions = {
+      audio_url: upload_url,
+      speech_model: 'nano',
+      speaker_labels: speakerLabels || false
+    }
+
     const response = await fetch(`${BASE_URL}/transcript`, {
       method: 'POST',
       headers,
-      body: JSON.stringify({
-        audio_url: upload_url,
-        speech_model: 'nano',
-        speaker_labels: speakerLabels || false
-      })
+      body: JSON.stringify(transcriptionOptions)
     })
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`)
     }
 
-    const transcriptData = await response.json()
+    const transcriptData = await response.json() as AssemblyAITranscript
 
     // Step 3: Poll for completion
-    let transcript
+    let transcript: AssemblyAIPollingResponse
     while (true) {
       const pollingResponse = await fetch(`${BASE_URL}/transcript/${transcriptData.id}`, { headers })
-      transcript = await pollingResponse.json()
+      transcript = await pollingResponse.json() as AssemblyAIPollingResponse
 
       if (transcript.status === 'completed' || transcript.status === 'error') {
         break
@@ -86,7 +99,7 @@ export async function callAssembly(options: ProcessingOptions, finalPath: string
       await new Promise(resolve => setTimeout(resolve, 3000))
     }
 
-    if (transcript.status === 'error') {
+    if (transcript.status === 'error' || transcript.error) {
       throw new Error(`Transcription failed: ${transcript.error}`)
     }
 
@@ -100,16 +113,17 @@ export async function callAssembly(options: ProcessingOptions, finalPath: string
     }
 
     // Process the transcript based on whether utterances are available
-    if (transcript.utterances) {
+    if (transcript.utterances && transcript.utterances.length > 0) {
       // If utterances are available, format each with speaker labels if used
-      txtContent = transcript.utterances.map((utt: any) =>
+      txtContent = transcript.utterances.map((utt: AssemblyAIUtterance) =>
         `${speakerLabels ? `Speaker ${utt.speaker} ` : ''}(${formatTime(utt.start)}): ${utt.text}`
       ).join('\n')
-    } else if (transcript.words) {
+    } else if (transcript.words && transcript.words.length > 0) {
       // If only words are available, group them into lines with timestamps
       let currentLine = ''
       let currentTimestamp = formatTime(transcript.words[0].start)
-      transcript.words.forEach((word: any) => {
+      
+      transcript.words.forEach((word: AssemblyAIWord) => {
         if (currentLine.length + word.text.length > 80) {
           // Start a new line if the current line exceeds 80 characters
           txtContent += `[${currentTimestamp}] ${currentLine.trim()}\n`
@@ -118,6 +132,7 @@ export async function callAssembly(options: ProcessingOptions, finalPath: string
         }
         currentLine += `${word.text} `
       })
+      
       // Add the last line if there's any remaining text
       if (currentLine.length > 0) {
         txtContent += `[${currentTimestamp}] ${currentLine.trim()}\n`

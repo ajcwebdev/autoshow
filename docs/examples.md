@@ -648,14 +648,14 @@ npm run prune
 ### Bun
 
 ```bash
-bun bun-as -- \
+npm run bun -- \
   --video "https://www.youtube.com/watch?v=MORMZXEaONk"
 ```
 
 ### Deno
 
 ```bash
-deno task deno-as \
+npm run deno -- \
   --video "https://www.youtube.com/watch?v=MORMZXEaONk"
 ```
 
@@ -667,7 +667,7 @@ Integration test.
 - Mostly uses transcripts of videos around one minute long and cheaper models when possible, so the total cost of running this for any given service should be at most only a few cents.
 
 ```bash
-npm run test-all
+npm run test-integrations
 ```
 
 Local services test, only uses Whisper for transcription and Ollama for LLM operations.

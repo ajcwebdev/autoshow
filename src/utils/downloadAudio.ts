@@ -14,7 +14,6 @@ import { fileTypeFromBuffer } from 'file-type'
 import { l, err, step, success, wait } from '../globals.js'
 import type { SupportedFileType, ProcessingOptions } from '../types.js'
 
-// Promisify node:child_process functions for async/await usage
 const execFilePromise = promisify(execFile)
 const execPromise = promisify(exec)
 
@@ -84,7 +83,7 @@ export async function downloadAudio(
   const outputPath = `${finalPath}.wav`
 
   // Handle online content (YouTube, RSS feeds, etc.)
-  if (options.video || options.playlist || options.urls || options.rss) {
+  if (options.video || options.playlist || options.urls || options.rss || options.channel) {
     l(step('\nStep 2 - Downloading URL audio...\n'))
     try {
       // Download and convert audio using yt-dlp
@@ -141,11 +140,7 @@ export async function downloadAudio(
       )
       l(success(`  File converted to WAV format successfully:\n    - ${outputPath}`))
     } catch (error) {
-      err(
-        `Error processing local file: ${
-          error instanceof Error ? (error as Error).message : String(error)
-        }`
-      )
+      err(`Error processing local file: ${error instanceof Error ? (error as Error).message : String(error)}`)
       throw error
     }
   }

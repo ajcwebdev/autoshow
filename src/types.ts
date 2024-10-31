@@ -12,64 +12,97 @@
 export type ProcessingOptions = {
   /** URL of the YouTube video to process. */
   video?: string
+
   /** URL of the YouTube playlist to process. */
   playlist?: string
+
+  /** URL of the YouTube channel to process. */
+  channel?: string
+
   /** File path containing a list of URLs to process. */
   urls?: string
+
   /** Local audio or video file path to process. */
   file?: string
+
   /** URL of the podcast RSS feed to process. */
   rss?: string
+
   /** Specific items (audio URLs) from the RSS feed to process. */
   item?: string[]
+
   /** Flag to generate JSON file with RSS feed information instead of processing items. */
   info?: boolean
+
   /** Flag to indicate whether to keep temporary files after processing. */
   noCleanUp?: boolean
+
   /** The Whisper model to use (e.g., 'tiny', 'base'). */
   whisper?: WhisperModelType
+
   /** The Whisper Python model to use (e.g., 'tiny', 'base'). */
   whisperPython?: WhisperModelType
+
   /** The Whisper Diarization model to use (e.g., 'tiny', 'base'). */
   whisperDiarization?: WhisperModelType
+
   /** The Whisper model to use with Docker (e.g., 'tiny', 'base'). */
   whisperDocker?: WhisperModelType
+
   /** Flag to use Deepgram for transcription. */
   deepgram?: boolean
+
   /** Flag to use AssemblyAI for transcription. */
   assembly?: boolean
+
   /** Flag to use speaker labels in AssemblyAI transcription. */
   speakerLabels?: boolean
+
   /** ChatGPT model to use (e.g., 'GPT_4o_MINI'). */
   chatgpt?: string
+
   /** Claude model to use (e.g., 'CLAUDE_3_SONNET'). */
   claude?: string
+
   /** Cohere model to use (e.g., 'COMMAND_R_PLUS'). */
   cohere?: string
+
   /** Mistral model to use (e.g., 'MISTRAL_LARGE'). */
   mistral?: string
+
   /** Fireworks model to use (e.g., ''). */
   fireworks?: string
+
   /** Together model to use (e.g., ''). */
   together?: string
+
   /** Groq model to use (e.g., ''). */
   groq?: string
+
   /** Ollama model to use for local inference (e.g., 'LLAMA_3_2_1B'). */
   ollama?: string
+
   /** Gemini model to use (e.g., 'GEMINI_1_5_FLASH'). */
   gemini?: string
+
   /** Array of prompt sections to include (e.g., ['titles', 'summary']). */
   prompt?: string[]
+
   /** The selected LLM option. */
   llmServices?: LLMServices
+
   /** The selected transcription option. */
   transcriptServices?: TranscriptServices
+
   /** Number of items to skip in RSS feed processing. */
   skip?: number
+
   /** Order in which to process RSS feed items ('newest' or 'oldest'). */
   order?: string
+
   /** Number of most recent items to process (overrides --order and --skip). */
   last?: number
+
   /** Whether to run in interactive mode. */
   interactive?: boolean
 }
@@ -81,42 +114,61 @@ export type ProcessingOptions = {
 export type InquirerAnswers = {
   /** The action selected by the user (e.g., 'video', 'playlist'). */
   action?: string
+
   /** YouTube video URL provided by the user. */
   video?: string
+
   /** YouTube playlist URL provided by the user. */
   playlist?: string
+
   /** File path containing URLs provided by the user. */
   urls?: string
+
   /** Local audio/video file path provided by the user. */
   file?: string
+
   /** RSS feed URL provided by the user. */
   rss?: string
+
   /** Whether the user wants to specify specific RSS items. */
   specifyItem?: boolean
+
   /** Comma-separated audio URLs of specific RSS items. */
   item?: string | string[]
+
   /** Whether to generate JSON file with RSS feed information instead of processing items. */
   info?: boolean
+
   /** Number of items to skip in RSS feed processing. */
   skip?: number
+
   /** Number of most recent items to process (overrides order and skip). */
   last?: number
+
   /** Order in which to process RSS feed items ('newest' or 'oldest'). */
   order?: string
+
   /** LLM option selected by the user. */
   llmServices?: LLMServices
+
   /** Specific LLM model selected by the user. */
   llmModel?: string
+
   /** Transcription option selected by the user. */
   transcriptServices?: TranscriptServices
+
   /** Whisper model type selected by the user. */
   whisperModel?: WhisperModelType
+
   /** Whether to use speaker labels in transcription. */
   speakerLabels?: boolean
+
   /** Prompt sections selected by the user. */
   prompt?: string[]
+
   /** Whether to keep temporary files after processing. */
   noCleanUp?: boolean
+
   /** Whether to proceed with the action. */
   confirmAction?: boolean
 }
@@ -127,16 +179,22 @@ export type InquirerAnswers = {
 export type InquirerQuestions = Array<{
   /** The type of the prompt (e.g., 'input', 'list', 'confirm', 'checkbox'). */
   type: string
+
   /** The name of the answer property. */
   name: string
+
   /** The message to display to the user. */
   message: string
+
   /** The choices available for selection (for 'list' and 'checkbox' types). */
   choices?: Array<any> | (() => Array<any>)
+
   /** A function to determine when to display the prompt. */
   when?: () => boolean
+
   /** A function to validate the user's input. */
   validate?: (input: any) => boolean | string
+
   /** The default value for the prompt. */
   default?: any
 }>
@@ -164,8 +222,10 @@ export type HandlerFunction = (
 export type MarkdownData = {
   /** The front matter content for the markdown file. */
   frontMatter: string
+
   /** The base file path (without extension) for the markdown file. */
   finalPath: string
+
   /** The sanitized filename used for the markdown file. */
   filename: string
 }
@@ -176,16 +236,22 @@ export type MarkdownData = {
 export type VideoMetadata = {
   /** The URL to the video's webpage. */
   showLink: string
+
   /** The name of the channel that uploaded the video. */
   channel: string
+
   /** The URL to the uploader's channel page. */
   channelURL: string
+
   /** The title of the video. */
   title: string
+
   /** The description of the video. */
   description: string
+
   /** The upload date in 'YYYY-MM-DD' format. */
   publishDate: string
+
   /** The URL to the video's thumbnail image. */
   coverImage: string
 }
@@ -197,18 +263,25 @@ export type VideoMetadata = {
 export type RSSItem = {
   /** The publication date of the RSS item (e.g., '2024-09-24'). */
   publishDate: string
+
   /** The title of the RSS item. */
   title: string
+
   /** The URL to the cover image of the RSS item. */
   coverImage: string
+
   /** The URL to the show or episode. */
   showLink: string
+
   /** The name of the channel or podcast. */
   channel: string
+
   /** The URL to the channel or podcast. */
   channelURL: string
+
   /** A brief description of the RSS item. */
   description?: string
+
   /** The URL to the audio file of the RSS item. */
   audioURL?: string
 }
@@ -219,6 +292,7 @@ export type RSSItem = {
 export type RSSOptions = {
   /** The order to process items ('newest' or 'oldest'). */
   order?: string
+
   /** The number of items to skip. */
   skip?: number
 }
@@ -230,8 +304,10 @@ export type RSSOptions = {
 export type DownloadAudioOptions = {
   /** The desired output audio format (e.g., 'wav'). */
   outputFormat?: string
+
   /** The sample rate for the audio file (e.g., 16000). */
   sampleRate?: number
+
   /** The number of audio channels (e.g., 1 for mono). */
   channels?: number
 }
@@ -264,6 +340,7 @@ export type WhisperTranscriptServices = 'whisper' | 'whisperDocker' | 'whisperPy
 export type PromptSection = {
   /** The instructions for the section. */
   instruction: string
+
   /** An example output for the section. */
   example: string
 }
@@ -279,10 +356,13 @@ export type LLMServices = 'chatgpt' | 'claude' | 'cohere' | 'mistral' | 'ollama'
 export type LLMOptions = {
   /** The sections to include in the prompt (e.g., ['titles', 'summary']). */
   promptSections?: string[]
+
   /** The specific LLM model to use. */
   model?: string
+
   /** The temperature parameter for text generation. */
   temperature?: number
+
   /** The maximum number of tokens to generate. */
   maxTokens?: number
 }
@@ -360,36 +440,52 @@ export type OllamaModelType = 'LLAMA_3_2_1B' | 'LLAMA_3_2_3B' | 'GEMMA_2_2B' | '
 export type FireworksResponse = {
   /** Unique identifier for the response */
   id: string
+
   /** Type of object */
   object: string
+
   /** Timestamp of creation */
   created: number
+
   /** Model used for generation */
   model: string
+
   /** Input prompts */
   prompt: any[]
+
   /** Array of completion choices */
   choices: {
+
     /** Reason for completion finish */
     finish_reason: string
+
     /** Index of the choice */
     index: number
+
     /** Message content and metadata */
     message: {
+
       /** Role of the message author */
       role: string
+
       /** Generated content */
       content: string
+
       /** Tool calls made during generation */
       tool_calls: {
+
         /** Tool call identifier */
         id: string
+
         /** Type of tool call */
         type: string
+
         /** Function call details */
         function: {
+
           /** Name of the function called */
           name: string
+
           /** Arguments passed to the function */
           arguments: string
         }
@@ -398,10 +494,13 @@ export type FireworksResponse = {
   }[]
   /** Token usage statistics */
   usage: {
+
     /** Number of tokens in the prompt */
     prompt_tokens: number
+
     /** Number of tokens in the completion */
     completion_tokens: number
+
     /** Total tokens used */
     total_tokens: number
   }
@@ -413,42 +512,61 @@ export type FireworksResponse = {
 export type TogetherResponse = {
   /** Unique identifier for the response */
   id: string
+
   /** Type of object */
   object: string
+
   /** Timestamp of creation */
   created: number
+
   /** Model used for generation */
   model: string
+
   /** Input prompts */
   prompt: any[]
+
   /** Array of completion choices */
   choices: {
+
     /** Generated text */
     text: string
+
     /** Reason for completion finish */
     finish_reason: string
+
     /** Random seed used */
     seed: number
+
     /** Choice index */
     index: number
+
     /** Message content and metadata */
     message: {
+
       /** Role of the message author */
       role: string
+
       /** Generated content */
       content: string
+
       /** Tool calls made during generation */
       tool_calls: {
+
         /** Index of the tool call */
         index: number
+
         /** Tool call identifier */
         id: string
+
         /** Type of tool call */
         type: string
+
         /** Function call details */
         function: {
+
           /** Name of the function called */
           name: string
+
           /** Arguments passed to the function */
           arguments: string
         }
@@ -456,20 +574,26 @@ export type TogetherResponse = {
     }
     /** Log probability information */
     logprobs: {
+
       /** Array of token IDs */
       token_ids: number[]
+
       /** Array of tokens */
       tokens: string[]
+
       /** Log probabilities for tokens */
       token_logprobs: number[]
     }
   }[]
   /** Token usage statistics */
   usage: {
+
     /** Number of tokens in the prompt */
     prompt_tokens: number
+
     /** Number of tokens in the completion */
     completion_tokens: number
+
     /** Total tokens used */
     total_tokens: number
   }
@@ -481,35 +605,50 @@ export type TogetherResponse = {
 export type GroqChatCompletionResponse = {
   /** Unique identifier for the response */
   id: string
+
   /** Type of object */
   object: string
+
   /** Timestamp of creation */
   created: number
+
   /** Model used for generation */
   model: string
+
   /** System fingerprint */
   system_fingerprint: string | null
+
   /** Array of completion choices */
   choices: {
+
     /** Choice index */
     index: number
+
     /** Message content and metadata */
     message: {
+
       /** Role of the message author */
       role: 'assistant' | 'user' | 'system'
+
       /** Generated content */
       content: string
     }
+
     /** Reason for completion finish */
     finish_reason: string
+
     /** Optional log probability information */
     logprobs?: {
+
       /** Array of tokens */
       tokens: string[]
+
       /** Log probabilities for tokens */
       token_logprobs: number[]
+
       /** Top log probabilities */
       top_logprobs: Record<string, number>[]
+
       /** Text offsets for tokens */
       text_offset: number[]
     } | null
@@ -518,14 +657,19 @@ export type GroqChatCompletionResponse = {
   usage?: {
     /** Number of tokens in the prompt */
     prompt_tokens: number
+
     /** Number of tokens in the completion */
     completion_tokens: number
+
     /** Total tokens used */
     total_tokens: number
+
     /** Optional timing for prompt processing */
     prompt_time?: number
+
     /** Optional timing for completion generation */
     completion_time?: number
+
     /** Optional total processing time */
     total_time?: number
   }
@@ -537,29 +681,40 @@ export type GroqChatCompletionResponse = {
 export type OllamaResponse = {
   /** Model used for generation */
   model: string
+
   /** Timestamp of creation */
   created_at: string
+
   /** Message content and metadata */
   message: {
+
     /** Role of the message author */
     role: string
+
     /** Generated content */
     content: string
   }
   /** Reason for completion */
   done_reason: string
+
   /** Whether generation is complete */
   done: boolean
+
   /** Total processing duration */
   total_duration: number
+
   /** Model loading duration */
   load_duration: number
+
   /** Number of prompt evaluations */
   prompt_eval_count: number
+
   /** Duration of prompt evaluation */
   prompt_eval_duration: number
+
   /** Number of evaluations */
   eval_count: number
+
   /** Duration of evaluation */
   eval_duration: number
 }
@@ -570,28 +725,40 @@ export type OllamaResponse = {
 export type OllamaTagsResponse = {
   /** Array of available models */
   models: Array<{
+
     /** Model name */
     name: string
+
     /** Base model identifier */
     model: string
+
     /** Last modification timestamp */
     modified_at: string
+
     /** Model size in bytes */
     size: number
+
     /** Model digest */
     digest: string
+
     /** Model details */
     details: {
+
       /** Parent model identifier */
       parent_model: string
+
       /** Model format */
       format: string
+
       /** Model family */
       family: string
+
       /** Array of model families */
       families: string[]
+
       /** Model parameter size */
       parameter_size: string
+
       /** Quantization level */
       quantization_level: string
     }
@@ -604,27 +771,38 @@ export type OllamaTagsResponse = {
 export type DeepgramResponse = {
   /** Metadata about the transcription */
   metadata: {
+
     /** Transaction key */
     transaction_key: string
+
     /** Request identifier */
     request_id: string
+
     /** SHA256 hash */
     sha256: string
+
     /** Creation timestamp */
     created: string
+
     /** Audio duration */
     duration: number
+
     /** Number of audio channels */
     channels: number
+
     /** Array of models used */
     models: string[]
+
     /** Information about models used */
     model_info: {
       [key: string]: {
+
         /** Model name */
         name: string
+
         /** Model version */
         version: string
+
         /** Model architecture */
         arch: string
       }
@@ -632,22 +810,31 @@ export type DeepgramResponse = {
   }
   /** Transcription results */
   results: {
+
     /** Array of channel results */
     channels: Array<{
+
       /** Array of alternative transcriptions */
       alternatives: Array<{
+
         /** Transcribed text */
         transcript: string
+
         /** Confidence score */
         confidence: number
+
         /** Array of word-level details */
         words: Array<{
+
           /** Individual word */
           word: string
+
           /** Start time */
           start: number
+
           /** End time */
           end: number
+
           /** Word-level confidence */
           confidence: number
         }>

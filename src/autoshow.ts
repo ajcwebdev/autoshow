@@ -15,6 +15,7 @@ import { Command } from 'commander'
 import { handleInteractivePrompt } from './interactive.js'
 import { processVideo } from './commands/processVideo.js'
 import { processPlaylist } from './commands/processPlaylist.js'
+import { processChannel } from './commands/processChannel.js'
 import { processURLs } from './commands/processURLs.js'
 import { processFile } from './commands/processFile.js'
 import { processRSS } from './commands/processRSS.js'
@@ -38,6 +39,7 @@ program
   // Input source options
   .option('-v, --video <url>', 'Process a single YouTube video')
   .option('-p, --playlist <playlistUrl>', 'Process all videos in a YouTube playlist')
+  .option('-c, --channel <channelUrl>', 'Process all videos in a YouTube channel')
   .option('-u, --urls <filePath>', 'Process YouTube videos from a list of URLs in a file')
   .option('-f, --file <filePath>', 'Process a local audio or video file')
   .option('-r, --rss <rssURL>', 'Process a podcast RSS feed')
@@ -46,7 +48,7 @@ program
   .option('--order <order>', 'Specify the order for RSS feed processing (newest or oldest)')
   .option('--skip <number>', 'Number of items to skip when processing RSS feed', parseInt)
   .option('--last <number>', 'Number of most recent items to process (overrides --order and --skip)', parseInt)
-  .option('--info', 'Generate JSON file with RSS feed information instead of processing items')
+  .option('--info', 'Generate JSON file with RSS feed or channel information instead of processing items')
   // Transcription service options
   .option('--whisper [model]', 'Use Whisper.cpp for transcription with optional model specification')
   .option('--whisperDocker [model]', 'Use Whisper.cpp in Docker for transcription with optional model specification')
@@ -56,15 +58,15 @@ program
   .option('--assembly', 'Use AssemblyAI for transcription')
   .option('--speakerLabels', 'Use speaker labels for AssemblyAI transcription')
   // LLM service options
+  .option('--ollama [model]', 'Use Ollama for processing with optional model specification')
   .option('--chatgpt [model]', 'Use ChatGPT for processing with optional model specification')
   .option('--claude [model]', 'Use Claude for processing with optional model specification')
+  .option('--gemini [model]', 'Use Gemini for processing with optional model specification')
   .option('--cohere [model]', 'Use Cohere for processing with optional model specification')
   .option('--mistral [model]', 'Use Mistral for processing')
   .option('--fireworks [model]', 'Use Fireworks AI for processing with optional model specification')
   .option('--together [model]', 'Use Together AI for processing with optional model specification')
   .option('--groq [model]', 'Use Groq for processing with optional model specification')
-  .option('--ollama [model]', 'Use Ollama for processing with optional model specification')
-  .option('--gemini [model]', 'Use Gemini for processing with optional model specification')
   // Utility options
   .option('--prompt <sections...>', 'Specify prompt sections to include')
   .option('--noCleanUp', 'Do not delete intermediary files after processing')
@@ -75,6 +77,7 @@ program
 Examples:
   $ autoshow --video "https://www.youtube.com/watch?v=..."
   $ autoshow --playlist "https://www.youtube.com/playlist?list=..."
+  $ autoshow --channel "https://www.youtube.com/channel/..."
   $ autoshow --file "content/audio.mp3"
   $ autoshow --rss "https://feeds.transistor.fm/fsjam-podcast/"
 
@@ -99,6 +102,7 @@ program.action(async (options: ProcessingOptions) => {
   const PROCESS_HANDLERS: Record<string, HandlerFunction> = {
     video: processVideo,
     playlist: processPlaylist,
+    channel: processChannel,
     urls: processURLs,
     file: processFile,
     rss: processRSS,
@@ -142,20 +146,17 @@ program.action(async (options: ProcessingOptions) => {
         llmServices,
         transcriptServices
       )
-      // Log success message
       l(final(`\n================================================================================================`))
       l(final(`  ${action} Processing Completed Successfully.`))
       l(final(`================================================================================================\n`))
       exit(0)
     } catch (error) {
-      // Log error and exit if processing fails
       err(`Error processing ${action}:`, (error as Error).message)
       exit(1)
     }
   }
 })
 
-// Set up error handling for unknown commands
 program.on('command:*', function () {
   err(`Error: Invalid command '${program.args.join(' ')}'. Use --help to see available commands.`)
   exit(1)

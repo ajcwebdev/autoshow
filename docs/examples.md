@@ -60,6 +60,13 @@ npm run as -- \
   --info
 ```
 
+### Process All Videos from a YouTube Channel
+
+```bash
+npm run as -- \
+  --channel "https://www.youtube.com/@ajcwebdev"
+```
+
 ### Process Multiple Videos Specified in a URLs File
 
 Run on an arbitrary list of URLs in `example-urls.md`.

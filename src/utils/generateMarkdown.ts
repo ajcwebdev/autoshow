@@ -6,14 +6,15 @@
  * @packageDocumentation
  */
 
-import { execFile } from 'node:child_process'
-import { promisify } from 'node:util'
-import { writeFile } from 'node:fs/promises'
-import { basename, extname } from 'node:path'
-import { l, dim, step, success } from '../globals.js'
-import type { MarkdownData, ProcessingOptions, RSSItem } from '../types.js'
+// Import necessary modules and functions
+import { execFile } from 'node:child_process'        // Used to execute external commands
+import { promisify } from 'node:util'                // Used to convert callback-based functions to promises
+import { writeFile } from 'node:fs/promises'         // Used to write files using promises
+import { basename, extname } from 'node:path'        // Used to manipulate file paths
+import { l, dim, step, success, err } from '../globals.js'  // Custom logging functions
+import type { MarkdownData, ProcessingOptions, RSSItem } from '../types.js'  // Type definitions
 
-// Promisify the execFile function for use with async/await
+// Convert execFile to return a promise, allowing us to use async/await
 const execFilePromise = promisify(execFile)
 
 /**
@@ -78,122 +79,162 @@ export async function generateMarkdown(
    */
   function sanitizeTitle(title: string): string {
     return title
-      .replace(/[^\w\s-]/g, '') // Remove all non-word chars except spaces and hyphens
-      .trim()                   // Remove leading and trailing whitespace
-      .replace(/[\s_]+/g, '-')  // Replace spaces and underscores with a single hyphen
-      .replace(/-+/g, '-')      // Replace multiple hyphens with a single hyphen
-      .toLowerCase()            // Convert to lowercase
-      .slice(0, 200)            // Limit to 200 characters
+      .replace(/[^\w\s-]/g, '')      // Remove all non-word characters except spaces and hyphens
+      .trim()                        // Remove leading and trailing whitespace
+      .replace(/[\s_]+/g, '-')       // Replace spaces and underscores with hyphens
+      .replace(/-+/g, '-')           // Replace multiple hyphens with a single hyphen
+      .toLowerCase()                 // Convert to lowercase
+      .slice(0, 200)                 // Limit the length to 200 characters
   }
 
-  // Declare variables to store generated content
-  let frontMatter: string[]
-  let finalPath: string
-  let filename: string
+  // Initialize variables for front matter content, final file path, and sanitized filename
+  let frontMatter: string[]          // Array to hold front matter lines
+  let finalPath: string              // The path where the markdown file will be saved
+  let filename: string               // The sanitized filename
 
-  // Handle different content types using a switch statement
+  // Determine which processing option is selected
   switch (true) {
+    // If any of these options are true, process as a video
     case !!options.video:
     case !!options.playlist:
     case !!options.urls:
-      // Extract video metadata using yt-dlp
-      const { stdout } = await execFilePromise('yt-dlp', [
-        '--restrict-filenames',
-        '--print', '%(upload_date>%Y-%m-%d)s',  // Format: YYYY-MM-DD
-        '--print', '%(title)s',
-        '--print', '%(thumbnail)s',
-        '--print', '%(webpage_url)s',
-        '--print', '%(channel)s',
-        '--print', '%(uploader_url)s',
-        input as string,
-      ])
+    case !!options.channel:
+      try {
+        // Execute yt-dlp command to extract metadata
+        const { stdout } = await execFilePromise('yt-dlp', [
+          '--restrict-filenames',                  // Restrict filenames to ASCII characters
+          '--print', '%(webpage_url)s',            // Print the webpage URL
+          '--print', '%(channel)s',                // Print the channel name
+          '--print', '%(uploader_url)s',           // Print the uploader's URL
+          '--print', '%(title)s',                  // Print the video title
+          '--print', '%(upload_date>%Y-%m-%d)s',   // Print the upload date in YYYY-MM-DD format
+          '--print', '%(thumbnail)s',              // Print the thumbnail URL
+          input as string,                         // The video URL provided as input
+        ])
 
-      // Parse the metadata output into individual fields
-      const [
-        formattedDate, videoTitle, thumbnail, webpage_url, videoChannel, uploader_url
-      ] = stdout.trim().split('\n')
+        // Split the output into individual metadata fields
+        const [
+          showLink,          // The video URL
+          videoChannel,      // The channel name
+          uploader_url,      // The uploader's URL
+          videoTitle,        // The video title
+          formattedDate,     // The upload date
+          thumbnail,         // The thumbnail URL
+        ] = stdout.trim().split('\n')
 
-      // Generate filename using date and sanitized title
-      filename = `${formattedDate}-${sanitizeTitle(videoTitle)}`
-      finalPath = `content/${filename}`
+        // Validate that all required metadata fields are present
+        if (
+          !showLink ||
+          !videoChannel ||
+          !uploader_url ||
+          !videoTitle ||
+          !formattedDate ||
+          !thumbnail
+        ) {
+          throw new Error('Incomplete metadata received from yt-dlp.')
+        }
 
-      // Create video-specific front matter
-      frontMatter = [
-        '---',
-        `showLink: "${webpage_url}"`,
-        `channel: "${videoChannel}"`,
-        `channelURL: "${uploader_url}"`,
-        `title: "${videoTitle}"`,
-        `description: ""`,
-        `publishDate: "${formattedDate}"`,
-        `coverImage: "${thumbnail}"`,
-        '---\n',
-      ]
+        // Generate the sanitized filename using the upload date and video title
+        filename = `${formattedDate}-${sanitizeTitle(videoTitle)}`
+        // Define the final path where the markdown file will be saved
+        finalPath = `content/${filename}`
+
+        // Construct the front matter content as an array of strings
+        frontMatter = [
+          '---',
+          `showLink: "${showLink}"`,               // The video URL
+          `channel: "${videoChannel}"`,            // The channel name
+          `channelURL: "${uploader_url}"`,         // The uploader's URL
+          `title: "${videoTitle}"`,                // The video title
+          `description: ""`,                       // Placeholder for description
+          `publishDate: "${formattedDate}"`,       // The upload date
+          `coverImage: "${thumbnail}"`,            // The thumbnail URL
+          '---\n',
+        ]
+      } catch (error) {
+        // Log the error and rethrow it for upstream handling
+        err(`Error extracting metadata for ${input}: ${error instanceof Error ? error.message : String(error)}`)
+        throw error
+      }
       break
 
+    // If the file option is selected
     case !!options.file:
-      // Extract and process local file information
+      // Get the original filename from the input path
       const originalFilename = basename(input as string)
+      // Remove the file extension to get the filename without extension
       const filenameWithoutExt = originalFilename.replace(extname(originalFilename), '')
 
-      // Generate sanitized filename
+      // Sanitize the filename to make it safe for use in paths
       filename = sanitizeTitle(filenameWithoutExt)
+      // Define the final path where the markdown file will be saved
       finalPath = `content/${filename}`
 
-      // Create file-specific front matter with minimal metadata
+      // Construct the front matter content for a file
       frontMatter = [
         '---',
-        `showLink: "${originalFilename}"`,
-        `channel: ""`,
-        `channelURL: ""`,
-        `title: "${originalFilename}"`,
-        `description: ""`,
-        `publishDate: ""`,
-        `coverImage: ""`,
+        `showLink: "${originalFilename}"`,         // The original filename
+        `channel: ""`,                             // Empty channel field
+        `channelURL: ""`,                          // Empty channel URL field
+        `title: "${originalFilename}"`,            // Use the original filename as the title
+        `description: ""`,                         // Placeholder for description
+        `publishDate: ""`,                         // Empty publish date
+        `coverImage: ""`,                          // Empty cover image
         '---\n',
       ]
       break
 
+    // If the RSS option is selected
     case !!options.rss:
-      // Process RSS feed item
+      // Cast the input to an RSSItem type
       const item = input as RSSItem
+      // Destructure necessary fields from the RSS item
       const {
-        publishDate, title: rssTitle, coverImage, showLink, channel: rssChannel, channelURL
+        publishDate,         // Publication date
+        title: rssTitle,     // Title of the RSS item
+        coverImage,          // Cover image URL
+        showLink,            // Link to the content
+        channel: rssChannel, // Channel name
+        channelURL,          // Channel URL
       } = item
 
-      // Generate filename using date and sanitized title
+      // Generate the sanitized filename using the publish date and title
       filename = `${publishDate}-${sanitizeTitle(rssTitle)}`
+      // Define the final path where the markdown file will be saved
       finalPath = `content/${filename}`
 
-      // Create RSS-specific front matter
+      // Construct the front matter content for an RSS item
       frontMatter = [
         '---',
-        `showLink: "${showLink}"`,
-        `channel: "${rssChannel}"`,
-        `channelURL: "${channelURL}"`,
-        `title: "${rssTitle}"`,
-        `description: ""`,
-        `publishDate: "${publishDate}"`,
-        `coverImage: "${coverImage}"`,
+        `showLink: "${showLink}"`,                 // Link to the content
+        `channel: "${rssChannel}"`,                // Channel name
+        `channelURL: "${channelURL}"`,             // Channel URL
+        `title: "${rssTitle}"`,                    // Title of the RSS item
+        `description: ""`,                         // Placeholder for description
+        `publishDate: "${publishDate}"`,           // Publication date
+        `coverImage: "${coverImage}"`,             // Cover image URL
         '---\n',
       ]
       break
 
+    // If no valid option is provided, throw an error
     default:
       throw new Error('Invalid option provided for markdown generation.')
   }
 
-  // Join front matter array into a single string
+  // Join the front matter array into a single string with newline separators
   const frontMatterContent = frontMatter.join('\n')
 
-  // Write the front matter content to a markdown file
+  // Write the front matter content to a markdown file at the specified path
   await writeFile(`${finalPath}.md`, frontMatterContent)
 
-  // Log the generated content and success message
+  // Log the front matter content in dimmed text
   l(dim(frontMatterContent))
+  // Log the current step in the process
   l(step('\nStep 1 - Generating markdown...\n'))
+  // Log a success message indicating where the file was saved
   l(success(`  Front matter successfully created and saved:\n    - ${finalPath}.md`))
 
-  // Return the generated markdown data for further processing
+  // Return an object containing the front matter, final path, and filename
   return { frontMatter: frontMatterContent, finalPath, filename }
 }

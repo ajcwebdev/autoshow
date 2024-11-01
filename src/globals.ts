@@ -77,7 +77,7 @@ export const err: typeof console.error = console.error
  * Available action options for content processing
  * @type {string[]}
  */
-export const ACTION_OPTIONS = ['video', 'playlist', 'urls', 'file', 'rss']
+export const ACTION_OPTIONS = ['video', 'playlist', 'channel', 'urls', 'file', 'rss']
 
 /**
  * Available LLM service options

@@ -21,12 +21,12 @@ export const callClaude: LLMFunction = async (
   model: string = 'CLAUDE_3_HAIKU'
 ): Promise<void> => {
   // Check if the ANTHROPIC_API_KEY environment variable is set
-  if (!env.ANTHROPIC_API_KEY) {
+  if (!env['ANTHROPIC_API_KEY']) {
     throw new Error('ANTHROPIC_API_KEY environment variable is not set. Please set it to your Anthropic API key.')
   }
 
   // Initialize the Anthropic client with the API key from environment variables
-  const anthropic = new Anthropic({ apiKey: env.ANTHROPIC_API_KEY })
+  const anthropic = new Anthropic({ apiKey: env['ANTHROPIC_API_KEY'] })
   
   try {
     // Select the actual model to use, defaulting to CLAUDE_3_HAIKU if not specified

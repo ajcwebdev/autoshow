@@ -27,8 +27,8 @@ export const callOllama: LLMFunction = async (
     l(wait(`    - modelName: ${modelName}\n    - ollamaModelName: ${ollamaModelName}`))
     
     // Get host and port from environment variables or use defaults
-    const ollamaHost = env.OLLAMA_HOST || 'localhost'
-    const ollamaPort = env.OLLAMA_PORT || '11434'
+    const ollamaHost = env['OLLAMA_HOST'] || 'localhost'
+    const ollamaPort = env['OLLAMA_PORT'] || '11434'
     
     // Check if Ollama server is running, start if not
     async function checkServer(): Promise<boolean> {

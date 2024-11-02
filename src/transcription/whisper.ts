@@ -11,6 +11,9 @@ import { existsSync } from 'node:fs'
 import { l, err, wait, success, WHISPER_MODELS, WHISPER_PYTHON_MODELS, execPromise } from '../globals.js'
 import type { ProcessingOptions, WhisperModelType, WhisperTranscriptServices } from '../types.js'
 
+// Updated function signatures for the runner functions
+type WhisperRunner = (finalPath: string, whisperModel: string) => Promise<void>
+
 /**
  * Main function to handle transcription using Whisper.
  * @param options - Additional processing options.
@@ -69,7 +72,7 @@ export async function callWhisper(
     l(wait(`\n    - whisperModel: ${whisperModel}`))
     
     // Run the appropriate transcription method
-    await config.runner(options, finalPath, whisperModel)
+    await config.runner(finalPath, whisperModel)
 
     // Read the generated transcript file (assuming it's always `${finalPath}.txt`)
     const txtContent = await readFile(`${finalPath}.txt`, 'utf8')
@@ -88,7 +91,7 @@ export async function callWhisper(
  * @param finalPath - Base path for files.
  * @param whisperModel - The Whisper model to use.
  */
-async function runWhisperCpp(options: ProcessingOptions, finalPath: string, whisperModel: string): Promise<void> {
+const runWhisperCpp: WhisperRunner = async (finalPath, whisperModel) => {
   const modelGGMLName = WHISPER_MODELS[whisperModel as WhisperModelType]
   l(wait(`    - modelGGMLName: ${modelGGMLName}`))
 
@@ -123,7 +126,7 @@ async function runWhisperCpp(options: ProcessingOptions, finalPath: string, whis
  * @param finalPath - Base path for files.
  * @param whisperModel - The Whisper model to use.
  */
-async function runWhisperDocker(options: ProcessingOptions, finalPath: string, whisperModel: string): Promise<void> {
+const runWhisperDocker: WhisperRunner = async (finalPath, whisperModel) => {
   const modelGGMLName = WHISPER_MODELS[whisperModel as WhisperModelType]
   const CONTAINER_NAME = 'autoshow-whisper-1'
   const modelPathContainer = `/app/models/${modelGGMLName}`
@@ -159,7 +162,7 @@ async function runWhisperDocker(options: ProcessingOptions, finalPath: string, w
  * @param finalPath - Base path for files.
  * @param whisperModel - The Whisper model to use.
  */
-async function runWhisperPython(options: ProcessingOptions, finalPath: string, whisperModel: string): Promise<void> {
+const runWhisperPython: WhisperRunner = async (finalPath, whisperModel) => {
   // Check if ffmpeg is installed
   try {
     await execPromise('ffmpeg -version')
@@ -210,7 +213,7 @@ async function runWhisperPython(options: ProcessingOptions, finalPath: string, w
  * @param finalPath - Base path for files.
  * @param whisperModel - The Whisper model to use.
  */
-async function runWhisperDiarization(options: ProcessingOptions, finalPath: string, whisperModel: string): Promise<void> {
+const runWhisperDiarization: WhisperRunner = async (finalPath, whisperModel) => {
   // Check if the virtual environment exists
   const venvPythonPath = 'whisper-diarization/venv/bin/python'
   if (!existsSync(venvPythonPath)) {
@@ -264,22 +267,23 @@ function srtToTxt(srtContent: string): string {
   return blocks
     .map(block => {
       const lines = block.split('\n').filter(line => line.trim() !== '')
-      if (lines.length >= 2) {
-        const timestampLine = lines[1]
-        const textLines = lines.slice(2)
-        const match = timestampLine.match(/(\d{2}):(\d{2}):(\d{2}),\d{3}/)
-        if (match) {
-          const hours = parseInt(match[1], 10)
-          const minutes = parseInt(match[2], 10)
-          const seconds = match[3]
-          const totalMinutes = hours * 60 + minutes
-          const timestamp = `[${String(totalMinutes).padStart(2, '0')}:${seconds}]`
-          const text = textLines.join(' ')
-          return `${timestamp} ${text}`
-        }
-      }
-      return null
+      if (lines.length < 2) return null
+
+      const timestampLine = lines[1]
+      const textLines = lines.slice(2)
+      
+      const match = timestampLine?.match(/(\d{2}):(\d{2}):(\d{2}),\d{3}/)
+      if (!match?.[1] || !match?.[2] || !match?.[3]) return null
+
+      const hours = parseInt(match[1], 10)
+      const minutes = parseInt(match[2], 10)
+      const seconds = match[3]
+      const totalMinutes = hours * 60 + minutes
+      const timestamp = `[${String(totalMinutes).padStart(2, '0')}:${seconds}]`
+      const text = textLines.join(' ')
+      
+      return `${timestamp} ${text}`
     })
-    .filter(line => line !== null)
+    .filter((line): line is string => line !== null)
     .join('\n')
 }

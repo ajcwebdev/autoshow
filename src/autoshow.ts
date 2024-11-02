@@ -27,6 +27,24 @@ import type { ProcessingOptions, HandlerFunction, LLMServices, TranscriptService
 // Initialize the command-line interface using Commander.js
 const program = new Command()
 
+// Define valid action types
+type ValidAction = 'video' | 'playlist' | 'channel' | 'urls' | 'file' | 'rss'
+
+// Define the process handlers with strict typing
+const PROCESS_HANDLERS: Record<ValidAction, HandlerFunction> = {
+  video: processVideo,
+  playlist: processPlaylist,
+  channel: processChannel,
+  urls: processURLs,
+  file: processFile,
+  rss: processRSS,
+}
+
+// Type guard to check if a string is a valid action
+function isValidAction(action: string | undefined): action is ValidAction {
+  return Boolean(action && action in PROCESS_HANDLERS)
+}
+
 /**
  * Defines the command-line interface options and descriptions.
  * Sets up all available commands and their respective flags
@@ -98,16 +116,6 @@ program.action(async (options: ProcessingOptions) => {
   l(opts(JSON.stringify(options, null, 2)))
   l(``)
 
-  // Define mapping of action types to their handler functions
-  const PROCESS_HANDLERS: Record<string, HandlerFunction> = {
-    video: processVideo,
-    playlist: processPlaylist,
-    channel: processChannel,
-    urls: processURLs,
-    file: processFile,
-    rss: processRSS,
-  }
-
   // Extract interactive mode flag
   const { interactive } = options
   
@@ -136,24 +144,34 @@ program.action(async (options: ProcessingOptions) => {
     options.whisper = 'large-v3-turbo'
   }
 
-  // Execute the appropriate handler if an action was specified
-  if (action) {
-    try {
-      // Process the content using the selected handler
-      await PROCESS_HANDLERS[action](
-        options,
-        options[action as keyof ProcessingOptions] as string,
-        llmServices,
-        transcriptServices
-      )
-      l(final(`\n================================================================================================`))
-      l(final(`  ${action} Processing Completed Successfully.`))
-      l(final(`================================================================================================\n`))
-      exit(0)
-    } catch (error) {
-      err(`Error processing ${action}:`, (error as Error).message)
-      exit(1)
+  // Validate action
+  if (!isValidAction(action)) {
+    err(`Invalid or missing action`)
+    exit(1)
+  }
+
+  try {
+    // Get input value with proper typing
+    const input = options[action]
+
+    // Ensure we have a valid input value
+    if (!input || typeof input !== 'string') {
+      throw new Error(`No valid input provided for ${action} processing`)
     }
+
+    // Get handler with proper typing
+    const handler = PROCESS_HANDLERS[action]
+
+    // Process the content using the selected handler
+    await handler(options, input, llmServices, transcriptServices)
+
+    l(final(`\n================================================================================================`))
+    l(final(`  ${action} Processing Completed Successfully.`))
+    l(final(`================================================================================================\n`))
+    exit(0)
+  } catch (error) {
+    err(`Error processing ${action}:`, (error as Error).message)
+    exit(1)
   }
 })
 

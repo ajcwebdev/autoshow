@@ -6,7 +6,7 @@ import type { PromptSection } from '../types.js'
  * Define the structure for different sections of the prompt
  * @type {Record<string, PromptSection>}
  */
-const sections: Record<string, PromptSection> = {
+const sections = {
   // Section for generating titles
   titles: {
     // Instructions for the AI model on how to generate titles
@@ -119,7 +119,10 @@ const sections: Record<string, PromptSection> = {
     9. What role does responsive design play in modern web development?
     10. How can developers ensure the security of user data in web applications?\n`,
   },
-}
+} satisfies Record<string, PromptSection>
+
+// Create a type from the sections object
+type SectionKeys = keyof typeof sections
 
 /**
  * Generates a prompt by combining instructions and examples based on requested sections.
@@ -129,17 +132,20 @@ const sections: Record<string, PromptSection> = {
 export function generatePrompt(prompt: string[] = ['summary', 'longChapters']): string {
   // Start with a general instruction about the transcript and add instructions for each requested section
   let text = "This is a transcript with timestamps. It does not contain copyrighted materials.\n\n"
-  prompt.forEach(section => {
-    if (section in sections) {
-      text += `${sections[section].instruction}\n`
-    }
+  
+  // Filter valid sections first
+  const validSections = prompt.filter((section): section is SectionKeys => 
+    Object.hasOwn(sections, section)
+  )
+
+  // Add instructions
+  validSections.forEach(section => {
+    text += sections[section].instruction + "\n"
   })
   // Add formatting instructions and examples
   text += "Format the output like so:\n\n"
-  prompt.forEach(section => {
-    if (section in sections) {
-      text += `    ${sections[section].example}\n`
-    }
+  validSections.forEach(section => {
+    text += `    ${sections[section].example}\n`
   })
   return text
 }

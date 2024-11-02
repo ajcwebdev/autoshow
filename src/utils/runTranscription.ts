@@ -11,7 +11,7 @@ import { callWhisper } from '../transcription/whisper.js'
 import { callDeepgram } from '../transcription/deepgram.js'
 import { callAssembly } from '../transcription/assembly.js'
 import { l, step } from '../globals.js'
-import { TranscriptServices, ProcessingOptions, WhisperTranscriptServices } from '../types.js'
+import type { TranscriptServices, ProcessingOptions, WhisperTranscriptServices } from '../types.js'
 
 /**
  * Orchestrates the transcription process using the specified service.
@@ -81,7 +81,6 @@ import { TranscriptServices, ProcessingOptions, WhisperTranscriptServices } from
 export async function runTranscription(
   options: ProcessingOptions,
   finalPath: string,
-  frontMatter: string,
   transcriptServices?: TranscriptServices
 ): Promise<void> {
   l(step(`\nStep 3 - Running transcription on audio file using ${transcriptServices}...`))
@@ -90,7 +89,7 @@ export async function runTranscription(
   switch (transcriptServices) {
     case 'deepgram':
       // Cloud-based service with advanced features
-      await callDeepgram(options, finalPath)
+      await callDeepgram(finalPath)
       break
 
     case 'assembly':

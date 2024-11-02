@@ -3,23 +3,19 @@
 import { writeFile, readFile } from 'node:fs/promises'
 import { env } from 'node:process'
 import { l, wait, err } from '../globals.js'
-import type { ProcessingOptions, DeepgramResponse } from '../types.js'
+import type { DeepgramResponse } from '../types.js'
 
 /**
  * Main function to handle transcription using Deepgram API.
- * @param {ProcessingOptions} options - Additional processing options.
  * @param {string} finalPath - The identifier used for naming output files.
  * @returns {Promise<string>} - Returns the formatted transcript content.
  * @throws {Error} - If an error occurs during transcription.
  */
-export async function callDeepgram(options: ProcessingOptions, finalPath: string): Promise<string> {
+export async function callDeepgram(finalPath: string): Promise<string> {
   l(wait('\n  Using Deepgram for transcription...\n'))
-  // l(`Options received in callDeepgram:\n`)
-  // l(options)
-  // l(`finalPath:`, finalPath)
 
   // Check if the DEEPGRAM_API_KEY environment variable is set
-  if (!env.DEEPGRAM_API_KEY) {
+  if (!env['DEEPGRAM_API_KEY']) {
     throw new Error('DEEPGRAM_API_KEY environment variable is not set. Please set it to your Deepgram API key.')
   }
 
@@ -40,7 +36,7 @@ export async function callDeepgram(options: ProcessingOptions, finalPath: string
     const response = await fetch(apiUrl, {
       method: 'POST',
       headers: {
-        'Authorization': `Token ${env.DEEPGRAM_API_KEY}`,
+        'Authorization': `Token ${env['DEEPGRAM_API_KEY']}`,
         'Content-Type': 'audio/wav'
       },
       body: audioBuffer
@@ -52,8 +48,16 @@ export async function callDeepgram(options: ProcessingOptions, finalPath: string
 
     const result = await response.json() as DeepgramResponse
 
+    // Add null checks and provide default values for the Deepgram response
+    const channel = result.results?.channels?.[0]
+    const alternative = channel?.alternatives?.[0]
+    
+    if (!alternative?.words) {
+      throw new Error('No transcription results found in Deepgram response')
+    }
+
     // Extract the words array from the Deepgram API response
-    const txtContent = result.results.channels[0].alternatives[0].words
+    const txtContent = alternative.words
       // Use reduce to iterate over the words array and build the formatted transcript
       .reduce((acc, { word, start }, i, arr) => {
         // Determine if a timestamp should be added

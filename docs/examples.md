@@ -5,6 +5,7 @@
 - [Content and Feed Inputs](#content-and-feed-inputs)
   - [Process Single Video URLs](#process-single-video-urls)
   - [Process Multiple Videos in YouTube Playlist](#process-multiple-videos-in-youtube-playlist)
+  - [Process All Videos from a YouTube Channel](#process-all-videos-from-a-youtube-channel)
   - [Process Multiple Videos Specified in a URLs File](#process-multiple-videos-specified-in-a-urls-file)
   - [Process Single Audio or Video File](#process-single-audio-or-video-file)
   - [Process Podcast RSS Feed](#process-podcast-rss-feed)
@@ -62,9 +63,43 @@ npm run as -- \
 
 ### Process All Videos from a YouTube Channel
 
+Process all videos from a YouTube channel (both live and non-live):
+
 ```bash
 npm run as -- \
   --channel "https://www.youtube.com/@ajcwebdev"
+```
+
+Process videos starting from the oldest instead of newest:
+
+```bash
+npm run as -- \
+  --channel "https://www.youtube.com/@ajcwebdev" \
+  --order oldest
+```
+
+Skip a certain number of videos before beginning processing (starts from newest by default and can be used with `--order oldest`):
+
+```bash
+npm run as -- \
+  --channel "https://www.youtube.com/@ajcwebdev" \
+  --skip 1
+```
+
+Process a certain number of the most recent videos, for example the last three videos released on the channel:
+
+```bash
+npm run as -- \
+  --channel "https://www.youtube.com/@ajcwebdev" \
+  --last 3
+```
+
+Run on a YouTube channel and generate JSON info file with markdown metadata of each video:
+
+```bash
+npm run as -- \
+  --channel "https://www.youtube.com/@ajcwebdev" \
+  --info
 ```
 
 ### Process Multiple Videos Specified in a URLs File
@@ -102,14 +137,6 @@ npm run as -- \
   --rss "https://ajcwebdev.substack.com/feed"
 ```
 
-Process a certain number of the most recent items, for example the last three episodes released on the feed:
-
-```bash
-npm run as -- \
-  --rss "https://feeds.transistor.fm/fsjam-podcast/" \
-  --last 3
-```
-
 Process RSS feed from oldest to newest:
 
 ```bash
@@ -126,14 +153,20 @@ npm run as -- \
   --skip 1
 ```
 
+Process a certain number of the most recent items, for example the last three episodes released on the feed:
+
+```bash
+npm run as -- \
+  --rss "https://feeds.transistor.fm/fsjam-podcast/" \
+  --last 3
+```
+
 Process a single specific episode from a podcast RSS feed by providing the episode's audio URL with the `--item` option:
 
 ```bash
 npm run as -- \
   --rss "https://ajcwebdev.substack.com/feed" \
-  --item "https://api.substack.com/feed/podcast/36236609/fd1f1532d9842fe1178de1c920442541.mp3" \
-  --ollama \
-  --prompt titles summary longChapters takeaways questions
+  --item "https://api.substack.com/feed/podcast/36236609/fd1f1532d9842fe1178de1c920442541.mp3"
 ```
 
 Run on a podcast RSS feed and generate JSON info file with markdown metadata of each item:

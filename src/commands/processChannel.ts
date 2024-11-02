@@ -7,10 +7,132 @@
 
 import { writeFile } from 'node:fs/promises'
 import { processVideo } from './processVideo.js'
-import { l, err, opts, success, execFilePromise } from '../globals.js'
+import { l, err, opts, success, execFilePromise, wait } from '../globals.js'
 import type {
   LLMServices, TranscriptServices, ProcessingOptions, VideoMetadata,
 } from '../types.js'
+
+/**
+ * Validates channel processing options for consistency and correct values.
+ * 
+ * @param options - Configuration options to validate
+ * @throws Will exit process if validation fails
+ */
+function validateChannelOptions(options: ProcessingOptions): void {
+  if (options.last !== undefined) {
+    if (!Number.isInteger(options.last) || options.last < 1) {
+      err('Error: The --last option must be a positive integer.')
+      process.exit(1)
+    }
+    if (options.skip !== undefined || options.order !== undefined) {
+      err('Error: The --last option cannot be used with --skip or --order.')
+      process.exit(1)
+    }
+  }
+
+  if (options.skip !== undefined && (!Number.isInteger(options.skip) || options.skip < 0)) {
+    err('Error: The --skip option must be a non-negative integer.')
+    process.exit(1)
+  }
+
+  if (options.order !== undefined && !['newest', 'oldest'].includes(options.order)) {
+    err("Error: The --order option must be either 'newest' or 'oldest'.")
+    process.exit(1)
+  }
+}
+
+/**
+ * Logs the current processing action based on provided options.
+ * 
+ * @param options - Configuration options determining what to process
+ */
+function logProcessingAction(options: ProcessingOptions): void {
+  if (options.last) {
+    l(wait(`\nProcessing the last ${options.last} videos`))
+  } else if (options.skip) {
+    l(wait(`\nSkipping first ${options.skip || 0} videos`))
+  }
+}
+
+/**
+ * Video information including upload date, URL, and type.
+ */
+interface VideoInfo {
+  uploadDate: string
+  url: string
+  date: Date
+  timestamp: number  // Unix timestamp for more precise sorting
+  isLive: boolean   // Flag to identify live streams
+}
+
+/**
+ * Gets detailed video information using yt-dlp.
+ * 
+ * @param url - Video URL to get information for
+ * @returns Promise resolving to video information
+ */
+async function getVideoDetails(url: string): Promise<VideoInfo | null> {
+  try {
+    const { stdout } = await execFilePromise('yt-dlp', [
+      '--print', '%(upload_date)s|%(timestamp)s|%(is_live)s|%(webpage_url)s',
+      '--no-warnings',
+      url,
+    ])
+
+    const [uploadDate, timestamp, isLive, videoUrl] = stdout.trim().split('|')
+    
+    if (!uploadDate || !timestamp || !videoUrl) {
+      throw new Error('Incomplete video information received from yt-dlp')
+    }
+
+    // Convert upload date to Date object
+    const year = uploadDate.substring(0, 4)
+    const month = uploadDate.substring(4, 6)
+    const day = uploadDate.substring(6, 8)
+    const date = new Date(`${year}-${month}-${day}`)
+
+    return {
+      uploadDate,
+      url: videoUrl,
+      date,
+      timestamp: parseInt(timestamp, 10) || date.getTime() / 1000,
+      isLive: isLive === 'True'
+    }
+  } catch (error) {
+    err(`Error getting details for video ${url}: ${error instanceof Error ? error.message : String(error)}`)
+    return null
+  }
+}
+
+/**
+ * Selects which videos to process based on provided options.
+ * 
+ * @param videos - All available videos with their dates and URLs
+ * @param options - Configuration options for filtering
+ * @returns Array of video info to process
+ */
+function selectVideosToProcess(videos: VideoInfo[], options: ProcessingOptions): VideoInfo[] {
+  if (options.last) {
+    return videos.slice(0, options.last)
+  }
+  return videos.slice(options.skip || 0)
+}
+
+/**
+ * Logs the processing status and video counts.
+ */
+function logProcessingStatus(total: number, processing: number, options: ProcessingOptions): void {
+  if (options.last) {
+    l(wait(`\n  - Found ${total} videos in the channel.`))
+    l(wait(`  - Processing the last ${processing} videos.`))
+  } else if (options.skip) {
+    l(wait(`\n  - Found ${total} videos in the channel.`))
+    l(wait(`  - Processing ${processing} videos after skipping ${options.skip || 0}.\n`))
+  } else {
+    l(wait(`\n  - Found ${total} videos in the channel.`))
+    l(wait(`  - Processing all ${processing} videos.\n`))
+  }
+}
 
 /**
  * Processes an entire YouTube channel by:
@@ -38,10 +160,14 @@ export async function processChannel(
   l(opts(`  - llmServices: ${llmServices}\n  - transcriptServices: ${transcriptServices}`))
 
   try {
-    // Extract all video URLs from the channel using yt-dlp
+    // Validate options
+    validateChannelOptions(options)
+    logProcessingAction(options)
+
+    // Get list of videos from channel
     const { stdout, stderr } = await execFilePromise('yt-dlp', [
       '--flat-playlist',
-      '--print', 'url',
+      '--print', '%(url)s',
       '--no-warnings',
       channelUrl,
     ])
@@ -51,22 +177,40 @@ export async function processChannel(
       err(`yt-dlp warnings: ${stderr}`)
     }
 
-    // Convert stdout into array of video URLs, removing empty entries
-    const urls = stdout.trim().split('\n').filter(Boolean)
+    // Get detailed information for each video
+    const videoUrls = stdout.trim().split('\n').filter(Boolean)
+    l(opts(`\nFetching detailed information for ${videoUrls.length} videos...`))
+
+    const videoDetailsPromises = videoUrls.map(url => getVideoDetails(url))
+    const videoDetailsResults = await Promise.all(videoDetailsPromises)
+    const videos = videoDetailsResults.filter((video): video is VideoInfo => video !== null)
 
     // Exit if no videos were found in the channel
-    if (urls.length === 0) {
+    if (videos.length === 0) {
       err('Error: No videos found in the channel.')
       process.exit(1)
     }
 
-    l(opts(`\nFound ${urls.length} videos in the channel...`))
+    // Sort videos based on timestamp
+    videos.sort((a, b) => a.timestamp - b.timestamp)
 
-    // If the --info option is provided, extract metadata for all videos
+    // If order is 'newest' (default), reverse the sorted array
+    if (options.order !== 'oldest') {
+      videos.reverse()
+    }
+
+    l(opts(`\nFound ${videos.length} videos in the channel...`))
+
+    // Select videos to process based on options
+    const videosToProcess = selectVideosToProcess(videos, options)
+    logProcessingStatus(videos.length, videosToProcess.length, options)
+
+    // If the --info option is provided, extract metadata for selected videos
     if (options.info) {
-      // Collect metadata for all videos in parallel
+      // Collect metadata for selected videos in parallel
       const metadataList = await Promise.all(
-        urls.map(async (url) => {
+        videosToProcess.map(async (video) => {
+          const url = video.url
           try {
             // Execute yt-dlp command to extract metadata
             const { stdout } = await execFilePromise('yt-dlp', [
@@ -126,10 +270,11 @@ export async function processChannel(
     }
 
     // Process each video sequentially, with error handling for individual videos
-    for (const [index, url] of urls.entries()) {
+    for (const [index, video] of videosToProcess.entries()) {
+      const url = video.url
       // Visual separator for each video in the console
       l(opts(`\n================================================================================================`))
-      l(opts(`  Processing video ${index + 1}/${urls.length}: ${url}`))
+      l(opts(`  Processing video ${index + 1}/${videosToProcess.length}: ${url}`))
       l(opts(`================================================================================================\n`))
       try {
         // Process the video using the existing processVideo function

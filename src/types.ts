@@ -121,6 +121,9 @@ export type InquirerAnswers = {
   /** YouTube playlist URL provided by the user. */
   playlist?: string
 
+  /** YouTube channel URL provided by the user. */
+  channel?: string
+
   /** File path containing URLs provided by the user. */
   urls?: string
 

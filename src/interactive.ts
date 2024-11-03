@@ -25,6 +25,7 @@ export async function handleInteractivePrompt(
       choices: [
         { name: 'Single YouTube Video', value: 'video' },
         { name: 'YouTube Playlist', value: 'playlist' },
+        { name: 'YouTube Channel', value: 'channel' },
         { name: 'List of URLs from File', value: 'urls' },
         { name: 'Local Audio/Video File', value: 'file' },
         { name: 'Podcast RSS Feed', value: 'rss' },
@@ -32,6 +33,7 @@ export async function handleInteractivePrompt(
     },
     // Input prompts for different content sources
     {
+      // Input prompt for YouTube Video
       type: 'input',
       name: 'video',
       message: 'Enter the YouTube video URL:',
@@ -39,6 +41,7 @@ export async function handleInteractivePrompt(
       validate: (input: string) => (input ? true : 'Please enter a valid URL.'),
     },
     {
+      // Input prompt for YouTube Playlist
       type: 'input',
       name: 'playlist',
       message: 'Enter the YouTube playlist URL:',
@@ -46,6 +49,15 @@ export async function handleInteractivePrompt(
       validate: (input: string) => (input ? true : 'Please enter a valid URL.'),
     },
     {
+      // Input prompt for YouTube Channel
+      type: 'input',
+      name: 'channel',
+      message: 'Enter the YouTube channel URL:',
+      when: (answers: InquirerAnswers) => answers.action === 'channel',
+      validate: (input: string) => (input ? true : 'Please enter a valid URL.'),
+    },
+    {
+      // Input prompt for file containing a list of URLs
       type: 'input',
       name: 'urls',
       message: 'Enter the file path containing URLs:',
@@ -53,6 +65,7 @@ export async function handleInteractivePrompt(
       validate: (input: string) => (input ? true : 'Please enter a valid file path.'),
     },
     {
+      // Input prompt for local audio and video files
       type: 'input',
       name: 'file',
       message: 'Enter the local audio/video file path:',
@@ -61,6 +74,7 @@ export async function handleInteractivePrompt(
     },
     // RSS feed specific prompts
     {
+      // Input prompt for RSS feed
       type: 'input',
       name: 'rss',
       message: 'Enter the podcast RSS feed URL:',

@@ -119,11 +119,8 @@ program.action(async (options: ProcessingOptions) => {
   // Extract interactive mode flag
   const { interactive } = options
   
-  // Check if no action option was provided
-  const noActionProvided = ACTION_OPTIONS.every((opt) => !options[opt as keyof ProcessingOptions])
-
   // If in interactive mode or no action provided, prompt user for input
-  if (interactive || noActionProvided) {
+  if (interactive) {
     options = await handleInteractivePrompt(options)
   }
 
@@ -131,9 +128,10 @@ program.action(async (options: ProcessingOptions) => {
   if (options.item && !Array.isArray(options.item)) {
     options.item = [options.item]
   }
-
+  // Extract the action values from ACTION_OPTIONS for validation
+  const actionValues = ACTION_OPTIONS.map((opt) => opt.name)
   // Validate and get single options for action, LLM, and transcription
-  const action = validateOption(ACTION_OPTIONS, options, 'input option')
+  const action = validateOption(actionValues, options, 'input option')
   const llmKey = validateOption(LLM_OPTIONS, options, 'LLM option')
   const llmServices = llmKey as LLMServices | undefined
   const transcriptKey = validateOption(TRANSCRIPT_OPTIONS, options, 'transcription option')

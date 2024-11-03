@@ -74,10 +74,47 @@ export const l: typeof console.log = console.log
 export const err: typeof console.error = console.error
 
 /**
- * Available action options for content processing
- * @type {string[]}
+ * Available action options for content processing with additional metadata
+ * @type {{ name: string; value: string; message: string; validate: (input: string) => boolean | string }[]}
  */
-export const ACTION_OPTIONS = ['video', 'playlist', 'channel', 'urls', 'file', 'rss']
+export const ACTION_OPTIONS = [
+  {
+    name: 'video',
+    description: 'Single YouTube Video',
+    message: 'Enter the YouTube video URL:',
+    validate: (input: string) => (input ? true : 'Please enter a valid URL.')
+  },
+  {
+    name: 'playlist',
+    description: 'YouTube Playlist',
+    message: 'Enter the YouTube playlist URL:',
+    validate: (input: string) => (input ? true : 'Please enter a valid URL.')
+  },
+  {
+    name: 'channel',
+    description: 'YouTube Channel',
+    message: 'Enter the YouTube channel URL:',
+    validate: (input: string) => (input ? true : 'Please enter a valid URL.')
+  },
+  {
+    name: 'urls',
+    description: 'List of URLs from File',
+    message: 'Enter the file path containing URLs:',
+    validate: (input: string) => (input ? true : 'Please enter a valid file path.')
+  },
+  {
+    name: 'file',
+    description: 'Local Audio/Video File',
+    message: 'Enter the local audio/video file path:',
+    validate: (input: string) => (input ? true : 'Please enter a valid file path.')
+  },
+  {
+    name: 'rss',
+    description: 'Podcast RSS Feed',
+    message: 'Enter the podcast RSS feed URL:',
+    validate: (input: string) => (input ? true : 'Please enter a valid URL.')
+  }
+]
 
 /**
  * Available LLM service options

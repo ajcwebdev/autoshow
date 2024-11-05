@@ -43,8 +43,8 @@ services:
     volumes:
       # Share content directory
       - ./content:/app/content
-      # Share whisper models directory
-      - ./whisper.cpp/models:/app/models
+      # Use a named volume for models
+      - whisper-models:/app/models
     # Keep container running (placeholder command)
     command: tail -f /dev/null
     # Allocate a pseudo-TTY
@@ -61,8 +61,8 @@ services:
     image: ollama/ollama
     # Mount these volumes
     volumes:
-      # Persist Ollama data in named volume
-      - ollama:/root/.ollama
+      # Use a named volume for models
+      - ollama-models:/root/.ollama
     # Set environment variables
     environment:
       # Make Ollama accessible on all network interfaces
@@ -80,6 +80,5 @@ networks:
 
 # Define named volumes used by the services
 volumes:
-  # Volume for persisting Ollama data
-  ollama:
-    # Using default volume configuration
+  ollama-models:
+  whisper-models:

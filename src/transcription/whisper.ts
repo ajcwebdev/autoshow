@@ -145,7 +145,7 @@ const runWhisperDocker: WhisperRunner = async (finalPath, whisperModel) => {
 
   // Run transcription inside the container
   await execPromise(
-    `docker exec ${CONTAINER_NAME} /app/main -m ${modelPathContainer} -f "/app/${finalPath}.wav" -of "/app/${finalPath}" --output-lrc`
+    `docker exec ${CONTAINER_NAME} /app/main -m ${modelPathContainer} -f "/app/content/${finalPath.split('/').pop()}.wav" -of "/app/content/${finalPath.split('/').pop()}" --output-lrc`
   )
   l(success(`\n  Transcript LRC file successfully created:\n    - ${finalPath}.lrc`))
 

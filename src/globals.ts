@@ -15,6 +15,148 @@ import type { WhisperModelType, ChatGPTModelType, ClaudeModelType, CohereModelTy
 export const execPromise = promisify(exec)
 export const execFilePromise = promisify(execFile)
 
+export const PROCESS_CHOICES = [
+  { name: 'Single YouTube Video', value: 'video' },
+  { name: 'YouTube Playlist', value: 'playlist' },
+  { name: 'YouTube Channel', value: 'channel' },
+  { name: 'List of URLs from File', value: 'urls' },
+  { name: 'Local Audio/Video File', value: 'file' },
+  { name: 'Podcast RSS Feed', value: 'rss' },
+]
+
+export const TRANSCRIPT_CHOICES = [
+  { name: 'Whisper.cpp', value: 'whisper' },
+  { name: 'Whisper.cpp (Docker)', value: 'whisperDocker' },
+  { name: 'Whisper Python', value: 'whisperPython' },
+  { name: 'Whisper Diarization', value: 'whisperDiarization' },
+  { name: 'Deepgram', value: 'deepgram' },
+  { name: 'AssemblyAI', value: 'assembly' },
+]
+
+export const WHISPER_MODEL_CHOICES = [
+  'tiny',
+  'tiny.en',
+  'base',
+  'base.en',
+  'small',
+  'small.en',
+  'medium',
+  'medium.en',
+  'large-v1',
+  'large-v2',
+  'turbo',
+]
+
+export const WHISPER_LIBRARY_CHOICES = [
+  'whisper',
+  'whisperDocker',
+  'whisperPython',
+  'whisperDiarization'
+]
+
+export const LLM_SERVICE_CHOICES = [
+  { name: 'Skip LLM Processing', value: null },
+  { name: 'Ollama (local inference)', value: 'ollama' },
+  { name: 'OpenAI ChatGPT', value: 'chatgpt' },
+  { name: 'Anthropic Claude', value: 'claude' },
+  { name: 'Google Gemini', value: 'gemini' },
+  { name: 'Cohere', value: 'cohere' },
+  { name: 'Mistral', value: 'mistral' },
+  { name: 'Fireworks AI', value: 'fireworks' },
+  { name: 'Together AI', value: 'together' },
+  { name: 'Groq', value: 'groq' },
+]
+
+export const LLM_CHOICES = [
+  'ollama',
+  'chatgpt',
+  'claude',
+  'cohere',
+  'mistral',
+  'fireworks',
+  'together',
+  'groq',
+  'gemini',
+]
+
+export const OLLAMA_CHOICES = [
+  { name: 'LLAMA 3 2 1B', value: 'LLAMA_3_2_1B' },
+  { name: 'LLAMA 3 2 3B', value: 'LLAMA_3_2_3B' },
+  { name: 'GEMMA 2 2B', value: 'GEMMA_2_2B' },
+  { name: 'PHI 3 5', value: 'PHI_3_5' },
+  { name: 'QWEN 2 5 1B', value: 'QWEN_2_5_1B' },
+  { name: 'QWEN 2 5 3B', value: 'QWEN_2_5_3B' },
+]
+
+export const CHATGPT_CHOICES = [
+  { name: 'GPT 4 o MINI', value: 'GPT_4o_MINI' },
+  { name: 'GPT 4 o', value: 'GPT_4o' },
+  { name: 'GPT 4 TURBO', value: 'GPT_4_TURBO' },
+  { name: 'GPT 4', value: 'GPT_4' },
+]
+
+export const CLAUDE_CHOICES = [
+  { name: 'Claude 3.5 Sonnet', value: 'CLAUDE_3_5_SONNET' },
+  { name: 'Claude 3 Opus', value: 'CLAUDE_3_OPUS' },
+  { name: 'Claude 3 Sonnet', value: 'CLAUDE_3_SONNET' },
+  { name: 'Claude 3 Haiku', value: 'CLAUDE_3_HAIKU' },
+]
+
+export const COHERE_CHOICES = [
+  { name: 'Command R', value: 'COMMAND_R' },
+  { name: 'Command R Plus', value: 'COMMAND_R_PLUS' },
+]
+
+export const MISTRAL_CHOICES = [
+  { name: 'Mixtral 8x7b', value: 'MIXTRAL_8x7b' },
+  { name: 'Mixtral 8x22b', value: 'MIXTRAL_8x22b' },
+  { name: 'Mistral Large', value: 'MISTRAL_LARGE' },
+  { name: 'Mistral Nemo', value: 'MISTRAL_NEMO' },
+]
+
+export const FIREWORKS_CHOICES = [
+  { name: 'LLAMA 3 1 405B', value: 'LLAMA_3_1_405B' },
+  { name: 'LLAMA 3 1 70B', value: 'LLAMA_3_1_70B' },
+  { name: 'LLAMA 3 1 8B', value: 'LLAMA_3_1_8B' },
+  { name: 'LLAMA 3 2 3B', value: 'LLAMA_3_2_3B' },
+  { name: 'LLAMA 3 2 1B', value: 'LLAMA_3_2_1B' },
+  { name: 'QWEN 2 5 72B', value: 'QWEN_2_5_72B' },
+]
+
+export const TOGETHER_CHOICES = [
+  { name: 'LLAMA 3 2 3B', value: 'LLAMA_3_2_3B' },
+  { name: 'LLAMA 3 1 405B', value: 'LLAMA_3_1_405B' },
+  { name: 'LLAMA 3 1 70B', value: 'LLAMA_3_1_70B' },
+  { name: 'LLAMA 3 1 8B', value: 'LLAMA_3_1_8B' },
+  { name: 'Gemma 2 27B', value: 'GEMMA_2_27B' },
+  { name: 'Gemma 2 9B', value: 'GEMMA_2_9B' },
+  { name: 'QWEN 2 5 72B', value: 'QWEN_2_5_72B' },
+  { name: 'QWEN 2 5 7B', value: 'QWEN_2_5_7B' },
+]
+
+export const GROQ_CHOICES = [
+  { name: 'LLAMA 3 1 70B Versatile', value: 'LLAMA_3_1_70B_VERSATILE' },
+  { name: 'LLAMA 3 1 8B Instant', value: 'LLAMA_3_1_8B_INSTANT' },
+  { name: 'LLAMA 3 2 1B Preview', value: 'LLAMA_3_2_1B_PREVIEW' },
+  { name: 'LLAMA 3 2 3B Preview', value: 'LLAMA_3_2_3B_PREVIEW' },
+  { name: 'Mixtral 8x7b 32768', value: 'MIXTRAL_8X7B_32768' },
+]
+
+export const GEMINI_CHOICES = [
+  { name: 'Gemini 1.5 Flash', value: 'GEMINI_1_5_FLASH' },
+  { name: 'Gemini 1.5 Pro', value: 'GEMINI_1_5_PRO' },
+]
+
+export const PROMPT_CHOICES = [
+  { name: 'Titles', value: 'titles' },
+  { name: 'Summary', value: 'summary' },
+  { name: 'Short Chapters', value: 'shortChapters' },
+  { name: 'Medium Chapters', value: 'mediumChapters' },
+  { name: 'Long Chapters', value: 'longChapters' },
+  { name: 'Key Takeaways', value: 'takeaways' },
+  { name: 'Questions', value: 'questions' },
+]
+
 /**
  * Configure XML parser for RSS feed processing
  * Handles attributes without prefixes and allows boolean values

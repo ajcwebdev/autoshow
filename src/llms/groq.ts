@@ -16,7 +16,7 @@ const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions'
  */
 export const callGroq = async (promptAndTranscript: string, tempPath: string, model: string = 'MIXTRAL_8X7B_32768'): Promise<void> => {
   // Ensure that the API key is set
-  if (!env.GROQ_API_KEY) {
+  if (!env['GROQ_API_KEY']) {
     throw new Error('GROQ_API_KEY environment variable is not set. Please set it to your Groq API key.')
   }
 
@@ -39,7 +39,7 @@ export const callGroq = async (promptAndTranscript: string, tempPath: string, mo
     const response = await fetch(GROQ_API_URL, {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${env.GROQ_API_KEY}`,
+        Authorization: `Bearer ${env['GROQ_API_KEY']}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(requestBody),

@@ -19,7 +19,7 @@ export const callFireworks: LLMFunction = async (
   model: string = 'LLAMA_3_2_3B'
 ): Promise<void> => {
   // Check if the FIREWORKS_API_KEY environment variable is set
-  if (!env.FIREWORKS_API_KEY) {
+  if (!env['FIREWORKS_API_KEY']) {
     throw new Error('FIREWORKS_API_KEY environment variable is not set. Please set it to your Fireworks API key.')
   }
 
@@ -41,7 +41,7 @@ export const callFireworks: LLMFunction = async (
     const response = await fetch('https://api.fireworks.ai/inference/v1/chat/completions', {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${env.FIREWORKS_API_KEY}`,
+        Authorization: `Bearer ${env['FIREWORKS_API_KEY']}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(requestBody),

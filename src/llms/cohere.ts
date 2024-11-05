@@ -21,12 +21,12 @@ export const callCohere: LLMFunction = async (
   model: string = 'COMMAND_R'
 ): Promise<void> => {
   // Check if the COHERE_API_KEY environment variable is set
-  if (!env.COHERE_API_KEY) {
+  if (!env['COHERE_API_KEY']) {
     throw new Error('COHERE_API_KEY environment variable is not set. Please set it to your Cohere API key.')
   }
   
   // Initialize the Cohere client with the API key from environment variables
-  const cohere = new CohereClient({ token: env.COHERE_API_KEY })
+  const cohere = new CohereClient({ token: env['COHERE_API_KEY'] })
   
   try {
     // Select the actual model to use, defaulting to COMMAND_R if not specified

@@ -19,7 +19,7 @@ export const callTogether: LLMFunction = async (
   model: string = 'LLAMA_3_2_3B'
 ): Promise<void> => {
   // Check if the TOGETHER_API_KEY environment variable is set
-  if (!env.TOGETHER_API_KEY) {
+  if (!env['TOGETHER_API_KEY']) {
     throw new Error('TOGETHER_API_KEY environment variable is not set. Please set it to your Together AI API key.')
   }
 
@@ -45,7 +45,7 @@ export const callTogether: LLMFunction = async (
       headers: {
         accept: 'application/json',
         'content-type': 'application/json',
-        authorization: `Bearer ${env.TOGETHER_API_KEY}`,
+        authorization: `Bearer ${env['TOGETHER_API_KEY']}`,
       },
       body: JSON.stringify(requestBody),
     })

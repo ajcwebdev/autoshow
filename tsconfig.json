@@ -1,19 +1,71 @@
 {
   "compilerOptions": {
-    "target": "ESNext",                           // Target modern JS features
-    "module": "ESNext",                           // Use ES modules
-    "lib": ["ESNext"],                            // Include modern JS features
-    "moduleResolution": "bundler",
-    "esModuleInterop": true,                      // Allow default imports from CJS modules
-    "skipLibCheck": true,                         // Skip type checking for node_modules
-    "forceConsistentCasingInFileNames": true,     // Enforce file name casing consistency
-    "outDir": "./dist",                           // Output directory for compiled files
-    "rootDir": "./src",                           // Root directory for source files
-    "resolveJsonModule": true,                    // Allow importing JSON files
+    // **Modern JavaScript Features**
+    "target": "ESNext",                           // Target the latest ECMAScript features
+    "module": "ESNext",                           // Use native ECMAScript module system
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],     // Include latest ECMAScript features and DOM types
+
+    // **Module Resolution and Imports**
+    "moduleResolution": "bundler",                // Use module resolution that's suitable for bundlers
+    "allowSyntheticDefaultImports": true,         // Allow default imports from modules with no default export
+    "forceConsistentCasingInFileNames": true,     // Disallow inconsistently-cased references to the same file
+    "resolveJsonModule": true,                    // Allow importing .json files
+    "verbatimModuleSyntax": true,                 // Preserve import/export syntax in the emitted code
+
+    // **Strict Type Checking**
     "strict": true,                               // Enable all strict type-checking options
-    "declaration": true,                          // Generate .d.ts files
-    "noEmitOnError": true                         // Prevent emitting files if there are errors
+    "noImplicitAny": true,                        // Error on expressions and declarations with an implied 'any' type
+    "strictNullChecks": true,                     // Enable strict null checks
+    "strictFunctionTypes": true,                  // Enable strict checking of function types
+    "strictBindCallApply": true,                  // Enable strict 'bind', 'call', and 'apply' methods on functions
+    "strictPropertyInitialization": true,         // Ensure class properties are correctly initialized
+    "noImplicitThis": true,                       // Error on 'this' expressions with an implied 'any' type
+    "useUnknownInCatchVariables": true,           // Default 'catch' clause variables as 'unknown' instead of 'any'
+    "alwaysStrict": true,                         // Parse in strict mode and emit "use strict" for each source file
+
+    // **Additional Type Checking**
+    "noUncheckedIndexedAccess": true,             // Include 'undefined' in indexed access results
+    "noPropertyAccessFromIndexSignature": true,   // Disallow property access via indexing signatures
+    "exactOptionalPropertyTypes": true,           // Interpret optional property types as written
+    "noImplicitReturns": true,                    // Error when not all code paths in function return a value
+    "noFallthroughCasesInSwitch": true,           // Error for fallthrough cases in switch statements
+    "noImplicitOverride": true,                   // Ensure overrides are explicitly marked with an 'override' modifier
+    "noUnusedLocals": true,                       // Error on unused local variables
+    "noUnusedParameters": true,                   // Error on unused parameters
+    "allowUnusedLabels": false,                   // Error when labels are unused
+    "allowUnreachableCode": false,                // Error on unreachable code
+
+    // **Build and Performance**
+    "skipLibCheck": false,                        // Do not skip type checking of declaration files
+    "incremental": true,                          // Enable incremental compilation for faster rebuilds
+
+    // **Emit Configuration**
+    "outDir": "./dist",                           // Redirect output structure to the 'dist' directory
+    "rootDir": "./src",                           // Specify the root directory of input files
+    "declaration": true,                          // Generate corresponding '.d.ts' files
+    "declarationMap": true,                       // Create sourcemaps for '.d.ts' files
+    "sourceMap": true,                            // Generate source map files
+    "noEmitOnError": true,                        // Do not emit outputs if any errors were reported
+    "removeComments": false,                      // Do not remove comments from output
+
+    // **Path Mapping**
+    "baseUrl": ".",                               // Base directory to resolve non-absolute module names
+    "paths": {                                    // Path alias mapping
+      "@/*": ["src/*"]
+    },
+
+    // **Experimental Features**
+    "isolatedModules": true                       // Ensure each file can be safely transpiled without relying on other imports
   },
-  "include": ["src/**/*"],                         // Include all TypeScript files in the `src` folder
-  "exclude": ["node_modules", "dist"]              // Exclude output and dependencies
+  "include": [
+    "src/**/*",                                   // Include all files in 'src' directory
+    "tests/**/*"                                  // Include all files in 'tests' directory
+  ],
+  "exclude": [
+    "node_modules",                               // Exclude 'node_modules' directory
+    "dist",                                       // Exclude 'dist' directory
+    "coverage",                                   // Exclude 'coverage' directory
+    "**/*.spec.ts",                               // Exclude test specification files
+    "**/*.test.ts"                                // Exclude test files
+  ]
 }

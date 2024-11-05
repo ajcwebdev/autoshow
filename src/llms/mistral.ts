@@ -4,7 +4,6 @@ import { writeFile } from 'node:fs/promises'
 import { env } from 'node:process'
 import { Mistral } from '@mistralai/mistralai'
 import { l, wait, err, MISTRAL_MODELS } from '../globals.js'
-
 import type { LLMFunction, MistralModelType } from '../types.js'
 
 /**
@@ -21,11 +20,12 @@ export const callMistral: LLMFunction = async (
   model: string = 'MISTRAL_NEMO'
 ): Promise<void> => {
   // Check if the MISTRAL_API_KEY environment variable is set
-  if (!env.MISTRAL_API_KEY) {
+  if (!env['MISTRAL_API_KEY']) {
     throw new Error('MISTRAL_API_KEY environment variable is not set. Please set it to your Mistral API key.')
   }
+
   // Initialize Mistral client with API key from environment variables
-  const mistral = new Mistral({ apiKey: env.MISTRAL_API_KEY })
+  const mistral = new Mistral({ apiKey: env['MISTRAL_API_KEY'] })
   
   try {
     // Select the actual model to use, defaulting to MISTRAL_NEMO if the specified model is not found
@@ -39,29 +39,30 @@ export const callMistral: LLMFunction = async (
       messages: [{ role: 'user', content: promptAndTranscript }],
     })
 
-    // Safely access the response properties
+    // Safely access the response properties with proper null checks
     if (!response.choices || response.choices.length === 0) {
       throw new Error("No choices returned from Mistral API")
     }
 
-    const content = response.choices[0].message.content
-    const finishReason = response.choices[0].finishReason
-    const { promptTokens, completionTokens, totalTokens } = response.usage ?? {}
-
-    // Check if content was generated
-    if (!content) {
-      throw new Error("No content generated from Mistral")
+    const firstChoice = response.choices[0]
+    if (!firstChoice?.message?.content) {
+      throw new Error("Invalid response format from Mistral API")
     }
+
+    const content = firstChoice.message.content
+    const finishReason = firstChoice.finishReason ?? 'unknown'
+    const usage = response.usage ?? { promptTokens: 0, completionTokens: 0, totalTokens: 0 }
     
     // Write the generated content to the specified output file
     await writeFile(tempPath, content)
+
     // Log finish reason, used model, and token usage
     l(wait(`\n  Finish Reason: ${finishReason}\n  Model Used: ${actualModel}`))
-    l(wait(`  Token Usage:\n    - ${promptTokens} prompt tokens\n    - ${completionTokens} completion tokens\n    - ${totalTokens} total tokens`))
+    l(wait(`  Token Usage:\n    - ${usage.promptTokens} prompt tokens\n    - ${usage.completionTokens} completion tokens\n    - ${usage.totalTokens} total tokens`))
     
   } catch (error) {
     // Log any errors that occur during the process
-    err(`Error in callMistral: ${error instanceof Error ? (error as Error).message : String(error)}`)
+    err(`Error in callMistral: ${error instanceof Error ? error.message : String(error)}`)
     throw error  // Re-throw the error for handling by the caller
   }
 }

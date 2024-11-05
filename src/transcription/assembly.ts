@@ -1,7 +1,6 @@
 // src/transcription/assembly.ts
 
-import { createReadStream } from 'node:fs'
-import { writeFile } from 'node:fs/promises'
+import { writeFile, readFile } from 'node:fs/promises'
 import { env } from 'node:process'
 import { l, wait, success, err } from '../globals.js'
 import type { ProcessingOptions } from '../types.js'
@@ -26,13 +25,13 @@ const BASE_URL = 'https://api.assemblyai.com/v2'
  */
 export async function callAssembly(options: ProcessingOptions, finalPath: string): Promise<string> {
   l(wait('\n  Using AssemblyAI for transcription...'))
-  // Check if the ASSEMBLY_API_KEY environment variable is set
-  if (!env.ASSEMBLY_API_KEY) {
+  
+  if (!env['ASSEMBLY_API_KEY']) {
     throw new Error('ASSEMBLY_API_KEY environment variable is not set. Please set it to your AssemblyAI API key.')
   }
 
   const headers = {
-    'Authorization': env.ASSEMBLY_API_KEY,
+    'Authorization': env['ASSEMBLY_API_KEY'],
     'Content-Type': 'application/json'
   }
 
@@ -43,16 +42,15 @@ export async function callAssembly(options: ProcessingOptions, finalPath: string
     // Step 1: Upload the audio file
     l(wait('\n  Uploading audio file to AssemblyAI...'))
     const uploadUrl = `${BASE_URL}/upload`
-    const fileStream = createReadStream(audioFilePath)
+    const fileBuffer = await readFile(audioFilePath)
 
     const uploadResponse = await fetch(uploadUrl, {
       method: 'POST',
       headers: {
-        'Authorization': env.ASSEMBLY_API_KEY,
+        'Authorization': env['ASSEMBLY_API_KEY'],
         'Content-Type': 'application/octet-stream',
       },
-      body: fileStream,
-      duplex: 'half',
+      body: fileBuffer
     })
 
     if (!uploadResponse.ok) {
@@ -119,9 +117,15 @@ export async function callAssembly(options: ProcessingOptions, finalPath: string
         `${speakerLabels ? `Speaker ${utt.speaker} ` : ''}(${formatTime(utt.start)}): ${utt.text}`
       ).join('\n')
     } else if (transcript.words && transcript.words.length > 0) {
+      // Check if words array exists and has content
+      const firstWord = transcript.words[0]
+      if (!firstWord) {
+        throw new Error('No words found in transcript')
+      }
+
       // If only words are available, group them into lines with timestamps
       let currentLine = ''
-      let currentTimestamp = formatTime(transcript.words[0].start)
+      let currentTimestamp = formatTime(firstWord.start)
       
       transcript.words.forEach((word: AssemblyAIWord) => {
         if (currentLine.length + word.text.length > 80) {
@@ -152,8 +156,7 @@ export async function callAssembly(options: ProcessingOptions, finalPath: string
 
     return txtContent
   } catch (error) {
-    // Log any errors that occur during the transcription process
     err(`Error processing the transcription: ${(error as Error).message}`)
-    throw error // Re-throw the error for handling in the calling function
+    throw error
   }
 }

@@ -106,6 +106,7 @@ function extractFeedItems(feed: any): RSSItem[] {
   const { title: channelTitle, link: channelLink, image: channelImageObject, item: feedItems } = feed.rss.channel
   const channelImage = channelImageObject?.url || ''
   const feedItemsArray = Array.isArray(feedItems) ? feedItems : [feedItems]
+  const defaultDate = new Date().toISOString().substring(0, 10)
 
   const items: RSSItem[] = feedItemsArray
     .filter((item) => {
@@ -113,15 +114,29 @@ function extractFeedItems(feed: any): RSSItem[] {
       const audioVideoTypes = ['audio/', 'video/']
       return audioVideoTypes.some((type) => item.enclosure.type.startsWith(type))
     })
-    .map((item) => ({
-      showLink: item.enclosure.url,
-      channel: channelTitle,
-      channelURL: channelLink,
-      title: item.title,
-      description: '',
-      publishDate: new Date(item.pubDate).toISOString().split('T')[0],
-      coverImage: item['itunes:image']?.href || channelImage || '',
-    }))
+    .map((item) => {
+      // Ensure publishDate is always a valid string
+      let publishDate: string
+      try {
+        // Try to parse the date, fall back to current date if invalid
+        const date = item.pubDate ? new Date(item.pubDate) : new Date()
+        publishDate = date.toISOString().substring(0, 10)
+      } catch {
+        // If date parsing fails, use current date
+        publishDate = defaultDate
+      }
+
+      return {
+        showLink: item.enclosure.url || '',
+        channel: channelTitle || '',
+        channelURL: channelLink || '',
+        title: item.title || '',
+        description: item.description || '',
+        publishDate,
+        coverImage: item['itunes:image']?.href || channelImage || '',
+        audioURL: item.enclosure?.url || ''
+      }
+    })
 
   if (items.length === 0) {
     err('Error: No audio/video items found in the RSS feed.')
@@ -205,7 +220,7 @@ async function processItem(
   try {
     const { frontMatter, finalPath, filename } = await generateMarkdown(options, item)
     await downloadAudio(options, item.showLink, filename)
-    await runTranscription(options, finalPath, frontMatter, transcriptServices)
+    await runTranscription(options, finalPath, transcriptServices)
     await runLLM(options, finalPath, frontMatter, llmServices)
 
     if (!options.noCleanUp) {

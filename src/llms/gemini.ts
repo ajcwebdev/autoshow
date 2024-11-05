@@ -27,12 +27,12 @@ export const callGemini: LLMFunction = async (
   model: string = 'GEMINI_1_5_FLASH'
 ): Promise<void> => {
   // Check if the GEMINI_API_KEY environment variable is set
-  if (!env.GEMINI_API_KEY) {
+  if (!env['GEMINI_API_KEY']) {
     throw new Error('GEMINI_API_KEY environment variable is not set. Please set it to your Gemini API key.')
   }
   
   // Initialize the Google Generative AI client
-  const genAI = new GoogleGenerativeAI(env.GEMINI_API_KEY)
+  const genAI = new GoogleGenerativeAI(env['GEMINI_API_KEY'])
   
   // Select the actual model to use, defaulting to GEMINI_1_5_FLASH if not specified
   const actualModel = GEMINI_MODELS[model as GeminiModelType] || GEMINI_MODELS.GEMINI_1_5_FLASH

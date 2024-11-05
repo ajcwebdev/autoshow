@@ -47,7 +47,7 @@ export async function processVideo(
     await downloadAudio(options, url, filename)
 
     // Convert the audio to text using the specified transcription service
-    await runTranscription(options, finalPath, frontMatter, transcriptServices)
+    await runTranscription(options, finalPath, transcriptServices)
 
     // Process the transcript with a language model if one was specified
     await runLLM(options, finalPath, frontMatter, llmServices)

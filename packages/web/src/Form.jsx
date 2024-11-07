@@ -39,7 +39,7 @@ const Form = () => {
       }
 
       const data = await response.json()
-      setResult(data) // Set result with the response data containing content
+      setResult(data) // Set result to the data object containing content
     } catch (err) {
       setError(err.message)
     } finally {

@@ -11,6 +11,7 @@ import { runTranscription } from '../utils/runTranscription.js'
 import { runLLM } from '../utils/runLLM.js'
 import { cleanUpFiles } from '../utils/cleanUpFiles.js'
 import { l, err, opts } from '../globals.js'
+import fs from 'fs/promises'
 import type { LLMServices, TranscriptServices, ProcessingOptions } from '../types.js'
 
 /**
@@ -34,7 +35,7 @@ export async function processVideo(
   url: string,
   llmServices?: LLMServices,
   transcriptServices?: TranscriptServices
-): Promise<void> {
+): Promise<string> {
   // Log the processing parameters for debugging purposes
   l(opts('Parameters passed to processVideo:\n'))
   l(opts(`  - llmServices: ${llmServices}\n  - transcriptServices: ${transcriptServices}\n`))
@@ -52,10 +53,16 @@ export async function processVideo(
     // Process the transcript with a language model if one was specified
     await runLLM(options, finalPath, frontMatter, llmServices)
 
+    // Read the content of the output file
+    const content = await fs.readFile(`${finalPath}-prompt.md`, 'utf-8')
+
     // Remove temporary files unless the noCleanUp option is set
     if (!options.noCleanUp) {
       await cleanUpFiles(finalPath)
     }
+
+    // Return the content
+    return content
   } catch (error) {
     // Log the error details and re-throw for upstream handling
     err('Error processing video:', (error as Error).message)

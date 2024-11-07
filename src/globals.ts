@@ -10,152 +10,12 @@ import { exec, execFile } from 'node:child_process'
 import { promisify } from 'node:util'
 import chalk from 'chalk'
 import type { ChalkInstance } from 'chalk'
-import type { WhisperModelType, ChatGPTModelType, ClaudeModelType, CohereModelType, GeminiModelType, MistralModelType, OllamaModelType, TogetherModelType, FireworksModelType, GroqModelType } from './types.js'
+import type {
+  WhisperModelType, ChatGPTModelType, ClaudeModelType, CohereModelType, GeminiModelType, MistralModelType, OllamaModelType, TogetherModelType, FireworksModelType, GroqModelType
+} from './types.js'
 
 export const execPromise = promisify(exec)
 export const execFilePromise = promisify(execFile)
-
-export const PROCESS_CHOICES = [
-  { name: 'Single YouTube Video', value: 'video' },
-  { name: 'YouTube Playlist', value: 'playlist' },
-  { name: 'YouTube Channel', value: 'channel' },
-  { name: 'List of URLs from File', value: 'urls' },
-  { name: 'Local Audio/Video File', value: 'file' },
-  { name: 'Podcast RSS Feed', value: 'rss' },
-]
-
-export const TRANSCRIPT_CHOICES = [
-  { name: 'Whisper.cpp', value: 'whisper' },
-  { name: 'Whisper.cpp (Docker)', value: 'whisperDocker' },
-  { name: 'Whisper Python', value: 'whisperPython' },
-  { name: 'Whisper Diarization', value: 'whisperDiarization' },
-  { name: 'Deepgram', value: 'deepgram' },
-  { name: 'AssemblyAI', value: 'assembly' },
-]
-
-export const WHISPER_MODEL_CHOICES = [
-  'tiny',
-  'tiny.en',
-  'base',
-  'base.en',
-  'small',
-  'small.en',
-  'medium',
-  'medium.en',
-  'large-v1',
-  'large-v2',
-  'turbo',
-]
-
-export const WHISPER_LIBRARY_CHOICES = [
-  'whisper',
-  'whisperDocker',
-  'whisperPython',
-  'whisperDiarization'
-]
-
-export const LLM_SERVICE_CHOICES = [
-  { name: 'Skip LLM Processing', value: null },
-  { name: 'Ollama (local inference)', value: 'ollama' },
-  { name: 'OpenAI ChatGPT', value: 'chatgpt' },
-  { name: 'Anthropic Claude', value: 'claude' },
-  { name: 'Google Gemini', value: 'gemini' },
-  { name: 'Cohere', value: 'cohere' },
-  { name: 'Mistral', value: 'mistral' },
-  { name: 'Fireworks AI', value: 'fireworks' },
-  { name: 'Together AI', value: 'together' },
-  { name: 'Groq', value: 'groq' },
-]
-
-export const LLM_CHOICES = [
-  'ollama',
-  'chatgpt',
-  'claude',
-  'cohere',
-  'mistral',
-  'fireworks',
-  'together',
-  'groq',
-  'gemini',
-]
-
-export const OLLAMA_CHOICES = [
-  { name: 'LLAMA 3 2 1B', value: 'LLAMA_3_2_1B' },
-  { name: 'LLAMA 3 2 3B', value: 'LLAMA_3_2_3B' },
-  { name: 'GEMMA 2 2B', value: 'GEMMA_2_2B' },
-  { name: 'PHI 3 5', value: 'PHI_3_5' },
-  { name: 'QWEN 2 5 1B', value: 'QWEN_2_5_1B' },
-  { name: 'QWEN 2 5 3B', value: 'QWEN_2_5_3B' },
-]
-
-export const CHATGPT_CHOICES = [
-  { name: 'GPT 4 o MINI', value: 'GPT_4o_MINI' },
-  { name: 'GPT 4 o', value: 'GPT_4o' },
-  { name: 'GPT 4 TURBO', value: 'GPT_4_TURBO' },
-  { name: 'GPT 4', value: 'GPT_4' },
-]
-
-export const CLAUDE_CHOICES = [
-  { name: 'Claude 3.5 Sonnet', value: 'CLAUDE_3_5_SONNET' },
-  { name: 'Claude 3 Opus', value: 'CLAUDE_3_OPUS' },
-  { name: 'Claude 3 Sonnet', value: 'CLAUDE_3_SONNET' },
-  { name: 'Claude 3 Haiku', value: 'CLAUDE_3_HAIKU' },
-]
-
-export const COHERE_CHOICES = [
-  { name: 'Command R', value: 'COMMAND_R' },
-  { name: 'Command R Plus', value: 'COMMAND_R_PLUS' },
-]
-
-export const MISTRAL_CHOICES = [
-  { name: 'Mixtral 8x7b', value: 'MIXTRAL_8x7b' },
-  { name: 'Mixtral 8x22b', value: 'MIXTRAL_8x22b' },
-  { name: 'Mistral Large', value: 'MISTRAL_LARGE' },
-  { name: 'Mistral Nemo', value: 'MISTRAL_NEMO' },
-]
-
-export const FIREWORKS_CHOICES = [
-  { name: 'LLAMA 3 1 405B', value: 'LLAMA_3_1_405B' },
-  { name: 'LLAMA 3 1 70B', value: 'LLAMA_3_1_70B' },
-  { name: 'LLAMA 3 1 8B', value: 'LLAMA_3_1_8B' },
-  { name: 'LLAMA 3 2 3B', value: 'LLAMA_3_2_3B' },
-  { name: 'LLAMA 3 2 1B', value: 'LLAMA_3_2_1B' },
-  { name: 'QWEN 2 5 72B', value: 'QWEN_2_5_72B' },
-]
-
-export const TOGETHER_CHOICES = [
-  { name: 'LLAMA 3 2 3B', value: 'LLAMA_3_2_3B' },
-  { name: 'LLAMA 3 1 405B', value: 'LLAMA_3_1_405B' },
-  { name: 'LLAMA 3 1 70B', value: 'LLAMA_3_1_70B' },
-  { name: 'LLAMA 3 1 8B', value: 'LLAMA_3_1_8B' },
-  { name: 'Gemma 2 27B', value: 'GEMMA_2_27B' },
-  { name: 'Gemma 2 9B', value: 'GEMMA_2_9B' },
-  { name: 'QWEN 2 5 72B', value: 'QWEN_2_5_72B' },
-  { name: 'QWEN 2 5 7B', value: 'QWEN_2_5_7B' },
-]
-
-export const GROQ_CHOICES = [
-  { name: 'LLAMA 3 1 70B Versatile', value: 'LLAMA_3_1_70B_VERSATILE' },
-  { name: 'LLAMA 3 1 8B Instant', value: 'LLAMA_3_1_8B_INSTANT' },
-  { name: 'LLAMA 3 2 1B Preview', value: 'LLAMA_3_2_1B_PREVIEW' },
-  { name: 'LLAMA 3 2 3B Preview', value: 'LLAMA_3_2_3B_PREVIEW' },
-  { name: 'Mixtral 8x7b 32768', value: 'MIXTRAL_8X7B_32768' },
-]
-
-export const GEMINI_CHOICES = [
-  { name: 'Gemini 1.5 Flash', value: 'GEMINI_1_5_FLASH' },
-  { name: 'Gemini 1.5 Pro', value: 'GEMINI_1_5_PRO' },
-]
-
-export const PROMPT_CHOICES = [
-  { name: 'Titles', value: 'titles' },
-  { name: 'Summary', value: 'summary' },
-  { name: 'Short Chapters', value: 'shortChapters' },
-  { name: 'Medium Chapters', value: 'mediumChapters' },
-  { name: 'Long Chapters', value: 'longChapters' },
-  { name: 'Key Takeaways', value: 'takeaways' },
-  { name: 'Questions', value: 'questions' },
-]
 
 /**
  * Configure XML parser for RSS feed processing
@@ -215,6 +75,16 @@ export const l: typeof console.log = console.log
  */
 export const err: typeof console.error = console.error
 
+export const PROMPT_CHOICES = [
+  { name: 'Titles', value: 'titles' },
+  { name: 'Summary', value: 'summary' },
+  { name: 'Short Chapters', value: 'shortChapters' },
+  { name: 'Medium Chapters', value: 'mediumChapters' },
+  { name: 'Long Chapters', value: 'longChapters' },
+  { name: 'Key Takeaways', value: 'takeaways' },
+  { name: 'Questions', value: 'questions' },
+]
+
 /**
  * Available action options for content processing with additional metadata
  * @type {{ name: string; value: string; message: string; validate: (input: string) => boolean | string }[]}
@@ -258,17 +128,60 @@ export const ACTION_OPTIONS = [
   }
 ]
 
+export const PROCESS_CHOICES = [
+  { name: 'Single YouTube Video', value: 'video' },
+  { name: 'YouTube Playlist', value: 'playlist' },
+  { name: 'YouTube Channel', value: 'channel' },
+  { name: 'List of URLs from File', value: 'urls' },
+  { name: 'Local Audio/Video File', value: 'file' },
+  { name: 'Podcast RSS Feed', value: 'rss' },
+]
+
 /**
  * Available LLM service options
  * @type {string[]}
  */
 export const LLM_OPTIONS = ['chatgpt', 'claude', 'cohere', 'mistral', 'ollama', 'gemini', 'fireworks', 'together', 'groq']
 
+export const LLM_CHOICES = [
+  'ollama',
+  'chatgpt',
+  'claude',
+  'cohere',
+  'mistral',
+  'fireworks',
+  'together',
+  'groq',
+  'gemini',
+]
+
+export const LLM_SERVICE_CHOICES = [
+  { name: 'Skip LLM Processing', value: null },
+  { name: 'Ollama (local inference)', value: 'ollama' },
+  { name: 'OpenAI ChatGPT', value: 'chatgpt' },
+  { name: 'Anthropic Claude', value: 'claude' },
+  { name: 'Google Gemini', value: 'gemini' },
+  { name: 'Cohere', value: 'cohere' },
+  { name: 'Mistral', value: 'mistral' },
+  { name: 'Fireworks AI', value: 'fireworks' },
+  { name: 'Together AI', value: 'together' },
+  { name: 'Groq', value: 'groq' },
+]
+
 /**
  * Available transcription service options
  * @type {string[]}
  */
 export const TRANSCRIPT_OPTIONS = ['whisper', 'whisperDocker', 'whisperPython', 'whisperDiarization', 'deepgram', 'assembly']
+
+export const TRANSCRIPT_CHOICES = [
+  { name: 'Whisper.cpp', value: 'whisper' },
+  { name: 'Whisper.cpp (Docker)', value: 'whisperDocker' },
+  { name: 'Whisper Python', value: 'whisperPython' },
+  { name: 'Whisper Diarization', value: 'whisperDiarization' },
+  { name: 'Deepgram', value: 'deepgram' },
+  { name: 'AssemblyAI', value: 'assembly' },
+]
 
 /**
  * Mapping of Whisper model types to their corresponding binary filenames for whisper.cpp.
@@ -288,6 +201,27 @@ export const WHISPER_MODELS: Record<WhisperModelType, string> = {
   'large-v3-turbo': 'ggml-large-v3-turbo.bin',
   'turbo': 'ggml-large-v3-turbo.bin'
 }
+
+export const WHISPER_MODEL_CHOICES = [
+  'tiny',
+  'tiny.en',
+  'base',
+  'base.en',
+  'small',
+  'small.en',
+  'medium',
+  'medium.en',
+  'large-v1',
+  'large-v2',
+  'turbo',
+]
+
+export const WHISPER_LIBRARY_CHOICES = [
+  'whisper',
+  'whisperDocker',
+  'whisperPython',
+  'whisperDiarization'
+]
 
 /**
  * Mapping of Whisper model types to their corresponding names for openai-whisper.
@@ -309,6 +243,28 @@ export const WHISPER_PYTHON_MODELS: Record<WhisperModelType, string> = {
 }
 
 /**
+ * Mapping of model identifiers to their corresponding names in Ollama.
+ * @type {Record<OllamaModelType, string>}
+ */
+export const OLLAMA_MODELS: Record<OllamaModelType, string> = {
+  LLAMA_3_2_1B: 'llama3.2:1b',
+  LLAMA_3_2_3B: 'llama3.2:3b',
+  GEMMA_2_2B: 'gemma2:2b',
+  PHI_3_5: 'phi3.5:3.8b',
+  QWEN_2_5_1B: 'qwen2.5:1.5b',
+  QWEN_2_5_3B: 'qwen2.5:3b',
+}
+
+export const OLLAMA_CHOICES = [
+  { name: 'LLAMA 3 2 1B', value: 'LLAMA_3_2_1B' },
+  { name: 'LLAMA 3 2 3B', value: 'LLAMA_3_2_3B' },
+  { name: 'GEMMA 2 2B', value: 'GEMMA_2_2B' },
+  { name: 'PHI 3 5', value: 'PHI_3_5' },
+  { name: 'QWEN 2 5 1B', value: 'QWEN_2_5_1B' },
+  { name: 'QWEN 2 5 3B', value: 'QWEN_2_5_3B' },
+]
+
+/**
  * Mapping of ChatGPT model identifiers to their API names.
  * @type {Record<ChatGPTModelType, string>}
  */
@@ -318,6 +274,13 @@ export const GPT_MODELS: Record<ChatGPTModelType, string> = {
   GPT_4_TURBO: "gpt-4-turbo",
   GPT_4: "gpt-4",
 }
+
+export const CHATGPT_CHOICES = [
+  { name: 'GPT 4 o MINI', value: 'GPT_4o_MINI' },
+  { name: 'GPT 4 o', value: 'GPT_4o' },
+  { name: 'GPT 4 TURBO', value: 'GPT_4_TURBO' },
+  { name: 'GPT 4', value: 'GPT_4' },
+]
 
 /**
  * Mapping of Claude model identifiers to their API names.
@@ -330,6 +293,13 @@ export const CLAUDE_MODELS: Record<ClaudeModelType, string> = {
   CLAUDE_3_HAIKU: "claude-3-haiku-20240307",
 }
 
+export const CLAUDE_CHOICES = [
+  { name: 'Claude 3.5 Sonnet', value: 'CLAUDE_3_5_SONNET' },
+  { name: 'Claude 3 Opus', value: 'CLAUDE_3_OPUS' },
+  { name: 'Claude 3 Sonnet', value: 'CLAUDE_3_SONNET' },
+  { name: 'Claude 3 Haiku', value: 'CLAUDE_3_HAIKU' },
+]
+
 /**
  * Mapping of Cohere model identifiers to their API names.
  * @type {Record<CohereModelType, string>}
@@ -338,6 +308,11 @@ export const COHERE_MODELS: Record<CohereModelType, string> = {
   COMMAND_R: "command-r", // Standard Command model
   COMMAND_R_PLUS: "command-r-plus" // Enhanced Command model
 }
+
+export const COHERE_CHOICES = [
+  { name: 'Command R', value: 'COMMAND_R' },
+  { name: 'Command R Plus', value: 'COMMAND_R_PLUS' },
+]
 
 /**
  * Mapping of Gemini model identifiers to their API names.
@@ -349,6 +324,11 @@ export const GEMINI_MODELS: Record<GeminiModelType, string> = {
   GEMINI_1_5_PRO: "gemini-1.5-pro-exp-0827",
 }
 
+export const GEMINI_CHOICES = [
+  { name: 'Gemini 1.5 Flash', value: 'GEMINI_1_5_FLASH' },
+  { name: 'Gemini 1.5 Pro', value: 'GEMINI_1_5_PRO' },
+]
+
 /**
  * Mapping of Mistral model identifiers to their API names.
  * @type {Record<MistralModelType, string>}
@@ -359,6 +339,13 @@ export const MISTRAL_MODELS: Record<MistralModelType, string> = {
   MISTRAL_LARGE: "mistral-large-latest",
   MISTRAL_NEMO: "open-mistral-nemo"
 }
+
+export const MISTRAL_CHOICES = [
+  { name: 'Mixtral 8x7b', value: 'MIXTRAL_8x7b' },
+  { name: 'Mixtral 8x22b', value: 'MIXTRAL_8x22b' },
+  { name: 'Mistral Large', value: 'MISTRAL_LARGE' },
+  { name: 'Mistral Nemo', value: 'MISTRAL_NEMO' },
+]
 
 /**
  * Mapping of Fireworks model identifiers to their API names.
@@ -372,6 +359,15 @@ export const FIREWORKS_MODELS: Record<FireworksModelType, string> = {
   LLAMA_3_2_1B: "accounts/fireworks/models/llama-v3p2-1b-instruct",
   QWEN_2_5_72B: "accounts/fireworks/models/qwen2p5-72b-instruct",
 }
+
+export const FIREWORKS_CHOICES = [
+  { name: 'LLAMA 3 1 405B', value: 'LLAMA_3_1_405B' },
+  { name: 'LLAMA 3 1 70B', value: 'LLAMA_3_1_70B' },
+  { name: 'LLAMA 3 1 8B', value: 'LLAMA_3_1_8B' },
+  { name: 'LLAMA 3 2 3B', value: 'LLAMA_3_2_3B' },
+  { name: 'LLAMA 3 2 1B', value: 'LLAMA_3_2_1B' },
+  { name: 'QWEN 2 5 72B', value: 'QWEN_2_5_72B' },
+]
 
 /**
  * Mapping of Together model identifiers to their API names.
@@ -388,6 +384,17 @@ export const TOGETHER_MODELS: Record<TogetherModelType, string> = {
   QWEN_2_5_7B: "Qwen/Qwen2.5-7B-Instruct-Turbo",
 }
 
+export const TOGETHER_CHOICES = [
+  { name: 'LLAMA 3 2 3B', value: 'LLAMA_3_2_3B' },
+  { name: 'LLAMA 3 1 405B', value: 'LLAMA_3_1_405B' },
+  { name: 'LLAMA 3 1 70B', value: 'LLAMA_3_1_70B' },
+  { name: 'LLAMA 3 1 8B', value: 'LLAMA_3_1_8B' },
+  { name: 'Gemma 2 27B', value: 'GEMMA_2_27B' },
+  { name: 'Gemma 2 9B', value: 'GEMMA_2_9B' },
+  { name: 'QWEN 2 5 72B', value: 'QWEN_2_5_72B' },
+  { name: 'QWEN 2 5 7B', value: 'QWEN_2_5_7B' },
+]
+
 /**
  * Mapping of Groq model identifiers to their API names.
  * @type {Record<GroqModelType, string>}
@@ -400,15 +407,10 @@ export const GROQ_MODELS: Record<GroqModelType, string> = {
   MIXTRAL_8X7B_32768: 'mixtral-8x7b-32768',
 }
 
-/**
- * Mapping of model identifiers to their corresponding names in Ollama.
- * @type {Record<OllamaModelType, string>}
- */
-export const OLLAMA_MODELS: Record<OllamaModelType, string> = {
-  LLAMA_3_2_1B: 'llama3.2:1b',
-  LLAMA_3_2_3B: 'llama3.2:3b',
-  GEMMA_2_2B: 'gemma2:2b',
-  PHI_3_5: 'phi3.5:3.8b',
-  QWEN_2_5_1B: 'qwen2.5:1.5b',
-  QWEN_2_5_3B: 'qwen2.5:3b',
-}
+export const GROQ_CHOICES = [
+  { name: 'LLAMA 3 1 70B Versatile', value: 'LLAMA_3_1_70B_VERSATILE' },
+  { name: 'LLAMA 3 1 8B Instant', value: 'LLAMA_3_1_8B_INSTANT' },
+  { name: 'LLAMA 3 2 1B Preview', value: 'LLAMA_3_2_1B_PREVIEW' },
+  { name: 'LLAMA 3 2 3B Preview', value: 'LLAMA_3_2_3B_PREVIEW' },
+  { name: 'Mixtral 8x7b 32768', value: 'MIXTRAL_8X7B_32768' },
+]

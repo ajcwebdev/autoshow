@@ -1,3 +1,5 @@
+// packages/web/src/App.jsx
+
 import Form from './Form.jsx'
 
 const App = () => {

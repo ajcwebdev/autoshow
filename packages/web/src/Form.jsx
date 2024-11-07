@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react'
 
+// Alert component to display error messages
 const Alert = ({ message, variant }) => (
   <div className={`alert ${variant}`}>
     <p>{message}</p>
@@ -9,12 +10,14 @@ const Alert = ({ message, variant }) => (
 )
 
 const Form = () => {
+  // State variables
   const [youtubeUrl, setYoutubeUrl] = useState('https://www.youtube.com/watch?v=jKB0EltG9Jo')
   const [model, setModel] = useState('base')
   const [result, setResult] = useState(null)
   const [error, setError] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
 
+  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault()
     setIsLoading(true)
@@ -22,6 +25,7 @@ const Form = () => {
     setResult(null)
 
     try {
+      // Send POST request to the backend
       const response = await fetch('http://localhost:3000/video', {
         method: 'POST',
         headers: {
@@ -35,7 +39,7 @@ const Form = () => {
       }
 
       const data = await response.json()
-      setResult(data) // Set result with the response data
+      setResult(data) // Set result with the response data containing content
     } catch (err) {
       setError(err.message)
     } finally {
@@ -43,14 +47,15 @@ const Form = () => {
     }
   }
 
+  // Format content by adding line breaks
   const formatContent = (text) => {
     return text.split('\n').map((line, index) => (
       <React.Fragment key={index}>
         {line}
         <br />
       </React.Fragment>
-    ));
-  };
+    ))
+  }
 
   return (
     <>

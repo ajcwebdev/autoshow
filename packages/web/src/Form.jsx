@@ -9,7 +9,7 @@ const Alert = ({ message, variant }) => (
   </div>
 )
 
-const Form = () => {
+const Form = ({ onNewShowNote }) => {
   // State variables
   const [youtubeUrl, setYoutubeUrl] = useState('https://www.youtube.com/watch?v=jKB0EltG9Jo')
   const [model, setModel] = useState('base')
@@ -40,6 +40,9 @@ const Form = () => {
 
       const data = await response.json()
       setResult(data) // Set result to the data object containing content
+
+      // Fetch the updated list of show notes
+      onNewShowNote()
     } catch (err) {
       setError(err.message)
     } finally {

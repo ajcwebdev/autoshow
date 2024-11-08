@@ -13,6 +13,8 @@ import { cleanUpFiles } from '../utils/cleanUpFiles.js'
 import { l, err, opts } from '../globals.js'
 import fs from 'fs/promises'
 import type { LLMServices, TranscriptServices, ProcessingOptions } from '../types.js'
+import { db } from '../../packages/server/db.js'
+import yaml from 'js-yaml'
 
 /**
  * Processes a single video by executing a series of operations:
@@ -21,7 +23,8 @@ import type { LLMServices, TranscriptServices, ProcessingOptions } from '../type
  * 3. Downloads and extracts audio
  * 4. Transcribes the audio content
  * 5. Processes the transcript with a language model (if specified)
- * 6. Cleans up temporary files (unless disabled)
+ * 6. Saves the show notes into the database
+ * 7. Cleans up temporary files (unless disabled)
  * 
  * @param options - Configuration options for processing
  * @param url - The URL of the video to process
@@ -55,6 +58,18 @@ export async function processVideo(
 
     // Read the content of the output file
     const content = await fs.readFile(`${finalPath}-prompt.md`, 'utf-8')
+
+    // Remove the '---' lines from the frontMatter
+    const frontMatterContent = frontMatter.replace(/^---\n/, '').replace(/\n---\n?$/, '')
+
+    // Parse the front matter to extract title and publishDate
+    const frontMatterData = yaml.load(frontMatterContent)
+    const { title, publishDate } = frontMatterData as any
+
+    // Save the show note into the database
+    db.prepare(
+      `INSERT INTO show_notes (title, date, content) VALUES (?, ?, ?)`
+    ).run(title, publishDate, content)
 
     // Remove temporary files unless the noCleanUp option is set
     if (!options.noCleanUp) {

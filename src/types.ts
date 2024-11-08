@@ -216,7 +216,7 @@ export type HandlerFunction = (
   input: string,
   llmServices?: LLMServices,
   transcriptServices?: TranscriptServices
-) => Promise<void>
+) => Promise<void> | Promise<string>
 
 // Content Types
 /**

@@ -14,7 +14,6 @@ import { l, err, opts } from '../globals.js'
 import fs from 'fs/promises'
 import type { LLMServices, TranscriptServices, ProcessingOptions } from '../types.js'
 import { db } from '../../packages/server/db.js'
-import yaml from 'js-yaml'
 
 /**
  * Processes a single video by executing a series of operations:
@@ -45,7 +44,7 @@ export async function processVideo(
 
   try {
     // Generate markdown file with video metadata and get file paths
-    const { frontMatter, finalPath, filename } = await generateMarkdown(options, url)
+    const { frontMatter, finalPath, filename, metadata } = await generateMarkdown(options, url)
 
     // Extract and download the audio from the video source
     await downloadAudio(options, url, filename)
@@ -59,12 +58,8 @@ export async function processVideo(
     // Read the content of the output file
     const content = await fs.readFile(`${finalPath}-prompt.md`, 'utf-8')
 
-    // Remove the '---' lines from the frontMatter
-    const frontMatterContent = frontMatter.replace(/^---\n/, '').replace(/\n---\n?$/, '')
-
-    // Parse the front matter to extract title and publishDate
-    const frontMatterData = yaml.load(frontMatterContent)
-    const { title, publishDate } = frontMatterData as any
+    // Extract title and publishDate from the metadata object
+    const { title, publishDate } = metadata
 
     // Save the show note into the database
     db.prepare(

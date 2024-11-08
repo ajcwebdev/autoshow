@@ -231,6 +231,17 @@ export type MarkdownData = {
 
   /** The sanitized filename used for the markdown file. */
   filename: string
+
+  /** The metadata used in the frontmatter saved to a JSON object. */
+  metadata: {
+    showLink: string
+    channel: string
+    channelURL: string
+    title: string
+    description: string
+    publishDate: string
+    coverImage: string
+  }
 }
 
 /**

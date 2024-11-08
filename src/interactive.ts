@@ -1,9 +1,12 @@
 // src/interactive.ts
 
 import inquirer from 'inquirer'
-import type { ProcessingOptions, InquirerAnswers, WhisperModelType } from './types.js'
+import type { LLMServices, ProcessingOptions, InquirerAnswers, WhisperModelType } from './types.js'
 import {
-  l, PROCESS_CHOICES, TRANSCRIPT_CHOICES, WHISPER_MODEL_CHOICES, WHISPER_LIBRARY_CHOICES, LLM_SERVICE_CHOICES, LLM_CHOICES, OLLAMA_CHOICES, CHATGPT_CHOICES, CLAUDE_CHOICES, COHERE_CHOICES, MISTRAL_CHOICES, FIREWORKS_CHOICES, TOGETHER_CHOICES, GROQ_CHOICES, GEMINI_CHOICES, PROMPT_CHOICES
+  l, PROCESS_CHOICES, TRANSCRIPT_SERVICES, WHISPER_MODELS,
+  LLM_SERVICES, LLM_OPTIONS, OLLAMA_MODELS, GPT_MODELS,
+  CLAUDE_MODELS, GEMINI_MODELS, COHERE_MODELS, MISTRAL_MODELS,
+  FIREWORKS_MODELS, TOGETHER_MODELS, GROQ_MODELS, PROMPT_CHOICES
 } from './globals.js'
 
 /**
@@ -129,7 +132,10 @@ export async function handleInteractivePrompt(
       type: 'list',
       name: 'llmServices',
       message: 'Select the Language Model (LLM) you want to use:',
-      choices: LLM_SERVICE_CHOICES,
+      choices: Object.values(LLM_SERVICES).map(service => ({
+        name: service.name,
+        value: service.value
+      })),
     },
     // Model selection based on chosen LLM service
     {
@@ -140,43 +146,46 @@ export async function handleInteractivePrompt(
         // Return appropriate model choices based on selected LLM service
         switch (answers.llmServices) {
           case 'ollama':
-            return OLLAMA_CHOICES
+            return Object.entries(OLLAMA_MODELS).map(([value, config]) => ({ name: config.name, value }))
           case 'chatgpt':
-            return CHATGPT_CHOICES
+            return Object.entries(GPT_MODELS).map(([value, config]) => ({ name: config.name, value }))
           case 'claude':
-            return CLAUDE_CHOICES
+            return Object.entries(CLAUDE_MODELS).map(([value, config]) => ({ name: config.name, value }))
           case 'gemini':
-            return GEMINI_CHOICES
+            return Object.entries(GEMINI_MODELS).map(([value, config]) => ({ name: config.name, value }))
           case 'cohere':
-            return COHERE_CHOICES
+            return Object.entries(COHERE_MODELS).map(([value, config]) => ({ name: config.name, value }))
           case 'mistral':
-            return MISTRAL_CHOICES
+            return Object.entries(MISTRAL_MODELS).map(([value, config]) => ({ name: config.name, value }))
           case 'fireworks':
-            return FIREWORKS_CHOICES
+            return Object.entries(FIREWORKS_MODELS).map(([value, config]) => ({ name: config.name, value }))
           case 'together':
-            return TOGETHER_CHOICES
+            return Object.entries(TOGETHER_MODELS).map(([value, config]) => ({ name: config.name, value }))
           case 'groq':
-            return GROQ_CHOICES
+            return Object.entries(GROQ_MODELS).map(([value, config]) => ({ name: config.name, value }))
           default:
             return []
         }
       },
       when: (answers: InquirerAnswers) =>
-        LLM_CHOICES.includes(answers.llmServices as string),
+        answers.llmServices !== null && LLM_OPTIONS.includes(answers.llmServices as LLMServices),
     },
     // Transcription service configuration
     {
       type: 'list',
       name: 'transcriptServices',
       message: 'Select the transcription service you want to use:',
-      choices: TRANSCRIPT_CHOICES,
+      choices: Object.values(TRANSCRIPT_SERVICES).map(service => ({
+        name: service.name,
+        value: service.value
+      })),
     },
     // Whisper model configuration
     {
       type: 'list',
       name: 'whisperModel',
       message: 'Select the Whisper model type:',
-      choices: WHISPER_MODEL_CHOICES,
+      choices: Object.keys(WHISPER_MODELS),
       when: (answers: InquirerAnswers) =>
         ['whisper', 'whisperDocker', 'whisperPython', 'whisperDiarization'].includes(
           answers.transcriptServices as string
@@ -223,11 +232,10 @@ export async function handleInteractivePrompt(
   } as ProcessingOptions
   // Configure transcription service options based on user selection
   if (answers.transcriptServices) {
-    if (
-      WHISPER_LIBRARY_CHOICES.includes(
-        answers.transcriptServices
-      )
-    ) {
+    const service = Object.values(TRANSCRIPT_SERVICES)
+      .find(s => s.value === answers.transcriptServices)
+    
+    if (service?.isWhisper) {
       // Set selected Whisper model
       (options as any)[answers.transcriptServices] = answers.whisperModel as WhisperModelType
     } else if (answers.transcriptServices === 'deepgram' || answers.transcriptServices === 'assembly') {

@@ -35,7 +35,7 @@ export const callGemini: LLMFunction = async (
   const genAI = new GoogleGenerativeAI(env['GEMINI_API_KEY'])
   
   // Select the actual model to use, defaulting to GEMINI_1_5_FLASH if not specified
-  const actualModel = GEMINI_MODELS[model as GeminiModelType] || GEMINI_MODELS.GEMINI_1_5_FLASH
+  const actualModel = (GEMINI_MODELS[model as GeminiModelType] || GEMINI_MODELS.GEMINI_1_5_FLASH).modelId
   
   // Create a GenerativeModel instance
   const geminiModel = genAI.getGenerativeModel({ model: actualModel })

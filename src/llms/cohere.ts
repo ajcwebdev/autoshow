@@ -30,7 +30,7 @@ export const callCohere: LLMFunction = async (
   
   try {
     // Select the actual model to use, defaulting to COMMAND_R if not specified
-    const actualModel = COHERE_MODELS[model as CohereModelType] || COHERE_MODELS.COMMAND_R
+    const actualModel = (COHERE_MODELS[model as CohereModelType] || COHERE_MODELS.COMMAND_R).modelId
     
     // Call the Cohere chat API
     const response = await cohere.chat({

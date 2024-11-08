@@ -8,7 +8,7 @@
 
 import { readFile, writeFile, unlink } from 'node:fs/promises'
 import { existsSync } from 'node:fs'
-import { l, err, wait, success, WHISPER_MODELS, WHISPER_PYTHON_MODELS, execPromise } from '../globals.js'
+import { l, err, wait, success, WHISPER_MODELS, execPromise } from '../globals.js'
 import type { ProcessingOptions, WhisperModelType, WhisperTranscriptServices } from '../types.js'
 
 // Updated function signatures for the runner functions
@@ -44,12 +44,12 @@ export async function callWhisper(
       },
       whisperPython: {
         option: options.whisperPython,
-        modelList: WHISPER_PYTHON_MODELS,
+        modelList: WHISPER_MODELS,
         runner: runWhisperPython
       },
       whisperDiarization: {
         option: options.whisperDiarization,
-        modelList: WHISPER_PYTHON_MODELS,
+        modelList: WHISPER_MODELS,
         runner: runWhisperDiarization
       }
     } as const

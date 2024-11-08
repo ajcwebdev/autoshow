@@ -24,7 +24,7 @@ export const callFireworks: LLMFunction = async (
   }
 
   try {
-    const actualModel = FIREWORKS_MODELS[model as FireworksModelType] || FIREWORKS_MODELS.LLAMA_3_2_3B
+    const actualModel = (FIREWORKS_MODELS[model as FireworksModelType] || FIREWORKS_MODELS.LLAMA_3_2_3B).modelId
 
     // Prepare the request body
     const requestBody = {

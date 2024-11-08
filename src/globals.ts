@@ -11,7 +11,7 @@ import { promisify } from 'node:util'
 import chalk from 'chalk'
 import type { ChalkInstance } from 'chalk'
 import type {
-  WhisperModelType, ChatGPTModelType, ClaudeModelType, CohereModelType, GeminiModelType, MistralModelType, OllamaModelType, TogetherModelType, FireworksModelType, GroqModelType
+  TranscriptServices, LLMServices, WhisperModelType, ChatGPTModelType, ClaudeModelType, CohereModelType, GeminiModelType, MistralModelType, OllamaModelType, TogetherModelType, FireworksModelType, GroqModelType
 } from './types.js'
 
 export const execPromise = promisify(exec)
@@ -137,51 +137,52 @@ export const PROCESS_CHOICES = [
   { name: 'Podcast RSS Feed', value: 'rss' },
 ]
 
-/**
- * Available LLM service options
- * @type {string[]}
- */
-export const LLM_OPTIONS = ['chatgpt', 'claude', 'cohere', 'mistral', 'ollama', 'gemini', 'fireworks', 'together', 'groq']
+type LLMServiceConfig = {
+  name: string
+  value: LLMServices | null
+}
 
-export const LLM_CHOICES = [
-  'ollama',
-  'chatgpt',
-  'claude',
-  'cohere',
-  'mistral',
-  'fireworks',
-  'together',
-  'groq',
-  'gemini',
-]
+export const LLM_SERVICES: Record<string, LLMServiceConfig> = {
+  SKIP: { name: 'Skip LLM Processing', value: null },
+  OLLAMA: { name: 'Ollama (local inference)', value: 'ollama' },
+  CHATGPT: { name: 'OpenAI ChatGPT', value: 'chatgpt' },
+  CLAUDE: { name: 'Anthropic Claude', value: 'claude' },
+  GEMINI: { name: 'Google Gemini', value: 'gemini' },
+  COHERE: { name: 'Cohere', value: 'cohere' },
+  MISTRAL: { name: 'Mistral', value: 'mistral' },
+  FIREWORKS: { name: 'Fireworks AI', value: 'fireworks' },
+  TOGETHER: { name: 'Together AI', value: 'together' },
+  GROQ: { name: 'Groq', value: 'groq' },
+} as const
 
-export const LLM_SERVICE_CHOICES = [
-  { name: 'Skip LLM Processing', value: null },
-  { name: 'Ollama (local inference)', value: 'ollama' },
-  { name: 'OpenAI ChatGPT', value: 'chatgpt' },
-  { name: 'Anthropic Claude', value: 'claude' },
-  { name: 'Google Gemini', value: 'gemini' },
-  { name: 'Cohere', value: 'cohere' },
-  { name: 'Mistral', value: 'mistral' },
-  { name: 'Fireworks AI', value: 'fireworks' },
-  { name: 'Together AI', value: 'together' },
-  { name: 'Groq', value: 'groq' },
-]
+// Modify the type definition for TRANSCRIPT_SERVICES
+type TranscriptServiceConfig = {
+  name: string
+  value: TranscriptServices
+  isWhisper?: boolean
+}
 
-/**
- * Available transcription service options
- * @type {string[]}
- */
-export const TRANSCRIPT_OPTIONS = ['whisper', 'whisperDocker', 'whisperPython', 'whisperDiarization', 'deepgram', 'assembly']
+export const TRANSCRIPT_SERVICES: Record<string, TranscriptServiceConfig> = {
+  WHISPER: { name: 'Whisper.cpp', value: 'whisper', isWhisper: true },
+  WHISPER_DOCKER: { name: 'Whisper.cpp (Docker)', value: 'whisperDocker', isWhisper: true },
+  WHISPER_PYTHON: { name: 'Whisper Python', value: 'whisperPython', isWhisper: true },
+  WHISPER_DIARIZATION: { name: 'Whisper Diarization', value: 'whisperDiarization', isWhisper: true },
+  DEEPGRAM: { name: 'Deepgram', value: 'deepgram' },
+  ASSEMBLY: { name: 'AssemblyAI', value: 'assembly' },
+} as const
 
-export const TRANSCRIPT_CHOICES = [
-  { name: 'Whisper.cpp', value: 'whisper' },
-  { name: 'Whisper.cpp (Docker)', value: 'whisperDocker' },
-  { name: 'Whisper Python', value: 'whisperPython' },
-  { name: 'Whisper Diarization', value: 'whisperDiarization' },
-  { name: 'Deepgram', value: 'deepgram' },
-  { name: 'AssemblyAI', value: 'assembly' },
-]
+export const LLM_OPTIONS = Object.values(LLM_SERVICES)
+  .map(service => service.value)
+  .filter((value): value is LLMServices => value !== null)
+
+export const TRANSCRIPT_OPTIONS = Object.values(TRANSCRIPT_SERVICES)
+  .map(service => service.value)
+
+export const WHISPER_SERVICES = Object.values(TRANSCRIPT_SERVICES)
+  .filter((service): service is TranscriptServiceConfig & { isWhisper: true } => 
+    service.isWhisper === true
+  )
+  .map(service => service.value)
 
 /**
  * Mapping of Whisper model types to their corresponding binary filenames for whisper.cpp.
@@ -202,215 +203,106 @@ export const WHISPER_MODELS: Record<WhisperModelType, string> = {
   'turbo': 'ggml-large-v3-turbo.bin'
 }
 
-export const WHISPER_MODEL_CHOICES = [
-  'tiny',
-  'tiny.en',
-  'base',
-  'base.en',
-  'small',
-  'small.en',
-  'medium',
-  'medium.en',
-  'large-v1',
-  'large-v2',
-  'turbo',
-]
-
-export const WHISPER_LIBRARY_CHOICES = [
-  'whisper',
-  'whisperDocker',
-  'whisperPython',
-  'whisperDiarization'
-]
-
 /**
- * Mapping of Whisper model types to their corresponding names for openai-whisper.
- * @type {Record<WhisperModelType, string>}
+ * Ollama model configuration with both display names and model identifiers
+ * @type {Record<OllamaModelType, { name: string, modelId: string }>}
  */
-export const WHISPER_PYTHON_MODELS: Record<WhisperModelType, string> = {
-  tiny: 'tiny',
-  'tiny.en': 'tiny.en',
-  base: 'base',
-  'base.en': 'base.en',
-  small: 'small',
-  'small.en': 'small.en',
-  medium: 'medium',
-  'medium.en': 'medium.en',
-  'large-v1': 'large-v1',
-  'large-v2': 'large-v2',
-  turbo: 'turbo',
-  'large-v3-turbo': 'large-v3-turbo'
+export const OLLAMA_MODELS: Record<OllamaModelType, { name: string, modelId: string }> = {
+  LLAMA_3_2_1B: { name: 'LLAMA 3 2 1B', modelId: 'llama3.2:1b' },
+  LLAMA_3_2_3B: { name: 'LLAMA 3 2 3B', modelId: 'llama3.2:3b' },
+  GEMMA_2_2B: { name: 'GEMMA 2 2B', modelId: 'gemma2:2b' },
+  PHI_3_5: { name: 'PHI 3 5', modelId: 'phi3.5:3.8b' },
+  QWEN_2_5_1B: { name: 'QWEN 2 5 1B', modelId: 'qwen2.5:1.5b' },
+  QWEN_2_5_3B: { name: 'QWEN 2 5 3B', modelId: 'qwen2.5:3b' },
 }
 
 /**
- * Mapping of model identifiers to their corresponding names in Ollama.
- * @type {Record<OllamaModelType, string>}
+ * Unified ChatGPT model configuration with both display names and model identifiers
+ * @type {Record<ChatGPTModelType, { name: string, modelId: string }>}
  */
-export const OLLAMA_MODELS: Record<OllamaModelType, string> = {
-  LLAMA_3_2_1B: 'llama3.2:1b',
-  LLAMA_3_2_3B: 'llama3.2:3b',
-  GEMMA_2_2B: 'gemma2:2b',
-  PHI_3_5: 'phi3.5:3.8b',
-  QWEN_2_5_1B: 'qwen2.5:1.5b',
-  QWEN_2_5_3B: 'qwen2.5:3b',
+export const GPT_MODELS: Record<ChatGPTModelType, { name: string, modelId: string }> = {
+  GPT_4o_MINI: { name: 'GPT 4 o MINI', modelId: 'gpt-4o-mini' },
+  GPT_4o: { name: 'GPT 4 o', modelId: 'gpt-4o' },
+  GPT_4_TURBO: { name: 'GPT 4 TURBO', modelId: 'gpt-4-turbo' },
+  GPT_4: { name: 'GPT 4', modelId: 'gpt-4' },
 }
-
-export const OLLAMA_CHOICES = [
-  { name: 'LLAMA 3 2 1B', value: 'LLAMA_3_2_1B' },
-  { name: 'LLAMA 3 2 3B', value: 'LLAMA_3_2_3B' },
-  { name: 'GEMMA 2 2B', value: 'GEMMA_2_2B' },
-  { name: 'PHI 3 5', value: 'PHI_3_5' },
-  { name: 'QWEN 2 5 1B', value: 'QWEN_2_5_1B' },
-  { name: 'QWEN 2 5 3B', value: 'QWEN_2_5_3B' },
-]
 
 /**
- * Mapping of ChatGPT model identifiers to their API names.
- * @type {Record<ChatGPTModelType, string>}
+ * Unified Claude model configuration with both display names and model identifiers
+ * @type {Record<ClaudeModelType, { name: string, modelId: string }>}
  */
-export const GPT_MODELS: Record<ChatGPTModelType, string> = {
-  GPT_4o_MINI: "gpt-4o-mini",
-  GPT_4o: "gpt-4o",
-  GPT_4_TURBO: "gpt-4-turbo",
-  GPT_4: "gpt-4",
+export const CLAUDE_MODELS: Record<ClaudeModelType, { name: string, modelId: string }> = {
+  CLAUDE_3_5_SONNET: { name: 'Claude 3.5 Sonnet', modelId: 'claude-3-5-sonnet-20240620' },
+  CLAUDE_3_OPUS: { name: 'Claude 3 Opus', modelId: 'claude-3-opus-20240229' },
+  CLAUDE_3_SONNET: { name: 'Claude 3 Sonnet', modelId: 'claude-3-sonnet-20240229' },
+  CLAUDE_3_HAIKU: { name: 'Claude 3 Haiku', modelId: 'claude-3-haiku-20240307' },
 }
-
-export const CHATGPT_CHOICES = [
-  { name: 'GPT 4 o MINI', value: 'GPT_4o_MINI' },
-  { name: 'GPT 4 o', value: 'GPT_4o' },
-  { name: 'GPT 4 TURBO', value: 'GPT_4_TURBO' },
-  { name: 'GPT 4', value: 'GPT_4' },
-]
 
 /**
- * Mapping of Claude model identifiers to their API names.
- * @type {Record<ClaudeModelType, string>}
+ * Unified Gemini model configuration with both display names and model identifiers
+ * @type {Record<GeminiModelType, { name: string, modelId: string }>}
  */
-export const CLAUDE_MODELS: Record<ClaudeModelType, string> = {
-  CLAUDE_3_5_SONNET: "claude-3-5-sonnet-20240620",
-  CLAUDE_3_OPUS: "claude-3-opus-20240229",
-  CLAUDE_3_SONNET: "claude-3-sonnet-20240229",
-  CLAUDE_3_HAIKU: "claude-3-haiku-20240307",
+export const GEMINI_MODELS: Record<GeminiModelType, { name: string, modelId: string }> = {
+  GEMINI_1_5_FLASH: { name: 'Gemini 1.5 Flash', modelId: 'gemini-1.5-flash' },
+  GEMINI_1_5_PRO: { name: 'Gemini 1.5 Pro', modelId: 'gemini-1.5-pro-exp-0827' },
 }
-
-export const CLAUDE_CHOICES = [
-  { name: 'Claude 3.5 Sonnet', value: 'CLAUDE_3_5_SONNET' },
-  { name: 'Claude 3 Opus', value: 'CLAUDE_3_OPUS' },
-  { name: 'Claude 3 Sonnet', value: 'CLAUDE_3_SONNET' },
-  { name: 'Claude 3 Haiku', value: 'CLAUDE_3_HAIKU' },
-]
 
 /**
- * Mapping of Cohere model identifiers to their API names.
- * @type {Record<CohereModelType, string>}
- */
-export const COHERE_MODELS: Record<CohereModelType, string> = {
-  COMMAND_R: "command-r", // Standard Command model
-  COMMAND_R_PLUS: "command-r-plus" // Enhanced Command model
+* Unified Cohere model configuration with both display names and model identifiers
+* @type {Record<CohereModelType, { name: string, modelId: string }>}
+*/
+export const COHERE_MODELS: Record<CohereModelType, { name: string, modelId: string }> = {
+ COMMAND_R: { name: 'Command R', modelId: 'command-r' },
+ COMMAND_R_PLUS: { name: 'Command R Plus', modelId: 'command-r-plus' },
 }
-
-export const COHERE_CHOICES = [
-  { name: 'Command R', value: 'COMMAND_R' },
-  { name: 'Command R Plus', value: 'COMMAND_R_PLUS' },
-]
 
 /**
- * Mapping of Gemini model identifiers to their API names.
- * @type {Record<GeminiModelType, string>}
- */
-export const GEMINI_MODELS: Record<GeminiModelType, string> = {
-  GEMINI_1_5_FLASH: "gemini-1.5-flash",
-  // GEMINI_1_5_PRO: "gemini-1.5-pro",
-  GEMINI_1_5_PRO: "gemini-1.5-pro-exp-0827",
+* Unified Mistral model configuration with both display names and model identifiers
+* @type {Record<MistralModelType, { name: string, modelId: string }>}
+*/
+export const MISTRAL_MODELS: Record<MistralModelType, { name: string, modelId: string }> = {
+ MIXTRAL_8x7b: { name: 'Mixtral 8x7b', modelId: 'open-mixtral-8x7b' },
+ MIXTRAL_8x22b: { name: 'Mixtral 8x22b', modelId: 'open-mixtral-8x22b' },
+ MISTRAL_LARGE: { name: 'Mistral Large', modelId: 'mistral-large-latest' },
+ MISTRAL_NEMO: { name: 'Mistral Nemo', modelId: 'open-mistral-nemo' },
 }
-
-export const GEMINI_CHOICES = [
-  { name: 'Gemini 1.5 Flash', value: 'GEMINI_1_5_FLASH' },
-  { name: 'Gemini 1.5 Pro', value: 'GEMINI_1_5_PRO' },
-]
 
 /**
- * Mapping of Mistral model identifiers to their API names.
- * @type {Record<MistralModelType, string>}
- */
-export const MISTRAL_MODELS: Record<MistralModelType, string> = {
-  MIXTRAL_8x7b: "open-mixtral-8x7b",
-  MIXTRAL_8x22b: "open-mixtral-8x22b",
-  MISTRAL_LARGE: "mistral-large-latest",
-  MISTRAL_NEMO: "open-mistral-nemo"
+* Unified Fireworks model configuration with both display names and model identifiers
+* @type {Record<FireworksModelType, { name: string, modelId: string }>}
+*/
+export const FIREWORKS_MODELS: Record<FireworksModelType, { name: string, modelId: string }> = {
+ LLAMA_3_1_405B: { name: 'LLAMA 3 1 405B', modelId: 'accounts/fireworks/models/llama-v3p1-405b-instruct' },
+ LLAMA_3_1_70B: { name: 'LLAMA 3 1 70B', modelId: 'accounts/fireworks/models/llama-v3p1-70b-instruct' },
+ LLAMA_3_1_8B: { name: 'LLAMA 3 1 8B', modelId: 'accounts/fireworks/models/llama-v3p1-8b-instruct' },
+ LLAMA_3_2_3B: { name: 'LLAMA 3 2 3B', modelId: 'accounts/fireworks/models/llama-v3p2-3b-instruct' },
+ LLAMA_3_2_1B: { name: 'LLAMA 3 2 1B', modelId: 'accounts/fireworks/models/llama-v3p2-1b-instruct' },
+ QWEN_2_5_72B: { name: 'QWEN 2 5 72B', modelId: 'accounts/fireworks/models/qwen2p5-72b-instruct' },
 }
-
-export const MISTRAL_CHOICES = [
-  { name: 'Mixtral 8x7b', value: 'MIXTRAL_8x7b' },
-  { name: 'Mixtral 8x22b', value: 'MIXTRAL_8x22b' },
-  { name: 'Mistral Large', value: 'MISTRAL_LARGE' },
-  { name: 'Mistral Nemo', value: 'MISTRAL_NEMO' },
-]
 
 /**
- * Mapping of Fireworks model identifiers to their API names.
- * @type {Record<FireworksModelType, string>}
- */
-export const FIREWORKS_MODELS: Record<FireworksModelType, string> = {
-  LLAMA_3_1_405B: "accounts/fireworks/models/llama-v3p1-405b-instruct",
-  LLAMA_3_1_70B: "accounts/fireworks/models/llama-v3p1-70b-instruct",
-  LLAMA_3_1_8B: "accounts/fireworks/models/llama-v3p1-8b-instruct",
-  LLAMA_3_2_3B: "accounts/fireworks/models/llama-v3p2-3b-instruct",
-  LLAMA_3_2_1B: "accounts/fireworks/models/llama-v3p2-1b-instruct",
-  QWEN_2_5_72B: "accounts/fireworks/models/qwen2p5-72b-instruct",
+* Unified Together model configuration with both display names and model identifiers
+* @type {Record<TogetherModelType, { name: string, modelId: string }>}
+*/
+export const TOGETHER_MODELS: Record<TogetherModelType, { name: string, modelId: string }> = {
+ LLAMA_3_2_3B: { name: 'LLAMA 3 2 3B', modelId: 'meta-llama/Llama-3.2-3B-Instruct-Turbo' },
+ LLAMA_3_1_405B: { name: 'LLAMA 3 1 405B', modelId: 'meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo' },
+ LLAMA_3_1_70B: { name: 'LLAMA 3 1 70B', modelId: 'meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo' },
+ LLAMA_3_1_8B: { name: 'LLAMA 3 1 8B', modelId: 'meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo' },
+ GEMMA_2_27B: { name: 'Gemma 2 27B', modelId: 'google/gemma-2-27b-it' },
+ GEMMA_2_9B: { name: 'Gemma 2 9B', modelId: 'google/gemma-2-9b-it' },
+ QWEN_2_5_72B: { name: 'QWEN 2 5 72B', modelId: 'Qwen/Qwen2.5-72B-Instruct-Turbo' },
+ QWEN_2_5_7B: { name: 'QWEN 2 5 7B', modelId: 'Qwen/Qwen2.5-7B-Instruct-Turbo' },
 }
-
-export const FIREWORKS_CHOICES = [
-  { name: 'LLAMA 3 1 405B', value: 'LLAMA_3_1_405B' },
-  { name: 'LLAMA 3 1 70B', value: 'LLAMA_3_1_70B' },
-  { name: 'LLAMA 3 1 8B', value: 'LLAMA_3_1_8B' },
-  { name: 'LLAMA 3 2 3B', value: 'LLAMA_3_2_3B' },
-  { name: 'LLAMA 3 2 1B', value: 'LLAMA_3_2_1B' },
-  { name: 'QWEN 2 5 72B', value: 'QWEN_2_5_72B' },
-]
 
 /**
- * Mapping of Together model identifiers to their API names.
- * @type {Record<TogetherModelType, string>}
- */
-export const TOGETHER_MODELS: Record<TogetherModelType, string> = {
-  LLAMA_3_2_3B: "meta-llama/Llama-3.2-3B-Instruct-Turbo",
-  LLAMA_3_1_405B: "meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo",
-  LLAMA_3_1_70B: "meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo",
-  LLAMA_3_1_8B: "meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo",
-  GEMMA_2_27B: "google/gemma-2-27b-it",
-  GEMMA_2_9B: "google/gemma-2-9b-it",
-  QWEN_2_5_72B: "Qwen/Qwen2.5-72B-Instruct-Turbo",
-  QWEN_2_5_7B: "Qwen/Qwen2.5-7B-Instruct-Turbo",
+* Unified Groq model configuration with both display names and model identifiers
+* @type {Record<GroqModelType, { name: string, modelId: string }>}
+*/
+export const GROQ_MODELS: Record<GroqModelType, { name: string, modelId: string }> = {
+ LLAMA_3_1_70B_VERSATILE: { name: 'LLAMA 3 1 70B Versatile', modelId: 'llama-3.1-70b-versatile' },
+ LLAMA_3_1_8B_INSTANT: { name: 'LLAMA 3 1 8B Instant', modelId: 'llama-3.1-8b-instant' },
+ LLAMA_3_2_1B_PREVIEW: { name: 'LLAMA 3 2 1B Preview', modelId: 'llama-3.2-1b-preview' },
+ LLAMA_3_2_3B_PREVIEW: { name: 'LLAMA 3 2 3B Preview', modelId: 'llama-3.2-3b-preview' },
+ MIXTRAL_8X7B_32768: { name: 'Mixtral 8x7b 32768', modelId: 'mixtral-8x7b-32768' },
 }
-
-export const TOGETHER_CHOICES = [
-  { name: 'LLAMA 3 2 3B', value: 'LLAMA_3_2_3B' },
-  { name: 'LLAMA 3 1 405B', value: 'LLAMA_3_1_405B' },
-  { name: 'LLAMA 3 1 70B', value: 'LLAMA_3_1_70B' },
-  { name: 'LLAMA 3 1 8B', value: 'LLAMA_3_1_8B' },
-  { name: 'Gemma 2 27B', value: 'GEMMA_2_27B' },
-  { name: 'Gemma 2 9B', value: 'GEMMA_2_9B' },
-  { name: 'QWEN 2 5 72B', value: 'QWEN_2_5_72B' },
-  { name: 'QWEN 2 5 7B', value: 'QWEN_2_5_7B' },
-]
-
-/**
- * Mapping of Groq model identifiers to their API names.
- * @type {Record<GroqModelType, string>}
- */
-export const GROQ_MODELS: Record<GroqModelType, string> = {
-  LLAMA_3_1_70B_VERSATILE: 'llama-3.1-70b-versatile',
-  LLAMA_3_1_8B_INSTANT: 'llama-3.1-8b-instant',
-  LLAMA_3_2_1B_PREVIEW: 'llama-3.2-1b-preview',
-  LLAMA_3_2_3B_PREVIEW: 'llama-3.2-3b-preview',
-  MIXTRAL_8X7B_32768: 'mixtral-8x7b-32768',
-}
-
-export const GROQ_CHOICES = [
-  { name: 'LLAMA 3 1 70B Versatile', value: 'LLAMA_3_1_70B_VERSATILE' },
-  { name: 'LLAMA 3 1 8B Instant', value: 'LLAMA_3_1_8B_INSTANT' },
-  { name: 'LLAMA 3 2 1B Preview', value: 'LLAMA_3_2_1B_PREVIEW' },
-  { name: 'LLAMA 3 2 3B Preview', value: 'LLAMA_3_2_3B_PREVIEW' },
-  { name: 'Mixtral 8x7b 32768', value: 'MIXTRAL_8X7B_32768' },
-]

@@ -11,7 +11,7 @@ import { runTranscription } from '../utils/runTranscription.js'
 import { runLLM } from '../utils/runLLM.js'
 import { cleanUpFiles } from '../utils/cleanUpFiles.js'
 import { l, err, opts } from '../globals.js'
-import fs from 'fs/promises'
+import { readFile } from 'fs/promises'
 import type { LLMServices, TranscriptServices, ProcessingOptions } from '../types.js'
 import { db } from '../../packages/server/db.js'
 
@@ -55,8 +55,16 @@ export async function processVideo(
     // Process the transcript with a language model if one was specified
     await runLLM(options, finalPath, frontMatter, llmServices)
 
+    // Determine the correct output file path based on whether an LLM was used
+    let outputFilePath: string
+    if (llmServices) {
+      outputFilePath = `${finalPath}-${llmServices}-shownotes.md`
+    } else {
+      outputFilePath = `${finalPath}-prompt.md`
+    }
+
     // Read the content of the output file
-    const content = await fs.readFile(`${finalPath}-prompt.md`, 'utf-8')
+    const content = await readFile(outputFilePath, 'utf-8')
 
     // Extract title and publishDate from the metadata object
     const { title, publishDate } = metadata

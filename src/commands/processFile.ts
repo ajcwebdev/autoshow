@@ -11,7 +11,9 @@ import { runTranscription } from '../utils/runTranscription.js'
 import { runLLM } from '../utils/runLLM.js'
 import { cleanUpFiles } from '../utils/cleanUpFiles.js'
 import { l, err, opts } from '../globals.js'
+import { readFile } from 'fs/promises'
 import type { LLMServices, TranscriptServices, ProcessingOptions } from '../types.js'
+import { db } from '../../packages/server/db.js'
 
 /**
  * Processes a local audio or video file through a series of operations:
@@ -19,7 +21,8 @@ import type { LLMServices, TranscriptServices, ProcessingOptions } from '../type
  * 2. Converts the file to the required audio format
  * 3. Transcribes the audio content
  * 4. Processes the transcript with a language model (if specified)
- * 5. Cleans up temporary files (unless disabled)
+ * 5. Saves the show notes into the database
+ * 6. Cleans up temporary files (unless disabled)
  * 
  * Unlike processVideo, this function handles local files and doesn't need
  * to check for external dependencies like yt-dlp.
@@ -43,7 +46,7 @@ export async function processFile(
 
   try {
     // Generate markdown file with file metadata and get file paths
-    const { frontMatter, finalPath, filename } = await generateMarkdown(options, filePath)
+    const { frontMatter, finalPath, filename, metadata } = await generateMarkdown(options, filePath)
 
     // Convert the input file to the required audio format for processing
     await downloadAudio(options, filePath, filename)
@@ -53,6 +56,25 @@ export async function processFile(
 
     // Process the transcript with a language model if one was specified
     await runLLM(options, finalPath, frontMatter, llmServices)
+
+    // Determine the correct output file path based on whether an LLM was used
+    let outputFilePath: string
+    if (llmServices) {
+      outputFilePath = `${finalPath}-${llmServices}-shownotes.md`
+    } else {
+      outputFilePath = `${finalPath}-prompt.md`
+    }
+
+    // Read the content of the output file
+    const content = await readFile(outputFilePath, 'utf-8')
+
+    // Extract title and publishDate from the metadata object
+    const { title, publishDate } = metadata
+
+    // Save the show note into the database
+    db.prepare(
+      `INSERT INTO show_notes (title, date, content) VALUES (?, ?, ?)`
+    ).run(title, publishDate, content)
 
     // Remove temporary files unless the noCleanUp option is set
     if (!options.noCleanUp) {

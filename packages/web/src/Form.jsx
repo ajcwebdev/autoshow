@@ -280,26 +280,28 @@ const Form = ({ onNewShowNote }) => {
 
         <div className="form-group">
           <label>Prompts</label>
-          {PROMPT_CHOICES.map((prompt) => (
-            <div key={prompt.value}>
-              <input
-                type="checkbox"
-                id={`prompt-${prompt.value}`}
-                value={prompt.value}
-                checked={selectedPrompts.includes(prompt.value)}
-                onChange={(e) => {
-                  if (e.target.checked) {
-                    setSelectedPrompts([...selectedPrompts, prompt.value])
-                  } else {
-                    setSelectedPrompts(
-                      selectedPrompts.filter((p) => p !== prompt.value)
-                    )
-                  }
-                }}
-              />
-              <label htmlFor={`prompt-${prompt.value}`}>{prompt.label}</label>
-            </div>
-          ))}
+          <div className="checkbox-group">
+            {PROMPT_CHOICES.map((prompt) => (
+              <div key={prompt.value}>
+                <input
+                  type="checkbox"
+                  id={`prompt-${prompt.value}`}
+                  value={prompt.value}
+                  checked={selectedPrompts.includes(prompt.value)}
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      setSelectedPrompts([...selectedPrompts, prompt.value])
+                    } else {
+                      setSelectedPrompts(
+                        selectedPrompts.filter((p) => p !== prompt.value)
+                      )
+                    }
+                  }}
+                />
+                <label htmlFor={`prompt-${prompt.value}`}>{prompt.label}</label>
+              </div>
+            ))}
+          </div>
         </div>
 
         <button

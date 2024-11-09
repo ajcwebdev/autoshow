@@ -2,7 +2,17 @@
 
 import React, { useState } from 'react'
 
-// Define constants for transcription services, Whisper models, LLM services, and their models
+// Define constants for prompts, transcription services, Whisper models, LLM services, and their models
+const PROMPT_CHOICES = [
+  { value: 'titles', label: 'Titles' },
+  { value: 'summary', label: 'Summary' },
+  { value: 'shortChapters', label: 'Short Chapters' },
+  { value: 'mediumChapters', label: 'Medium Chapters' },
+  { value: 'longChapters', label: 'Long Chapters' },
+  { value: 'takeaways', label: 'Key Takeaways' },
+  { value: 'questions', label: 'Questions' },
+]
+
 const TRANSCRIPTION_SERVICES = [
   { value: 'whisper', label: 'Whisper.cpp' },
   { value: 'whisperDocker', label: 'Whisper.cpp (Docker)' },
@@ -115,6 +125,7 @@ const Form = ({ onNewShowNote }) => {
   const [whisperModel, setWhisperModel] = useState('large-v3-turbo')
   const [llmService, setLlmService] = useState('chatgpt')
   const [llmModel, setLlmModel] = useState('gpt-4o')
+  const [selectedPrompts, setSelectedPrompts] = useState([])
   const [result, setResult] = useState(null)
   const [error, setError] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
@@ -126,12 +137,19 @@ const Form = ({ onNewShowNote }) => {
     setError(null)
     setResult(null)
 
+    if (selectedPrompts.length === 0) {
+      setError('Please select at least one prompt.')
+      setIsLoading(false)
+      return
+    }
+
     try {
       // Prepare the request body
       const requestBody = {
         youtubeUrl,
         transcriptServices: transcriptionService,
         llm: llmService,
+        prompt: selectedPrompts,
       }
 
       if (transcriptionService.startsWith('whisper')) {
@@ -260,7 +278,34 @@ const Form = ({ onNewShowNote }) => {
           </div>
         )}
 
-        <button type="submit" disabled={isLoading}>
+        <div className="form-group">
+          <label>Prompts</label>
+          {PROMPT_CHOICES.map((prompt) => (
+            <div key={prompt.value}>
+              <input
+                type="checkbox"
+                id={`prompt-${prompt.value}`}
+                value={prompt.value}
+                checked={selectedPrompts.includes(prompt.value)}
+                onChange={(e) => {
+                  if (e.target.checked) {
+                    setSelectedPrompts([...selectedPrompts, prompt.value])
+                  } else {
+                    setSelectedPrompts(
+                      selectedPrompts.filter((p) => p !== prompt.value)
+                    )
+                  }
+                }}
+              />
+              <label htmlFor={`prompt-${prompt.value}`}>{prompt.label}</label>
+            </div>
+          ))}
+        </div>
+
+        <button
+          type="submit"
+          disabled={isLoading}
+        >
           {isLoading ? 'Processing...' : 'Submit'}
         </button>
       </form>

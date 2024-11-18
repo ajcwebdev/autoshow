@@ -1,7 +1,7 @@
 # Dockerfile
 
-# Use the official Node.js 20 image as the base
-FROM node:20
+# Use the official Node.js 22 image as the base
+FROM node:22
 
 # Install necessary packages
 RUN apt-get update && apt-get install -y ffmpeg git make curl docker.io
@@ -24,6 +24,7 @@ RUN npm ci
 
 # Copy the application source code (excluding files specified in .dockerignore)
 COPY src ./src
+COPY packages ./packages
 COPY docker-entrypoint.sh ./
 
 # Ensure the entrypoint script is executable

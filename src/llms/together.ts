@@ -24,7 +24,7 @@ export const callTogether: LLMFunction = async (
   }
 
   try {
-    const actualModel = TOGETHER_MODELS[model as TogetherModelType] || TOGETHER_MODELS.LLAMA_3_2_3B
+    const actualModel = (TOGETHER_MODELS[model as TogetherModelType] || TOGETHER_MODELS.LLAMA_3_2_3B).modelId
 
     // Prepare the request body
     const requestBody = {

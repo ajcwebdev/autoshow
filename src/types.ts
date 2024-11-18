@@ -216,7 +216,7 @@ export type HandlerFunction = (
   input: string,
   llmServices?: LLMServices,
   transcriptServices?: TranscriptServices
-) => Promise<void>
+) => Promise<void> | Promise<string>
 
 // Content Types
 /**
@@ -231,6 +231,17 @@ export type MarkdownData = {
 
   /** The sanitized filename used for the markdown file. */
   filename: string
+
+  /** The metadata used in the frontmatter saved to a JSON object. */
+  metadata: {
+    showLink: string
+    channel: string
+    channelURL: string
+    title: string
+    description: string
+    publishDate: string
+    coverImage: string
+  }
 }
 
 /**

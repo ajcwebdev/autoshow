@@ -6,16 +6,10 @@
  * @packageDocumentation
  */
 
-// Import necessary modules and functions
-import { execFile } from 'node:child_process'        // Used to execute external commands
-import { promisify } from 'node:util'                // Used to convert callback-based functions to promises
-import { writeFile } from 'node:fs/promises'         // Used to write files using promises
-import { basename, extname } from 'node:path'        // Used to manipulate file paths
-import { l, dim, step, success, err } from '../globals.js'  // Custom logging functions
-import type { MarkdownData, ProcessingOptions, RSSItem } from '../types.js'  // Type definitions
-
-// Convert execFile to return a promise, allowing us to use async/await
-const execFilePromise = promisify(execFile)
+import { writeFile } from 'node:fs/promises'
+import { basename, extname } from 'node:path'
+import { l, dim, step, success, err, execFilePromise } from '../globals.js'
+import type { MarkdownData, ProcessingOptions, RSSItem } from '../types.js'
 
 /**
  * Generates markdown content with front matter based on the provided options and input.
@@ -34,9 +28,10 @@ const execFilePromise = promisify(execFile)
  *                                   - For file: A file path string
  *                                   - For RSS: An RSSItem object containing feed item details
  * @returns {Promise<MarkdownData>} A promise that resolves to an object containing:
- *                                 - frontMatter: The generated front matter content
+ *                                 - frontMatter: The generated front matter content as a string
  *                                 - finalPath: The path where the markdown file is saved
  *                                 - filename: The sanitized filename
+ *                                 - metadata: An object containing all metadata fields
  * @throws {Error} If invalid options are provided or if metadata extraction fails.
  * 
  * @example
@@ -87,10 +82,19 @@ export async function generateMarkdown(
       .slice(0, 200)                 // Limit the length to 200 characters
   }
 
-  // Initialize variables for front matter content, final file path, and sanitized filename
+  // Initialize variables for front matter content, final file path, sanitized filename, and metadata
   let frontMatter: string[]          // Array to hold front matter lines
   let finalPath: string              // The path where the markdown file will be saved
   let filename: string               // The sanitized filename
+  let metadata: {                    // Object to hold metadata fields
+    showLink: string
+    channel: string
+    channelURL: string
+    title: string
+    description: string
+    publishDate: string
+    coverImage: string
+  }
 
   // Determine which processing option is selected
   switch (true) {
@@ -139,16 +143,27 @@ export async function generateMarkdown(
         // Define the final path where the markdown file will be saved
         finalPath = `content/${filename}`
 
+        // Construct the metadata object
+        metadata = {
+          showLink: showLink,
+          channel: videoChannel,
+          channelURL: uploader_url,
+          title: videoTitle,
+          description: '',
+          publishDate: formattedDate,
+          coverImage: thumbnail,
+        }
+
         // Construct the front matter content as an array of strings
         frontMatter = [
           '---',
-          `showLink: "${showLink}"`,               // The video URL
-          `channel: "${videoChannel}"`,            // The channel name
-          `channelURL: "${uploader_url}"`,         // The uploader's URL
-          `title: "${videoTitle}"`,                // The video title
-          `description: ""`,                       // Placeholder for description
-          `publishDate: "${formattedDate}"`,       // The upload date
-          `coverImage: "${thumbnail}"`,            // The thumbnail URL
+          `showLink: "${metadata.showLink}"`,               // The video URL
+          `channel: "${metadata.channel}"`,            // The channel name
+          `channelURL: "${metadata.channelURL}"`,         // The uploader's URL
+          `title: "${metadata.title}"`,                // The video title
+          `description: "${metadata.description}"`,                       // Placeholder for description
+          `publishDate: "${metadata.publishDate}"`,       // The upload date
+          `coverImage: "${metadata.coverImage}"`,            // The thumbnail URL
           '---\n',
         ]
       } catch (error) {
@@ -170,16 +185,27 @@ export async function generateMarkdown(
       // Define the final path where the markdown file will be saved
       finalPath = `content/${filename}`
 
+      // Construct the metadata object for a file
+      metadata = {
+        showLink: originalFilename,
+        channel: '',
+        channelURL: '',
+        title: originalFilename,
+        description: '',
+        publishDate: '',
+        coverImage: '',
+      }
+
       // Construct the front matter content for a file
       frontMatter = [
         '---',
-        `showLink: "${originalFilename}"`,         // The original filename
-        `channel: ""`,                             // Empty channel field
-        `channelURL: ""`,                          // Empty channel URL field
-        `title: "${originalFilename}"`,            // Use the original filename as the title
-        `description: ""`,                         // Placeholder for description
-        `publishDate: ""`,                         // Empty publish date
-        `coverImage: ""`,                          // Empty cover image
+        `showLink: "${metadata.showLink}"`,         // The original filename
+        `channel: "${metadata.channel}"`,                             // Empty channel field
+        `channelURL: "${metadata.channelURL}"`,                          // Empty channel URL field
+        `title: "${metadata.title}"`,            // Use the original filename as the title
+        `description: "${metadata.description}"`,                         // Placeholder for description
+        `publishDate: "${metadata.publishDate}"`,                         // Empty publish date
+        `coverImage: "${metadata.coverImage}"`,                          // Empty cover image
         '---\n',
       ]
       break
@@ -203,16 +229,27 @@ export async function generateMarkdown(
       // Define the final path where the markdown file will be saved
       finalPath = `content/${filename}`
 
+      // Construct the metadata object for an RSS item
+      metadata = {
+        showLink: showLink,
+        channel: rssChannel,
+        channelURL: channelURL,
+        title: rssTitle,
+        description: '',
+        publishDate: publishDate,
+        coverImage: coverImage,
+      }
+
       // Construct the front matter content for an RSS item
       frontMatter = [
         '---',
-        `showLink: "${showLink}"`,                 // Link to the content
-        `channel: "${rssChannel}"`,                // Channel name
-        `channelURL: "${channelURL}"`,             // Channel URL
-        `title: "${rssTitle}"`,                    // Title of the RSS item
-        `description: ""`,                         // Placeholder for description
-        `publishDate: "${publishDate}"`,           // Publication date
-        `coverImage: "${coverImage}"`,             // Cover image URL
+        `showLink: "${metadata.showLink}"`,                 // Link to the content
+        `channel: "${metadata.channel}"`,                // Channel name
+        `channelURL: "${metadata.channelURL}"`,             // Channel URL
+        `title: "${metadata.title}"`,                    // Title of the RSS item
+        `description: "${metadata.description}"`,                         // Placeholder for description
+        `publishDate: "${metadata.publishDate}"`,           // Publication date
+        `coverImage: "${metadata.coverImage}"`,             // Cover image URL
         '---\n',
       ]
       break
@@ -235,6 +272,6 @@ export async function generateMarkdown(
   // Log a success message indicating where the file was saved
   l(success(`  Front matter successfully created and saved:\n    - ${finalPath}.md`))
 
-  // Return an object containing the front matter, final path, and filename
-  return { frontMatter: frontMatterContent, finalPath, filename }
+  // Return an object containing the front matter, final path, filename, and metadata
+  return { frontMatter: frontMatterContent, finalPath, filename, metadata }
 }

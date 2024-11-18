@@ -41,7 +41,7 @@
 
     // **Emit Configuration**
     "outDir": "./dist",                           // Redirect output structure to the 'dist' directory
-    "rootDir": "./src",                           // Specify the root directory of input files
+    // "rootDir": "./src",                           // Specify the root directory of input files
     "declaration": true,                          // Generate corresponding '.d.ts' files
     "declarationMap": true,                       // Create sourcemaps for '.d.ts' files
     "sourceMap": true,                            // Generate source map files

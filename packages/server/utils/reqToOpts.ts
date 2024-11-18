@@ -54,14 +54,14 @@ export function reqToOpts(requestData: any): {
 
   // Set transcript options based on the selected service
   if (transcriptServices === 'whisper') {
-    // Set the Whisper model or default to 'base'
-    options.whisper = requestData.whisperModel || 'base'
+    // Set the Whisper model or default to 'large-v3-turbo'
+    options.whisper = requestData.whisperModel || 'large-v3-turbo'
   } else if (transcriptServices === 'whisperDocker') {
-    options.whisperDocker = requestData.whisperModel || 'base'
+    options.whisperDocker = requestData.whisperModel || 'large-v3-turbo'
   } else if (transcriptServices === 'whisperPython') {
-    options.whisperPython = requestData.whisperModel || 'base'
+    options.whisperPython = requestData.whisperModel || 'large-v3-turbo'
   } else if (transcriptServices === 'whisperDiarization') {
-    options.whisperDiarization = requestData.whisperModel || 'base'
+    options.whisperDiarization = requestData.whisperModel || 'large-v3-turbo'
   } else if (transcriptServices === 'deepgram') {
     options.deepgram = true
   } else if (transcriptServices === 'assembly') {

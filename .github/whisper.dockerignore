@@ -1,0 +1,16 @@
+# .github/whisper.dockerignore
+
+# Ignore models directory (will be mounted as a volume)
+models
+
+# Ignore git metadata
+.git
+.gitignore
+
+# Ignore build artifacts
+build/
+bin/
+
+# Ignore any logs or temporary files
+*.log
+tmp/

@@ -659,6 +659,16 @@ This will start `whisper.cpp`, Ollama, and the AutoShow Commander CLI in their o
 npm run docker-up
 ```
 
+Inspect various aspects of the containers, images, and volumes:
+
+```bash
+docker images && docker ps -a && docker system df -v && docker volume ls
+docker volume inspect autoshow_ollama
+du -sh ./whisper.cpp/models
+docker history autoshow-autoshow:latest
+docker history autoshow-whisper:latest
+```
+
 Replace `as` with `docker` to run most other commands explained in this document. Does not support all options at this time, notably `--whisperPython` and `--whisperDiarization`.
 
 ```bash

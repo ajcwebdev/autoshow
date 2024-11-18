@@ -132,7 +132,7 @@ program.action(async (options: ProcessingOptions) => {
   const actionValues = ACTION_OPTIONS.map((opt) => opt.name)
   // Validate and get single options for action, LLM, and transcription
   const action = validateOption(actionValues, options, 'input option')
-  const llmKey = validateOption(LLM_OPTIONS, options, 'LLM option')
+  const llmKey = validateOption(LLM_OPTIONS as string[], options, 'LLM option') as LLMServices | undefined
   const llmServices = llmKey as LLMServices | undefined
   const transcriptKey = validateOption(TRANSCRIPT_OPTIONS, options, 'transcription option')
   const transcriptServices: TranscriptServices = (transcriptKey as TranscriptServices) || 'whisper'

@@ -21,7 +21,7 @@ export const callGroq = async (promptAndTranscript: string, tempPath: string, mo
   }
 
   try {
-    const actualModel = GROQ_MODELS[model as GroqModelType] || GROQ_MODELS.MIXTRAL_8X7B_32768 // Retrieve the actual model string from GROQ_MODELS
+    const actualModel = (GROQ_MODELS[model as GroqModelType] || GROQ_MODELS.MIXTRAL_8X7B_32768).modelId
 
     // Prepare the request body
     const requestBody = {

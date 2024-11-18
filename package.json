@@ -20,7 +20,7 @@
     "autoshow": "./dist/autoshow.js"
   },
   "scripts": {
-    "tsx:base": "tsx --env-file=.env --no-warnings",
+    "tsx:base": "tsx --env-file=.env --no-warnings --experimental-sqlite",
     "setup": "bash ./scripts/setup.sh",
     "setup-python": "bash ./scripts/setup-python.sh",
     "autoshow": "npm run tsx:base -- src/autoshow.ts",
@@ -38,7 +38,7 @@
     "docker-up": "docker compose up --build -d --remove-orphans --no-start",
     "ds": "docker compose images && docker compose ls",
     "prune": "docker system prune -af --volumes && docker image prune -af && docker container prune -f && docker volume prune -af",
-    "serve": "npm run tsx:base -- --watch packages/server/index.ts",
+    "serve": "npm run tsx:base -- --watch --experimental-sqlite packages/server/index.ts",
     "fetch-local": "npm run tsx:base -- packages/server/tests/fetch-local.ts",
     "fetch-all": "npm run tsx:base -- packages/server/tests/fetch-all.ts",
     "t": "npm run test-local",
@@ -65,11 +65,13 @@
     "fastify": "5.0.0",
     "file-type": "19.6.0",
     "inquirer": "12.0.1",
+    "js-yaml": "^4.1.0",
     "ollama": "0.5.9",
     "openai": "4.68.4"
   },
   "devDependencies": {
     "@types/inquirer": "9.0.7",
+    "@types/js-yaml": "^4.0.9",
     "@types/node": "22.8.1",
     "tsx": "4.19.1",
     "typedoc": "0.26.10",

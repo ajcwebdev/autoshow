@@ -30,7 +30,7 @@ export const callClaude: LLMFunction = async (
   
   try {
     // Select the actual model to use, defaulting to CLAUDE_3_HAIKU if not specified
-    const actualModel = CLAUDE_MODELS[model as ClaudeModelType] || CLAUDE_MODELS.CLAUDE_3_HAIKU
+    const actualModel = (CLAUDE_MODELS[model as ClaudeModelType] || CLAUDE_MODELS.CLAUDE_3_HAIKU).modelId
     
     // Call the Anthropic messages API to create a chat completion
     const response = await anthropic.messages.create({

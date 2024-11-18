@@ -120,6 +120,10 @@ function selectVideosToProcess(videos: VideoInfo[], options: ProcessingOptions):
 
 /**
  * Logs the processing status and video counts.
+ * 
+ * @param total - Total number of videos found.
+ * @param processing - Number of videos to process.
+ * @param options - Configuration options.
  */
 function logProcessingStatus(total: number, processing: number, options: ProcessingOptions): void {
   if (options.last) {

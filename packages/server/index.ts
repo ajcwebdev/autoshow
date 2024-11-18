@@ -9,6 +9,8 @@ import { handleFileRequest } from './routes/file.js'
 import { handleRSSRequest } from './routes/rss.js'
 import { l } from '../../src/globals.js'
 import { env } from 'node:process'
+import { getShowNotes } from './routes/showNotes.js'
+import { getShowNote } from './routes/showNote.js'
 
 // Set the port from environment variable or default to 3000
 const port = Number(env.PORT) || 3000
@@ -37,6 +39,8 @@ async function start() {
   fastify.post('/urls', handleURLsRequest)
   fastify.post('/file', handleFileRequest)
   fastify.post('/rss', handleRSSRequest)
+  fastify.get('/show-notes', getShowNotes)
+  fastify.get('/show-notes/:id', getShowNote)
 
   try {
     // Start the server and listen on the specified port

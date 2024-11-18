@@ -29,7 +29,7 @@ export const callMistral: LLMFunction = async (
   
   try {
     // Select the actual model to use, defaulting to MISTRAL_NEMO if the specified model is not found
-    const actualModel = MISTRAL_MODELS[model as MistralModelType] || MISTRAL_MODELS.MISTRAL_NEMO
+    const actualModel = (MISTRAL_MODELS[model as MistralModelType] || MISTRAL_MODELS.MISTRAL_NEMO).modelId
     l(wait(`\n  Using Mistral model:\n    - ${actualModel}`))
     
     // Make API call to Mistral AI for chat completion

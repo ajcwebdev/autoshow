@@ -83,6 +83,7 @@ else
     # Copy Dockerfile
     echo "Copying Dockerfile..."
     cp .github/whisper.Dockerfile whisper.cpp/Dockerfile
+    cp .github/whisper.dockerignore whisper.cpp/.dockerignore
     rm -rf whisper.cpp/.git
 fi
 

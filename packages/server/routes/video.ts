@@ -39,11 +39,13 @@ export const handleVideoRequest = async (
       options,
     })
 
-    // Call processVideo with the mapped options and extracted URL
-    await processVideo(options, youtubeUrl, llmServices, transcriptServices)
+    // Call processVideo and get the content
+    const content = await processVideo(options, youtubeUrl, llmServices, transcriptServices)
 
     l('\nprocessVideo completed successfully')
-    reply.send({ message: 'Video processed successfully.' })
+
+    // Send the content back in the response
+    reply.send({ content })
   } catch (error) {
     err('Error processing video:', error)
     reply.status(500).send({ error: 'An error occurred while processing the video' })

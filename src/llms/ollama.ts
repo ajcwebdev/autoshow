@@ -23,7 +23,7 @@ export const callOllama: LLMFunction = async (
 ) => {
   try {
     // Map the model name to the Ollama model identifier
-    const ollamaModelName = OLLAMA_MODELS[modelName as OllamaModelType] || 'llama3.2:3b'
+    const ollamaModelName = OLLAMA_MODELS[modelName as OllamaModelType]?.modelId || 'llama3.2:3b'
     l(wait(`    - modelName: ${modelName}\n    - ollamaModelName: ${ollamaModelName}`))
     
     // Get host and port from environment variables or use defaults

@@ -29,7 +29,7 @@ export const callChatGPT: LLMFunction = async (
   
   try {
     // Select the actual model to use, defaulting to GPT_4o_MINI if not specified
-    const actualModel = GPT_MODELS[model as ChatGPTModelType] || GPT_MODELS.GPT_4o_MINI
+    const actualModel = (GPT_MODELS[model as ChatGPTModelType] || GPT_MODELS.GPT_4o_MINI).modelId
     
     // Call the OpenAI chat completions API
     const response = await openai.chat.completions.create({

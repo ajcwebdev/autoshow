@@ -26,7 +26,7 @@ export type ProcessingOptions = {
   file?: string
 
   /** URL of the podcast RSS feed to process. */
-  rss?: string
+  rss?: string[]
 
   /** Specific items (audio URLs) from the RSS feed to process. */
   item?: string[]

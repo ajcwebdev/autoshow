@@ -231,6 +231,11 @@ export async function handleInteractivePrompt(
     ...answers,
   } as ProcessingOptions
   // Configure transcription service options based on user selection
+
+  if (typeof options.rss === 'string') {
+    options.rss = [options.rss]
+  }
+
   if (answers.transcriptServices) {
     const service = Object.values(TRANSCRIPT_SERVICES)
       .find(s => s.value === answers.transcriptServices)

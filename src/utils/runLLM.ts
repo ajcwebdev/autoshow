@@ -61,7 +61,7 @@ import type { LLMFunction, LLMFunctions } from '../types/llm-types'
  * @throws {Error} If:
  *   - Transcript file is missing or unreadable
  *   - Invalid LLM service is specified
- *   - LLM processing fails
+ *   - LLM processing fails after retries
  *   - File operations fail
  * 
  * @example
@@ -112,7 +112,7 @@ export async function runLLM(
     const promptAndTranscript = `${prompt}${transcript}`
 
     if (llmServices) {
-      l(wait(`  Processing with ${llmServices} Language Model...\n`))
+      l(wait(`  Preparing to process with ${llmServices} Language Model...\n`))
 
       // Get the appropriate LLM handler function
       const llmFunction: LLMFunction = LLM_FUNCTIONS[llmServices]
@@ -120,10 +120,34 @@ export async function runLLM(
         throw new Error(`Invalid LLM option: ${llmServices}`)
       }
 
-      // Process content with selected LLM
+      // Set up retry logic
+      const maxRetries = 5
+      const delayBetweenRetries = 10000 // 10 seconds in milliseconds
+      let attempt = 0
       const tempPath = `${finalPath}-${llmServices}-temp.md`
-      await llmFunction(promptAndTranscript, tempPath, options[llmServices])
-      l(success(`\n  Transcript saved to temporary file:\n    - ${tempPath}`))
+
+      while (attempt < maxRetries) {
+        try {
+          attempt++
+          l(wait(`  Attempt ${attempt} - Processing with ${llmServices} Language Model...\n`))
+          // Process content with selected LLM
+          await llmFunction(promptAndTranscript, tempPath, options[llmServices])
+          // If successful, break out of the loop
+          break
+        } catch (error) {
+          if (attempt >= maxRetries) {
+            // Max retries reached, rethrow the error
+            err(`  Max retries reached. Unable to process with ${llmServices}.`)
+            throw error
+          }
+          l(err(`  Attempt ${attempt} failed with error: ${(error as Error).message}`))
+          l(wait(`  Retrying in ${delayBetweenRetries / 1000} seconds...`))
+          // Wait before retrying
+          await new Promise(resolve => setTimeout(resolve, delayBetweenRetries))
+        }
+      }
+
+      l(success(`\n  LLM processing completed successfully after ${attempt} attempt(s).\n`))
 
       // Combine results with front matter and original transcript
       const showNotes = await readFile(tempPath, 'utf8')

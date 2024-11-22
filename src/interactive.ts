@@ -1,13 +1,13 @@
 // src/interactive.ts
 
 import inquirer from 'inquirer'
-import type { LLMServices, ProcessingOptions, InquirerAnswers, WhisperModelType } from './types.js'
 import {
   l, PROCESS_CHOICES, TRANSCRIPT_SERVICES, WHISPER_MODELS,
   LLM_SERVICES, LLM_OPTIONS, OLLAMA_MODELS, GPT_MODELS,
   CLAUDE_MODELS, GEMINI_MODELS, COHERE_MODELS, MISTRAL_MODELS,
   FIREWORKS_MODELS, TOGETHER_MODELS, GROQ_MODELS, PROMPT_CHOICES
 } from './globals.js'
+import type { LLMServices, ProcessingOptions, InquirerAnswers, WhisperModelType } from './types/main'
 
 /**
  * Prompts the user for input if interactive mode is selected.

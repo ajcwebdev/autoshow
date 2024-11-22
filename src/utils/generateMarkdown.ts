@@ -8,8 +8,8 @@
 
 import { writeFile } from 'node:fs/promises'
 import { basename, extname } from 'node:path'
-import { l, dim, step, success, err, execFilePromise } from '../globals.js'
-import type { MarkdownData, ProcessingOptions, RSSItem } from '../types.js'
+import { l, dim, step, success, err, execFilePromise } from '../globals'
+import type { MarkdownData, ProcessingOptions, RSSItem } from '../types/main'
 
 /**
  * Generates markdown content with front matter based on the provided options and input.

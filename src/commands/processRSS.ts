@@ -11,9 +11,9 @@ import { downloadAudio } from '../utils/downloadAudio.js'
 import { runTranscription } from '../utils/runTranscription.js'
 import { runLLM } from '../utils/runLLM.js'
 import { cleanUpFiles } from '../utils/cleanUpFiles.js'
-import { l, err, wait, opts, parser } from '../globals.js'
-import type { LLMServices, TranscriptServices, ProcessingOptions, RSSItem } from '../types.js'
+import { l, err, wait, opts, parser } from '../globals'
 import { db } from '../../packages/server/db.js'
+import type { LLMServices, TranscriptServices, ProcessingOptions, RSSItem } from '../types/main'
 
 /**
  * Validates RSS processing options for consistency and correct values.

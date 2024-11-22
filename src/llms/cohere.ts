@@ -3,9 +3,8 @@
 import { writeFile } from 'node:fs/promises'
 import { env } from 'node:process'
 import { CohereClient } from 'cohere-ai'
-import { l, wait, err, COHERE_MODELS } from '../globals.js'
-
-import type { LLMFunction, CohereModelType } from '../types.js'
+import { l, wait, err, COHERE_MODELS } from '../globals'
+import type { LLMFunction, CohereModelType } from '../types/llm-types'
 
 /**
  * Main function to call Cohere API.

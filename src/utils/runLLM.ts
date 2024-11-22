@@ -17,8 +17,9 @@ import { callFireworks } from '../llms/fireworks.js'
 import { callTogether } from '../llms/together.js'
 import { callGroq } from '../llms/groq.js'
 import { generatePrompt } from '../llms/prompt.js'
-import { l, err, step, success, wait } from '../globals.js'
-import type { LLMServices, ProcessingOptions, LLMFunction, LLMFunctions } from '../types.js'
+import { l, err, step, success, wait } from '../globals'
+import type { LLMServices, ProcessingOptions } from '../types/main'
+import type { LLMFunction, LLMFunctions } from '../types/llm-types'
 
 /**
  * Processes a transcript using a specified Language Model service.

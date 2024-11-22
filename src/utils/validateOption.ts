@@ -1,8 +1,8 @@
 // src/utils/validateOption.ts
 
 import { exit } from 'node:process'
-import { err } from '../globals.js'
-import type { ProcessingOptions } from '../types.js'
+import { err } from '../globals'
+import type { ProcessingOptions } from '../types/main'
 
 /**
  * Helper function to validate that only one option from a list is provided.

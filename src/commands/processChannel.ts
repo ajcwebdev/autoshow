@@ -7,10 +7,8 @@
 
 import { writeFile } from 'node:fs/promises'
 import { processVideo } from './processVideo.js'
-import { l, err, opts, success, execFilePromise, wait } from '../globals.js'
-import type {
-  LLMServices, TranscriptServices, ProcessingOptions, VideoMetadata,
-} from '../types.js'
+import { l, err, opts, success, execFilePromise, wait } from '../globals'
+import type { LLMServices, TranscriptServices, ProcessingOptions, VideoMetadata } from '../types/main'
 
 /**
  * Validates channel processing options for consistency and correct values.

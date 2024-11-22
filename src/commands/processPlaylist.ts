@@ -7,10 +7,8 @@
 
 import { writeFile } from 'node:fs/promises'
 import { processVideo } from './processVideo.js'
-import { l, err, opts, success, execFilePromise } from '../globals.js'
-import type {
-  LLMServices, TranscriptServices, ProcessingOptions, VideoMetadata,
-} from '../types.js'
+import { l, err, opts, success, execFilePromise } from '../globals'
+import type { LLMServices, TranscriptServices, ProcessingOptions, VideoMetadata } from '../types/main'
 
 /**
  * Processes an entire YouTube playlist by:

@@ -3,8 +3,8 @@
 import { writeFile } from 'node:fs/promises'
 import { env } from 'node:process'
 import { Mistral } from '@mistralai/mistralai'
-import { l, wait, err, MISTRAL_MODELS } from '../globals.js'
-import type { LLMFunction, MistralModelType } from '../types.js'
+import { l, wait, err, MISTRAL_MODELS } from '../globals'
+import type { LLMFunction, MistralModelType } from '../types/llm-types'
 
 /**
  * Main function to call Mistral AI API.

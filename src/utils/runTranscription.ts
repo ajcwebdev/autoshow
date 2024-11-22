@@ -10,8 +10,8 @@
 import { callWhisper } from '../transcription/whisper.js'
 import { callDeepgram } from '../transcription/deepgram.js'
 import { callAssembly } from '../transcription/assembly.js'
-import { l, step } from '../globals.js'
-import type { TranscriptServices, ProcessingOptions, WhisperTranscriptServices } from '../types.js'
+import { l, step } from '../globals'
+import type { TranscriptServices, ProcessingOptions, WhisperTranscriptServices } from '../types/main'
 
 /**
  * Orchestrates the transcription process using the specified service.

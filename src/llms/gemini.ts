@@ -3,8 +3,8 @@
 import { writeFile } from 'node:fs/promises'
 import { env } from 'node:process'
 import { GoogleGenerativeAI } from "@google/generative-ai"
-import { l, wait, err, GEMINI_MODELS } from '../globals.js'
-import type { LLMFunction, GeminiModelType } from '../types.js'
+import { l, wait, err, GEMINI_MODELS } from '../globals'
+import type { LLMFunction, GeminiModelType } from '../types/llm-types'
 
 /**
  * Utility function to introduce a delay

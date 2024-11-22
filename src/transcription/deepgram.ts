@@ -2,8 +2,8 @@
 
 import { writeFile, readFile } from 'node:fs/promises'
 import { env } from 'node:process'
-import { l, wait, err } from '../globals.js'
-import type { DeepgramResponse } from '../types.js'
+import { l, wait, err } from '../globals'
+import type { DeepgramResponse } from '../types/transcript-service-types'
 
 /**
  * Main function to handle transcription using Deepgram API.

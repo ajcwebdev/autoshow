@@ -84,8 +84,8 @@ const commands = [
   {
     // Download JSON file with metadata for each item in the RSS feed.
     cmd: 'npm run as -- --rss "https://ajcwebdev.substack.com/feed" --info',
-    expectedFile: 'rss_info.json',
-    newName: 'FILE_12_rss_info.json',
+    expectedFile: 'ajcwebdev_info.json',
+    newName: 'FILE_12_ajcwebdev_info.json',
   }
 ]
 

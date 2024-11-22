@@ -12,6 +12,29 @@ import { l, dim, step, success, err, execFilePromise } from '../globals'
 import type { MarkdownData, ProcessingOptions, RSSItem } from '../types/main'
 
 /**
+ * Sanitizes a title string for use in filenames by:
+ * - Removing special characters except spaces and hyphens
+ * - Converting spaces and underscores to hyphens
+ * - Converting to lowercase
+ * - Limiting length to 200 characters
+ * 
+ * @param {string} title - The title to sanitize.
+ * @returns {string} The sanitized title safe for use in filenames.
+ * 
+ * @example
+ * sanitizeTitle('My Video Title! (2024)') // returns 'my-video-title-2024'
+ */
+export function sanitizeTitle(title: string): string {
+  return title
+    .replace(/[^\w\s-]/g, '')      // Remove all non-word characters except spaces and hyphens
+    .trim()                        // Remove leading and trailing whitespace
+    .replace(/[\s_]+/g, '-')       // Replace spaces and underscores with hyphens
+    .replace(/-+/g, '-')           // Replace multiple hyphens with a single hyphen
+    .toLowerCase()                 // Convert to lowercase
+    .slice(0, 200)                 // Limit the length to 200 characters
+}
+
+/**
  * Generates markdown content with front matter based on the provided options and input.
  * Handles different content types including YouTube videos, playlists, local files, and RSS items.
  * 

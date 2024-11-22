@@ -8,6 +8,7 @@
 import { writeFile } from 'node:fs/promises'
 import { processVideo } from './processVideo.js'
 import { l, err, opts, success, execFilePromise } from '../globals'
+import { sanitizeTitle } from '../utils/generateMarkdown.js'
 import type { LLMServices, TranscriptServices, ProcessingOptions, VideoMetadata } from '../types/main'
 
 /**
@@ -36,10 +37,10 @@ export async function processPlaylist(
   l(opts(`  - llmServices: ${llmServices}\n  - transcriptServices: ${transcriptServices}`))
 
   try {
-    // Extract all video URLs from the playlist using yt-dlp
+    // Fetch playlist metadata
     const { stdout, stderr } = await execFilePromise('yt-dlp', [
+      '--dump-single-json',
       '--flat-playlist',
-      '--print', 'url',
       '--no-warnings',
       playlistUrl,
     ])
@@ -49,8 +50,13 @@ export async function processPlaylist(
       err(`yt-dlp warnings: ${stderr}`)
     }
 
-    // Convert stdout into array of video URLs, removing empty entries
-    const urls = stdout.trim().split('\n').filter(Boolean)
+    // Parse the JSON output
+    const playlistData = JSON.parse(stdout)
+    const playlistTitle = playlistData.title
+    const entries = playlistData.entries
+
+    // Extract video URLs using entry.id
+    const urls = entries.map((entry: any) => `https://www.youtube.com/watch?v=${entry.id}`)
 
     // Exit if no videos were found in the playlist
     if (urls.length === 0) {
@@ -58,13 +64,13 @@ export async function processPlaylist(
       process.exit(1)
     }
 
-    l(opts(`\nFound ${urls.length} videos in the playlist...`))
+    l(opts(`\nFound ${urls.length} videos in the playlist: ${playlistTitle}...`))
 
     // If the --info option is provided, extract metadata for all videos
     if (options.info) {
       // Collect metadata for all videos in parallel
       const metadataList = await Promise.all(
-        urls.map(async (url) => {
+        urls.map(async (url: string) => {
           try {
             // Execute yt-dlp command to extract metadata
             const { stdout } = await execFilePromise('yt-dlp', [
@@ -117,7 +123,8 @@ export async function processPlaylist(
 
       // Save metadata to a JSON file
       const jsonContent = JSON.stringify(validMetadata, null, 2)
-      const jsonFilePath = 'content/playlist_info.json'
+      const sanitizedTitle = sanitizeTitle(playlistTitle)
+      const jsonFilePath = `content/${sanitizedTitle}_info.json`
       await writeFile(jsonFilePath, jsonContent)
       l(success(`Playlist information saved to: ${jsonFilePath}`))
       return

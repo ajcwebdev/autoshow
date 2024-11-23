@@ -83,6 +83,7 @@ export const PROMPT_CHOICES = [
   { name: 'Long Chapters', value: 'longChapters' },
   { name: 'Key Takeaways', value: 'takeaways' },
   { name: 'Questions', value: 'questions' },
+  { name: 'Blog', value: 'blog' },
 ]
 
 /**

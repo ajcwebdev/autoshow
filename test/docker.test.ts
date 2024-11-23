@@ -72,8 +72,8 @@ const commands = [
   },
   {
     cmd: 'npm run docker -- --rss "https://ajcwebdev.substack.com/feed" --info',
-    expectedFile: 'ajcwebdev_info.json',
-    newName: 'FILE_12_ajcwebdev_info.json',
+    expectedFile: 'rss_info.json',
+    newName: 'FILE_12_rss_info.json',
   }
 ]
 

@@ -8,8 +8,8 @@
 
 import { readFile, writeFile, unlink } from 'node:fs/promises'
 import { existsSync } from 'node:fs'
-import { l, err, wait, success, WHISPER_MODELS, execPromise } from '../globals.js'
-import type { ProcessingOptions, WhisperModelType, WhisperTranscriptServices } from '../types.js'
+import { l, err, wait, success, WHISPER_MODELS, execPromise } from '../globals'
+import type { ProcessingOptions, WhisperModelType, WhisperTranscriptServices } from '../types/main'
 
 // Updated function signatures for the runner functions
 type WhisperRunner = (finalPath: string, whisperModel: string) => Promise<void>

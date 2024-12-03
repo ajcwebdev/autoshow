@@ -47,6 +47,7 @@
     "test-local": "tsx --test test/local.test.ts",
     "test-docker": "tsx --test test/docker.test.ts",
     "test-integrations": "tsx --test test/integrations.test.ts",
+    "test-int": "tsx --test test/integrations.test.ts",
     "clean": "tsx scripts/cleanContent.ts",
     "bun": "bun --env-file=.env --no-warnings src/autoshow.ts",
     "deno": "deno run --allow-sys --allow-read --allow-run --allow-write --allow-env --unstable-sloppy-imports src/autoshow.ts"

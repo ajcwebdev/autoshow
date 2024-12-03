@@ -3,8 +3,8 @@
 import { writeFile } from 'node:fs/promises'
 import { env } from 'node:process'
 import { OpenAI } from 'openai'
-import { l, wait, err, GPT_MODELS } from '../globals.js'
-import type { LLMFunction, ChatGPTModelType } from '../types.js'
+import { l, wait, err, GPT_MODELS } from '../globals'
+import type { LLMFunction, ChatGPTModelType } from '../types/llm-types'
 
 /**
  * Main function to call ChatGPT API.

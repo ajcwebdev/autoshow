@@ -22,15 +22,15 @@ import { processRSS } from './commands/processRSS.js'
 import { validateOption } from './utils/validateOption.js'
 import { argv, exit } from 'node:process'
 import { l, err, opts, final, ACTION_OPTIONS, LLM_OPTIONS, TRANSCRIPT_OPTIONS } from './globals.js'
-import type { ProcessingOptions, HandlerFunction, LLMServices, TranscriptServices } from './types.js'
+import type { ProcessingOptions, HandlerFunction, LLMServices, TranscriptServices } from './types/main'
 
 // Initialize the command-line interface using Commander.js
 const program = new Command()
 
-// Define valid action types
+// Define valid action types for processing
 type ValidAction = 'video' | 'playlist' | 'channel' | 'urls' | 'file' | 'rss'
 
-// Define the process handlers with strict typing
+// Map each action to its corresponding handler function
 const PROCESS_HANDLERS: Record<ValidAction, HandlerFunction> = {
   video: processVideo,
   playlist: processPlaylist,
@@ -46,8 +46,20 @@ function isValidAction(action: string | undefined): action is ValidAction {
 }
 
 /**
+ * Collector function to handle multiple RSS feed URLs.
+ *
+ * @param value - The current RSS URL provided by the user.
+ * @param previous - The array of previously collected RSS URLs.
+ * @returns The updated array of RSS URLs.
+ */
+function collectRss(value: string, previous?: string[]): string[] {
+  // If 'previous' is undefined, initialize it as an empty array
+  return previous ? previous.concat([value]) : [value]
+}
+
+/**
  * Defines the command-line interface options and descriptions.
- * Sets up all available commands and their respective flags
+ * Sets up all available commands and their respective flags.
  */
 program
   .name('autoshow')
@@ -60,7 +72,12 @@ program
   .option('-c, --channel <channelUrl>', 'Process all videos in a YouTube channel')
   .option('-u, --urls <filePath>', 'Process YouTube videos from a list of URLs in a file')
   .option('-f, --file <filePath>', 'Process a local audio or video file')
-  .option('-r, --rss <rssURL>', 'Process a podcast RSS feed')
+  // Modify the --rss option to accept multiple values without a default value
+  .option<string[]>(
+    '-r, --rss <rssURL>',
+    'Process a podcast RSS feed',
+    collectRss
+  )
   // RSS feed specific options
   .option('--item <itemUrls...>', 'Process specific items in the RSS feed by providing their audio URLs')
   .option('--order <order>', 'Specify the order for RSS feed processing (newest or oldest)')
@@ -89,19 +106,20 @@ program
   .option('--prompt <sections...>', 'Specify prompt sections to include')
   .option('--noCleanUp', 'Do not delete intermediary files after processing')
   .option('-i, --interactive', 'Run in interactive mode')
+  // Add examples and additional help text
   .addHelpText(
     'after',
     `
-Examples:
-  $ autoshow --video "https://www.youtube.com/watch?v=..."
-  $ autoshow --playlist "https://www.youtube.com/playlist?list=..."
-  $ autoshow --channel "https://www.youtube.com/channel/..."
-  $ autoshow --file "content/audio.mp3"
-  $ autoshow --rss "https://feeds.transistor.fm/fsjam-podcast/"
+        Examples:
+          $ autoshow --video "https://www.youtube.com/watch?v=..."
+          $ autoshow --playlist "https://www.youtube.com/playlist?list=..."
+          $ autoshow --channel "https://www.youtube.com/channel/..."
+          $ autoshow --file "content/audio.mp3"
+          $ autoshow --rss "https://feeds.transistor.fm/fsjam-podcast/"
 
-Documentation: https://github.com/ajcwebdev/autoshow#readme
-Report Issues: https://github.com/ajcwebdev/autoshow/issues
-`
+        Documentation: https://github.com/ajcwebdev/autoshow#readme
+        Report Issues: https://github.com/ajcwebdev/autoshow/issues
+        `
   )
 
 /**
@@ -118,8 +136,8 @@ program.action(async (options: ProcessingOptions) => {
 
   // Extract interactive mode flag
   const { interactive } = options
-  
-  // If in interactive mode or no action provided, prompt user for input
+
+  // If in interactive mode, prompt user for input
   if (interactive) {
     options = await handleInteractivePrompt(options)
   }
@@ -128,6 +146,12 @@ program.action(async (options: ProcessingOptions) => {
   if (options.item && !Array.isArray(options.item)) {
     options.item = [options.item]
   }
+
+  // Ensure options.rss is always an array, in case it's a single string
+  if (typeof options.rss === 'string') {
+    options.rss = [options.rss]
+  }
+
   // Extract the action values from ACTION_OPTIONS for validation
   const actionValues = ACTION_OPTIONS.map((opt) => opt.name)
   // Validate and get single options for action, LLM, and transcription
@@ -142,37 +166,53 @@ program.action(async (options: ProcessingOptions) => {
     options.whisper = 'large-v3-turbo'
   }
 
-  // Validate action
+  // Validate that the action is one of the valid actions
   if (!isValidAction(action)) {
     err(`Invalid or missing action`)
     exit(1)
   }
 
   try {
-    // Get input value with proper typing
-    const input = options[action]
-
-    // Ensure we have a valid input value
-    if (!input || typeof input !== 'string') {
-      throw new Error(`No valid input provided for ${action} processing`)
-    }
-
-    // Get handler with proper typing
+    // Get the handler function for the selected action
     const handler = PROCESS_HANDLERS[action]
 
-    // Process the content using the selected handler
-    await handler(options, input, llmServices, transcriptServices)
+    if (action === 'rss') {
+      // For RSS feeds, process multiple URLs
+      const rssUrls = options.rss
+      if (!rssUrls || rssUrls.length === 0) {
+        throw new Error(`No valid RSS URLs provided for processing`)
+      }
+      // Iterate over each RSS URL and process it
+      for (const rssUrl of rssUrls) {
+        // Process each RSS feed URL individually
+        await handler(options, rssUrl, llmServices, transcriptServices)
+      }
+    } else {
+      // Get input value with proper typing
+      const input = options[action]
 
+      // Ensure we have a valid input value
+      if (!input || typeof input !== 'string') {
+        throw new Error(`No valid input provided for ${action} processing`)
+      }
+
+      // Process the content using the selected handler
+      await handler(options, input, llmServices, transcriptServices)
+    }
+
+    // Log completion message
     l(final(`\n================================================================================================`))
     l(final(`  ${action} Processing Completed Successfully.`))
     l(final(`================================================================================================\n`))
     exit(0)
   } catch (error) {
+    // Handle errors during processing
     err(`Error processing ${action}:`, (error as Error).message)
     exit(1)
   }
 })
 
+// Handle invalid commands
 program.on('command:*', function () {
   err(`Error: Invalid command '${program.args.join(' ')}'. Use --help to see available commands.`)
   exit(1)

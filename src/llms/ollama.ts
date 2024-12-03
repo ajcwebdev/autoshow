@@ -2,9 +2,9 @@
 
 import { writeFile } from 'node:fs/promises'
 import { env } from 'node:process'
-import { OLLAMA_MODELS, l, err, wait } from '../globals.js'
+import { OLLAMA_MODELS, l, err, wait } from '../globals'
 import { spawn } from 'node:child_process'
-import type { LLMFunction, OllamaModelType, OllamaResponse, OllamaTagsResponse } from '../types.js'
+import type { LLMFunction, OllamaModelType, OllamaResponse, OllamaTagsResponse } from '../types/llm-types'
 
 /**
  * Main function to call the Llama model using the Ollama REST API.

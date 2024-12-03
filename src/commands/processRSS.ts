@@ -6,14 +6,14 @@
  */
 
 import { writeFile, readFile } from 'node:fs/promises'
-import { generateMarkdown } from '../utils/generateMarkdown.js'
+import { generateMarkdown, sanitizeTitle } from '../utils/generateMarkdown.js'
 import { downloadAudio } from '../utils/downloadAudio.js'
 import { runTranscription } from '../utils/runTranscription.js'
 import { runLLM } from '../utils/runLLM.js'
 import { cleanUpFiles } from '../utils/cleanUpFiles.js'
-import { l, err, wait, opts, parser } from '../globals.js'
-import type { LLMServices, TranscriptServices, ProcessingOptions, RSSItem } from '../types.js'
+import { l, err, wait, opts, parser } from '../globals'
 import { db } from '../../packages/server/db.js'
+import type { LLMServices, TranscriptServices, ProcessingOptions, RSSItem } from '../types/main'
 
 /**
  * Validates RSS processing options for consistency and correct values.
@@ -100,10 +100,10 @@ async function fetchRSSFeed(rssUrl: string) {
  * Extracts and normalizes items from a parsed RSS feed.
  * 
  * @param feed - Parsed RSS feed object
- * @returns Array of normalized RSS items
+ * @returns The items and channel title from the feed
  * @throws Will exit process if no valid items are found
  */
-function extractFeedItems(feed: any): RSSItem[] {
+function extractFeedItems(feed: any): { items: RSSItem[], channelTitle: string } {
   const { title: channelTitle, link: channelLink, image: channelImageObject, item: feedItems } = feed.rss.channel
   const channelImage = channelImageObject?.url || ''
   const feedItemsArray = Array.isArray(feedItems) ? feedItems : [feedItems]
@@ -144,17 +144,19 @@ function extractFeedItems(feed: any): RSSItem[] {
     process.exit(1)
   }
 
-  return items
+  return { items, channelTitle }
 }
 
 /**
  * Saves feed information to a JSON file.
  * 
  * @param items - Array of RSS items to save
+ * @param channelTitle - The title of the RSS channel
  */
-async function saveFeedInfo(items: RSSItem[]): Promise<void> {
+async function saveFeedInfo(items: RSSItem[], channelTitle: string): Promise<void> {
   const jsonContent = JSON.stringify(items, null, 2)
-  const jsonFilePath = 'content/rss_info.json'
+  const sanitizedTitle = sanitizeTitle(channelTitle)
+  const jsonFilePath = `content/${sanitizedTitle}_info.json`
   await writeFile(jsonFilePath, jsonContent)
   l(wait(`RSS feed information saved to: ${jsonFilePath}`))
 }
@@ -291,10 +293,10 @@ export async function processRSS(
     logProcessingAction(options)
 
     const feed = await fetchRSSFeed(rssUrl)
-    const items = extractFeedItems(feed)
+    const { items, channelTitle } = extractFeedItems(feed)
 
     if (options.info) {
-      await saveFeedInfo(items)
+      await saveFeedInfo(items, channelTitle)
       return
     }
 

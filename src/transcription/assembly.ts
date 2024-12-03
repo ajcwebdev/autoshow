@@ -2,8 +2,8 @@
 
 import { writeFile, readFile } from 'node:fs/promises'
 import { env } from 'node:process'
-import { l, wait, success, err } from '../globals.js'
-import type { ProcessingOptions } from '../types.js'
+import { l, wait, success, err } from '../globals'
+import type { ProcessingOptions } from '../types/main'
 import type {
   AssemblyAITranscriptionOptions,
   AssemblyAIErrorResponse,
@@ -12,7 +12,7 @@ import type {
   AssemblyAIPollingResponse,
   AssemblyAIUtterance,
   AssemblyAIWord
-} from '../types.js'
+} from '../types/transcript-service-types'
 
 const BASE_URL = 'https://api.assemblyai.com/v2'
 

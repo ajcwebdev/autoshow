@@ -2,8 +2,8 @@
 
 import { writeFile } from 'node:fs/promises'
 import { env } from 'node:process'
-import { l, wait, err, FIREWORKS_MODELS } from '../globals.js'
-import type { LLMFunction, FireworksModelType, FireworksResponse } from '../types.js'
+import { l, wait, err, FIREWORKS_MODELS } from '../globals'
+import type { LLMFunction, FireworksModelType, FireworksResponse } from '../types/llm-types'
 
 /**
  * Main function to call Fireworks AI API.

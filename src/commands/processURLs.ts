@@ -7,10 +7,8 @@
 
 import { readFile, writeFile } from 'node:fs/promises'
 import { processVideo } from './processVideo.js'
-import { l, err, wait, opts, execFilePromise } from '../globals.js'
-import type {
-  LLMServices, TranscriptServices, ProcessingOptions, VideoMetadata,
-} from '../types.js'
+import { l, err, wait, opts, execFilePromise } from '../globals'
+import type { LLMServices, TranscriptServices, ProcessingOptions, VideoMetadata } from '../types/main'
 
 /**
  * Processes multiple YouTube videos from a file containing URLs by:
@@ -110,7 +108,9 @@ export async function processURLs(
 
       // Save metadata to a JSON file
       const jsonContent = JSON.stringify(validMetadata, null, 2)
-      const jsonFilePath = 'content/urls_info.json'
+      const date = new Date().toISOString().split('T')[0]
+      const uniqueId = Date.now()
+      const jsonFilePath = `content/urls_info_${date}_${uniqueId}.json`
       await writeFile(jsonFilePath, jsonContent)
       l(wait(`Video information saved to: ${jsonFilePath}`))
       return

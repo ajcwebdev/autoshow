@@ -10,7 +10,6 @@ src/llms/models
 build
 deno.lock
 out
-types
 dist
 NEW.md
 TODO.md

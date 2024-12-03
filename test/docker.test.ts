@@ -32,53 +32,48 @@ const commands = [
     newName: 'FILE_04.md'
   },
   {
-    cmd: 'npm run docker -- --file "content/audio.mp3" --prompt titles --whisperDocker tiny --ollama',
+    cmd: 'npm run docker -- --file "content/audio.mp3" --prompt titles --whisperDocker tiny --ollama LLAMA_3_2_1B',
     expectedFile: 'audio-ollama-shownotes.md',
     newName: 'FILE_05.md'
   },
   {
-    cmd: 'npm run docker -- --file "content/audio.mp3" --ollama LLAMA_3_2_3B',
-    expectedFile: 'audio-ollama-shownotes.md',
-    newName: 'FILE_06.md'
-  },
-  {
     cmd: 'npm run docker -- --file "content/audio.mp3" --whisperDocker tiny',
     expectedFile: 'audio-prompt.md',
-    newName: 'FILE_07.md'
+    newName: 'FILE_06.md'
   },
   {
     cmd: 'npm run docker -- --file "content/audio.mp3" --prompt titles summary mediumChapters takeaways questions',
     expectedFile: 'audio-prompt.md',
+    newName: 'FILE_07.md'
+  },
+  {
+    cmd: 'npm run docker -- --file "content/audio.mp3" --prompt titles summary shortChapters takeaways questions --whisperDocker tiny --ollama LLAMA_3_2_1B',
+    expectedFile: 'audio-ollama-shownotes.md',
     newName: 'FILE_08.md'
   },
   {
-    cmd: 'npm run docker -- --file "content/audio.mp3" --prompt titles summary shortChapters takeaways questions --whisperDocker tiny --ollama',
-    expectedFile: 'audio-ollama-shownotes.md',
-    newName: 'FILE_09.md'
+    cmd: 'npm run docker -- --playlist "https://www.youtube.com/playlist?list=PLCVnrVv4KhXPz0SoAVu8Rc1emAdGPbSbr" --prompt titles --whisperDocker tiny --ollama LLAMA_3_2_1B',
+    expectedFiles: [
+      { file: '2024-09-24-ep1-fsjam-podcast-ollama-shownotes.md', newName: 'FILE_09A.md' },
+      { file: '2024-09-24-ep0-fsjam-podcast-ollama-shownotes.md', newName: 'FILE_09B.md' }
+    ]
   },
   {
-    cmd: 'npm run docker -- --playlist "https://www.youtube.com/playlist?list=PLCVnrVv4KhXPz0SoAVu8Rc1emAdGPbSbr" --prompt titles --whisperDocker tiny --ollama',
+    cmd: 'npm run docker -- --urls "content/example-urls.md" --prompt titles --whisperDocker tiny --ollama LLAMA_3_2_1B',
     expectedFiles: [
       { file: '2024-09-24-ep1-fsjam-podcast-ollama-shownotes.md', newName: 'FILE_10A.md' },
       { file: '2024-09-24-ep0-fsjam-podcast-ollama-shownotes.md', newName: 'FILE_10B.md' }
     ]
   },
   {
-    cmd: 'npm run docker -- --urls "content/example-urls.md" --prompt titles --whisperDocker tiny --ollama',
-    expectedFiles: [
-      { file: '2024-09-24-ep1-fsjam-podcast-ollama-shownotes.md', newName: 'FILE_11A.md' },
-      { file: '2024-09-24-ep0-fsjam-podcast-ollama-shownotes.md', newName: 'FILE_11B.md' }
-    ]
-  },
-  {
     cmd: 'npm run docker -- --rss "https://ajcwebdev.substack.com/feed"',
     expectedFile: '2021-05-10-thoughts-on-lambda-school-layoffs-prompt.md',
-    newName: 'FILE_12.md'
+    newName: 'FILE_11.md'
   },
   {
     cmd: 'npm run docker -- --rss "https://ajcwebdev.substack.com/feed" --info',
     expectedFile: 'rss_info.json',
-    newName: 'FILE_13_rss_info.json',
+    newName: 'FILE_12_rss_info.json',
   }
 ]
 

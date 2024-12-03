@@ -10,10 +10,10 @@ import { downloadAudio } from '../utils/downloadAudio.js'
 import { runTranscription } from '../utils/runTranscription.js'
 import { runLLM } from '../utils/runLLM.js'
 import { cleanUpFiles } from '../utils/cleanUpFiles.js'
-import { l, err, opts } from '../globals.js'
+import { l, err, opts } from '../globals'
 import { readFile } from 'fs/promises'
-import type { LLMServices, TranscriptServices, ProcessingOptions } from '../types.js'
 import { db } from '../../packages/server/db.js'
+import type { LLMServices, TranscriptServices, ProcessingOptions } from '../types/main'
 
 /**
  * Processes a local audio or video file through a series of operations:

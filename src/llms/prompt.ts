@@ -1,6 +1,6 @@
 // src/llms/prompt.ts
 
-import type { PromptSection } from '../types.js'
+import type { PromptSection } from '../types/main'
 
 /**
  * Define the structure for different sections of the prompt
@@ -118,6 +118,24 @@ const sections = {
     8. How do containerization technologies like Docker impact web development and deployment?
     9. What role does responsive design play in modern web development?
     10. How can developers ensure the security of user data in web applications?\n`,
+  },
+
+  // Section for generating a blog outline and first draft
+  blog: {
+    // Instructions for creating an outline and blog draft
+    instruction: `- Generate a blog outline and first draft for a blog post based on this piece of content.
+    
+    - Make sure the blog post is at least 750 words.\n`,
+    // Example of how the outline and draft should be formatted
+    example: `## Blog Outline
+
+    1. Part 1
+    2. Part 2
+    3. Part 3
+    
+    ### Blog First Draft
+    
+    First draft of a blog.\n`,
   },
 } satisfies Record<string, PromptSection>
 

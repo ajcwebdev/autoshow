@@ -3,9 +3,8 @@
 import { writeFile } from 'node:fs/promises'
 import { env } from 'node:process'
 import { Anthropic } from '@anthropic-ai/sdk'
-import { l, wait, err, CLAUDE_MODELS } from '../globals.js'
-
-import type { LLMFunction, ClaudeModelType } from '../types.js'
+import { l, wait, err, CLAUDE_MODELS } from '../globals'
+import type { LLMFunction, ClaudeModelType } from '../types/llm-types'
 
 /**
  * Main function to call Claude API.

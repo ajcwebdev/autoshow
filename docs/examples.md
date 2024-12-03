@@ -177,6 +177,16 @@ npm run as -- \
   --info
 ```
 
+Process multiple RSS feeds:
+
+```bash
+npm run as -- \
+  --rss "https://ajcwebdev.substack.com/feed" \
+  --rss "https://feeds.transistor.fm/fsjam-podcast/" \
+  --last 1 \
+  --whisper tiny
+```
+
 ## Language Model (LLM) Options
 
 Create a `.env` file and set API key as demonstrated in `.env.example` for either:

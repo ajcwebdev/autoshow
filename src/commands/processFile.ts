@@ -5,14 +5,14 @@
  * @packageDocumentation
  */
 
-import { generateMarkdown } from '../utils/generateMarkdown.js'
-import { downloadAudio } from '../utils/downloadAudio.js'
-import { runTranscription } from '../utils/runTranscription.js'
-import { runLLM } from '../utils/runLLM.js'
-import { cleanUpFiles } from '../utils/cleanUpFiles.js'
+import { generateMarkdown } from '../utils/generateMarkdown'
+import { downloadAudio } from '../utils/downloadAudio'
+import { runTranscription } from '../utils/runTranscription'
+import { runLLM } from '../utils/runLLM'
+import { cleanUpFiles } from '../utils/cleanUpFiles'
 import { l, err, opts } from '../globals'
 import { readFile } from 'fs/promises'
-import { db } from '../../packages/server/db.js'
+import { db } from '../server/db'
 import type { LLMServices, TranscriptServices, ProcessingOptions } from '../types/main'
 
 /**

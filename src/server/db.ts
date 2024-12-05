@@ -1,4 +1,4 @@
-// packages/server/db.ts
+// src/server/db.ts
 
 import { DatabaseSync } from 'node:sqlite'
 

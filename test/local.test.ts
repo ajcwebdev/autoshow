@@ -86,7 +86,19 @@ const commands = [
     cmd: 'npm run as -- --rss "https://ajcwebdev.substack.com/feed" --info',
     expectedFile: 'ajcwebdev_info.json',
     newName: 'FILE_12_ajcwebdev_info.json',
-  }
+  },
+  {
+    // Process local audio file with Python Whisper 'base' model.
+    cmd: 'npm run as -- --file "content/audio.mp3" --whisperPython base',
+    expectedFile: 'audio-prompt.md',
+    newName: 'FILE_13_BASE_PYTHON.md'
+  },
+  {
+    // Process local audio file with whisper-diarization 'base' model.
+    cmd: 'npm run as -- --file "content/audio.mp3" --whisperDiarization base',
+    expectedFile: 'audio-prompt.md',
+    newName: 'FILE_14_BASE_DIARIZATION.md'
+  },
 ]
 
 test('Autoshow Command Tests', async (t) => {

@@ -12,17 +12,17 @@
  */
 
 import { Command } from 'commander'
-import { handleInteractivePrompt } from './interactive.js'
-import { processVideo } from './commands/processVideo.js'
-import { processPlaylist } from './commands/processPlaylist.js'
-import { processChannel } from './commands/processChannel.js'
-import { processURLs } from './commands/processURLs.js'
-import { processFile } from './commands/processFile.js'
-import { processRSS } from './commands/processRSS.js'
-import { validateOption } from './utils/validateOption.js'
+import { handleInteractivePrompt } from './interactive'
+import { processVideo } from '../commands/processVideo'
+import { processPlaylist } from '../commands/processPlaylist'
+import { processChannel } from '../commands/processChannel'
+import { processURLs } from '../commands/processURLs'
+import { processFile } from '../commands/processFile'
+import { processRSS } from '../commands/processRSS'
+import { validateOption } from '../utils/validateOption'
 import { argv, exit } from 'node:process'
-import { l, err, opts, final, ACTION_OPTIONS, LLM_OPTIONS, TRANSCRIPT_OPTIONS } from './globals.js'
-import type { ProcessingOptions, HandlerFunction, LLMServices, TranscriptServices } from './types/main'
+import { l, err, opts, final, ACTION_OPTIONS, LLM_OPTIONS, TRANSCRIPT_OPTIONS } from '../globals'
+import type { ProcessingOptions, HandlerFunction, LLMServices, TranscriptServices } from '../types/main'
 
 // Initialize the command-line interface using Commander.js
 const program = new Command()

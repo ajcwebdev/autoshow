@@ -1,9 +1,9 @@
 // server/routes/playlist.ts
 
-import { FastifyRequest, FastifyReply } from 'fastify'
-import { processPlaylist } from '../../../src/commands/processPlaylist.js'
-import { reqToOpts } from '../utils/reqToOpts.js'
-import { l, err } from '../../../src/globals.js'
+import type { FastifyRequest, FastifyReply } from 'fastify'
+import { processPlaylist } from '../../../src/commands/processPlaylist'
+import { reqToOpts } from '../utils/reqToOpts'
+import { l, err } from '../../../src/globals'
 
 // Handler for the /playlist route
 export const handlePlaylistRequest = async (

@@ -6,13 +6,13 @@
  */
 
 import { writeFile, readFile } from 'node:fs/promises'
-import { generateMarkdown, sanitizeTitle } from '../utils/generateMarkdown.js'
-import { downloadAudio } from '../utils/downloadAudio.js'
-import { runTranscription } from '../utils/runTranscription.js'
-import { runLLM } from '../utils/runLLM.js'
-import { cleanUpFiles } from '../utils/cleanUpFiles.js'
+import { generateMarkdown, sanitizeTitle } from '../utils/generateMarkdown'
+import { downloadAudio } from '../utils/downloadAudio'
+import { runTranscription } from '../utils/runTranscription'
+import { runLLM } from '../utils/runLLM'
+import { cleanUpFiles } from '../utils/cleanUpFiles'
 import { l, err, wait, opts, parser } from '../globals'
-import { db } from '../../packages/server/db.js'
+import { db } from '../server/db'
 import type { LLMServices, TranscriptServices, ProcessingOptions, RSSItem } from '../types/main'
 
 /**

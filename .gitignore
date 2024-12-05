@@ -17,3 +17,4 @@ nemo_msdd_configs
 temp_outputs
 tsconfig.tsbuildinfo
 show_notes.db
+ollama.log

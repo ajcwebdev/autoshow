@@ -1,9 +1,9 @@
 // server/routes/rss.ts
 
-import { FastifyRequest, FastifyReply } from 'fastify'
-import { processRSS } from '../../../src/commands/processRSS.js'
-import { reqToOpts } from '../utils/reqToOpts.js'
-import { l, err } from '../../../src/globals.js'
+import type { FastifyRequest, FastifyReply } from 'fastify'
+import { processRSS } from '../../../src/commands/processRSS'
+import { reqToOpts } from '../utils/reqToOpts'
+import { l, err } from '../../../src/globals'
 
 // Handler for the /rss route
 export const handleRSSRequest = async (

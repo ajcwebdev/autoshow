@@ -1,4 +1,4 @@
-// src/interactive.ts
+// src/cli/interactive.ts
 
 import inquirer from 'inquirer'
 import {
@@ -6,7 +6,7 @@ import {
   LLM_SERVICES, LLM_OPTIONS, OLLAMA_MODELS, GPT_MODELS,
   CLAUDE_MODELS, GEMINI_MODELS, COHERE_MODELS, MISTRAL_MODELS,
   FIREWORKS_MODELS, TOGETHER_MODELS, GROQ_MODELS, PROMPT_CHOICES
-} from '../globals'
+} from '../types/globals'
 import type { LLMServices, ProcessingOptions, InquirerAnswers, WhisperModelType } from '../types/main'
 
 /**

@@ -1,9 +1,9 @@
-// server/routes/video.ts
+// src/server/routes/video.ts
 
 import type { FastifyRequest, FastifyReply } from 'fastify'
 import { processVideo } from '../../../src/commands/processVideo'
 import { reqToOpts } from '../utils/reqToOpts'
-import { l, err } from '../../../src/globals'
+import { l, err } from '../../../src/types/globals'
 
 // Handler for the /video route
 export const handleVideoRequest = async (

@@ -1,4 +1,4 @@
-// server/index.js
+// src/server/index.js
 
 import Fastify from 'fastify'
 import cors from '@fastify/cors'
@@ -7,7 +7,7 @@ import { handlePlaylistRequest } from './routes/playlist'
 import { handleURLsRequest } from './routes/urls'
 import { handleFileRequest } from './routes/file'
 import { handleRSSRequest } from './routes/rss'
-import { l } from '../../src/globals'
+import { l } from '../../src/types/globals'
 import { env } from 'node:process'
 import { getShowNotes } from './routes/showNotes'
 import { getShowNote } from './routes/showNote'

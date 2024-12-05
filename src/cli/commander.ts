@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-// src/autoshow.ts
+// src/cli/commander.ts
 
 /**
  * Autoshow CLI Application
@@ -21,7 +21,7 @@ import { processFile } from '../commands/processFile'
 import { processRSS } from '../commands/processRSS'
 import { validateOption } from '../utils/validateOption'
 import { argv, exit } from 'node:process'
-import { l, err, opts, final, ACTION_OPTIONS, LLM_OPTIONS, TRANSCRIPT_OPTIONS } from '../globals'
+import { l, err, opts, final, ACTION_OPTIONS, LLM_OPTIONS, TRANSCRIPT_OPTIONS } from '../types/globals'
 import type { ProcessingOptions, HandlerFunction, LLMServices, TranscriptServices } from '../types/main'
 
 // Initialize the command-line interface using Commander.js
@@ -46,18 +46,6 @@ function isValidAction(action: string | undefined): action is ValidAction {
 }
 
 /**
- * Collector function to handle multiple RSS feed URLs.
- *
- * @param value - The current RSS URL provided by the user.
- * @param previous - The array of previously collected RSS URLs.
- * @returns The updated array of RSS URLs.
- */
-function collectRss(value: string, previous?: string[]): string[] {
-  // If 'previous' is undefined, initialize it as an empty array
-  return previous ? previous.concat([value]) : [value]
-}
-
-/**
  * Defines the command-line interface options and descriptions.
  * Sets up all available commands and their respective flags.
  */
@@ -72,12 +60,7 @@ program
   .option('-c, --channel <channelUrl>', 'Process all videos in a YouTube channel')
   .option('-u, --urls <filePath>', 'Process YouTube videos from a list of URLs in a file')
   .option('-f, --file <filePath>', 'Process a local audio or video file')
-  // Modify the --rss option to accept multiple values without a default value
-  .option<string[]>(
-    '-r, --rss <rssURL>',
-    'Process a podcast RSS feed',
-    collectRss
-  )
+  .option('-r, --rss <rssURLs...>', 'Process one or more podcast RSS feeds')
   // RSS feed specific options
   .option('--item <itemUrls...>', 'Process specific items in the RSS feed by providing their audio URLs')
   .option('--order <order>', 'Specify the order for RSS feed processing (newest or oldest)')

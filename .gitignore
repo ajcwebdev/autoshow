@@ -11,10 +11,10 @@ build
 deno.lock
 out
 dist
-NEW.md
-TODO.md
+LLM.md
 nemo_msdd_configs
 temp_outputs
 tsconfig.tsbuildinfo
 show_notes.db
 ollama.log
+llm-txt.md

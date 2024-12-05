@@ -2,7 +2,7 @@
 
 import { writeFile } from 'node:fs/promises'
 import { env } from 'node:process'
-import { OLLAMA_MODELS, l, err, wait } from '../globals'
+import { OLLAMA_MODELS, l, err, wait } from '../types/globals'
 import { spawn } from 'node:child_process'
 import type { LLMFunction, OllamaModelType, OllamaResponse, OllamaTagsResponse } from '../types/llm-types'
 

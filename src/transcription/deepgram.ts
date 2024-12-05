@@ -2,7 +2,7 @@
 
 import { writeFile, readFile } from 'node:fs/promises'
 import { env } from 'node:process'
-import { l, wait, err } from '../globals'
+import { l, wait, err } from '../types/globals'
 import type { DeepgramResponse } from '../types/transcript-service-types'
 
 /**

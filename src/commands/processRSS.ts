@@ -11,7 +11,7 @@ import { downloadAudio } from '../utils/downloadAudio'
 import { runTranscription } from '../utils/runTranscription'
 import { runLLM } from '../utils/runLLM'
 import { cleanUpFiles } from '../utils/cleanUpFiles'
-import { l, err, wait, opts, parser } from '../globals'
+import { l, err, wait, opts, parser } from '../types/globals'
 import { db } from '../server/db'
 import type { LLMServices, TranscriptServices, ProcessingOptions, RSSItem } from '../types/main'
 
@@ -128,14 +128,13 @@ function extractFeedItems(feed: any): { items: RSSItem[], channelTitle: string }
       }
 
       return {
-        showLink: item.enclosure.url || '',
+        showLink: item.enclosure?.url || '',
         channel: channelTitle || '',
         channelURL: channelLink || '',
         title: item.title || '',
-        description: item.description || '',
+        description: '',
         publishDate,
-        coverImage: item['itunes:image']?.href || channelImage || '',
-        audioURL: item.enclosure?.url || ''
+        coverImage: item['itunes:image']?.href || channelImage || ''
       }
     })
 

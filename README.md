@@ -10,6 +10,7 @@
 - [Setup](#setup)
 - [Run Autoshow Node Scripts](#run-autoshow-node-scripts)
 - [Project Structure](#project-structure)
+- [Contributors](#contributors)
 
 ## Project Overview
 
@@ -139,3 +140,5 @@ Example commands for all available CLI options can be found in [`docs/examples.m
   - Web interface built with React and Vite
   - Node.js server that handles backend operations for the web interface
   - *Note: Just a proof of concept, very little functionality built at this point. Expect these to catch up with the CLI starting in Q4 2024*
+
+## Contributors

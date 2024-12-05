@@ -1,8 +1,8 @@
-// server/fetch-all.ts
+// packages/server/tests/fetch-local.ts
 
 import fs from 'fs/promises'
 import path from 'path'
-import { l, err } from '../../../src/globals.js'
+import { l, err } from '../../../src/globals'
 
 const BASE_URL = 'http://localhost:3000'
 const OUTPUT_DIR = 'content'
@@ -178,7 +178,7 @@ const requests = [
   {
     data: {
       youtubeUrl: 'https://www.youtube.com/watch?v=MORMZXEaONk',
-      llm: 'chatgpt',
+      whisperModel: 'tiny',
     },
     endpoint: '/video',
     outputFiles: ['FILE_20.md'],
@@ -186,8 +186,7 @@ const requests = [
   {
     data: {
       youtubeUrl: 'https://www.youtube.com/watch?v=MORMZXEaONk',
-      llm: 'chatgpt',
-      llmModel: 'GPT_4o_MINI',
+      prompts: ['titles', 'mediumChapters'],
     },
     endpoint: '/video',
     outputFiles: ['FILE_21.md'],
@@ -195,7 +194,7 @@ const requests = [
   {
     data: {
       youtubeUrl: 'https://www.youtube.com/watch?v=MORMZXEaONk',
-      llm: 'claude',
+      prompts: ['titles', 'summary', 'shortChapters', 'takeaways', 'questions'],
     },
     endpoint: '/video',
     outputFiles: ['FILE_22.md'],
@@ -203,149 +202,12 @@ const requests = [
   {
     data: {
       youtubeUrl: 'https://www.youtube.com/watch?v=MORMZXEaONk',
-      llm: 'claude',
-      llmModel: 'CLAUDE_3_SONNET',
+      prompts: ['titles', 'summary', 'shortChapters', 'takeaways', 'questions'],
+      whisperModel: 'tiny',
+      llm: 'ollama',
     },
     endpoint: '/video',
     outputFiles: ['FILE_23.md'],
-  },
-  {
-    data: {
-      youtubeUrl: 'https://www.youtube.com/watch?v=MORMZXEaONk',
-      llm: 'gemini',
-    },
-    endpoint: '/video',
-    outputFiles: ['FILE_24.md'],
-  },
-  {
-    data: {
-      youtubeUrl: 'https://www.youtube.com/watch?v=MORMZXEaONk',
-      llm: 'gemini',
-      llmModel: 'GEMINI_1_5_FLASH',
-    },
-    endpoint: '/video',
-    outputFiles: ['FILE_25.md'],
-  },
-  {
-    data: {
-      youtubeUrl: 'https://www.youtube.com/watch?v=MORMZXEaONk',
-      llm: 'cohere',
-    },
-    endpoint: '/video',
-    outputFiles: ['FILE_26.md'],
-  },
-  {
-    data: {
-      youtubeUrl: 'https://www.youtube.com/watch?v=MORMZXEaONk',
-      llm: 'cohere',
-      llmModel: 'COMMAND_R_PLUS',
-    },
-    endpoint: '/video',
-    outputFiles: ['FILE_27.md'],
-  },
-  {
-    data: {
-      youtubeUrl: 'https://www.youtube.com/watch?v=MORMZXEaONk',
-      llm: 'mistral',
-    },
-    endpoint: '/video',
-    outputFiles: ['FILE_28.md'],
-  },
-  {
-    data: {
-      youtubeUrl: 'https://www.youtube.com/watch?v=MORMZXEaONk',
-      llm: 'mistral',
-      llmModel: 'MIXTRAL_8x7b',
-    },
-    endpoint: '/video',
-    outputFiles: ['FILE_29.md'],
-  },
-  {
-    data: {
-      youtubeUrl: 'https://www.youtube.com/watch?v=MORMZXEaONk',
-      whisperModel: 'tiny',
-    },
-    endpoint: '/video',
-    outputFiles: ['FILE_32.md'],
-  },
-  {
-    data: {
-      youtubeUrl: 'https://www.youtube.com/watch?v=MORMZXEaONk',
-      transcriptServices: 'deepgram',
-    },
-    endpoint: '/video',
-    outputFiles: ['FILE_33.md'],
-  },
-  {
-    data: {
-      youtubeUrl: 'https://www.youtube.com/watch?v=MORMZXEaONk',
-      transcriptServices: 'deepgram',
-      llm: 'ollama',
-    },
-    endpoint: '/video',
-    outputFiles: ['FILE_34.md'],
-  },
-  {
-    data: {
-      youtubeUrl: 'https://www.youtube.com/watch?v=MORMZXEaONk',
-      transcriptServices: 'assembly',
-    },
-    endpoint: '/video',
-    outputFiles: ['FILE_35.md'],
-  },
-  {
-    data: {
-      youtubeUrl: 'https://www.youtube.com/watch?v=MORMZXEaONk',
-      transcriptServices: 'assembly',
-      llm: 'ollama',
-    },
-    endpoint: '/video',
-    outputFiles: ['FILE_36.md'],
-  },
-  {
-    data: {
-      youtubeUrl: 'https://ajc.pics/audio/fsjam-short.mp3',
-      transcriptServices: 'assembly',
-      speakerLabels: true,
-    },
-    endpoint: '/video',
-    outputFiles: ['FILE_37.md'],
-  },
-  {
-    data: {
-      youtubeUrl: 'https://ajc.pics/audio/fsjam-short.mp3',
-      transcriptServices: 'assembly',
-      speakerLabels: true,
-      llm: 'ollama',
-    },
-    endpoint: '/video',
-    outputFiles: ['FILE_38.md'],
-  },
-  {
-    data: {
-      youtubeUrl: 'https://www.youtube.com/watch?v=MORMZXEaONk',
-      prompts: ['titles', 'mediumChapters'],
-    },
-    endpoint: '/video',
-    outputFiles: ['FILE_39.md'],
-  },
-  {
-    data: {
-      youtubeUrl: 'https://www.youtube.com/watch?v=MORMZXEaONk',
-      prompts: ['titles', 'summary', 'shortChapters', 'takeaways', 'questions'],
-    },
-    endpoint: '/video',
-    outputFiles: ['FILE_40.md'],
-  },
-  {
-    data: {
-      youtubeUrl: 'https://www.youtube.com/watch?v=MORMZXEaONk',
-      prompts: ['titles', 'summary', 'shortChapters', 'takeaways', 'questions'],
-      whisperModel: 'tiny',
-      llm: 'ollama',
-    },
-    endpoint: '/video',
-    outputFiles: ['FILE_41.md'],
   },
 ]
 

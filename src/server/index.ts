@@ -2,18 +2,19 @@
 
 import Fastify from 'fastify'
 import cors from '@fastify/cors'
-import { handleVideoRequest } from './routes/video.js'
-import { handlePlaylistRequest } from './routes/playlist.js'
-import { handleURLsRequest } from './routes/urls.js'
-import { handleFileRequest } from './routes/file.js'
-import { handleRSSRequest } from './routes/rss.js'
-import { l } from '../../src/globals.js'
+import { handleVideoRequest } from './routes/video'
+import { handlePlaylistRequest } from './routes/playlist'
+import { handleURLsRequest } from './routes/urls'
+import { handleFileRequest } from './routes/file'
+import { handleRSSRequest } from './routes/rss'
+import { l } from '../../src/globals'
 import { env } from 'node:process'
-import { getShowNotes } from './routes/showNotes.js'
-import { getShowNote } from './routes/showNote.js'
+import { getShowNotes } from './routes/showNotes'
+import { getShowNote } from './routes/showNote'
 
 // Set the port from environment variable or default to 3000
-const port = Number(env.PORT) || 3000
+// const port = Number(env.PORT) || 3000
+const port = Number(env['PORT']) || 3000
 
 async function start() {
   // Create a Fastify instance with logging enabled

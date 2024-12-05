@@ -1,6 +1,6 @@
 // packages/server/routes/showNote.ts
 
-import { db } from '../db.js'
+import { db } from '../db'
 
 export const getShowNote = async (request, reply) => {
   try {

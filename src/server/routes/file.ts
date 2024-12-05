@@ -1,9 +1,9 @@
-// server/routes/file.ts
+// src/server/routes/file.ts
 
 import type { FastifyRequest, FastifyReply } from 'fastify'
 import { processFile } from '../../../src/commands/processFile'
 import { reqToOpts } from '../utils/reqToOpts'
-import { l, err } from '../../../src/globals'
+import { l, err } from '../../../src/types/globals'
 
 // Handler for the /file route
 export const handleFileRequest = async (

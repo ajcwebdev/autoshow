@@ -2,7 +2,7 @@
 
 import { writeFile, readFile } from 'node:fs/promises'
 import { env } from 'node:process'
-import { l, wait, success, err } from '../globals'
+import { l, wait, success, err } from '../types/globals'
 import type { ProcessingOptions } from '../types/main'
 import type {
   AssemblyAITranscriptionOptions,

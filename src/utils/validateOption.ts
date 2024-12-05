@@ -1,7 +1,7 @@
 // src/utils/validateOption.ts
 
 import { exit } from 'node:process'
-import { err } from '../globals'
+import { err } from '../types/globals'
 import type { ProcessingOptions } from '../types/main'
 
 /**

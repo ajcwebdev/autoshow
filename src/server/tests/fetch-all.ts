@@ -1,8 +1,8 @@
-// server/fetch-all.ts
+// src/server/fetch-all.ts
 
 import fs from 'fs/promises'
 import path from 'path'
-import { l, err } from '../../../src/globals'
+import { l, err } from '../../../src/types/globals'
 
 const BASE_URL = 'http://localhost:3000'
 const OUTPUT_DIR = 'content'

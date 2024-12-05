@@ -1,4 +1,4 @@
-// src/globals.ts
+// src/types/globals.ts
 
 /**
  * @file Defines constants, model mappings, and utility functions used throughout the application.
@@ -10,8 +10,8 @@ import { exec, execFile } from 'node:child_process'
 import { promisify } from 'node:util'
 import chalk from 'chalk'
 import type { ChalkInstance } from 'chalk'
-import type { TranscriptServices, LLMServices, WhisperModelType } from './types/main'
-import type { ChatGPTModelType, ClaudeModelType, CohereModelType, GeminiModelType, MistralModelType, OllamaModelType, TogetherModelType, FireworksModelType, GroqModelType } from './types/llm-types'
+import type { TranscriptServices, LLMServices, WhisperModelType } from '../types/main'
+import type { ChatGPTModelType, ClaudeModelType, CohereModelType, GeminiModelType, MistralModelType, OllamaModelType, TogetherModelType, FireworksModelType, GroqModelType } from '../types/llm-types'
 
 
 export const execPromise = promisify(exec)

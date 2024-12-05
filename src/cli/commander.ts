@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-// src/autoshow.ts
+// src/cli/commander.ts
 
 /**
  * Autoshow CLI Application
@@ -21,7 +21,7 @@ import { processFile } from '../commands/processFile'
 import { processRSS } from '../commands/processRSS'
 import { validateOption } from '../utils/validateOption'
 import { argv, exit } from 'node:process'
-import { l, err, opts, final, ACTION_OPTIONS, LLM_OPTIONS, TRANSCRIPT_OPTIONS } from '../globals'
+import { l, err, opts, final, ACTION_OPTIONS, LLM_OPTIONS, TRANSCRIPT_OPTIONS } from '../types/globals'
 import type { ProcessingOptions, HandlerFunction, LLMServices, TranscriptServices } from '../types/main'
 
 // Initialize the command-line interface using Commander.js

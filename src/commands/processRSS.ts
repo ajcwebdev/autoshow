@@ -128,14 +128,13 @@ function extractFeedItems(feed: any): { items: RSSItem[], channelTitle: string }
       }
 
       return {
-        showLink: item.enclosure.url || '',
+        showLink: item.enclosure?.url || '',
         channel: channelTitle || '',
         channelURL: channelLink || '',
         title: item.title || '',
         description: '',
         publishDate,
-        coverImage: item['itunes:image']?.href || channelImage || '',
-        audioURL: item.enclosure?.url || ''
+        coverImage: item['itunes:image']?.href || channelImage || ''
       }
     })
 

@@ -142,3 +142,5 @@ Example commands for all available CLI options can be found in [`docs/examples.m
   - *Note: Just a proof of concept, very little functionality built at this point. Expect these to catch up with the CLI starting in Q4 2024*
 
 ## Contributors
+
+- [Jenn Junod](https://jennjunod.dev/) host of [Teach Jenn Tech](https://teachjenntech.com/)

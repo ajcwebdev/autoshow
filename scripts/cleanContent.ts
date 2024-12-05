@@ -2,7 +2,7 @@
 
 import { exec } from 'node:child_process'
 import { promisify } from 'node:util'
-import { l, err } from '../src/globals.js'
+import { l, err } from '../src/globals'
 
 const execAsync = promisify(exec)
 

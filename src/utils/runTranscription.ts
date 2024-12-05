@@ -7,9 +7,9 @@
  * @packageDocumentation
  */
 
-import { callWhisper } from '../transcription/whisper.js'
-import { callDeepgram } from '../transcription/deepgram.js'
-import { callAssembly } from '../transcription/assembly.js'
+import { callWhisper } from '../transcription/whisper'
+import { callDeepgram } from '../transcription/deepgram'
+import { callAssembly } from '../transcription/assembly'
 import { l, step } from '../globals'
 import type { TranscriptServices, ProcessingOptions, WhisperTranscriptServices } from '../types/main'
 

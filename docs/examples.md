@@ -727,7 +727,7 @@ Integration test.
 - Mostly uses transcripts of videos around one minute long and cheaper models when possible, so the total cost of running this for any given service should be at most only a few cents.
 
 ```bash
-npm run test-integrations
+npm run test-services
 ```
 
 Local services test, only uses Whisper for transcription and Ollama for LLM operations.
@@ -742,8 +742,13 @@ Docker test, also uses Whisper for transcription and Ollama for LLM operations b
 npm run test-docker
 ```
 
-Benchmark test, compares different size models for `whisper.cpp`, `openai-whisper`, and `whisper-diarization`.
+Benchmark tests, each compare different size models for `whisper.cpp`, `openai-whisper`, and `whisper-diarization`.
 
 ```bash
-npm run test-bench
+npm run bench-tiny
+npm run bench-base
+npm run bench-small
+npm run bench-medium
+npm run bench-large
+npm run bench-turbo
 ```

@@ -72,9 +72,15 @@ const commands = [
   },
   {
     cmd: 'npm run docker -- --rss "https://ajcwebdev.substack.com/feed" --info',
-    expectedFile: 'rss_info.json',
-    newName: 'FILE_12_rss_info.json',
-  }
+    expectedFile: 'ajcwebdev_info.json',
+    newName: 'FILE_12_ajcwebdev_info.json',
+  },
+  {
+    // Process local audio file with Dockerized Whisper 'base' model.
+    cmd: 'npm run as -- --file "content/audio.mp3" --whisperDocker base',
+    expectedFile: 'audio-prompt.md',
+    newName: 'FILE_13_BASE_WHISPERCPP_DOCKER.md'
+  },
 ]
 
 test('Autoshow Command Tests', async (t) => {

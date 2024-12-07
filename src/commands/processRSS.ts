@@ -13,7 +13,8 @@ import { runLLM } from '../utils/runLLM'
 import { cleanUpFiles } from '../utils/cleanUpFiles'
 import { l, err, wait, opts, parser } from '../types/globals'
 import { db } from '../server/db'
-import type { LLMServices, TranscriptServices, ProcessingOptions, RSSItem } from '../types/main'
+import type { LLMServices, ProcessingOptions, RSSItem } from '../types/main'
+import type { TranscriptServices } from '../types/transcript-service-types'
 
 /**
  * Validates RSS processing options for consistency and correct values.

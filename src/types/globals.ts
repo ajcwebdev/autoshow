@@ -10,7 +10,8 @@ import { exec, execFile } from 'node:child_process'
 import { promisify } from 'node:util'
 import chalk from 'chalk'
 import type { ChalkInstance } from 'chalk'
-import type { TranscriptServices, LLMServices, WhisperModelType } from '../types/main'
+import type { LLMServices } from '../types/main'
+import type { TranscriptServices, WhisperModelType } from '../types/transcript-service-types'
 import type { ChatGPTModelType, ClaudeModelType, CohereModelType, GeminiModelType, MistralModelType, OllamaModelType, TogetherModelType, FireworksModelType, GroqModelType } from '../types/llm-types'
 
 

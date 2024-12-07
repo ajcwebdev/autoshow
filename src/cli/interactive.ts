@@ -7,7 +7,8 @@ import {
   CLAUDE_MODELS, GEMINI_MODELS, COHERE_MODELS, MISTRAL_MODELS,
   FIREWORKS_MODELS, TOGETHER_MODELS, GROQ_MODELS, PROMPT_CHOICES
 } from '../types/globals'
-import type { LLMServices, ProcessingOptions, InquirerAnswers, WhisperModelType } from '../types/main'
+import type { LLMServices, ProcessingOptions, InquirerAnswers } from '../types/main'
+import type { WhisperModelType } from '../types/transcript-service-types'
 
 /**
  * Prompts the user for input if interactive mode is selected.

@@ -1,20 +1,28 @@
 // src/transcription/deepgram.ts
 
+// This file manages transcription using the Deepgram API service.
+// Steps:
+// 1. Read the local WAV file.
+// 2. Send it to Deepgram for transcription with chosen parameters (model, formatting, punctuation, etc.).
+// 3. Check for successful response and extract the transcription results.
+// 4. Format the returned words array using formatDeepgramTranscript to add timestamps and newlines.
+// 5. Write the formatted transcript to a .txt file and create an empty .lrc file.
+
 import { writeFile, readFile } from 'node:fs/promises'
 import { env } from 'node:process'
 import { l, wait, err } from '../types/globals'
+import { formatDeepgramTranscript } from './transcription-utils'
 import type { DeepgramResponse } from '../types/transcript-service-types'
 
 /**
  * Main function to handle transcription using Deepgram API.
- * @param {string} finalPath - The identifier used for naming output files.
- * @returns {Promise<string>} - Returns the formatted transcript content.
- * @throws {Error} - If an error occurs during transcription.
+ * @param finalPath - The base filename (without extension) for input/output files
+ * @returns Promise<string> - The formatted transcript content
+ * @throws Error if any step of the process fails (upload, transcription request, formatting)
  */
 export async function callDeepgram(finalPath: string): Promise<string> {
   l(wait('\n  Using Deepgram for transcription...\n'))
 
-  // Check if the DEEPGRAM_API_KEY environment variable is set
   if (!env['DEEPGRAM_API_KEY']) {
     throw new Error('DEEPGRAM_API_KEY environment variable is not set. Please set it to your Deepgram API key.')
   }
@@ -22,17 +30,17 @@ export async function callDeepgram(finalPath: string): Promise<string> {
   try {
     const apiUrl = new URL('https://api.deepgram.com/v1/listen')
 
-    // Set query parameters
+    // Set query parameters for the chosen model and formatting
     apiUrl.searchParams.append('model', 'nova-2')
     apiUrl.searchParams.append('smart_format', 'true')
     apiUrl.searchParams.append('punctuate', 'true')
     apiUrl.searchParams.append('diarize', 'false')
     apiUrl.searchParams.append('paragraphs', 'true')
 
-    // Read the local WAV file
+    // Read the WAV file from disk
     const audioBuffer = await readFile(`${finalPath}.wav`)
 
-    // Send the request to Deepgram
+    // Send the WAV data to Deepgram for transcription
     const response = await fetch(apiUrl, {
       method: 'POST',
       headers: {
@@ -48,49 +56,30 @@ export async function callDeepgram(finalPath: string): Promise<string> {
 
     const result = await response.json() as DeepgramResponse
 
-    // Add null checks and provide default values for the Deepgram response
+    // Extract the transcription results
+    // Deepgram returns results in channels->alternatives->words
     const channel = result.results?.channels?.[0]
     const alternative = channel?.alternatives?.[0]
-    
+
     if (!alternative?.words) {
       throw new Error('No transcription results found in Deepgram response')
     }
 
-    // Extract the words array from the Deepgram API response
-    const txtContent = alternative.words
-      // Use reduce to iterate over the words array and build the formatted transcript
-      .reduce((acc, { word, start }, i, arr) => {
-        // Determine if a timestamp should be added
-        // Add timestamp if it's the first word, every 30th word, or the start of a sentence
-        const timestamp = (i % 30 === 0 || word.match(/^[A-Z]/))
-          // If true, create a timestamp string that calculates minutes/seconds and converts to string with a pad for leading zeros
-          ? `[${Math.floor(start / 60).toString().padStart(2, '0')
-            }:${Math.floor(start % 60).toString().padStart(2, '0')}] `
-          // If false, use an empty string (no timestamp)
-          : ''
-    
-        // Add newline if the word ends a sentence, every 30th word, or it's the last word
-        const newline = (word.match(/[.!?]$/) || i % 30 === 29 || i === arr.length - 1)
-          // Add a newline character if true and use an empty string if false
-          ? '\n'
-          : ''
-    
-        // Combine the accumulated text, timestamp (if any), current word, and newline (if any)
-        return `${acc}${timestamp}${word} ${newline}`
-      }, '')
+    // Format the returned words array
+    const txtContent = formatDeepgramTranscript(alternative.words)
 
-    // Write the formatted transcript to a file
+    // Write the formatted transcript to a .txt file
     await writeFile(`${finalPath}.txt`, txtContent)
     l(wait(`\n  Transcript saved:\n    - ${finalPath}.txt\n`))
 
-    // Create an empty LRC file to prevent cleanup errors
+    // Create an empty LRC file to meet pipeline expectations
     await writeFile(`${finalPath}.lrc`, '')
     l(wait(`\n  Empty LRC file created:\n    - ${finalPath}.lrc\n`))
 
     return txtContent
   } catch (error) {
-    // Log any errors that occur during the transcription process
+    // If any error occurred at any step, log it and rethrow
     err(`Error processing the transcription: ${(error as Error).message}`)
-    throw error // Re-throw the error for handling in the calling function
+    throw error
   }
 }

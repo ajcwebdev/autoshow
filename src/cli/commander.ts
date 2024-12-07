@@ -22,7 +22,8 @@ import { processRSS } from '../commands/processRSS'
 import { validateOption } from '../utils/validateOption'
 import { argv, exit } from 'node:process'
 import { l, err, opts, final, ACTION_OPTIONS, LLM_OPTIONS, TRANSCRIPT_OPTIONS } from '../types/globals'
-import type { ProcessingOptions, HandlerFunction, LLMServices, TranscriptServices } from '../types/main'
+import type { ProcessingOptions, HandlerFunction, LLMServices } from '../types/main'
+import type { TranscriptServices } from '../types/transcript-service-types'
 
 // Initialize the command-line interface using Commander.js
 const program = new Command()

@@ -11,7 +11,8 @@ import { callWhisper } from '../transcription/whisper'
 import { callDeepgram } from '../transcription/deepgram'
 import { callAssembly } from '../transcription/assembly'
 import { l, step } from '../types/globals'
-import type { TranscriptServices, ProcessingOptions, WhisperTranscriptServices } from '../types/main'
+import type { ProcessingOptions } from '../types/main'
+import type { TranscriptServices, WhisperTranscriptServices } from '../types/transcript-service-types'
 
 /**
  * Orchestrates the transcription process using the specified service.

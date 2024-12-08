@@ -1,115 +1,10 @@
 // packages/web/src/Form.jsx
 
-import React, { useState } from 'react'
-
-// Define constants for prompts, transcription services, Whisper models, LLM services, and their models
-const PROMPT_CHOICES = [
-  { value: 'titles', label: 'Titles' },
-  { value: 'summary', label: 'Summary' },
-  { value: 'shortChapters', label: 'Short Chapters' },
-  { value: 'mediumChapters', label: 'Medium Chapters' },
-  { value: 'longChapters', label: 'Long Chapters' },
-  { value: 'takeaways', label: 'Key Takeaways' },
-  { value: 'questions', label: 'Questions' },
-]
-
-const TRANSCRIPTION_SERVICES = [
-  { value: 'whisper', label: 'Whisper.cpp' },
-  { value: 'whisperDocker', label: 'Whisper.cpp (Docker)' },
-  { value: 'whisperPython', label: 'Whisper Python' },
-  { value: 'whisperDiarization', label: 'Whisper Diarization' },
-  { value: 'deepgram', label: 'Deepgram' },
-  { value: 'assembly', label: 'AssemblyAI' },
-]
-
-const WHISPER_MODELS = [
-  { value: 'tiny', label: 'tiny' },
-  { value: 'tiny.en', label: 'tiny.en' },
-  { value: 'base', label: 'base' },
-  { value: 'base.en', label: 'base.en' },
-  { value: 'small', label: 'small' },
-  { value: 'small.en', label: 'small.en' },
-  { value: 'medium', label: 'medium' },
-  { value: 'medium.en', label: 'medium.en' },
-  { value: 'large-v1', label: 'large-v1' },
-  { value: 'large-v2', label: 'large-v2' },
-  { value: 'large-v3-turbo', label: 'large-v3-turbo' },
-  { value: 'turbo', label: 'turbo' },
-]
-
-const LLM_SERVICES = [
-  { value: 'chatgpt', label: 'ChatGPT' },
-  { value: 'claude', label: 'Claude' },
-  { value: 'cohere', label: 'Cohere' },
-  { value: 'mistral', label: 'Mistral' },
-  { value: 'ollama', label: 'Ollama' },
-  { value: 'gemini', label: 'Gemini' },
-  { value: 'fireworks', label: 'Fireworks' },
-  { value: 'together', label: 'Together AI' },
-  { value: 'groq', label: 'Groq' },
-]
-
-const LLM_MODELS = {
-  chatgpt: [
-    { value: 'gpt-4o-mini', label: 'GPT 4o Mini' },
-    { value: 'gpt-4o', label: 'GPT 4o' },
-    { value: 'gpt-4-turbo', label: 'GPT 4 Turbo' },
-    { value: 'gpt-4', label: 'GPT 4' },
-  ],
-  claude: [
-    { value: 'claude-3-5-sonnet-20240620', label: 'Claude 3.5 Sonnet' },
-    { value: 'claude-3-opus-20240229', label: 'Claude 3 Opus' },
-    { value: 'claude-3-sonnet-20240229', label: 'Claude 3 Sonnet' },
-    { value: 'claude-3-haiku-20240307', label: 'Claude 3 Haiku' },
-  ],
-  cohere: [
-    { value: 'command-r', label: 'Command R' },
-    { value: 'command-r-plus', label: 'Command R Plus' },
-  ],
-  mistral: [
-    { value: 'open-mixtral-8x7b', label: 'Mixtral 8x7b' },
-    { value: 'open-mixtral-8x22b', label: 'Mixtral 8x22b' },
-    { value: 'mistral-large-latest', label: 'Mistral Large' },
-    { value: 'open-mistral-nemo', label: 'Mistral Nemo' },
-  ],
-  ollama: [
-    { value: 'llama3.2:1b', label: 'LLAMA 3.2 1B' },
-    { value: 'llama3.2:3b', label: 'LLAMA 3.2 3B' },
-    { value: 'gemma2:2b', label: 'GEMMA 2 2B' },
-    { value: 'phi3.5:3.8b', label: 'PHI 3.5' },
-    { value: 'qwen2.5:1.5b', label: 'QWEN 2.5 1.5B' },
-    { value: 'qwen2.5:3b', label: 'QWEN 2.5 3B' },
-  ],
-  gemini: [
-    { value: 'gemini-1.5-flash', label: 'Gemini 1.5 Flash' },
-    { value: 'gemini-1.5-pro-exp-0827', label: 'Gemini 1.5 Pro' },
-  ],
-  fireworks: [
-    { value: 'accounts/fireworks/models/llama-v3p1-405b-instruct', label: 'LLAMA 3.1 405B' },
-    { value: 'accounts/fireworks/models/llama-v3p1-70b-instruct', label: 'LLAMA 3.1 70B' },
-    { value: 'accounts/fireworks/models/llama-v3p1-8b-instruct', label: 'LLAMA 3.1 8B' },
-    { value: 'accounts/fireworks/models/llama-v3p2-3b-instruct', label: 'LLAMA 3.2 3B' },
-    { value: 'accounts/fireworks/models/llama-v3p2-1b-instruct', label: 'LLAMA 3.2 1B' },
-    { value: 'accounts/fireworks/models/qwen2p5-72b-instruct', label: 'QWEN 2.5 72B' },
-  ],
-  together: [
-    { value: 'meta-llama/Llama-3.2-3B-Instruct-Turbo', label: 'LLAMA 3.2 3B' },
-    { value: 'meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo', label: 'LLAMA 3.1 405B' },
-    { value: 'meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo', label: 'LLAMA 3.1 70B' },
-    { value: 'meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo', label: 'LLAMA 3.1 8B' },
-    { value: 'google/gemma-2-27b-it', label: 'Gemma 2 27B' },
-    { value: 'google/gemma-2-9b-it', label: 'Gemma 2 9B' },
-    { value: 'Qwen/Qwen2.5-72B-Instruct-Turbo', label: 'QWEN 2.5 72B' },
-    { value: 'Qwen/Qwen2.5-7B-Instruct-Turbo', label: 'QWEN 2.5 7B' },
-  ],
-  groq: [
-    { value: 'llama-3.1-70b-versatile', label: 'LLAMA 3.1 70B Versatile' },
-    { value: 'llama-3.1-8b-instant', label: 'LLAMA 3.1 8B Instant' },
-    { value: 'llama-3.2-1b-preview', label: 'LLAMA 3.2 1B Preview' },
-    { value: 'llama-3.2-3b-preview', label: 'LLAMA 3.2 3B Preview' },
-    { value: 'mixtral-8x7b-32768', label: 'Mixtral 8x7b 32768' },
-  ],
-}
+import React, { useState, useEffect } from 'react'
+import {
+  PROMPT_CHOICES, TRANSCRIPTION_SERVICES, WHISPER_MODELS, LLM_SERVICES, LLM_MODELS
+} from '@/site-config'
+// import { BrowserRouter as Router, Routes, Route, Link, useParams } from 'react-router-dom'
 
 // Alert component to display error messages
 const Alert = ({ message, variant }) => (
@@ -118,14 +13,53 @@ const Alert = ({ message, variant }) => (
   </div>
 )
 
-const Form = ({ onNewShowNote }) => {
+const ShowNote = () => {
+  const { id } = useParams()
+  const [showNote, setShowNote] = useState(null)
+
+  useEffect(() => {
+    // Fetch the show note from the backend
+    fetch(`http://localhost:3000/show-notes/${id}`)
+      .then((response) => response.json())
+      .then((data) => {
+        setShowNote(data.showNote)
+      })
+      .catch((error) => {
+        console.error('Error fetching show note:', error)
+      })
+  }, [id])
+
+  if (!showNote) {
+    return <div>Loading...</div>
+  }
+
+  // Format content by adding line breaks
+  const formatContent = (text) => {
+    return text.split('\n').map((line, index) => (
+      <React.Fragment key={index}>
+        {line}
+        <br />
+      </React.Fragment>
+    ))
+  }
+
+  return (
+    <div className="show-note">
+      <h2>{showNote.title}</h2>
+      <p>Date: {showNote.date}</p>
+      <div>{formatContent(showNote.content)}</div>
+    </div>
+  )
+}
+
+const Inputs = ({ onNewShowNote }) => {
   // State variables
-  const [youtubeUrl, setYoutubeUrl] = useState('')
+  const [youtubeUrl, setYoutubeUrl] = useState('https://www.youtube.com/watch?v=MORMZXEaONk')
   const [transcriptionService, setTranscriptionService] = useState('whisper')
-  const [whisperModel, setWhisperModel] = useState('large-v3-turbo')
-  const [llmService, setLlmService] = useState('chatgpt')
-  const [llmModel, setLlmModel] = useState('gpt-4o')
-  const [selectedPrompts, setSelectedPrompts] = useState([])
+  const [whisperModel, setWhisperModel] = useState('base')
+  const [llmService, setLlmService] = useState('none')
+  const [llmModel, setLlmModel] = useState('')
+  const [selectedPrompts, setSelectedPrompts] = useState(['summary'])
   const [result, setResult] = useState(null)
   const [error, setError] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
@@ -201,6 +135,7 @@ const Form = ({ onNewShowNote }) => {
         <div className="form-group">
           <label htmlFor="youtubeUrl">YouTube URL</label>
           <input
+            // placeholder="https://www.youtube.com/watch?v=MORMZXEaONk"
             type="text"
             id="youtubeUrl"
             value={youtubeUrl}
@@ -320,6 +255,58 @@ const Form = ({ onNewShowNote }) => {
       )}
     </>
   )
+}
+
+const Form = () => {
+  const [showNotes, setShowNotes] = useState([])
+
+  // Fetch show notes function
+  const fetchShowNotes = () => {
+    fetch('http://localhost:3000/show-notes')
+      .then((response) => response.json())
+      .then((data) => {
+        setShowNotes(data.showNotes)
+      })
+      .catch((error) => {
+        console.error('Error fetching show notes:', error)
+      })
+  }
+
+  useEffect(() => {
+    fetchShowNotes()
+  }, [])
+
+  return (
+    <div className="container">
+      <Inputs client:only="react" onNewShowNote={fetchShowNotes} />
+    </div>
+  )
+
+  // return (
+  //   <Router>
+  //     <div className="container">
+  //       <h1>Show Notes</h1>
+  //       <Routes>
+  //         <Route
+  //           path="/"
+  //           element={
+  //             <>
+  //               <ul className="show-notes-list">
+  //                 {showNotes.map((note) => (
+  //                   <li key={note.id}>
+  //                     <Link to={`/show-notes/${note.id}`}>{note.title}</Link> - {note.date}
+  //                   </li>
+  //                 ))}
+  //               </ul>
+  //               <Input onNewShowNote={fetchShowNotes} />
+  //             </>
+  //           }
+  //         />
+  //         <Route path="/show-notes/:id" element={<ShowNote />} />
+  //       </Routes>
+  //     </div>
+  //   </Router>
+  // )
 }
 
 export default Form

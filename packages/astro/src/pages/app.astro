@@ -1,0 +1,11 @@
+---
+import PageLayout from "@/layouts/Base.astro";
+import Form from "@/components/app/Form";
+---
+
+<PageLayout meta={{ title: "Home" }}>
+  <section>
+    <h1>Generate Show Notes</h1>
+    <Form client:only="react" />
+  </section>
+</PageLayout>

@@ -101,10 +101,9 @@ Example commands for all available CLI options can be found in [`docs/examples.m
 
 ## Project Structure
 
-- Main Entry Point (`src/autoshow.ts`)
-  - Defines the command-line interface using Commander.js
-  - Handles various input options (video, playlist, URLs, file, RSS)
-  - Manages LLM and transcription options
+- Main Entry Points (`src/cli`)
+  - `commander.ts`: Defines the command-line interface using Commander
+  - `interactive.ts`: Defines the interactive terminal interface using Inquirer
 
 - Command Processors (`src/commands`)
   - `process-file.ts`: Handles local audio/video file processing
@@ -115,18 +114,22 @@ Example commands for all available CLI options can be found in [`docs/examples.m
   - `process-rss.ts`: Processes podcast RSS feeds
 
 - Utility Functions (`src/utils`)
+  - `generate-markdown.ts`: Creates initial markdown files with metadata
   - `download-audio.ts`: Downloads audio from YouTube videos
   - `run-transcription.ts`: Manages the transcription process
   - `run-llm.ts`: Handles LLM processing for summarization and chapter generation
-  - `generate-markdown.ts`: Creates initial markdown files with metadata
   - `clean-up-files.ts`: Removes temporary files after processing
+  - `logging.ts`: Reusable Chalk functions for logging colors
+  - `validate-option.ts`: Functions for validating CLI options and handling errors
 
 - Transcription Services (`src/transcription`)
   - `whisper.ts`: Uses Whisper.cpp, openai-whisper, or whisper-diarization for transcription
   - `deepgram.ts`: Integrates Deepgram transcription service
   - `assembly.ts`: Integrates AssemblyAI transcription service
+  - `transcription-utils.ts`: Transcript formatting functions
 
 - Language Models (`src/llms`)
+  - `ollama.ts`: Integrations Ollama's locally available models
   - `chatgpt.ts`: Integrates OpenAI's GPT models
   - `claude.ts`: Integrates Anthropic's Claude models
   - `gemini.ts`: Integrates Google's Gemini models

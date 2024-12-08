@@ -137,6 +137,41 @@ const sections = {
     
     First draft of a blog.\n`,
   },
+  // Section for generating a rap song based on the transcript
+rapSong: {
+  // Instructions for creating the rap song
+  instruction: `- Write a highly complex, multi-syllabic rhyming, Eminem inspired rap based on this transcript.
+  - Do not rhyme any words with themselves.
+  - Give it a basic song structure with verses, choruses, and a bridge but do not write those markings above each section.
+  - Give the song three potential titles.\n`,
+  // Example rap song
+  example: `## Song
+  
+  Lyrics to the song.`
+},
+rockSong: {
+  // Instructions for creating the rock song
+  instruction: `- Write a high-energy, anthemic rock song with powerful imagery and impactful, multi-layered lyrics.
+  - Use metaphors and vivid language to convey a sense of rebellion or freedom.
+  - Structure the song with verses, choruses, and a bridge, but do not label these sections.
+  - Provide the song with three potential titles.\n`,
+  // Example rock song
+  example: `## Song
+  
+  Lyrics to the song.`
+},
+
+countrySong: {
+  // Instructions for creating the country song
+  instruction: `- Write a heartfelt, storytelling country song with simple yet emotionally charged lyrics.
+  - Include themes of life, love, and the struggles of everyday people.
+  - Structure the song with verses, choruses, and a bridge, but do not label these sections.
+  - Offer the song three potential titles.\n`,
+  // Example country song
+  example: `## Song
+  
+  Lyrics to the song.`
+},
 } satisfies Record<string, PromptSection>
 
 // Create a type from the sections object

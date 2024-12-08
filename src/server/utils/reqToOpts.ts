@@ -1,6 +1,7 @@
 // src/server/utils/reqToOpts.ts
 
-import type { ProcessingOptions, LLMServices, TranscriptServices } from '../../../src/types/main'
+import type { ProcessingOptions, LLMServices } from '../../../src/types/main'
+import type { TranscriptServices } from '../../../src/types/transcript-service-types'
 
 // Function to map request data to processing options
 export function reqToOpts(requestData: any): {
@@ -72,10 +73,12 @@ export function reqToOpts(requestData: any): {
   for (const opt of otherOptions) {
     if (requestData[opt] !== undefined) {
       // Set the option if it is provided
+      // @ts-ignore
       options[opt] = requestData[opt]
     }
   }
 
   // Return the mapped options along with selected services
+  // @ts-ignore
   return { options, llmServices, transcriptServices }
 }

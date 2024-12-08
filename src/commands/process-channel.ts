@@ -6,9 +6,11 @@
  */
 
 import { writeFile } from 'node:fs/promises'
-import { processVideo } from './processVideo'
-import { l, err, opts, success, execFilePromise, wait } from '../types/globals'
-import type { LLMServices, TranscriptServices, ProcessingOptions, VideoMetadata } from '../types/main'
+import { processVideo } from './process-video'
+import { execFilePromise } from '../types/globals'
+import { l, err, opts, success, wait } from '../utils/logging'
+import type { LLMServices, ProcessingOptions, VideoMetadata } from '../types/main'
+import type { TranscriptServices } from '../types/transcript-service-types'
 
 /**
  * Validates channel processing options for consistency and correct values.

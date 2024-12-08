@@ -7,7 +7,7 @@
  */
 
 import { unlink } from 'node:fs/promises'
-import { l, err, step, success } from '../types/globals'
+import { l, err, step, success } from '../utils/logging'
 
 /**
  * Removes temporary files generated during content processing.

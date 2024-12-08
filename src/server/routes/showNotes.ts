@@ -2,7 +2,7 @@
 
 import { db } from '../db'
 
-export const getShowNotes = async (request, reply) => {
+export const getShowNotes = async (reply: any) => {
   try {
     // Fetch all show notes from the database
     const showNotes = db.prepare(`SELECT * FROM show_notes ORDER BY date DESC`).all()

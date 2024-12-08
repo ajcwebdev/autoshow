@@ -2,7 +2,7 @@
 
 import { db } from '../db'
 
-export const getShowNote = async (request, reply) => {
+export const getShowNote = async (request: any, reply: any) => {
   try {
     const { id } = request.params
     // Fetch the show note from the database

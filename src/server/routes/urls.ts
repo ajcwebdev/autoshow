@@ -1,9 +1,9 @@
 // src/server/routes/urls.ts
 
 import type { FastifyRequest, FastifyReply } from 'fastify'
-import { processURLs } from '../../../src/commands/processURLs'
+import { processURLs } from '../../commands/process-urls'
 import { reqToOpts } from '../utils/reqToOpts'
-import { l, err } from '../../../src/types/globals'
+import { l, err } from '../../../src/utils/logging'
 
 // Handler for the /urls route
 export const handleURLsRequest = async (

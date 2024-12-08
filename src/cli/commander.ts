@@ -13,16 +13,18 @@
 
 import { Command } from 'commander'
 import { handleInteractivePrompt } from './interactive'
-import { processVideo } from '../commands/processVideo'
-import { processPlaylist } from '../commands/processPlaylist'
-import { processChannel } from '../commands/processChannel'
-import { processURLs } from '../commands/processURLs'
-import { processFile } from '../commands/processFile'
-import { processRSS } from '../commands/processRSS'
-import { validateOption } from '../utils/validateOption'
+import { processVideo } from '../commands/process-video'
+import { processPlaylist } from '../commands/process-playlist'
+import { processChannel } from '../commands/process-channel'
+import { processURLs } from '../commands/process-urls'
+import { processFile } from '../commands/process-file'
+import { processRSS } from '../commands/process-rss'
+import { validateOption } from '../utils/validate-option'
 import { argv, exit } from 'node:process'
-import { l, err, opts, final, ACTION_OPTIONS, LLM_OPTIONS, TRANSCRIPT_OPTIONS } from '../types/globals'
-import type { ProcessingOptions, HandlerFunction, LLMServices, TranscriptServices } from '../types/main'
+import { ACTION_OPTIONS, LLM_OPTIONS, TRANSCRIPT_OPTIONS } from '../types/globals'
+import { l, err, opts, final } from '../utils/logging'
+import type { ProcessingOptions, HandlerFunction, LLMServices } from '../types/main'
+import type { TranscriptServices } from '../types/transcript-service-types'
 
 // Initialize the command-line interface using Commander.js
 const program = new Command()

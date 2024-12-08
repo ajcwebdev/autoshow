@@ -5,15 +5,16 @@
  * @packageDocumentation
  */
 
-import { generateMarkdown } from '../utils/generateMarkdown'
-import { downloadAudio } from '../utils/downloadAudio'
-import { runTranscription } from '../utils/runTranscription'
-import { runLLM } from '../utils/runLLM'
-import { cleanUpFiles } from '../utils/cleanUpFiles'
-import { l, err, opts } from '../types/globals'
+import { generateMarkdown } from '../utils/generate-markdown'
+import { downloadAudio } from '../utils/download-audio'
+import { runTranscription } from '../utils/run-transcription'
+import { runLLM } from '../utils/run-llm'
+import { cleanUpFiles } from '../utils/clean-up-files'
+import { l, err, opts } from '../utils/logging'
 import { readFile } from 'fs/promises'
 import { db } from '../server/db'
-import type { LLMServices, TranscriptServices, ProcessingOptions } from '../types/main'
+import type { LLMServices, ProcessingOptions } from '../types/main'
+import type { TranscriptServices } from '../types/transcript-service-types'
 
 /**
  * Processes a single video by executing a series of operations:

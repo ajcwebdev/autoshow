@@ -2,7 +2,8 @@
 
 import { writeFile } from 'node:fs/promises'
 import { env } from 'node:process'
-import { l, wait, err, GROQ_MODELS } from '../types/globals'
+import { GROQ_MODELS } from '../types/globals'
+import { l, wait, err } from '../utils/logging'
 import type { GroqChatCompletionResponse, GroqModelType } from '../types/llm-types'
 
 // Define the Groq API URL

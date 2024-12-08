@@ -1,7 +1,7 @@
 // src/utils/validateOption.ts
 
 import { exit } from 'node:process'
-import { err } from '../types/globals'
+import { err } from '../utils/logging'
 import type { ProcessingOptions } from '../types/main'
 
 /**
@@ -35,4 +35,33 @@ export function validateOption(
     exit(1)
   }
   return selectedOptions[0] as string | undefined
+}
+
+/**
+ * Validates RSS processing options for consistency and correct values.
+ * 
+ * @param options - Configuration options to validate
+ * @throws Will exit process if validation fails
+ */
+export function validateRSSOptions(options: ProcessingOptions): void {
+  if (options.last !== undefined) {
+    if (!Number.isInteger(options.last) || options.last < 1) {
+      err('Error: The --last option must be a positive integer.')
+      process.exit(1)
+    }
+    if (options.skip !== undefined || options.order !== undefined) {
+      err('Error: The --last option cannot be used with --skip or --order.')
+      process.exit(1)
+    }
+  }
+
+  if (options.skip !== undefined && (!Number.isInteger(options.skip) || options.skip < 0)) {
+    err('Error: The --skip option must be a non-negative integer.')
+    process.exit(1)
+  }
+
+  if (options.order !== undefined && !['newest', 'oldest'].includes(options.order)) {
+    err("Error: The --order option must be either 'newest' or 'oldest'.")
+    process.exit(1)
+  }
 }

@@ -68,6 +68,8 @@ program
   .option('--order <order>', 'Specify the order for RSS feed processing (newest or oldest)')
   .option('--skip <number>', 'Number of items to skip when processing RSS feed', parseInt)
   .option('--last <number>', 'Number of most recent items to process (overrides --order and --skip)', parseInt)
+  .option('--date <dates...>', 'Process items from these dates (YYYY-MM-DD)')
+  .option('--lastDays <number>', 'Number of days to look back for items', parseInt)
   .option('--info', 'Skip processing and write metadata to JSON objects (supports --urls, --rss, --playlist, --channel)')
   // Transcription service options
   .option('--whisper [model]', 'Use Whisper.cpp for transcription with optional model specification')

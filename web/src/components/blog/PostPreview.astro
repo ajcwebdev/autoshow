@@ -1,4 +1,6 @@
 ---
+// web/src/components/blog/PostPreview.astro
+
 import type { HTMLTag, Polymorphic } from "astro/types"
 import type { CollectionEntry } from "astro:content"
 import { getPostSortDate } from "@/data/post"
@@ -14,7 +16,6 @@ const postDate = getPostSortDate(post)
 ---
 
 <Tag>
-	{post.data.draft && <span>(Draft) </span>}
 	<a data-astro-prefetch href={`/posts/${post.slug}/`}>
 		{post.data.title}
 	</a> - 

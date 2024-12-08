@@ -1,11 +1,345 @@
-@layer base {
-	:root {
-		color-scheme: dark;
-		--theme-bg: 210deg 6% 12%;
-		--theme-link: 330deg 49% 67%;
-		--theme-text: 220deg 3% 79%;
-		--theme-accent: 159deg 64% 45%;
-		--theme-accent-2: 0deg 0% 93%;
-		--theme-quote: 102deg 100% 86%;
-	}
+/* web/src/styles/global.css */
+
+/* -----------------------
+   THEME & VARIABLES
+   -----------------------
+   :root holds all CSS variables (custom properties).
+   We define a dark color scheme and various theme colors,
+   typography settings, and states for interactive elements.
+   These variables ensure consistent styling across the entire site.
+*/
+:root {
+  /* Use dark mode UI elements */
+  color-scheme: dark;
+
+  /* Core theme colors (HSL hue, saturation, lightness) */
+  --theme-bg: 210deg 6% 12%;
+  --theme-link: 330deg 49% 67%;
+  --theme-text: 220deg 3% 79%;
+  --theme-accent: 159deg 64% 45%;
+  --theme-accent-2: 0deg 0% 93%;
+  --theme-quote: 102deg 100% 86%;
+
+  /* Additional variables for form elements and states */
+  --primary-color: hsl(var(--theme-accent));
+  --primary-hover: hsl(159deg 64% 55%);
+  --disabled-color: hsl(220deg 3% 30%);
+  --error-bg: hsl(0deg 50% 15%);
+  --error-border: hsl(0deg 50% 25%);
+  --error-text: hsl(0deg 100% 90%);
+
+  /* Typography variables for consistent font sizes and line heights */
+  --font-family: 'Helvetica Neue', Arial, sans-serif;
+  --font-size-base: 16px;
+  --line-height-base: 1.5;
+}
+
+
+/* -----------------------
+   GLOBAL STYLES
+   -----------------------
+   Reset default browser margins and paddings, set base font properties
+   and apply our dark theme background and text color.
+*/
+html, body {
+  margin: 0;               /* Remove default browser margin */
+  padding: 0;              /* Remove default browser padding */
+  font-family: var(--font-family); /* Apply chosen font family */
+  font-size: var(--font-size-base);/* Base font size for scaling text */
+  line-height: var(--line-height-base); /* Improve readability */
+  color: hsl(var(--theme-text));  /* Set text color from theme */
+  background-color: hsl(var(--theme-bg)); /* Dark background */
+}
+
+body {
+  padding: 20px; /* Add space around the content to avoid touching edges */
+  align-items: center;
+}
+
+
+/* -----------------------
+   LAYOUT & STRUCTURE
+   -----------------------
+   We center the main content by using a max-width and auto margins.
+   This creates a comfortable reading width and centers content on larger screens.
+*/
+header#main-header > div,
+main#main,
+footer div {
+  max-width: 800px;   /* Restrict line length for readability */
+  margin: 0 auto;      /* Center horizontally on the page */
+}
+
+/* Center text inside main containers to create a cohesive, centered layout */
+main#main > section,
+header#main-header > div,
+footer div {
+  text-align: center; /* All inline and block-level text aligned centrally */
+}
+
+
+/* -----------------------
+   HEADER (NAVIGATION)
+   -----------------------
+   The header typically contains a logo/title and navigation menu.
+   We ensure it matches the dark theme and center it as well.
+*/
+header#main-header {
+  background-color: hsl(var(--theme-bg)); /* Same as main background for consistency */
+  margin-bottom: 2rem;                    /* Space below header before main content */
+}
+
+header#main-header > div {
+  display: flex;               /* Arrange logo and nav horizontally */
+  align-items: center;         /* Vertically center items in header */
+  justify-content: space-between; /* Push nav to the opposite side from logo */
+  padding: 0 1rem;             /* Horizontal padding inside header container */
+}
+
+header#main-header a {
+  color: hsl(var(--theme-text)); /* Link color matches text color */
+  text-decoration: none;         /* Remove underline for a cleaner look */
+  font-weight: bold;             /* Slightly bolder text for emphasis */
+  transition: color 0.2s;        /* Smooth transition on hover */
+}
+
+header#main-header a:hover {
+  color: var(--primary-color);   /* Highlight links on hover with accent color */
+}
+
+header#main-header nav#navigation-menu ul {
+  list-style: none;  /* Remove bullet points from nav list */
+  display: flex;      /* Display navigation items in a row */
+  gap: 1rem;          /* Space between each nav item */
+  margin: 0;          /* Reset margin on list */
+  padding: 0;         /* Reset padding on list */
+}
+
+header#main-header nav#navigation-menu a {
+  color: hsl(var(--theme-text)); /* Inherit text color for nav links */
+  text-decoration: none;         /* No underline for nav links */
+  transition: color 0.2s;        /* Smooth hover transition */
+}
+
+header#main-header nav#navigation-menu a:hover {
+  color: var(--primary-color);   /* Highlight nav link on hover */
+}
+
+
+/* -----------------------
+   MAIN CONTENT AREA
+   -----------------------
+   The main area uses a card-like container with a subtle shadow,
+   a fixed max-width, and some padding. Inner sections also have their own styling.
+*/
+main#main {
+  background-color: hsl(var(--theme-bg)); /* Match theme background */
+  border-radius: 8px;      /* Rounded corners for softer look */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5); /* Subtle shadow for depth */
+  padding: 20px;           /* Internal spacing */
+}
+
+main#main > section {
+  background-color: hsl(var(--theme-bg)); /* Blend with main container */
+  padding: 1rem;                          /* Inner padding for content separation */
+  border-radius: 8px;                     /* Round corners to match parent container */
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3); /* A lighter shadow for nested sections */
+}
+
+main#main > section h1 {
+  color: var(--primary-color);            /* Heading color stands out */
+  margin-bottom: 1.5rem;                  /* Space below heading */
+}
+
+
+/* -----------------------
+   FOOTER
+   -----------------------
+   The footer is also centered and uses the same theme background
+   and text colors. A touch of accent color is used for emphasis.
+*/
+footer {
+  background-color: hsl(var(--theme-bg)); /* Dark themed footer */
+  color: hsl(var(--theme-text));          /* Footer text color */
+  margin-top: 2rem;                       /* Space above footer */
+  text-align: center;                     /* Center footer content */
+  padding: 1rem 0;                        /* Vertical padding for breathing room */
+}
+
+footer div {
+  /* footer div already has max-width and is centered above */
+  padding: 0 1rem; /* Horizontal padding for consistent spacing */
+}
+
+footer div span {
+  color: var(--primary-color); /* Highlighted text in footer */
+}
+
+
+/* -----------------------
+   CONTAINER (GENERAL)
+   -----------------------
+   This class can be applied to sections to keep them narrow and centered.
+*/
+.container {
+  max-width: 800px;  /* Ideal reading width */
+  margin: 40px auto; /* Center and space it out from top/bottom */
+  padding: 20px;     /* Internal spacing */
+}
+
+
+/* -----------------------
+   GENERAL PAGE HEADINGS
+   -----------------------
+   A generic style for h1 elements that appear outside main sections.
+*/
+h1 {
+  font-size: 2rem;       /* Larger text for primary headings */
+  margin-bottom: 1.5rem; /* Space below heading */
+  text-align: center;    /* Center headings globally */
+  color: var(--primary-color); /* Use accent color for headings */
+}
+
+
+/* -----------------------
+   FORM STYLES
+   -----------------------
+   Styles for forms and form elements, integrated with the dark theme.
+*/
+form {
+  background-color: hsl(var(--theme-bg)); /* Same dark background */
+  padding: 2rem;                          /* Comfortable padding inside form */
+  border-radius: 8px;                     /* Rounded corners */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5); /* Subtle shadow for form container */
+}
+
+.form-group {
+  margin-bottom: 1.25rem; /* Space between form fields */
+}
+
+label {
+  display: block;              /* Labels on their own line */
+  margin-bottom: 0.5rem;       /* Space below label */
+  font-weight: 600;            /* Make labels bold for clarity */
+  color: hsl(var(--theme-text)); /* Same text color as theme */
+}
+
+input[type="text"],
+select {
+  width: 95%;                     /* Nearly full width for comfortable typing */
+  padding: 0.75rem 1rem;          /* Spacing inside fields */
+  border: 1px solid hsl(210deg 6% 25%); /* Neutral border color */
+  border-radius: 4px;             /* Slightly rounded edges */
+  font-size: 1rem;                /* Match base font size */
+  background-color: hsl(210deg 6% 18%); /* Dark input background */
+  color: hsl(var(--theme-text));  /* Light text on dark background */
+  transition: border-color 0.2s;  /* Smooth focus transition */
+}
+
+input[type="text"]:focus,
+select:focus {
+  outline: none;                /* Remove default focus outline */
+  border-color: var(--primary-color); /* Highlight border on focus */
+}
+
+button {
+  width: 100%;               /* Full width buttons for clarity */
+  padding: 0.75rem 1rem;     /* Spacing inside button */
+  background-color: var(--primary-color); /* Use accent color for CTAs */
+  color: #fff;               /* White text on accent background */
+  border: none;              /* Remove default border */
+  border-radius: 4px;        /* Rounded edges */
+  font-size: 1.125rem;       /* Slightly larger text for emphasis */
+  cursor: pointer;           /* Indicate clickability */
+  transition: background-color 0.2s; /* Smooth hover transition */
+}
+
+button:hover {
+  background-color: var(--primary-hover); /* Slightly different shade on hover */
+}
+
+button:disabled {
+  background-color: var(--disabled-color); /* Dim color for disabled state */
+  cursor: not-allowed;                     /* Indicate no action possible */
+}
+
+.alert {
+  margin-top: 1rem;        /* Space above alert */
+  padding: 1rem;           /* Internal spacing for readability */
+  border-radius: 4px;      /* Soften edges */
+  font-size: 1rem;         /* Match base font size */
+}
+
+.alert.error {
+  background-color: var(--error-bg);      /* Red-tinted background for error */
+  border: 1px solid var(--error-border);  /* Define error border for emphasis */
+  color: var(--error-text);               /* High contrast error text color */
+}
+
+.result {
+  margin-top: 2rem; /* Space above result section */
+}
+
+.result h2 {
+  font-size: 1.5rem;      /* Slightly smaller than main h1 but still prominent */
+  margin-bottom: 1rem;    /* Space below h2 */
+}
+
+pre {
+  background-color: hsl(210deg 6% 18%);   /* Dark background for code blocks */
+  border: 1px solid hsl(210deg 6% 25%);   /* Slight border for definition */
+  border-radius: 4px;                     /* Soft edges */
+  padding: 1rem;                          /* Internal spacing */
+  overflow-x: auto;                       /* Allow horizontal scroll if code is long */
+  font-size: 1rem;                        /* Base font size for code */
+  color: hsl(var(--theme-text));          /* Light text on dark background */
+}
+
+
+/* -----------------------
+   CHECKBOX STYLES
+   -----------------------
+   Layout and focus styling for checkbox groups in forms.
+*/
+.form-group .checkbox-group {
+  display: flex;         /* Lay out checkboxes inline */
+  flex-wrap: wrap;       /* Wrap to next line if needed */
+  gap: 0.5rem;           /* Space between checkboxes */
+}
+
+.form-group .checkbox-group div {
+  width: calc(50% - 0.5rem); /* Two-column layout for checkboxes on larger screens */
+}
+
+input[type="checkbox"] {
+  margin-right: 0.5rem; /* Space between checkbox and its label */
+}
+
+input[type="checkbox"]:focus {
+  outline: 2px solid var(--primary-color); /* Highlight checkbox when focused */
+}
+
+
+/* -----------------------
+   RESPONSIVE DESIGN
+   -----------------------
+   Adjust spacing and layout on smaller screens for better usability.
+*/
+@media (max-width: 600px) {
+  body {
+    padding: 10px; /* Reduce body padding on small screens */
+  }
+
+  main#main {
+    padding: 10px; /* Less padding inside main for small screens */
+  }
+
+  header#main-header > div,
+  footer div {
+    padding: 0 10px; /* Reduce horizontal padding in header/footer on small screens */
+  }
+
+  .form-group .checkbox-group div {
+    width: 100%; /* Single column layout for checkboxes on narrow screens */
+  }
 }

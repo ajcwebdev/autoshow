@@ -1,4 +1,6 @@
 ---
+// web/src/components/blog/Hero.astro
+
 import type { CollectionEntry } from "astro:content"
 import { Image } from "astro:assets"
 import FormattedDate from "../FormattedDate.astro"
@@ -28,7 +30,7 @@ const dateTimeOptions: Intl.DateTimeFormatOptions = {
 		</div>
 	)
 }
-{data.draft ? <span>(Draft)</span> : null}
+
 <h1>
 	{data.title}
 </h1>

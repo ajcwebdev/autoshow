@@ -1,9 +1,10 @@
-// packages/web/src/Form.jsx
+// web/src/components/app/Form.jsx
 
 import React, { useState, useEffect } from 'react'
 import {
   PROMPT_CHOICES, TRANSCRIPTION_SERVICES, WHISPER_MODELS, LLM_SERVICES, LLM_MODELS
 } from '@/site-config'
+import '../../styles/global.css'
 // import { BrowserRouter as Router, Routes, Route, Link, useParams } from 'react-router-dom'
 
 // Alert component to display error messages

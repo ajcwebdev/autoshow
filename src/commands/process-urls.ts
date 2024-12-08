@@ -1,77 +1,62 @@
-// src/commands/processPlaylist.ts
+// src/commands/processURLs.ts
 
 /**
- * @file Processes all videos from a YouTube playlist, handling metadata extraction and individual video processing.
+ * @file Processes multiple YouTube videos from a list of URLs stored in a file.
  * @packageDocumentation
  */
 
-import { writeFile } from 'node:fs/promises'
-import { processVideo } from './processVideo'
-import { l, err, opts, success, execFilePromise } from '../types/globals'
-import { sanitizeTitle } from '../utils/generateMarkdown'
+import { readFile, writeFile } from 'node:fs/promises'
+import { processVideo } from './process-video'
+import { l, err, wait, opts, execFilePromise } from '../types/globals'
 import type { LLMServices, ProcessingOptions, VideoMetadata } from '../types/main'
 import type { TranscriptServices } from '../types/transcript-service-types'
 
 /**
- * Processes an entire YouTube playlist by:
- * 1. Fetching all video URLs from the playlist using yt-dlp.
+ * Processes multiple YouTube videos from a file containing URLs by:
+ * 1. Reading and parsing URLs from the input file.
  * 2. Optionally extracting metadata for all videos.
  * 3. Processing each video sequentially with error handling.
  *
- * The function continues processing remaining videos even if individual videos fail.
+ * The function continues processing remaining URLs even if individual videos fail.
  *
  * @param options - Configuration options for processing.
- * @param playlistUrl - URL of the YouTube playlist to process.
+ * @param filePath - Path to the file containing video URLs (one per line).
  * @param llmServices - Optional language model service for transcript processing.
  * @param transcriptServices - Optional transcription service for audio conversion.
- * @throws Will terminate the process with exit code 1 if the playlist itself cannot be processed.
- * @returns Promise that resolves when all videos have been processed.
+ * @throws Will terminate the process with exit code 1 if the file cannot be read or contains no valid URLs.
+ * @returns Promise that resolves when all videos have been processed or JSON info has been saved.
  */
-export async function processPlaylist(
+export async function processURLs(
   options: ProcessingOptions,
-  playlistUrl: string,
+  filePath: string,
   llmServices?: LLMServices,
   transcriptServices?: TranscriptServices
 ): Promise<void> {
   // Log the processing parameters for debugging purposes
-  l(opts('Parameters passed to processPlaylist:\n'))
-  l(opts(`  - llmServices: ${llmServices}\n  - transcriptServices: ${transcriptServices}`))
+  l(opts('Parameters passed to processURLs:\n'))
+  l(opts(`  - llmServices: ${llmServices}\n  - transcriptServices: ${transcriptServices}\n`))
 
   try {
-    // Fetch playlist metadata
-    const { stdout, stderr } = await execFilePromise('yt-dlp', [
-      '--dump-single-json',
-      '--flat-playlist',
-      '--no-warnings',
-      playlistUrl,
-    ])
+    // Read the file and extract valid URLs
+    const content = await readFile(filePath, 'utf8')
+    const urls = content
+      .split('\n')
+      .map((line) => line.trim())
+      .filter((line) => line && !line.startsWith('#'))
 
-    // Log any warnings from yt-dlp
-    if (stderr) {
-      err(`yt-dlp warnings: ${stderr}`)
-    }
-
-    // Parse the JSON output
-    const playlistData = JSON.parse(stdout)
-    const playlistTitle = playlistData.title
-    const entries = playlistData.entries
-
-    // Extract video URLs using entry.id
-    const urls = entries.map((entry: any) => `https://www.youtube.com/watch?v=${entry.id}`)
-
-    // Exit if no videos were found in the playlist
+    // Exit if no valid URLs were found in the file
     if (urls.length === 0) {
-      err('Error: No videos found in the playlist.')
+      err('Error: No URLs found in the file.')
       process.exit(1)
     }
 
-    l(opts(`\nFound ${urls.length} videos in the playlist: ${playlistTitle}...`))
+    l(opts(`\nFound ${urls.length} URLs in the file...`))
 
     // If the --info option is provided, extract metadata for all videos
     if (options.info) {
       // Collect metadata for all videos in parallel
       const metadataList = await Promise.all(
-        urls.map(async (url: string) => {
+        urls.map(async (url) => {
           try {
             // Execute yt-dlp command to extract metadata
             const { stdout } = await execFilePromise('yt-dlp', [
@@ -124,30 +109,31 @@ export async function processPlaylist(
 
       // Save metadata to a JSON file
       const jsonContent = JSON.stringify(validMetadata, null, 2)
-      const sanitizedTitle = sanitizeTitle(playlistTitle)
-      const jsonFilePath = `content/${sanitizedTitle}_info.json`
+      const date = new Date().toISOString().split('T')[0]
+      const uniqueId = Date.now()
+      const jsonFilePath = `content/urls_info_${date}_${uniqueId}.json`
       await writeFile(jsonFilePath, jsonContent)
-      l(success(`Playlist information saved to: ${jsonFilePath}`))
+      l(wait(`Video information saved to: ${jsonFilePath}`))
       return
     }
 
-    // Process each video sequentially, with error handling for individual videos
+    // Process each URL sequentially, with error handling for individual videos
     for (const [index, url] of urls.entries()) {
       // Visual separator for each video in the console
       l(opts(`\n================================================================================================`))
-      l(opts(`  Processing video ${index + 1}/${urls.length}: ${url}`))
+      l(opts(`  Processing URL ${index + 1}/${urls.length}: ${url}`))
       l(opts(`================================================================================================\n`))
       try {
         // Process the video using the existing processVideo function
         await processVideo(options, url, llmServices, transcriptServices)
       } catch (error) {
-        // Log error but continue processing remaining videos
-        err(`Error processing video ${url}: ${(error as Error).message}`)
+        // Log error but continue processing remaining URLs
+        err(`Error processing URL ${url}: ${(error as Error).message}`)
       }
     }
   } catch (error) {
-    // Handle fatal errors that prevent playlist processing
-    err(`Error processing playlist: ${(error as Error).message}`)
+    // Handle fatal errors that prevent file processing
+    err(`Error reading or processing file ${filePath}: ${(error as Error).message}`)
     process.exit(1)
   }
 }

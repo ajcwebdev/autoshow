@@ -1,7 +1,7 @@
 // src/server/routes/video.ts
 
 import type { FastifyRequest, FastifyReply } from 'fastify'
-import { processVideo } from '../../../src/commands/processVideo'
+import { processVideo } from '../../commands/process-video'
 import { reqToOpts } from '../utils/reqToOpts'
 import { l, err } from '../../../src/types/globals'
 

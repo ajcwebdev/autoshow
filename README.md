@@ -107,18 +107,19 @@ Example commands for all available CLI options can be found in [`docs/examples.m
   - Manages LLM and transcription options
 
 - Command Processors (`src/commands`)
-  - `processVideo.ts`: Handles single YouTube video processing
-  - `processPlaylist.ts`: Processes all videos in a YouTube playlist
-  - `processURLs.ts`: Processes videos from a list of URLs in a file
-  - `processFile.ts`: Handles local audio/video file processing
-  - `processRSS.ts`: Processes podcast RSS feeds
+  - `process-file.ts`: Handles local audio/video file processing
+  - `process-video.ts`: Handles single YouTube video processing
+  - `process-urls.ts`: Processes videos from a list of URLs in a file
+  - `process-playlist.ts`: Processes all videos in a YouTube playlist
+  - `process-channel.ts`: Processes all videos from a YouTube channel
+  - `process-rss.ts`: Processes podcast RSS feeds
 
 - Utility Functions (`src/utils`)
-  - `downloadAudio.ts`: Downloads audio from YouTube videos
-  - `runTranscription.ts`: Manages the transcription process
-  - `runLLM.ts`: Handles LLM processing for summarization and chapter generation
-  - `generateMarkdown.ts`: Creates initial markdown files with metadata
-  - `cleanUpFiles.ts`: Removes temporary files after processing
+  - `download-audio.ts`: Downloads audio from YouTube videos
+  - `run-transcription.ts`: Manages the transcription process
+  - `run-llm.ts`: Handles LLM processing for summarization and chapter generation
+  - `generate-markdown.ts`: Creates initial markdown files with metadata
+  - `clean-up-files.ts`: Removes temporary files after processing
 
 - Transcription Services (`src/transcription`)
   - `whisper.ts`: Uses Whisper.cpp, openai-whisper, or whisper-diarization for transcription
@@ -135,11 +136,6 @@ Example commands for all available CLI options can be found in [`docs/examples.m
   - `together.ts`: Integrates Together's open source models
   - `groq.ts`: Integrates Groq's open source models
   - `prompt.ts`: Defines the prompt structure for summarization and chapter generation
-
-- Web Interface (`web`) and Server (`server`)
-  - Web interface built with React and Vite
-  - Node.js server that handles backend operations for the web interface
-  - *Note: Just a proof of concept, very little functionality built at this point. Expect these to catch up with the CLI starting in Q4 2024*
 
 ## Contributors
 

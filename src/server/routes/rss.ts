@@ -1,7 +1,7 @@
 // src/server/routes/rss.ts
 
 import type { FastifyRequest, FastifyReply } from 'fastify'
-import { processRSS } from '../../../src/commands/processRSS'
+import { processRSS } from '../../commands/process-rss'
 import { reqToOpts } from '../utils/reqToOpts'
 import { l, err } from '../../../src/types/globals'
 

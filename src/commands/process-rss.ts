@@ -6,11 +6,11 @@
  */
 
 import { writeFile, readFile } from 'node:fs/promises'
-import { generateMarkdown, sanitizeTitle } from '../utils/generateMarkdown'
-import { downloadAudio } from '../utils/downloadAudio'
-import { runTranscription } from '../utils/runTranscription'
-import { runLLM } from '../utils/runLLM'
-import { cleanUpFiles } from '../utils/cleanUpFiles'
+import { generateMarkdown, sanitizeTitle } from '../utils/generate-markdown'
+import { downloadAudio } from '../utils/download-audio'
+import { runTranscription } from '../utils/run-transcription'
+import { runLLM } from '../utils/run-llm'
+import { cleanUpFiles } from '../utils/clean-up-files'
 import { l, err, wait, opts, parser } from '../types/globals'
 import { db } from '../server/db'
 import type { LLMServices, ProcessingOptions, RSSItem } from '../types/main'

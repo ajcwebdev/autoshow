@@ -136,6 +136,23 @@ function selectItemsToProcess(items: RSSItem[], options: ProcessingOptions): RSS
     return matchedItems
   }
 
+  if (options.lastDays !== undefined) {
+    const now = new Date()
+    const cutoff = new Date(now.getTime() - (options.lastDays * 24 * 60 * 60 * 1000))
+  
+    const matchedItems = items.filter((item) => {
+      const itemDate = new Date(item.publishDate)
+      return itemDate >= cutoff
+    })
+    return matchedItems
+  }
+  
+  if (options.date && options.date.length > 0) {
+    const selectedDates = new Set(options.date)
+    const matchedItems = items.filter((item) => selectedDates.has(item.publishDate))
+    return matchedItems
+  }  
+
   if (options.last) {
     return items.slice(0, options.last)
   }
@@ -242,6 +259,10 @@ export async function processRSS(
     }
 
     const itemsToProcess = selectItemsToProcess(items, options)
+    if (itemsToProcess.length === 0) {
+      l(wait(`\nNo items found matching the provided criteria for this feed. Skipping...`))
+      return
+    }
     logProcessingStatus(items.length, itemsToProcess.length, options)
     await processItems(itemsToProcess, options, llmServices, transcriptServices)
   } catch (error) {

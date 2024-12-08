@@ -64,4 +64,30 @@ export function validateRSSOptions(options: ProcessingOptions): void {
     err("Error: The --order option must be either 'newest' or 'oldest'.")
     process.exit(1)
   }
+
+  if (options.lastDays !== undefined) {
+    if (!Number.isInteger(options.lastDays) || options.lastDays < 1) {
+      err('Error: The --lastDays option must be a positive integer.')
+      process.exit(1)
+    }
+    if (options.last !== undefined || options.skip !== undefined || options.order !== undefined || (options.date && options.date.length > 0)) {
+      err('Error: The --lastDays option cannot be used with --last, --skip, --order, or --date.')
+      process.exit(1)
+    }
+  }
+
+  if (options.date && options.date.length > 0) {
+    const dateRegex = /^\d{4}-\d{2}-\d{2}$/
+    for (const d of options.date) {
+      if (!dateRegex.test(d)) {
+        err(`Error: Invalid date format "${d}". Please use YYYY-MM-DD format.`)
+        process.exit(1)
+      }
+    }
+
+    if (options.last !== undefined || options.skip !== undefined || options.order !== undefined) {
+      err('Error: The --date option cannot be used with --last, --skip, or --order.')
+      process.exit(1)
+    }
+  }
 }

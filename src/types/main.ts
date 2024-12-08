@@ -99,6 +99,12 @@ export type ProcessingOptions = {
   /** Number of most recent items to process (overrides --order and --skip). */
   last?: number
 
+  /** Date of RSS items to process. */
+  date?: string[]
+
+  /** Number of previous days to check for RSS items to process. */
+  lastDays?: number
+
   /** Whether to run in interactive mode. */
   interactive?: boolean
 }

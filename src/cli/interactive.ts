@@ -2,11 +2,12 @@
 
 import inquirer from 'inquirer'
 import {
-  l, PROCESS_CHOICES, TRANSCRIPT_SERVICES, WHISPER_MODELS,
+  PROCESS_CHOICES, TRANSCRIPT_SERVICES, WHISPER_MODELS,
   LLM_SERVICES, LLM_OPTIONS, OLLAMA_MODELS, GPT_MODELS,
   CLAUDE_MODELS, GEMINI_MODELS, COHERE_MODELS, MISTRAL_MODELS,
   FIREWORKS_MODELS, TOGETHER_MODELS, GROQ_MODELS, PROMPT_CHOICES
 } from '../types/globals'
+import { l } from '../utils/logging'
 import type { LLMServices, ProcessingOptions, InquirerAnswers } from '../types/main'
 import type { WhisperModelType } from '../types/transcript-service-types'
 

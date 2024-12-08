@@ -10,7 +10,7 @@
 
 import { writeFile, readFile } from 'node:fs/promises'
 import { env } from 'node:process'
-import { l, wait, success, err } from '../types/globals'
+import { l, wait, success, err } from '../utils/logging'
 import { formatAssemblyTranscript } from './transcription-utils'
 import type { ProcessingOptions } from '../types/main'
 import type {

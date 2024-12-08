@@ -3,7 +3,7 @@
 import type { FastifyRequest, FastifyReply } from 'fastify'
 import { processRSS } from '../../commands/process-rss'
 import { reqToOpts } from '../utils/reqToOpts'
-import { l, err } from '../../../src/types/globals'
+import { l, err } from '../../../src/utils/logging'
 
 // Handler for the /rss route
 export const handleRSSRequest = async (

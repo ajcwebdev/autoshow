@@ -2,7 +2,7 @@
 
 import fs from 'fs/promises'
 import path from 'path'
-import { l, err } from '../../../src/types/globals'
+import { l, err } from '../../../src/utils/logging'
 
 const BASE_URL = 'http://localhost:3000'
 const OUTPUT_DIR = 'content'
@@ -211,7 +211,7 @@ const requests = [
   },
 ]
 
-const fetchRequest = async (request, index) => {
+const fetchRequest = async (request: any, index: any) => {
   try {
     // Get list of files before the request
     const filesBefore = await fs.readdir(OUTPUT_DIR)
@@ -246,7 +246,7 @@ const fetchRequest = async (request, index) => {
 
     if (newFiles.length > 0) {
       for (let i = 0; i < newFiles.length; i++) {
-        const oldFilePath = path.join(OUTPUT_DIR, newFiles[i])
+        const oldFilePath = path.join(OUTPUT_DIR, newFiles[i] as any)
         const newFileName = outputFiles[i]
         const newFilePath = path.join(OUTPUT_DIR, newFileName)
         await fs.rename(oldFilePath, newFilePath)

@@ -7,7 +7,7 @@ import { handlePlaylistRequest } from './routes/playlist'
 import { handleURLsRequest } from './routes/urls'
 import { handleFileRequest } from './routes/file'
 import { handleRSSRequest } from './routes/rss'
-import { l } from '../../src/types/globals'
+import { l } from '../../src/utils/logging'
 import { env } from 'node:process'
 import { getShowNotes } from './routes/showNotes'
 import { getShowNote } from './routes/showNote'
@@ -28,7 +28,7 @@ async function start() {
   })
 
   // Log each incoming request
-  fastify.addHook('onRequest', async (request, reply) => {
+  fastify.addHook('onRequest', async (request) => {
     l(
       `\n[${new Date().toISOString()}] Received ${request.method} request for ${request.url}\n`
     )

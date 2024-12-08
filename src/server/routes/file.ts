@@ -3,7 +3,7 @@
 import type { FastifyRequest, FastifyReply } from 'fastify'
 import { processFile } from '../../commands/process-file'
 import { reqToOpts } from '../utils/reqToOpts'
-import { l, err } from '../../../src/types/globals'
+import { l, err } from '../../../src/utils/logging'
 
 // Handler for the /file route
 export const handleFileRequest = async (

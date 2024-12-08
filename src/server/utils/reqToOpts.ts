@@ -73,10 +73,12 @@ export function reqToOpts(requestData: any): {
   for (const opt of otherOptions) {
     if (requestData[opt] !== undefined) {
       // Set the option if it is provided
+      // @ts-ignore
       options[opt] = requestData[opt]
     }
   }
 
   // Return the mapped options along with selected services
+  // @ts-ignore
   return { options, llmServices, transcriptServices }
 }

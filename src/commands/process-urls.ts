@@ -7,7 +7,8 @@
 
 import { readFile, writeFile } from 'node:fs/promises'
 import { processVideo } from './process-video'
-import { l, err, wait, opts, execFilePromise } from '../types/globals'
+import { execFilePromise } from '../types/globals'
+import { l, err, wait, opts } from '../utils/logging'
 import type { LLMServices, ProcessingOptions, VideoMetadata } from '../types/main'
 import type { TranscriptServices } from '../types/transcript-service-types'
 

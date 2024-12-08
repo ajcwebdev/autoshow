@@ -11,55 +11,12 @@ import { downloadAudio } from '../utils/download-audio'
 import { runTranscription } from '../utils/run-transcription'
 import { runLLM } from '../utils/run-llm'
 import { cleanUpFiles } from '../utils/clean-up-files'
-import { l, err, wait, opts, parser } from '../types/globals'
+import { validateRSSOptions } from '../utils/validate-option'
+import { logProcessingAction, logProcessingStatus } from '../utils/logging'
+import { l, err, wait, opts, parser } from '../utils/logging'
 import { db } from '../server/db'
 import type { LLMServices, ProcessingOptions, RSSItem } from '../types/main'
 import type { TranscriptServices } from '../types/transcript-service-types'
-
-/**
- * Validates RSS processing options for consistency and correct values.
- * 
- * @param options - Configuration options to validate
- * @throws Will exit process if validation fails
- */
-function validateRSSOptions(options: ProcessingOptions): void {
-  if (options.last !== undefined) {
-    if (!Number.isInteger(options.last) || options.last < 1) {
-      err('Error: The --last option must be a positive integer.')
-      process.exit(1)
-    }
-    if (options.skip !== undefined || options.order !== undefined) {
-      err('Error: The --last option cannot be used with --skip or --order.')
-      process.exit(1)
-    }
-  }
-
-  if (options.skip !== undefined && (!Number.isInteger(options.skip) || options.skip < 0)) {
-    err('Error: The --skip option must be a non-negative integer.')
-    process.exit(1)
-  }
-
-  if (options.order !== undefined && !['newest', 'oldest'].includes(options.order)) {
-    err("Error: The --order option must be either 'newest' or 'oldest'.")
-    process.exit(1)
-  }
-}
-
-/**
- * Logs the current processing action based on provided options.
- * 
- * @param options - Configuration options determining what to process
- */
-function logProcessingAction(options: ProcessingOptions): void {
-  if (options.item && options.item.length > 0) {
-    l(wait('\nProcessing specific items:'))
-    options.item.forEach((url) => l(wait(`  - ${url}`)))
-  } else if (options.last) {
-    l(wait(`\nProcessing the last ${options.last} items`))
-  } else if (options.skip) {
-    l(wait(`  - Skipping first ${options.skip || 0} items`))
-  }
-}
 
 /**
  * Fetches and parses an RSS feed with timeout handling.
@@ -185,22 +142,6 @@ function selectItemsToProcess(items: RSSItem[], options: ProcessingOptions): RSS
 
   const sortedItems = options.order === 'oldest' ? items.slice().reverse() : items
   return sortedItems.slice(options.skip || 0)
-}
-
-/**
- * Logs the processing status and item counts.
- */
-function logProcessingStatus(total: number, processing: number, options: ProcessingOptions): void {
-  if (options.item && options.item.length > 0) {
-    l(wait(`\n  - Found ${total} items in the RSS feed.`))
-    l(wait(`  - Processing ${processing} specified items.`))
-  } else if (options.last) {
-    l(wait(`\n  - Found ${total} items in the RSS feed.`))
-    l(wait(`  - Processing the last ${options.last} items.`))
-  } else {
-    l(wait(`\n  - Found ${total} item(s) in the RSS feed.`))
-    l(wait(`  - Processing ${processing} item(s) after skipping ${options.skip || 0}.\n`))
-  }
 }
 
 /**

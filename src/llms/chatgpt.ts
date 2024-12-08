@@ -3,7 +3,8 @@
 import { writeFile } from 'node:fs/promises'
 import { env } from 'node:process'
 import { OpenAI } from 'openai'
-import { l, wait, err, GPT_MODELS } from '../types/globals'
+import { GPT_MODELS } from '../types/globals'
+import { l, wait, err } from '../utils/logging'
 import type { LLMFunction, ChatGPTModelType } from '../types/llm-types'
 
 /**

@@ -10,7 +10,7 @@
 
 import { writeFile, readFile } from 'node:fs/promises'
 import { env } from 'node:process'
-import { l, wait, err } from '../types/globals'
+import { l, wait, err } from '../utils/logging'
 import { formatDeepgramTranscript } from './transcription-utils'
 import type { DeepgramResponse } from '../types/transcript-service-types'
 

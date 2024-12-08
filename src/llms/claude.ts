@@ -3,7 +3,8 @@
 import { writeFile } from 'node:fs/promises'
 import { env } from 'node:process'
 import { Anthropic } from '@anthropic-ai/sdk'
-import { l, wait, err, CLAUDE_MODELS } from '../types/globals'
+import { CLAUDE_MODELS } from '../types/globals'
+import { l, wait, err } from '../utils/logging'
 import type { LLMFunction, ClaudeModelType } from '../types/llm-types'
 
 /**

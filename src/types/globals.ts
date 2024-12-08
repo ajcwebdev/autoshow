@@ -5,76 +5,14 @@
  * @packageDocumentation
  */
 
-import { XMLParser } from 'fast-xml-parser'
 import { exec, execFile } from 'node:child_process'
 import { promisify } from 'node:util'
-import chalk from 'chalk'
-import type { ChalkInstance } from 'chalk'
 import type { LLMServices } from '../types/main'
 import type { TranscriptServices, WhisperModelType } from '../types/transcript-service-types'
 import type { ChatGPTModelType, ClaudeModelType, CohereModelType, GeminiModelType, MistralModelType, OllamaModelType, TogetherModelType, FireworksModelType, GroqModelType } from '../types/llm-types'
 
-
 export const execPromise = promisify(exec)
 export const execFilePromise = promisify(execFile)
-
-/**
- * Configure XML parser for RSS feed processing
- * Handles attributes without prefixes and allows boolean values
- */
-export const parser = new XMLParser({
-  ignoreAttributes: false,
-  attributeNamePrefix: '',
-  allowBooleanAttributes: true,
-})
-
-/**
- * Chalk styling for step indicators in the CLI
- * @type {ChalkInstance}
- */
-export const step: ChalkInstance = chalk.bold.underline
-
-/**
- * Chalk styling for dimmed text
- * @type {ChalkInstance}
- */
-export const dim: ChalkInstance = chalk.dim
-
-/**
- * Chalk styling for success messages
- * @type {ChalkInstance}
- */
-export const success: ChalkInstance = chalk.bold.blue
-
-/**
- * Chalk styling for options display
- * @type {ChalkInstance}
- */
-export const opts: ChalkInstance = chalk.magentaBright.bold
-
-/**
- * Chalk styling for wait/processing messages
- * @type {ChalkInstance}
- */
-export const wait: ChalkInstance = chalk.bold.cyan
-
-/**
- * Chalk styling for final messages
- * @type {ChalkInstance}
- */
-export const final: ChalkInstance = chalk.bold.italic
-
-/**
- * Convenience export for console.log
- * @type {typeof console.log}
- */
-export const l: typeof console.log = console.log
-
-/**
- * Convenience export for console.error
- * @type {typeof console.log}
- */
-export const err: typeof console.error = console.error
 
 export const PROMPT_CHOICES = [
   { name: 'Titles', value: 'titles' },

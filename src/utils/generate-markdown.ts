@@ -8,7 +8,8 @@
 
 import { writeFile } from 'node:fs/promises'
 import { basename, extname } from 'node:path'
-import { l, dim, step, success, err, execFilePromise } from '../types/globals'
+import { execFilePromise } from '../types/globals'
+import { l, dim, step, success, err } from '../utils/logging'
 import type { MarkdownData, ProcessingOptions, RSSItem } from '../types/main'
 
 /**

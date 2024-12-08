@@ -10,7 +10,7 @@
 import { callWhisper } from '../transcription/whisper'
 import { callDeepgram } from '../transcription/deepgram'
 import { callAssembly } from '../transcription/assembly'
-import { l, step } from '../types/globals'
+import { l, step } from '../utils/logging'
 import type { ProcessingOptions } from '../types/main'
 import type { TranscriptServices, WhisperTranscriptServices } from '../types/transcript-service-types'
 

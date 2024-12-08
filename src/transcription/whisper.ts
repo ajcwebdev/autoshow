@@ -15,10 +15,11 @@
 
 import { readFile, writeFile, unlink } from 'node:fs/promises'
 import { existsSync } from 'node:fs'
-import { l, err, wait, success, WHISPER_MODELS, execPromise } from '../types/globals'
+import { lrcToTxt, srtToTxt } from './transcription-utils'
+import { WHISPER_MODELS, execPromise } from '../types/globals'
+import { l, err, wait, success } from '../utils/logging'
 import type { ProcessingOptions } from '../types/main'
 import type { WhisperModelType, WhisperTranscriptServices, WhisperRunner } from '../types/transcript-service-types'
-import { lrcToTxt, srtToTxt } from './transcription-utils'
 
 /**
  * Main function to handle transcription using various Whisper-based methods.

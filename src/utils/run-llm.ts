@@ -17,7 +17,7 @@ import { callFireworks } from '../llms/fireworks'
 import { callTogether } from '../llms/together'
 import { callGroq } from '../llms/groq'
 import { generatePrompt } from '../llms/prompt'
-import { l, err, step, success, wait } from '../types/globals'
+import { l, err, step, success, wait } from '../utils/logging'
 import type { LLMServices, ProcessingOptions } from '../types/main'
 import type { LLMFunction, LLMFunctions } from '../types/llm-types'
 

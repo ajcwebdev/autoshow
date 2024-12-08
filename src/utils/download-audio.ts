@@ -11,7 +11,7 @@ import { exec, execFile } from 'node:child_process'
 import { promisify } from 'node:util'
 import { readFile, access } from 'node:fs/promises'
 import { fileTypeFromBuffer } from 'file-type'
-import { l, err, step, success, wait } from '../types/globals'
+import { l, err, step, success, wait } from '../utils/logging'
 import type { SupportedFileType, ProcessingOptions } from '../types/main'
 
 const execFilePromise = promisify(execFile)

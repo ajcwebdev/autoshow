@@ -3,7 +3,7 @@
 import type { FastifyRequest, FastifyReply } from 'fastify'
 import { processVideo } from '../../commands/process-video'
 import { reqToOpts } from '../utils/reqToOpts'
-import { l, err } from '../../../src/types/globals'
+import { l, err } from '../../../src/utils/logging'
 
 // Handler for the /video route
 export const handleVideoRequest = async (

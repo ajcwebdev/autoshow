@@ -1,5 +1,5 @@
 {
-	"name": "astro-autogen",
+	"name": "astro-autoshow",
 	"scripts": {
 		"dev": "astro dev",
 		"start": "astro dev",
@@ -8,26 +8,25 @@
 		"check": "astro check"
 	},
 	"dependencies": {
-		"@astrojs/mdx": "^3.1.5",
-		"@astrojs/react": "^3.6.3",
-		"@astrojs/rss": "^4.0.7",
-		"@astrojs/sitemap": "^3.1.6",
-		"@types/react": "^18.3.12",
-		"@types/react-dom": "^18.3.1",
-		"astro": "^4.15.4",
-		"astro-expressive-code": "^0.36.1",
-		"astro-icon": "^1.1.1",
-		"react": "^18.3.1",
-		"react-dom": "^18.3.1",
-		"react-router-dom": "^7.0.2",
-		"satori": "^0.10.14",
+		"@astrojs/mdx": "^4.0.1",
+		"@astrojs/react": "^4.0.0",
+		"@astrojs/rss": "^4.0.10",
+		"@astrojs/sitemap": "^3.2.1",
+		"@types/react": "^19.0.1",
+		"@types/react-dom": "^19.0.1",
+		"astro": "^5.0.3",
+		"astro-expressive-code": "^0.38.3",
+		"astro-icon": "^1.1.4",
+		"react": "^19.0.0",
+		"react-dom": "^19.0.0",
+		"satori": "^0.12.0",
 		"satori-html": "^0.3.2",
 		"sharp": "^0.33.5"
 	},
 	"devDependencies": {
-		"@iconify-json/mdi": "^1.2.0",
+		"@iconify-json/mdi": "^1.2.1",
 		"@resvg/resvg-js": "^2.6.2",
 		"mdast-util-to-string": "^4.0.0",
-		"typescript": "^5.6.2"
+		"typescript": "^5.7.2"
 	}
 }

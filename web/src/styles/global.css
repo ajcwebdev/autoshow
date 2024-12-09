@@ -70,13 +70,6 @@ footer div {
   margin: 0 auto;      /* Center horizontally on the page */
 }
 
-/* Center text inside main containers to create a cohesive, centered layout */
-main#main > section,
-header#main-header > div,
-footer div {
-  text-align: center; /* All inline and block-level text aligned centrally */
-}
-
 
 /* -----------------------
    HEADER (NAVIGATION)

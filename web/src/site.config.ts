@@ -2,6 +2,16 @@ import type { SiteConfig } from "@/types";
 import type { AstroExpressiveCodeOptions } from "astro-expressive-code";
 
 // Define constants for prompts, transcription services, Whisper models, LLM services, and their models
+
+export const PROCESS_TYPES = [
+  { value: 'video', label: 'Video' },
+  { value: 'playlist', label: 'Playlist' },
+  { value: 'channel', label: 'Channel' },
+  { value: 'urls', label: 'URLs' },
+  { value: 'file', label: 'File' },
+  { value: 'rss', label: 'RSS' },
+] as const
+
 export const PROMPT_CHOICES = [
   { value: 'titles', label: 'Titles' },
   { value: 'summary', label: 'Summary' },
@@ -133,8 +143,8 @@ export const menuLinks: { path: string; title: string }[] = [
 		path: "/",
 	},
 	{
-		title: "Blog",
-		path: "/posts/",
+		title: "Show Notes",
+		path: "/show-notes/",
 	},
 	{
 		title: "App",

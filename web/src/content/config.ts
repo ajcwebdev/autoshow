@@ -1,6 +1,8 @@
 import { defineCollection, z } from "astro:content"
+import { glob } from 'astro/loaders'
 
 const post = defineCollection({
+  loader: glob({ pattern: "**/*.md", base: "./src/data/post" }),
   schema: ({ image }) =>
     z.object({
       title: z.string().max(60),
@@ -10,7 +12,6 @@ const post = defineCollection({
 	  coverImage: z.object({alt: z.string(),src: image()}).optional(),
 	  ogImage: z.string().optional(),
     }),
-  type: "content",
 })
 
 export const collections = { post }

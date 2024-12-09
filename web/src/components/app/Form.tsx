@@ -1,26 +1,44 @@
-// web/src/components/app/Form.jsx
+// web/src/components/app/Form.tsx
 
 import React, { useState, useEffect } from 'react'
 import {
-  PROMPT_CHOICES, TRANSCRIPTION_SERVICES, WHISPER_MODELS, LLM_SERVICES, LLM_MODELS
+  PROMPT_CHOICES,
+  TRANSCRIPTION_SERVICES,
+  WHISPER_MODELS,
+  LLM_SERVICES,
+  LLM_MODELS
 } from '@/site-config'
 import '../../styles/global.css'
 
+// Define types for the Alert component props
+interface AlertProps {
+  message: string
+  variant: string
+}
+
 // Alert component to display error messages
-const Alert = ({ message, variant }) => (
+const Alert: React.FC<AlertProps> = ({ message, variant }) => (
   <div className={`alert ${variant}`}>
     <p>{message}</p>
   </div>
 )
 
+// Define types for show notes
+interface ShowNoteType {
+  title: string
+  date: string
+  content: string
+  id?: number
+}
+
 // Export ShowNote component to be used in [id].astro
-export const ShowNote = () => {
-  const [showNote, setShowNote] = useState(null)
+export const ShowNote: React.FC = () => {
+  const [showNote, setShowNote] = useState<ShowNoteType | null>(null)
 
   useEffect(() => {
     // Get ID from URL path
     const id = window.location.pathname.split('/').pop()
-    
+
     // Fetch the show note from the backend
     fetch(`http://localhost:3000/show-notes/${id}`)
       .then((response) => response.json())
@@ -37,8 +55,8 @@ export const ShowNote = () => {
   }
 
   // Format content by adding line breaks
-  const formatContent = (text) => {
-    return text.split('\n').map((line, index) => (
+  const formatContent = (text: string) => {
+    return text.split('\n').map((line: string, index: number) => (
       <React.Fragment key={index}>
         {line}
         <br />
@@ -55,20 +73,33 @@ export const ShowNote = () => {
   )
 }
 
-const Inputs = ({ onNewShowNote }) => {
-  // State variables
-  const [youtubeUrl, setYoutubeUrl] = useState('https://www.youtube.com/watch?v=MORMZXEaONk')
-  const [transcriptionService, setTranscriptionService] = useState('whisper')
-  const [whisperModel, setWhisperModel] = useState('base')
-  const [llmService, setLlmService] = useState('none')
-  const [llmModel, setLlmModel] = useState('')
-  const [selectedPrompts, setSelectedPrompts] = useState(['summary'])
-  const [result, setResult] = useState(null)
-  const [error, setError] = useState(null)
-  const [isLoading, setIsLoading] = useState(false)
+// Define the allowed LLM service keys from LLM_MODELS
+type LlmServiceKey = keyof typeof LLM_MODELS
+
+// Define props for the Inputs component
+interface InputsProps {
+  onNewShowNote: () => void
+}
+
+// Define type for the result object returned by the server
+interface ResultType {
+  content: string
+}
+
+// Inputs component for the form
+const Inputs: React.FC<InputsProps> = ({ onNewShowNote }) => {
+  const [youtubeUrl, setYoutubeUrl] = useState<string>('https://www.youtube.com/watch?v=MORMZXEaONk')
+  const [transcriptionService, setTranscriptionService] = useState<string>('whisper')
+  const [whisperModel, setWhisperModel] = useState<string>('base')
+  const [llmService, setLlmService] = useState<string>('')
+  const [llmModel, setLlmModel] = useState<string>('')
+  const [selectedPrompts, setSelectedPrompts] = useState<string[]>(['summary'])
+  const [result, setResult] = useState<ResultType | null>(null)
+  const [error, setError] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState<boolean>(false)
 
   // Handle form submission
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setIsLoading(true)
     setError(null)
@@ -82,11 +113,18 @@ const Inputs = ({ onNewShowNote }) => {
 
     try {
       // Prepare the request body
-      const requestBody = {
+      const requestBody: {
+        youtubeUrl: string
+        transcriptServices: string
+        llm: string
+        prompt: string[]
+        whisperModel?: string
+        llmModel?: string
+      } = {
         youtubeUrl,
         transcriptServices: transcriptionService,
         llm: llmService,
-        prompt: selectedPrompts,
+        prompt: selectedPrompts
       }
 
       if (transcriptionService.startsWith('whisper')) {
@@ -110,21 +148,25 @@ const Inputs = ({ onNewShowNote }) => {
         throw new Error(`HTTP error! status: ${response.status}`)
       }
 
-      const data = await response.json()
+      const data = await response.json() as ResultType
       setResult(data) // Set result to the data object containing content
 
       // Fetch the updated list of show notes
       onNewShowNote()
-    } catch (err) {
-      setError(err.message)
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message)
+      } else {
+        setError('An unknown error occurred.')
+      }
     } finally {
       setIsLoading(false)
     }
   }
 
   // Format content by adding line breaks
-  const formatContent = (text) => {
-    return text.split('\n').map((line, index) => (
+  const formatContent = (text: string) => {
+    return text.split('\n').map((line: string, index: number) => (
       <React.Fragment key={index}>
         {line}
         <br />
@@ -138,7 +180,6 @@ const Inputs = ({ onNewShowNote }) => {
         <div className="form-group">
           <label htmlFor="youtubeUrl">YouTube URL</label>
           <input
-            // placeholder="https://www.youtube.com/watch?v=MORMZXEaONk"
             type="text"
             id="youtubeUrl"
             value={youtubeUrl}
@@ -199,7 +240,8 @@ const Inputs = ({ onNewShowNote }) => {
           </select>
         </div>
 
-        {llmService && LLM_MODELS[llmService] && (
+        {/* Only show LLM Models if llmService is a valid key of LLM_MODELS */}
+        {llmService && (llmService in LLM_MODELS) && (
           <div className="form-group">
             <label htmlFor="llmModel">LLM Model</label>
             <select
@@ -207,7 +249,7 @@ const Inputs = ({ onNewShowNote }) => {
               value={llmModel}
               onChange={(e) => setLlmModel(e.target.value)}
             >
-              {LLM_MODELS[llmService].map((model) => (
+              {LLM_MODELS[llmService as LlmServiceKey].map((model) => (
                 <option key={model.value} value={model.value}>
                   {model.label}
                 </option>
@@ -260,8 +302,8 @@ const Inputs = ({ onNewShowNote }) => {
   )
 }
 
-const Form = () => {
-  const [showNotes, setShowNotes] = useState([])
+const Form: React.FC = () => {
+  const [showNotes, setShowNotes] = useState<ShowNoteType[]>([])
 
   // Fetch show notes function
   const fetchShowNotes = () => {

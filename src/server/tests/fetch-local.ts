@@ -1,4 +1,4 @@
-// packages/server/tests/fetch-local.ts
+// src/server/tests/fetch-local.ts
 
 import fs from 'fs/promises'
 import path from 'path'
@@ -211,7 +211,7 @@ const requests = [
   },
 ]
 
-const fetchRequest = async (request: any, index: any) => {
+const fetchRequest = async (request, index) => {
   try {
     // Get list of files before the request
     const filesBefore = await fs.readdir(OUTPUT_DIR)

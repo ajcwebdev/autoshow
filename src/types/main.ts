@@ -22,7 +22,7 @@ export type ProcessingOptions = {
   file?: string
 
   /** URL of the podcast RSS feed to process. */
-  rss?: string[]
+  rss?: string | string[]
 
   /** Specific items (audio URLs) from the RSS feed to process. */
   item?: string[]
@@ -133,7 +133,7 @@ export type InquirerAnswers = {
   file?: string
 
   /** RSS feed URL provided by the user. */
-  rss?: string
+  rss?: string | string[]
 
   /** Whether the user wants to specify specific RSS items. */
   specifyItem?: boolean

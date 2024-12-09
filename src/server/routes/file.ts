@@ -2,8 +2,13 @@
 
 import type { FastifyRequest, FastifyReply } from 'fastify'
 import { processFile } from '../../commands/process-file'
-import { reqToOpts } from '../utils/reqToOpts'
+import { reqToOpts } from '../utils/req-to-opts'
 import { l, err } from '../../../src/utils/logging'
+
+// Define a type for the request body
+interface FileRequestBody {
+  filePath?: string
+}
 
 // Handler for the /file route
 export const handleFileRequest = async (
@@ -14,7 +19,7 @@ export const handleFileRequest = async (
 
   try {
     // Access parsed request body
-    const requestData = request.body as any
+    const requestData = request.body as FileRequestBody
     l('\nParsed request body:', requestData)
 
     // Extract file path from the request data

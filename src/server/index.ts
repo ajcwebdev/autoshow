@@ -9,8 +9,8 @@ import { handleFileRequest } from './routes/file'
 import { handleRSSRequest } from './routes/rss'
 import { l } from '../../src/utils/logging'
 import { env } from 'node:process'
-import { getShowNotes } from './routes/showNotes'
-import { getShowNote } from './routes/showNote'
+import { getShowNotes } from './routes/show-notes'
+import { getShowNote } from './routes/show-note'
 
 // Set the port from environment variable or default to 3000
 // const port = Number(env.PORT) || 3000

@@ -1,8 +1,9 @@
-// packages/server/routes/showNotes.ts
+// src/server/routes/show-notes.ts
 
 import { db } from '../db'
+import type { FastifyRequest, FastifyReply } from 'fastify'
 
-export const getShowNotes = async (reply: any) => {
+export const getShowNotes = async (_request: FastifyRequest, reply: FastifyReply) => {
   try {
     // Fetch all show notes from the database
     const showNotes = db.prepare(`SELECT * FROM show_notes ORDER BY date DESC`).all()

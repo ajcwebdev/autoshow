@@ -1,10 +1,11 @@
-// packages/server/routes/showNote.ts
+// src/server/routes/show-note.ts
 
 import { db } from '../db'
+import type { FastifyRequest, FastifyReply } from 'fastify'
 
-export const getShowNote = async (request: any, reply: any) => {
+export const getShowNote = async (request: FastifyRequest, reply: FastifyReply) => {
   try {
-    const { id } = request.params
+    const { id } = request.params as { id: string }
     // Fetch the show note from the database
     const showNote = db.prepare(`SELECT * FROM show_notes WHERE id = ?`).get(id)
     if (showNote) {

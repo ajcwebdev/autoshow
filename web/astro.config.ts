@@ -8,6 +8,7 @@ import { expressiveCodeOptions } from "./src/site.config"
 
 // https://astro.build/config
 export default defineConfig({
+    output: "server",
     site: "https://autoshow.sh/",
     integrations: [
       expressiveCode(expressiveCodeOptions),

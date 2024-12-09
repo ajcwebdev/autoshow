@@ -5,7 +5,6 @@ import {
   PROMPT_CHOICES, TRANSCRIPTION_SERVICES, WHISPER_MODELS, LLM_SERVICES, LLM_MODELS
 } from '@/site-config'
 import '../../styles/global.css'
-// import { BrowserRouter as Router, Routes, Route, Link, useParams } from 'react-router-dom'
 
 // Alert component to display error messages
 const Alert = ({ message, variant }) => (
@@ -14,11 +13,14 @@ const Alert = ({ message, variant }) => (
   </div>
 )
 
-const ShowNote = () => {
-  const { id } = useParams()
+// Export ShowNote component to be used in [id].astro
+export const ShowNote = () => {
   const [showNote, setShowNote] = useState(null)
 
   useEffect(() => {
+    // Get ID from URL path
+    const id = window.location.pathname.split('/').pop()
+    
     // Fetch the show note from the backend
     fetch(`http://localhost:3000/show-notes/${id}`)
       .then((response) => response.json())
@@ -28,7 +30,7 @@ const ShowNote = () => {
       .catch((error) => {
         console.error('Error fetching show note:', error)
       })
-  }, [id])
+  }, [])
 
   if (!showNote) {
     return <div>Loading...</div>
@@ -279,35 +281,18 @@ const Form = () => {
 
   return (
     <div className="container">
-      <Inputs client:only="react" onNewShowNote={fetchShowNotes} />
+      <ul className="show-notes-list">
+        {showNotes.map((note) => (
+          <li key={note.id}>
+            <a href={`/show-notes/${note.id}`}>
+              {note.title}
+            </a> - {note.date}
+          </li>
+        ))}
+      </ul>
+      <Inputs onNewShowNote={fetchShowNotes} />
     </div>
   )
-
-  // return (
-  //   <Router>
-  //     <div className="container">
-  //       <h1>Show Notes</h1>
-  //       <Routes>
-  //         <Route
-  //           path="/"
-  //           element={
-  //             <>
-  //               <ul className="show-notes-list">
-  //                 {showNotes.map((note) => (
-  //                   <li key={note.id}>
-  //                     <Link to={`/show-notes/${note.id}`}>{note.title}</Link> - {note.date}
-  //                   </li>
-  //                 ))}
-  //               </ul>
-  //               <Input onNewShowNote={fetchShowNotes} />
-  //             </>
-  //           }
-  //         />
-  //         <Route path="/show-notes/:id" element={<ShowNote />} />
-  //       </Routes>
-  //     </div>
-  //   </Router>
-  // )
 }
 
 export default Form

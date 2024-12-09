@@ -5,9 +5,11 @@ import PageLayout from "@/layouts/Base.astro";
 import Form from "@/components/app/Form";
 ---
 
-<PageLayout meta={{ title: "Home" }}>
+<PageLayout meta={{ title: "Show Notes" }}>
   <section>
     <h1>Generate Show Notes</h1>
-    <Form client:only="react" />
+    <ul class="show-notes-list">
+      <Form client:only="react" />
+    </ul>
   </section>
 </PageLayout>

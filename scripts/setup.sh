@@ -78,7 +78,8 @@ else
     
     # Compile whisper.cpp
     echo "Compiling whisper.cpp..."
-    make -C whisper.cpp
+    cmake -B whisper.cpp/build -S whisper.cpp
+    cmake --build whisper.cpp/build --config Release
     
     # Copy Dockerfile
     echo "Copying Dockerfile..."

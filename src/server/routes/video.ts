@@ -2,8 +2,12 @@
 
 import type { FastifyRequest, FastifyReply } from 'fastify'
 import { processVideo } from '../../commands/process-video'
-import { reqToOpts } from '../utils/reqToOpts'
+import { reqToOpts } from '../utils/req-to-opts'
 import { l, err } from '../../../src/utils/logging'
+
+interface VideoRequestBody {
+  youtubeUrl?: string
+}
 
 // Handler for the /video route
 export const handleVideoRequest = async (
@@ -14,7 +18,7 @@ export const handleVideoRequest = async (
 
   try {
     // Access parsed request body
-    const requestData = request.body as any
+    const requestData = request.body as VideoRequestBody
     l('\nParsed request body:', requestData)
 
     // Extract YouTube URL from the request data

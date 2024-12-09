@@ -1,0 +1,63 @@
+---
+// web/src/pages/posts/[...page].astro
+
+import type { GetStaticPaths, Page } from "astro";
+import type { CollectionEntry } from "astro:content";
+
+import Pagination from "@/components/Paginator.astro";
+import PostPreview from "@/components/blog/PostPreview.astro";
+import PageLayout from "@/layouts/Base.astro";
+import { getAllPosts, groupPostsByYear, sortMDByDate } from "@/data/post";
+
+export const getStaticPaths = (async ({ paginate }) => {
+	const allPosts = await getAllPosts();
+	const allPostsByDate = sortMDByDate(allPosts);
+	return paginate(allPostsByDate, { pageSize: 20 });
+}) satisfies GetStaticPaths;
+
+interface Props {
+	page: Page<CollectionEntry<"post">>;
+}
+
+const { page } = Astro.props;
+
+const paginationProps = {
+	...(page.url.prev && {
+		prevUrl: {
+			text: `← Previous Posts`,
+			url: page.url.prev,
+		},
+	}),
+	...(page.url.next && {
+		nextUrl: {
+			text: `Next Posts →`,
+			url: page.url.next,
+		},
+	}),
+};
+
+const groupedByYear = groupPostsByYear(page.data);
+const descYearKeys = Object.keys(groupedByYear).sort((a, b) => +b - +a);
+---
+
+<PageLayout meta={{
+	description: "Read my collection of posts and the things that interest me",
+	title: "Posts",
+}}>
+	<h1>Posts</h1>
+	<div>
+		<section aria-label="Blog post list">
+			{
+				descYearKeys.map((yearKey) => (
+					<>
+						<h2>{yearKey}</h2>
+							{groupedByYear[yearKey]?.map((p) => (
+								<PostPreview post={p} />
+							))}
+					</>
+				))
+			}
+			<Pagination {...paginationProps} />
+		</section>
+	</div>
+</PageLayout>

@@ -2,8 +2,12 @@
 
 import type { FastifyRequest, FastifyReply } from 'fastify'
 import { processRSS } from '../../commands/process-rss'
-import { reqToOpts } from '../utils/reqToOpts'
+import { reqToOpts } from '../utils/req-to-opts'
 import { l, err } from '../../../src/utils/logging'
+
+interface RSSRequestBody {
+  rssUrl?: string
+}
 
 // Handler for the /rss route
 export const handleRSSRequest = async (
@@ -14,7 +18,7 @@ export const handleRSSRequest = async (
 
   try {
     // Access parsed request body
-    const requestData = request.body as any
+    const requestData = request.body as RSSRequestBody
     l('\nParsed request body:', requestData)
 
     // Extract RSS URL from the request data

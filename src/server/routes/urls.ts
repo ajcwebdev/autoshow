@@ -2,8 +2,12 @@
 
 import type { FastifyRequest, FastifyReply } from 'fastify'
 import { processURLs } from '../../commands/process-urls'
-import { reqToOpts } from '../utils/reqToOpts'
+import { reqToOpts } from '../utils/req-to-opts'
 import { l, err } from '../../../src/utils/logging'
+
+interface URLsRequestBody {
+  filePath?: string
+}
 
 // Handler for the /urls route
 export const handleURLsRequest = async (
@@ -14,11 +18,11 @@ export const handleURLsRequest = async (
 
   try {
     // Access parsed request body
-    const requestData = request.body as any
+    const requestData = request.body
     l('\nParsed request body:', requestData)
 
     // Extract file path from the request data
-    const { filePath } = requestData
+    const { filePath } = requestData as URLsRequestBody
 
     if (!filePath) {
       l('File path not provided, sending 400')

@@ -2,8 +2,12 @@
 
 import type { FastifyRequest, FastifyReply } from 'fastify'
 import { processPlaylist } from '../../commands/process-playlist'
-import { reqToOpts } from '../utils/reqToOpts'
+import { reqToOpts } from '../utils/req-to-opts'
 import { l, err } from '../../../src/utils/logging'
+
+interface PlaylistRequestBody {
+  playlistUrl?: string
+}
 
 // Handler for the /playlist route
 export const handlePlaylistRequest = async (
@@ -14,7 +18,7 @@ export const handlePlaylistRequest = async (
 
   try {
     // Access parsed request body
-    const requestData = request.body as any
+    const requestData = request.body as PlaylistRequestBody
     l('\nParsed request body:', requestData)
 
     // Extract playlist URL from the request data

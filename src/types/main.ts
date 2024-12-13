@@ -1,5 +1,7 @@
 // src/types/main.ts
 
+import type { TranscriptServices, WhisperModelType } from './transcript-service-types'
+
 /**
  * Processing options passed through command-line arguments or interactive prompts.
  */
@@ -20,7 +22,7 @@ export type ProcessingOptions = {
   file?: string
 
   /** URL of the podcast RSS feed to process. */
-  rss?: string[]
+  rss?: string | string[]
 
   /** Specific items (audio URLs) from the RSS feed to process. */
   item?: string[]
@@ -97,6 +99,12 @@ export type ProcessingOptions = {
   /** Number of most recent items to process (overrides --order and --skip). */
   last?: number
 
+  /** Date of RSS items to process. */
+  date?: string[]
+
+  /** Number of previous days to check for RSS items to process. */
+  lastDays?: number
+
   /** Whether to run in interactive mode. */
   interactive?: boolean
 }
@@ -125,7 +133,7 @@ export type InquirerAnswers = {
   file?: string
 
   /** RSS feed URL provided by the user. */
-  rss?: string
+  rss?: string | string[]
 
   /** Whether the user wants to specify specific RSS items. */
   specifyItem?: boolean
@@ -324,22 +332,6 @@ export type DownloadAudioOptions = {
  * Supported file types for audio and video processing.
  */
 export type SupportedFileType = 'wav' | 'mp3' | 'm4a' | 'aac' | 'ogg' | 'flac' | 'mp4' | 'mkv' | 'avi' | 'mov' | 'webm'
-
-// Transcription Service Types
-/**
- * Transcription services that can be used in the application.
- */
-export type TranscriptServices = 'whisper' | 'whisperDocker' | 'whisperPython' | 'whisperDiarization' | 'deepgram' | 'assembly'
-
-/**
- * Available Whisper model types with varying sizes and capabilities.
- */
-export type WhisperModelType = 'tiny' | 'tiny.en' | 'base' | 'base.en' | 'small' | 'small.en' | 'medium' | 'medium.en' | 'large-v1' | 'large-v2' | 'large-v3-turbo' | 'turbo'
-
-/**
- * Whisper-specific transcription services.
- */
-export type WhisperTranscriptServices = 'whisper' | 'whisperDocker' | 'whisperPython' | 'whisperDiarization'
 
 // LLM Types
 /**

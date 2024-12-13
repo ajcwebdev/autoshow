@@ -1,0 +1,10 @@
+---
+// web/src/pages/show-notes/[id].astro
+
+import PageLayout from "@/layouts/Base.astro"
+import { ShowNote } from "@/components/app/Form"
+---
+
+<PageLayout meta={{ title: "Show Note Details" }}>
+  <ShowNote client:only="react" />
+</PageLayout>

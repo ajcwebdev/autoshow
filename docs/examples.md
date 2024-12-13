@@ -181,10 +181,43 @@ Process multiple RSS feeds:
 
 ```bash
 npm run as -- \
-  --rss "https://ajcwebdev.substack.com/feed" \
-  --rss "https://feeds.transistor.fm/fsjam-podcast/" \
   --last 1 \
-  --whisper tiny
+  --whisper tiny \
+  --rss "https://ajcwebdev.substack.com/feed" \
+  "https://feeds.transistor.fm/fsjam-podcast/"
+```
+
+Download episodes from a specific date:
+
+```bash
+npm run as -- \
+  --rss "https://ajcwebdev.substack.com/feed" \
+  --date 2021-05-10
+```
+
+Download episodes from multiple dates:
+
+```bash
+npm run as -- \
+  --rss "https://ajcwebdev.substack.com/feed" \
+  --date 2021-05-10 2022-05-10
+```
+
+Download episodes from multiple dates on multiple RSS feeds:
+
+```bash
+npm run as -- \
+  --rss "https://ajcwebdev.substack.com/feed" \
+  "https://feeds.transistor.fm/fsjam-podcast/" \
+  --date 2021-05-10 2022-05-10
+```
+
+Download episodes from a specific number of previous days, for example to download episodes from the last 7 days:
+
+```bash
+npm run as -- \
+  --rss "https://ajcwebdev.substack.com/feed" \
+  --lastDays 7
 ```
 
 ## Language Model (LLM) Options

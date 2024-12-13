@@ -1,5 +1,29 @@
 // src/types/transcript-service-types.ts
 
+// Transcription Service Types
+/**
+ * Transcription services that can be used in the application.
+ */
+export type TranscriptServices = 'whisper' | 'whisperDocker' | 'whisperPython' | 'whisperDiarization' | 'deepgram' | 'assembly'
+
+/**
+ * Available Whisper model types with varying sizes and capabilities.
+ */
+export type WhisperModelType = 'tiny' | 'tiny.en' | 'base' | 'base.en' | 'small' | 'small.en' | 'medium' | 'medium.en' | 'large-v1' | 'large-v2' | 'large-v3-turbo' | 'turbo'
+
+/**
+ * Whisper-specific transcription services.
+ */
+export type WhisperTranscriptServices = 'whisper' | 'whisperDocker' | 'whisperPython' | 'whisperDiarization'
+
+/**
+ * Function signature for the runner functions
+ */
+export type WhisperRunner = (
+  finalPath: string,
+  whisperModel: string
+) => Promise<void>
+
 /**
  * Response structure from Deepgram API.
  */

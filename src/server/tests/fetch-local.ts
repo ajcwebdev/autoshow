@@ -1,8 +1,8 @@
-// packages/server/tests/fetch-local.ts
+// src/server/tests/fetch-local.ts
 
 import fs from 'fs/promises'
 import path from 'path'
-import { l, err } from '../../../src/types/globals'
+import { l, err } from '../../../src/utils/logging'
 
 const BASE_URL = 'http://localhost:3000'
 const OUTPUT_DIR = 'content'
@@ -11,207 +11,230 @@ const requests = [
   // Playlist Endpoint Requests
   {
     data: {
-      playlistUrl: 'https://www.youtube.com/playlist?list=PLCVnrVv4KhXPz0SoAVu8Rc1emAdGPbSbr',
+      type: 'playlist',
+      url: 'https://www.youtube.com/playlist?list=PLCVnrVv4KhXPz0SoAVu8Rc1emAdGPbSbr',
     },
-    endpoint: '/playlist',
+    endpoint: '/process',
     outputFiles: ['FILE_01A.md', 'FILE_01B.md'],
   },
   {
     data: {
-      playlistUrl: 'https://www.youtube.com/playlist?list=PLCVnrVv4KhXPz0SoAVu8Rc1emAdGPbSbr',
+      type: 'playlist',
+      url: 'https://www.youtube.com/playlist?list=PLCVnrVv4KhXPz0SoAVu8Rc1emAdGPbSbr',
       whisperModel: 'tiny',
     },
-    endpoint: '/playlist',
+    endpoint: '/process',
     outputFiles: ['FILE_02A.md', 'FILE_02B.md'],
   },
   {
     data: {
-      playlistUrl: 'https://www.youtube.com/playlist?list=PLCVnrVv4KhXPz0SoAVu8Rc1emAdGPbSbr',
+      type: 'playlist',
+      url: 'https://www.youtube.com/playlist?list=PLCVnrVv4KhXPz0SoAVu8Rc1emAdGPbSbr',
       whisperModel: 'tiny',
       llm: 'ollama',
     },
-    endpoint: '/playlist',
+    endpoint: '/process',
     outputFiles: ['FILE_03A.md', 'FILE_03B.md'],
   },
   {
     data: {
-      playlistUrl: 'https://www.youtube.com/playlist?list=PLCVnrVv4KhXPz0SoAVu8Rc1emAdGPbSbr',
+      type: 'playlist',
+      url: 'https://www.youtube.com/playlist?list=PLCVnrVv4KhXPz0SoAVu8Rc1emAdGPbSbr',
       prompts: ['titles', 'mediumChapters'],
       whisperModel: 'tiny',
       llm: 'ollama',
     },
-    endpoint: '/playlist',
+    endpoint: '/process',
     outputFiles: ['FILE_04A.md', 'FILE_04B.md'],
   },
   // URLs Endpoint Requests
   {
     data: {
+      type: 'urls',
       filePath: 'content/example-urls.md',
     },
-    endpoint: '/urls',
+    endpoint: '/process',
     outputFiles: ['FILE_05A.md', 'FILE_05B.md'],
   },
   {
     data: {
+      type: 'urls',
       filePath: 'content/example-urls.md',
       whisperModel: 'tiny',
     },
-    endpoint: '/urls',
+    endpoint: '/process',
     outputFiles: ['FILE_06A.md', 'FILE_06B.md'],
   },
   {
     data: {
+      type: 'urls',
       filePath: 'content/example-urls.md',
       whisperModel: 'tiny',
       llm: 'ollama',
     },
-    endpoint: '/urls',
+    endpoint: '/process',
     outputFiles: ['FILE_07A.md', 'FILE_07B.md'],
   },
   {
     data: {
+      type: 'urls',
       filePath: 'content/example-urls.md',
       prompts: ['titles', 'mediumChapters'],
       whisperModel: 'tiny',
       llm: 'ollama',
     },
-    endpoint: '/urls',
+    endpoint: '/process',
     outputFiles: ['FILE_08A.md', 'FILE_08B.md'],
   },
   // File Endpoint Requests
   {
     data: {
+      type: 'file',
       filePath: 'content/audio.mp3',
     },
-    endpoint: '/file',
+    endpoint: '/process',
     outputFiles: ['FILE_09.md'],
   },
   {
     data: {
+      type: 'file',
       filePath: 'content/audio.mp3',
       whisperModel: 'tiny',
     },
-    endpoint: '/file',
+    endpoint: '/process',
     outputFiles: ['FILE_10.md'],
   },
   {
     data: {
+      type: 'file',
       filePath: 'content/audio.mp3',
       whisperModel: 'tiny',
       llm: 'ollama',
     },
-    endpoint: '/file',
+    endpoint: '/process',
     outputFiles: ['FILE_11.md'],
   },
   {
     data: {
+      type: 'file',
       filePath: 'content/audio.mp3',
       prompts: ['titles'],
       whisperModel: 'tiny',
       llm: 'ollama',
     },
-    endpoint: '/file',
+    endpoint: '/process',
     outputFiles: ['FILE_12.md'],
   },
   // RSS Endpoint Requests
   {
     data: {
-      rssUrl: 'https://ajcwebdev.substack.com/feed/',
+      type: 'rss',
+      url: 'https://ajcwebdev.substack.com/feed/',
     },
-    endpoint: '/rss',
+    endpoint: '/process',
     outputFiles: ['FILE_13.md'],
   },
   {
     data: {
-      rssUrl: 'https://ajcwebdev.substack.com/feed/',
+      type: 'rss',
+      url: 'https://ajcwebdev.substack.com/feed/',
       whisperModel: 'tiny',
     },
-    endpoint: '/rss',
+    endpoint: '/process',
     outputFiles: ['FILE_14.md'],
   },
   {
     data: {
-      rssUrl: 'https://ajcwebdev.substack.com/feed/',
+      type: 'rss',
+      url: 'https://ajcwebdev.substack.com/feed/',
       whisperModel: 'tiny',
       llm: 'ollama',
     },
-    endpoint: '/rss',
+    endpoint: '/process',
     outputFiles: ['FILE_15.md'],
   },
   {
     data: {
-      rssUrl: 'https://feeds.transistor.fm/fsjam-podcast/',
+      type: 'rss',
+      url: 'https://feeds.transistor.fm/fsjam-podcast/',
       whisperModel: 'tiny',
       order: 'newest',
       skip: 94,
     },
-    endpoint: '/rss',
+    endpoint: '/process',
     outputFiles: ['FILE_16.md'],
   },
   {
     data: {
-      rssUrl: 'https://feeds.transistor.fm/fsjam-podcast/',
+      type: 'rss',
+      url: 'https://feeds.transistor.fm/fsjam-podcast/',
       whisperModel: 'tiny',
       order: 'oldest',
       skip: 94,
     },
-    endpoint: '/rss',
+    endpoint: '/process',
     outputFiles: ['FILE_17.md'],
   },
   // Video Endpoint Requests
   {
     data: {
-      youtubeUrl: 'https://www.youtube.com/watch?v=MORMZXEaONk',
+      type: 'video',
+      url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
     },
-    endpoint: '/video',
+    endpoint: '/process',
     outputFiles: ['FILE_18.md'],
   },
   {
     data: {
-      youtubeUrl: 'https://www.youtube.com/watch?v=MORMZXEaONk',
+      type: 'video',
+      url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
       whisperModel: 'tiny',
       llm: 'ollama',
     },
-    endpoint: '/video',
+    endpoint: '/process',
     outputFiles: ['FILE_19.md'],
   },
   {
     data: {
-      youtubeUrl: 'https://www.youtube.com/watch?v=MORMZXEaONk',
+      type: 'video',
+      url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
       whisperModel: 'tiny',
     },
-    endpoint: '/video',
+    endpoint: '/process',
     outputFiles: ['FILE_20.md'],
   },
   {
     data: {
-      youtubeUrl: 'https://www.youtube.com/watch?v=MORMZXEaONk',
+      type: 'video',
+      url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
       prompts: ['titles', 'mediumChapters'],
     },
-    endpoint: '/video',
+    endpoint: '/process',
     outputFiles: ['FILE_21.md'],
   },
   {
     data: {
-      youtubeUrl: 'https://www.youtube.com/watch?v=MORMZXEaONk',
+      type: 'video',
+      url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
       prompts: ['titles', 'summary', 'shortChapters', 'takeaways', 'questions'],
     },
-    endpoint: '/video',
+    endpoint: '/process',
     outputFiles: ['FILE_22.md'],
   },
   {
     data: {
-      youtubeUrl: 'https://www.youtube.com/watch?v=MORMZXEaONk',
+      type: 'video',
+      url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
       prompts: ['titles', 'summary', 'shortChapters', 'takeaways', 'questions'],
       whisperModel: 'tiny',
       llm: 'ollama',
     },
-    endpoint: '/video',
+    endpoint: '/process',
     outputFiles: ['FILE_23.md'],
   },
 ]
 
-const fetchRequest = async (request, index) => {
+const fetchRequest = async (request: any, index: number) => {
   try {
     // Get list of files before the request
     const filesBefore = await fs.readdir(OUTPUT_DIR)
@@ -246,7 +269,7 @@ const fetchRequest = async (request, index) => {
 
     if (newFiles.length > 0) {
       for (let i = 0; i < newFiles.length; i++) {
-        const oldFilePath = path.join(OUTPUT_DIR, newFiles[i])
+        const oldFilePath = path.join(OUTPUT_DIR, newFiles[i] as any)
         const newFileName = outputFiles[i]
         const newFilePath = path.join(OUTPUT_DIR, newFileName)
         await fs.rename(oldFilePath, newFilePath)

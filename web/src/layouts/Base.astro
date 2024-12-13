@@ -1,0 +1,35 @@
+---
+// web/src/layouts/Base.astro
+
+import type { SiteMeta } from "@/types"
+import BaseHead from "@/components/BaseHead.astro"
+import { siteConfig } from "@/site-config"
+import Navigation from "@/components/Navigation.astro"
+
+interface Props {
+	meta: SiteMeta
+}
+
+const {
+	meta: { articleDate, description = siteConfig.description, ogImage, title },
+} = Astro.props
+
+const year = new Date().getFullYear()
+---
+
+<html color-mode="user" lang={siteConfig.lang}>
+	<head>
+		<BaseHead articleDate={articleDate} description={description} ogImage={ogImage} title={title} />
+	</head>
+	<body>
+		<Navigation />
+		<main id="main">
+			<slot />
+		</main>
+		<footer>
+			<div>
+				&copy; {siteConfig.author} {year}<br><span>Astro Autoshow</span>
+			</div>
+		</footer>
+	</body>
+</html>

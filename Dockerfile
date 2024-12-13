@@ -24,7 +24,6 @@ RUN npm ci
 
 # Copy the application source code (excluding files specified in .dockerignore)
 COPY src ./src
-COPY packages ./packages
 COPY docker-entrypoint.sh ./
 
 # Ensure the entrypoint script is executable

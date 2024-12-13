@@ -1,31 +1,38 @@
 // src/transcription/assembly.ts
 
+// This file manages transcription using the AssemblyAI API service.
+// Steps involved:
+// 1. Upload the local WAV audio file to AssemblyAI.
+// 2. Request transcription of the uploaded file.
+// 3. Poll for completion until the transcript is ready or fails.
+// 4. Once completed, format the transcript using a helper function from transcription-utils.ts.
+// 5. Save the final formatted transcript to a .txt file and also create an empty .lrc file as required by the pipeline.
+
 import { writeFile, readFile } from 'node:fs/promises'
 import { env } from 'node:process'
-import { l, wait, success, err } from '../types/globals'
+import { l, wait, success, err } from '../utils/logging'
+import { formatAssemblyTranscript } from './transcription-utils'
 import type { ProcessingOptions } from '../types/main'
 import type {
   AssemblyAITranscriptionOptions,
   AssemblyAIErrorResponse,
   AssemblyAIUploadResponse,
   AssemblyAITranscript,
-  AssemblyAIPollingResponse,
-  AssemblyAIUtterance,
-  AssemblyAIWord
+  AssemblyAIPollingResponse
 } from '../types/transcript-service-types'
 
 const BASE_URL = 'https://api.assemblyai.com/v2'
 
 /**
  * Main function to handle transcription using AssemblyAI.
- * @param {ProcessingOptions} options - Additional processing options.
- * @param {string} finalPath - The identifier used for naming output files.
- * @returns {Promise<string>} - Returns the formatted transcript content.
- * @throws {Error} - If an error occurs during transcription.
+ * @param options - Additional processing options (e.g., speaker labels)
+ * @param finalPath - The base filename (without extension) for input/output files
+ * @returns Promise<string> - The formatted transcript content
+ * @throws Error if any step of the process fails (upload, transcription request, polling, formatting)
  */
 export async function callAssembly(options: ProcessingOptions, finalPath: string): Promise<string> {
   l(wait('\n  Using AssemblyAI for transcription...'))
-  
+
   if (!env['ASSEMBLY_API_KEY']) {
     throw new Error('ASSEMBLY_API_KEY environment variable is not set. Please set it to your AssemblyAI API key.')
   }
@@ -39,12 +46,11 @@ export async function callAssembly(options: ProcessingOptions, finalPath: string
     const { speakerLabels } = options
     const audioFilePath = `${finalPath}.wav`
 
-    // Step 1: Upload the audio file
+    // Step 1: Uploading the audio file to AssemblyAI
     l(wait('\n  Uploading audio file to AssemblyAI...'))
-    const uploadUrl = `${BASE_URL}/upload`
     const fileBuffer = await readFile(audioFilePath)
 
-    const uploadResponse = await fetch(uploadUrl, {
+    const uploadResponse = await fetch(`${BASE_URL}/upload`, {
       method: 'POST',
       headers: {
         'Authorization': env['ASSEMBLY_API_KEY'],
@@ -65,7 +71,7 @@ export async function callAssembly(options: ProcessingOptions, finalPath: string
     }
     l(success('  Audio file uploaded successfully.'))
 
-    // Step 2: Request transcription
+    // Step 2: Requesting the transcription
     const transcriptionOptions: AssemblyAITranscriptionOptions = {
       audio_url: upload_url,
       speech_model: 'nano',
@@ -84,7 +90,7 @@ export async function callAssembly(options: ProcessingOptions, finalPath: string
 
     const transcriptData = await response.json() as AssemblyAITranscript
 
-    // Step 3: Poll for completion
+    // Step 3: Polling for transcription completion
     let transcript: AssemblyAIPollingResponse
     while (true) {
       const pollingResponse = await fetch(`${BASE_URL}/transcript/${transcriptData.id}`, { headers })
@@ -94,6 +100,7 @@ export async function callAssembly(options: ProcessingOptions, finalPath: string
         break
       }
 
+      // Wait 3 seconds before polling again
       await new Promise(resolve => setTimeout(resolve, 3000))
     }
 
@@ -101,61 +108,21 @@ export async function callAssembly(options: ProcessingOptions, finalPath: string
       throw new Error(`Transcription failed: ${transcript.error}`)
     }
 
-    // Initialize output string
-    let txtContent = ''
+    // Step 4: Formatting the transcript
+    // The formatAssemblyTranscript function handles all formatting logic including speaker labels and timestamps.
+    const txtContent = formatAssemblyTranscript(transcript, speakerLabels || false)
 
-    // Helper function to format timestamps
-    const formatTime = (timestamp: number): string => {
-      const totalSeconds = Math.floor(timestamp / 1000)
-      return `${Math.floor(totalSeconds / 60).toString().padStart(2, '0')}:${(totalSeconds % 60).toString().padStart(2, '0')}`
-    }
-
-    // Process the transcript based on whether utterances are available
-    if (transcript.utterances && transcript.utterances.length > 0) {
-      // If utterances are available, format each with speaker labels if used
-      txtContent = transcript.utterances.map((utt: AssemblyAIUtterance) =>
-        `${speakerLabels ? `Speaker ${utt.speaker} ` : ''}(${formatTime(utt.start)}): ${utt.text}`
-      ).join('\n')
-    } else if (transcript.words && transcript.words.length > 0) {
-      // Check if words array exists and has content
-      const firstWord = transcript.words[0]
-      if (!firstWord) {
-        throw new Error('No words found in transcript')
-      }
-
-      // If only words are available, group them into lines with timestamps
-      let currentLine = ''
-      let currentTimestamp = formatTime(firstWord.start)
-      
-      transcript.words.forEach((word: AssemblyAIWord) => {
-        if (currentLine.length + word.text.length > 80) {
-          // Start a new line if the current line exceeds 80 characters
-          txtContent += `[${currentTimestamp}] ${currentLine.trim()}\n`
-          currentLine = ''
-          currentTimestamp = formatTime(word.start)
-        }
-        currentLine += `${word.text} `
-      })
-      
-      // Add the last line if there's any remaining text
-      if (currentLine.length > 0) {
-        txtContent += `[${currentTimestamp}] ${currentLine.trim()}\n`
-      }
-    } else {
-      // If no structured data is available, use the plain text or a default message
-      txtContent = transcript.text || 'No transcription available.'
-    }
-
-    // Write the formatted transcript to a file
+    // Step 5: Write the formatted transcript to a .txt file
     await writeFile(`${finalPath}.txt`, txtContent)
     l(wait(`\n  Transcript saved...\n  - ${finalPath}.txt\n`))
 
-    // Create an empty LRC file to prevent cleanup errors
+    // Create an empty LRC file to satisfy pipeline expectations (even if we don't use it for this service)
     await writeFile(`${finalPath}.lrc`, '')
     l(wait(`\n  Empty LRC file created:\n    - ${finalPath}.lrc\n`))
 
     return txtContent
   } catch (error) {
+    // If any error occurred at any step, log it and rethrow
     err(`Error processing the transcription: ${(error as Error).message}`)
     throw error
   }

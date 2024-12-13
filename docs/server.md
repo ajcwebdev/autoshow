@@ -25,128 +25,142 @@ Version 20 enters its maintenance period in October 2024 and end-of-life in Apri
 
 </details>
 
-## Process Endpoints
+## Process Endpoint
 
-### Video Endpoint
+Once the server is running, send a `POST` request to `http://localhost:3000/process` containing a JSON object:
 
-Once the server is running, send a `POST` request to `http://localhost:3000/video` containing a JSON object with the YouTube URL:
+### Video Type
 
 ```bash
 curl --json '{
-  "youtubeUrl": "https://www.youtube.com/watch?v=MORMZXEaONk"
-}' http://localhost:3000/video
+  "type": "video",
+  "url": "https://www.youtube.com/watch?v=MORMZXEaONk"
+}' http://localhost:3000/process
 ```
 
 Use LLM.
 
 ```bash
 curl --json '{
-  "youtubeUrl": "https://www.youtube.com/watch?v=MORMZXEaONk",
+  "type": "video",
+  "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "whisperModel": "tiny",
   "llm": "ollama"
-}' http://localhost:3000/video
+}' http://localhost:3000/process
 ```
 
-### Playlist Endpoint
+### Playlist Type
 
 ```bash
 curl --json '{
-  "playlistUrl": "https://www.youtube.com/playlist?list=PLCVnrVv4KhXPz0SoAVu8Rc1emAdGPbSbr"
-}' http://localhost:3000/playlist
+  "type": "playlist",
+  "url": "https://www.youtube.com/playlist?list=PLCVnrVv4KhXPz0SoAVu8Rc1emAdGPbSbr"
+}' http://localhost:3000/process
 ```
 
 ```bash
 curl --json '{
-  "playlistUrl": "https://www.youtube.com/playlist?list=PLCVnrVv4KhXPz0SoAVu8Rc1emAdGPbSbr",
+  "type": "playlist",
+  "url": "https://www.youtube.com/playlist?list=PLCVnrVv4KhXPz0SoAVu8Rc1emAdGPbSbr",
   "whisperModel": "tiny",
   "llm": "ollama"
-}' http://localhost:3000/playlist
+}' http://localhost:3000/process
 ```
 
-### URLs Endpoint
+### URLs Type
 
 ```bash
 curl --json '{
+  "type": "urls",
   "filePath": "content/example-urls.md"
-}' http://localhost:3000/urls
+}' http://localhost:3000/process
 ```
 
 ```bash
 curl --json '{
+  "type": "urls",
   "filePath": "content/example-urls.md",
   "whisperModel": "tiny",
   "llm": "ollama"
-}' http://localhost:3000/urls
+}' http://localhost:3000/process
 ```
 
 ```bash
 curl --json '{
+  "type": "urls",
   "filePath": "content/example-urls.md",
   "prompts": ["titles", "mediumChapters"],
   "whisperModel": "tiny",
   "llm": "ollama"
-}' http://localhost:3000/urls
+}' http://localhost:3000/process
 ```
 
-### File Endpoint
+### File Type
 
 ```bash
 curl --json '{
+  "type": "file",
   "filePath": "content/audio.mp3"
-}' http://localhost:3000/file
+}' http://localhost:3000/process
 ```
 
 ```bash
 curl --json '{
+  "type": "file",
   "filePath": "content/audio.mp3",
   "whisperModel": "tiny",
   "llm": "ollama"
-}' http://localhost:3000/file
+}' http://localhost:3000/process
 ```
 
 ```bash
 curl --json '{
+  "type": "file",
   "filePath": "content/audio.mp3",
   "prompts": ["titles"],
   "whisperModel": "tiny",
   "llm": "ollama"
-}' http://localhost:3000/file
+}' http://localhost:3000/process
 ```
 
-### RSS Endpoint
+### RSS Type
 
 ```bash
 curl --json '{
-  "rssUrl": "https://feeds.transistor.fm/fsjam-podcast/"
-}' http://localhost:3000/rss
+  "type": "rss",
+  "url": "https://feeds.transistor.fm/fsjam-podcast/"
+}' http://localhost:3000/process
 ```
 
 ```bash
 curl --json '{
-  "rssUrl": "https://feeds.transistor.fm/fsjam-podcast/",
+  "type": "rss",
+  "url": "https://feeds.transistor.fm/fsjam-podcast/",
   "whisperModel": "tiny",
   "llm": "ollama",
   "order": "newest",
   "skip": 0
-}' http://localhost:3000/rss
+}' http://localhost:3000/process
 ```
 
 ```bash
 curl --json '{
-  "rssUrl": "https://feeds.transistor.fm/fsjam-podcast/",
+  "type": "rss",
+  "url": "https://feeds.transistor.fm/fsjam-podcast/",
   "order": "newest",
   "skip": 94,
   "whisperModel": "tiny"
-}' http://localhost:3000/rss
+}' http://localhost:3000/process
 ```
 
 ```bash
 curl --json '{
-  "rssUrl": "https://feeds.transistor.fm/fsjam-podcast/",
+  "type": "rss",
+  "url": "https://feeds.transistor.fm/fsjam-podcast/",
   "order": "oldest",
   "skip": 94,
   "whisperModel": "tiny"
-}' http://localhost:3000/rss
+}' http://localhost:3000/process
 ```
 
 ## Language Model (LLM) Options
@@ -155,85 +169,95 @@ curl --json '{
 
 ```bash
 curl --json '{
-  "youtubeUrl": "https://www.youtube.com/watch?v=MORMZXEaONk",
+  "type": "video",
+  "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "llm": "chatgpt"
-}' http://localhost:3000/video
+}' http://localhost:3000/process
 ```
 
 ```bash
 curl --json '{
-  "youtubeUrl": "https://www.youtube.com/watch?v=MORMZXEaONk",
+  "type": "video",
+  "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "llm": "chatgpt",
   "llmModel": "GPT_4o_MINI"
-}' http://localhost:3000/video
+}' http://localhost:3000/process
 ```
 
 ### Claude
 
 ```bash
 curl --json '{
-  "youtubeUrl": "https://www.youtube.com/watch?v=MORMZXEaONk",
+  "type": "video",
+  "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "llm": "claude"
-}' http://localhost:3000/video
+}' http://localhost:3000/process
 ```
 
 ```bash
 curl --json '{
-  "youtubeUrl": "https://www.youtube.com/watch?v=MORMZXEaONk",
+  "type": "video",
+  "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "llm": "claude",
   "llmModel": "CLAUDE_3_SONNET"
-}' http://localhost:3000/video
+}' http://localhost:3000/process
 ```
 
 ### Gemini
 
 ```bash
 curl --json '{
-  "youtubeUrl": "https://www.youtube.com/watch?v=MORMZXEaONk",
+  "type": "video",
+  "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "llm": "gemini"
-}' http://localhost:3000/video
+}' http://localhost:3000/process
 ```
 
 ```bash
 curl --json '{
-  "youtubeUrl": "https://www.youtube.com/watch?v=MORMZXEaONk",
+  "type": "video",
+  "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "llm": "gemini",
   "llmModel": "GEMINI_1_5_FLASH"
-}' http://localhost:3000/video
+}' http://localhost:3000/process
 ```
 
 ### Cohere
 
 ```bash
 curl --json '{
-  "youtubeUrl": "https://www.youtube.com/watch?v=MORMZXEaONk",
+  "type": "video",
+  "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "llm": "cohere"
-}' http://localhost:3000/video
+}' http://localhost:3000/process
 ```
 
 ```bash
 curl --json '{
-  "youtubeUrl": "https://www.youtube.com/watch?v=MORMZXEaONk",
+  "type": "video",
+  "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "llm": "cohere",
   "llmModel": "COMMAND_R_PLUS"
-}' http://localhost:3000/video
+}' http://localhost:3000/process
 ```
 
 ### Mistral
 
 ```bash
 curl --json '{
-  "youtubeUrl": "https://www.youtube.com/watch?v=MORMZXEaONk",
+  "type": "video",
+  "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "llm": "mistral"
-}' http://localhost:3000/video
+}' http://localhost:3000/process
 ```
 
 ```bash
 curl --json '{
-  "youtubeUrl": "https://www.youtube.com/watch?v=MORMZXEaONk",
+  "type": "video",
+  "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "llm": "mistral",
   "llmModel": "MIXTRAL_8x7b"
-}' http://localhost:3000/video
+}' http://localhost:3000/process
 ```
 
 ## Transcription Options
@@ -242,346 +266,349 @@ curl --json '{
 
 ```bash
 curl --json '{
-  "youtubeUrl": "https://www.youtube.com/watch?v=MORMZXEaONk",
+  "type": "video",
+  "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "whisperModel": "tiny"
-}' http://localhost:3000/video
+}' http://localhost:3000/process
 ```
 
 ### Deepgram
 
 ```bash
 curl --json '{
-  "youtubeUrl": "https://www.youtube.com/watch?v=MORMZXEaONk",
+  "type": "video",
+  "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "transcriptServices": "deepgram"
-}' http://localhost:3000/video
+}' http://localhost:3000/process
 ```
 
 ```bash
 curl --json '{
-  "youtubeUrl": "https://www.youtube.com/watch?v=MORMZXEaONk",
+  "type": "video",
+  "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "transcriptServices": "deepgram",
   "llm": "ollama"
-}' http://localhost:3000/video
+}' http://localhost:3000/process
 ```
 
 ### Assembly
 
 ```bash
 curl --json '{
-  "youtubeUrl": "https://www.youtube.com/watch?v=MORMZXEaONk",
+  "type": "video",
+  "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "transcriptServices": "assembly"
-}' http://localhost:3000/video
+}' http://localhost:3000/process
 ```
 
 ```bash
 curl --json '{
-  "youtubeUrl": "https://www.youtube.com/watch?v=MORMZXEaONk",
+  "type": "video",
+  "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "transcriptServices": "assembly",
   "llm": "ollama"
-}' http://localhost:3000/video
+}' http://localhost:3000/process
 ```
 
 ```bash
 curl --json '{
-  "youtubeUrl": "https://ajc.pics/audio/fsjam-short.mp3",
+  "type": "video",
+  "url": "https://ajc.pics/audio/fsjam-short.mp3",
   "transcriptServices": "assembly",
   "speakerLabels": true
-}' http://localhost:3000/video
+}' http://localhost:3000/process
 ```
 
 ```bash
 curl --json '{
-  "youtubeUrl": "https://ajc.pics/audio/fsjam-short.mp3",
+  "type": "video",
+  "url": "https://ajc.pics/audio/fsjam-short.mp3",
   "transcriptServices": "assembly",
   "speakerLabels": true,
   "llm": "ollama"
-}' http://localhost:3000/video
+}' http://localhost:3000/process
 ```
 
 ## Prompt Options
 
 ```bash
 curl --json '{
-  "youtubeUrl": "https://www.youtube.com/watch?v=MORMZXEaONk",
+  "type": "video",
+  "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "prompts": ["titles", "mediumChapters"]
-}' http://localhost:3000/video
+}' http://localhost:3000/process
 ```
 
 ```bash
 curl --json '{
-  "youtubeUrl": "https://www.youtube.com/watch?v=MORMZXEaONk",
+  "type": "video",
+  "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "prompts": ["titles", "summary", "shortChapters", "takeaways", "questions"]
-}' http://localhost:3000/video
+}' http://localhost:3000/process
 ```
 
 ```bash
 curl --json '{
-  "youtubeUrl": "https://www.youtube.com/watch?v=MORMZXEaONk",
+  "type": "video",
+  "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "prompts": ["titles", "summary", "shortChapters", "takeaways", "questions"],
   "whisperModel": "tiny",
   "llm": "ollama"
-}' http://localhost:3000/video
+}' http://localhost:3000/process
 ```
 
 ```bash
 curl --json '{
-  "playlistUrl": "https://www.youtube.com/playlist?list=PLCVnrVv4KhXPz0SoAVu8Rc1emAdGPbSbr",
+  "type": "playlist",
+  "url": "https://www.youtube.com/playlist?list=PLCVnrVv4KhXPz0SoAVu8Rc1emAdGPbSbr",
   "prompts": ["titles", "mediumChapters"],
   "whisperModel": "tiny",
   "llm": "ollama"
-}' http://localhost:3000/playlist
+}' http://localhost:3000/process
 ```
 
 ```bash
 curl --json '{
-  "playlistUrl": "https://www.youtube.com/playlist?list=PLCVnrVv4KhXPz0SoAVu8Rc1emAdGPbSbr",
+  "type": "playlist",
+  "url": "https://www.youtube.com/playlist?list=PLCVnrVv4KhXPz0SoAVu8Rc1emAdGPbSbr",
   "prompts": ["titles", "mediumChapters"],
   "whisperModel": "tiny",
   "llm": "ollama"
-}' http://localhost:3000/playlist
+}' http://localhost:3000/process
 ```
 
 ## Test Requests
 
-http://localhost:3000/playlist
-
 ```js
 const TEST_REQ_01 = {
-  "playlistUrl": "https://www.youtube.com/playlist?list=PLCVnrVv4KhXPz0SoAVu8Rc1emAdGPbSbr"
+  "type": "playlist",
+  "url": "https://www.youtube.com/playlist?list=PLCVnrVv4KhXPz0SoAVu8Rc1emAdGPbSbr"
 }
 
 const TEST_REQ_02 = {
-  "playlistUrl": "https://www.youtube.com/playlist?list=PLCVnrVv4KhXPz0SoAVu8Rc1emAdGPbSbr",
+  "type": "playlist",
+  "url": "https://www.youtube.com/playlist?list=PLCVnrVv4KhXPz0SoAVu8Rc1emAdGPbSbr",
   "whisperModel": "tiny"
 }
 
 const TEST_REQ_03 = {
-  "playlistUrl": "https://www.youtube.com/playlist?list=PLCVnrVv4KhXPz0SoAVu8Rc1emAdGPbSbr",
+  "type": "playlist",
+  "url": "https://www.youtube.com/playlist?list=PLCVnrVv4KhXPz0SoAVu8Rc1emAdGPbSbr",
   "whisperModel": "tiny",
   "llm": "ollama"
 }
 
 const TEST_REQ_04 = {
-  "playlistUrl": "https://www.youtube.com/playlist?list=PLCVnrVv4KhXPz0SoAVu8Rc1emAdGPbSbr",
+  "type": "playlist",
+  "url": "https://www.youtube.com/playlist?list=PLCVnrVv4KhXPz0SoAVu8Rc1emAdGPbSbr",
   "prompts": ["titles", "mediumChapters"],
   "whisperModel": "tiny",
   "llm": "ollama"
 }
-```
 
-### URLs Endpoint
-
-http://localhost:3000/urls
-
-```js
 const TEST_REQ_05 = {
+  "type": "urls",
   "filePath": "content/example-urls.md"
 }
 
 const TEST_REQ_06 = {
+  "type": "urls",
   "filePath": "content/example-urls.md",
   "whisperModel": "tiny"
 }
 
 const TEST_REQ_07 = {
+  "type": "urls",
   "filePath": "content/example-urls.md",
   "whisperModel": "tiny",
   "llm": "ollama"
 }
 
 const TEST_REQ_08 = {
+  "type": "urls",
   "filePath": "content/example-urls.md",
   "prompts": ["titles", "mediumChapters"],
   "whisperModel": "tiny",
   "llm": "ollama"
 }
-```
 
-### File Endpoint
-
-http://localhost:3000/file
-
-```js
 const TEST_REQ_09 = {
+  "type": "file",
   "filePath": "content/audio.mp3"
 }
 
 const TEST_REQ_10 = {
+  "type": "file",
   "filePath": "content/audio.mp3",
   "whisperModel": "tiny"
 }
 
 const TEST_REQ_11 = {
+  "type": "file",
   "filePath": "content/audio.mp3",
   "whisperModel": "tiny",
   "llm": "ollama"
 }
 
 const TEST_REQ_12 = {
+  "type": "file",
   "filePath": "content/audio.mp3",
   "prompts": ["titles"],
   "whisperModel": "tiny",
   "llm": "ollama"
 }
-```
 
-### RSS Endpoint
-
-http://localhost:3000/rss
-
-```js
 const TEST_REQ_13 = {
-  "rssUrl": "https://feeds.transistor.fm/fsjam-podcast/"
+  "type": "rss",
+  "url": "https://feeds.transistor.fm/fsjam-podcast/"
 }
 
 const TEST_REQ_14 = {
-  "rssUrl": "https://feeds.transistor.fm/fsjam-podcast/",
+  "type": "rss",
+  "url": "https://feeds.transistor.fm/fsjam-podcast/",
   "whisperModel": "tiny"
 }
 
 const TEST_REQ_15 = {
-  "rssUrl": "https://feeds.transistor.fm/fsjam-podcast/",
+  "type": "rss",
+  "url": "https://feeds.transistor.fm/fsjam-podcast/",
   "whisperModel": "tiny",
   "llm": "ollama"
 }
 
 const TEST_REQ_16 = {
-  "rssUrl": "https://feeds.transistor.fm/fsjam-podcast/",
+  "type": "rss",
+  "url": "https://feeds.transistor.fm/fsjam-podcast/",
   "whisperModel": "tiny",
   "order": "newest",
   "skip": 94
 }
 
 const TEST_REQ_17 = {
-  "rssUrl": "https://feeds.transistor.fm/fsjam-podcast/",
+  "type": "rss",
+  "url": "https://feeds.transistor.fm/fsjam-podcast/",
   "whisperModel": "tiny",
   "order": "oldest",
   "skip": 94
 }
-```
 
-### Video Endpoint
-
-http://localhost:3000/video
-
-```js
 const TEST_REQ_18 = {
-  "youtubeUrl": "https://www.youtube.com/watch?v=MORMZXEaONk"
+  "url": "https://www.youtube.com/watch?v=MORMZXEaONk"
 }
 
 const TEST_REQ_19 = {
-  "youtubeUrl": "https://www.youtube.com/watch?v=MORMZXEaONk",
+  "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "whisperModel": "tiny",
   "llm": "ollama"
 }
 
 const TEST_REQ_20 = {
-  "youtubeUrl": "https://www.youtube.com/watch?v=MORMZXEaONk",
+  "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "llm": "chatgpt"
 }
 
 const TEST_REQ_21 = {
-  "youtubeUrl": "https://www.youtube.com/watch?v=MORMZXEaONk",
+  "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "llm": "chatgpt",
   "llmModel": "GPT_4o_MINI"
 }
 
 const TEST_REQ_22 = {
-  "youtubeUrl": "https://www.youtube.com/watch?v=MORMZXEaONk",
+  "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "llm": "claude"
 }
 
 const TEST_REQ_23 = {
-  "youtubeUrl": "https://www.youtube.com/watch?v=MORMZXEaONk",
+  "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "llm": "claude",
   "llmModel": "CLAUDE_3_SONNET"
 }
 
 const TEST_REQ_24 = {
-  "youtubeUrl": "https://www.youtube.com/watch?v=MORMZXEaONk",
+  "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "llm": "gemini"
 }
 
 const TEST_REQ_25 = {
-  "youtubeUrl": "https://www.youtube.com/watch?v=MORMZXEaONk",
+  "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "llm": "gemini",
   "llmModel": "GEMINI_1_5_FLASH"
 }
 
 const TEST_REQ_26 = {
-  "youtubeUrl": "https://www.youtube.com/watch?v=MORMZXEaONk",
+  "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "llm": "cohere"
 }
 
 const TEST_REQ_27 = {
-  "youtubeUrl": "https://www.youtube.com/watch?v=MORMZXEaONk",
+  "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "llm": "cohere",
   "llmModel": "COMMAND_R_PLUS"
 }
 
 const TEST_REQ_28 = {
-  "youtubeUrl": "https://www.youtube.com/watch?v=MORMZXEaONk",
+  "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "llm": "mistral"
 }
 
 const TEST_REQ_29 = {
-  "youtubeUrl": "https://www.youtube.com/watch?v=MORMZXEaONk",
+  "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "llm": "mistral",
   "llmModel": "MIXTRAL_8x7b"
 }
 
 const TEST_REQ_32 = {
-  "youtubeUrl": "https://www.youtube.com/watch?v=MORMZXEaONk",
+  "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "whisperModel": "tiny"
 }
 
 const TEST_REQ_33 = {
-  "youtubeUrl": "https://www.youtube.com/watch?v=MORMZXEaONk",
+  "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "transcriptServices": "deepgram"
 }
 
 const TEST_REQ_34 = {
-  "youtubeUrl": "https://www.youtube.com/watch?v=MORMZXEaONk",
+  "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "transcriptServices": "deepgram",
   "llm": "ollama"
 }
 
 const TEST_REQ_35 = {
-  "youtubeUrl": "https://www.youtube.com/watch?v=MORMZXEaONk",
+  "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "transcriptServices": "assembly"
 }
 
 const TEST_REQ_36 = {
-  "youtubeUrl": "https://www.youtube.com/watch?v=MORMZXEaONk",
+  "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "transcriptServices": "assembly",
   "llm": "ollama"
 }
 
 const TEST_REQ_37 = {
-  "youtubeUrl": "https://ajc.pics/audio/fsjam-short.mp3",
+  "url": "https://ajc.pics/audio/fsjam-short.mp3",
   "transcriptServices": "assembly",
   "speakerLabels": true
 }
 
 const TEST_REQ_38 = {
-  "youtubeUrl": "https://ajc.pics/audio/fsjam-short.mp3",
+  "url": "https://ajc.pics/audio/fsjam-short.mp3",
   "transcriptServices": "assembly",
   "speakerLabels": true,
   "llm": "ollama"
 }
 
 const TEST_REQ_39 = {
-  "youtubeUrl": "https://www.youtube.com/watch?v=MORMZXEaONk",
+  "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "prompts": ["titles", "mediumChapters"]
 }
 
 const TEST_REQ_40 = {
-  "youtubeUrl": "https://www.youtube.com/watch?v=MORMZXEaONk",
+  "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "prompts": ["titles", "summary", "shortChapters", "takeaways", "questions"]
 }
 
 const TEST_REQ_41 = {
-  "youtubeUrl": "https://www.youtube.com/watch?v=MORMZXEaONk",
+  "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "prompts": ["titles", "summary", "shortChapters", "takeaways", "questions"],
   "whisperModel": "tiny",
   "llm": "ollama"

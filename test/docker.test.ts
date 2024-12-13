@@ -1,4 +1,4 @@
-// test/docker.test.js
+// test/docker.test.ts
 
 import test from 'node:test'
 import { strictEqual } from 'node:assert/strict'

@@ -1,13 +1,22 @@
 ---
 // web/src/pages/app.astro
 
-import PageLayout from "@/layouts/Base.astro";
-import Form from "@/components/app/Form";
+import PageLayout from "@/layouts/Base.astro"
+import Form from "@/components/app/Form"
 ---
 
 <PageLayout meta={{ title: "Show Notes" }}>
   <section>
     <h1>Generate Show Notes</h1>
+    <h2>Examples</h2>
+    <ul>
+      <li>Video - https://www.youtube.com/watch?v=MORMZXEaONk</li>
+      <li>Playlist - https://www.youtube.com/playlist?list=PLCVnrVv4KhXPz0SoAVu8Rc1emAdGPbSbr</li>
+      <li>Channel - https://www.youtube.com/@ajcwebdev</li>
+      <li>URLs - content/example-urls.md</li>
+      <li>File - content/audio.mp3</li>
+      <li>RSS - https://ajcwebdev.substack.com/feed</li>
+    </ul>
     <ul class="show-notes-list">
       <Form client:only="react" />
     </ul>

@@ -1,4 +1,4 @@
-// test/local.test.js
+// test/local.test.ts
 
 import test from 'node:test'
 import { strictEqual } from 'node:assert/strict'

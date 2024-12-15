@@ -32,7 +32,7 @@ RUN apt-get update && \
 COPY --from=build /app /app
 
 # Ensure that the main executable and scripts have execute permissions
-RUN chmod +x /app/build/main && \
+RUN chmod +x /app/build/bin/main && \
     chmod +x /app/models/download-ggml-model.sh
 
 # Set the entrypoint to bash

@@ -13,13 +13,21 @@ export const PROCESS_TYPES = [
 ] as const
 
 export const PROMPT_CHOICES = [
-  { value: 'titles', label: 'Titles' },
-  { value: 'summary', label: 'Summary' },
-  { value: 'shortChapters', label: 'Short Chapters' },
-  { value: 'mediumChapters', label: 'Medium Chapters' },
-  { value: 'longChapters', label: 'Long Chapters' },
-  { value: 'takeaways', label: 'Key Takeaways' },
-  { value: 'questions', label: 'Questions' },
+  { name: 'Titles', value: 'titles' },
+  { name: 'Summary', value: 'summary' },
+  { name: 'Short Summary', value: 'shortSummary' },
+  { name: 'Long Summary', value: 'longSummary' },
+  { name: 'Bullet Point Summary', value: 'bulletPoints' },
+  { name: 'Short Chapters', value: 'shortChapters' },
+  { name: 'Medium Chapters', value: 'mediumChapters' },
+  { name: 'Long Chapters', value: 'longChapters' },
+  { name: 'Key Takeaways', value: 'takeaways' },
+  { name: 'Questions', value: 'questions' },
+  { name: 'FAQ', value: 'faq' },
+  { name: 'Blog', value: 'blog' },
+  { name: 'Rap Song', value: 'rapSong' },
+  { name: 'Rock Song', value: 'rockSong' },
+  { name: 'Country Song', value: 'countrySong' },
 ]
 
 export const TRANSCRIPTION_SERVICES = [

@@ -57,6 +57,17 @@ const sections = {
     A concise summary of a chapter's content, typically ranging from 600 to 1200 characters or approximately 100 to 200 words. It begins by introducing the main topic or theme of the chapter, providing context for the reader. The summary then outlines key points or arguments presented in the chapter, touching on major concepts, theories, or findings discussed. It may briefly mention methodologies used or data analyzed, if applicable. The paragraph also highlights any significant conclusions or implications drawn from the chapter's content. Throughout, it maintains a balance between providing enough detail to give readers a clear understanding of the chapter's scope and keeping the information general enough to apply to various subjects. This summary style efficiently conveys the essence of the chapter's content, allowing readers to quickly grasp its main ideas and decide if they want to delve deeper into the full text.\n`,
   },
 
+  // Section for generating a bullet point list summary
+  bulletPoints: {
+    // Instructions and example for creating a bullet point list summary
+    instruction: `- Write a bullet point list summarizing the transcript.\n`,
+    example: `## Bullet Point Summary
+
+    - A concise summary of a chapter's content in bullet point list form.
+    - It begins by introducing the main topic or theme of the chapter, providing context for the reader.
+    - The summary then outlines key points or arguments presented in the chapter\n`,
+  },
+
   // Section for creating short chapter descriptions
   shortChapters: {
     // Instructions and example for generating concise chapter summaries
@@ -120,19 +131,38 @@ const sections = {
   questions: {
     // Instructions and example for creating relevant questions about the content
     instruction: `- Include a list of 10 questions to check the listeners' comprehension of the material.
-  - Ensure questions cover all major sections of the content.\n`,
+  - Ensure questions cover all major sections of the content.
+  - Ensure the questions are correct, emphasize the right things, and aren't redundant.
+  - Do not say things like "the instructor describes" or "according to the lesson," assume that all the questions relate to the lesson told by the instructor.
+  - The first five questions should be beginner level questions and the last five should be expert level questions.\n`,
     example: `## Questions to Check Comprehension
+
+    ### Beginner Questions
 
     1. What are the three main components of the modern web development stack?
     2. How has the role of JavaScript evolved in web development over the past decade?
     3. What are the key differences between React and Vue.js?
     4. Why is server-side rendering beneficial for web applications?
     5. What is the purpose of a RESTful API in full-stack development?
+
+    ### Expert Questions
+
     6. How does Node.js differ from traditional server-side languages like PHP or Python?
     7. What are the main considerations when choosing a database for a web application?
     8. How do containerization technologies like Docker impact web development and deployment?
     9. What role does responsive design play in modern web development?
     10. How can developers ensure the security of user data in web applications?\n`,
+  },
+
+  // Section for generating frequently asked questions and answers
+  faq: {
+    // Instructions and example for creating relevant questions about the content
+    instruction: `- Include a list of 5-10 frequently asked questions and answers based on the transcript.
+  - Ensure questions and answers cover all major sections of the content.\n`,
+    example: `## FAQ
+
+    Q: What are the three main components of the Jamstack?
+    A: JavaScript, APIs, and markup.\n`,
   },
 
   // Section for generating a blog outline and first draft

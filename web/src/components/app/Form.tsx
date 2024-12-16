@@ -284,7 +284,7 @@ const Inputs: React.FC<InputsProps> = ({ onNewShowNote }) => {
                     }
                   }}
                 />
-                <label htmlFor={`prompt-${prompt.value}`}>{prompt.label}</label>
+                <label htmlFor={`prompt-${prompt.value}`}>{prompt.name}</label>
               </div>
             ))}
           </div>

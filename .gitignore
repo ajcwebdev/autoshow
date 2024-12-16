@@ -17,3 +17,5 @@ tsconfig.tsbuildinfo
 show_notes.db
 ollama.log
 llm-txt.md
+embeddings.db
+embeddings.json

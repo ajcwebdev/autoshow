@@ -32,6 +32,7 @@
   - [Deno](#deno)
   - [Bun](#bun)
 - [Test Suite](#test-suite)
+- [Chat with Show Notes](#chat-with-show-notes)
 
 ## Content and Feed Inputs
 
@@ -784,4 +785,19 @@ npm run bench-small
 npm run bench-medium
 npm run bench-large
 npm run bench-turbo
+```
+
+## Chat with Show Notes
+
+***Note: Very rough prototype for upcoming "chat with your show notes" feature using OpenAI and Claude embeddings.***
+
+*Not currently integrated into the CLI, backend server, or frontend and only supports OpenAI.*
+
+```bash
+node create-embeddings-and-sqlite.js <directory> <outputJSON> [dbFile]
+```
+
+```bash
+OPENAI_API_KEY="" node scripts/create-embeddings-and-sqlite.js content embeddings.json embeddings.db
+OPENAI_API_KEY="" node scripts/read-and-query-embeddings.js "What's the deal with these show notes? Answer in the voice of Jerry Seinfeld."
 ```

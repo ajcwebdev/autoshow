@@ -3,7 +3,6 @@ node_modules
 /content
 whisper.cpp
 whisper-diarization
-package-lock.json
 .env
 src/llms/models
 .idea

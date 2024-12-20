@@ -41,7 +41,7 @@
     "test-local": "tsx --test test/local.test.ts",
     "test-docker": "tsx --test test/docker.test.ts",
     "test-services": "tsx --test test/services.test.ts",
-    "test-all": "npm run test-local && npm run test-services && npm run test-docker",
+    "test-all": "tsx --test test/all.test.ts",
     "clean": "tsx scripts/cleanContent.ts",
     "docker": "docker compose run --remove-orphans --rm autoshow --whisperDocker",
     "docker-up": "docker compose up --build -d --remove-orphans --no-start",

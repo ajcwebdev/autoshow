@@ -42,7 +42,7 @@
    and apply our dark theme background and text color.
 */
 html, body {
-  margin: 0;               /* Remove default browser margin */
+  margin: 24;               /* Remove default browser margin */
   padding: 0;              /* Remove default browser padding */
   font-family: var(--font-family); /* Apply chosen font family */
   font-size: var(--font-size-base);/* Base font size for scaling text */

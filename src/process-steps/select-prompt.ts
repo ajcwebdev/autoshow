@@ -1,6 +1,6 @@
 // src/llms/prompt.ts
 
-import type { PromptSection } from '../types/main'
+import type { PromptSection } from '../types/process'
 
 /**
  * Define the structure for different sections of the prompt

@@ -9,8 +9,9 @@ import { readFile, writeFile } from 'node:fs/promises'
 import { processVideo } from './video'
 import { execFilePromise } from '../utils/globals'
 import { l, err, logURLsSeparator } from '../utils/logging'
-import type { LLMServices, ProcessingOptions, VideoMetadata } from '../types/main'
-import type { TranscriptServices } from '../types/transcript-service-types'
+import type { ProcessingOptions, VideoMetadata } from '../types/process'
+import type { TranscriptServices } from '../types/transcription'
+import type { LLMServices } from '../types/llms'
 
 /**
  * Processes multiple YouTube videos from a file containing URLs by:

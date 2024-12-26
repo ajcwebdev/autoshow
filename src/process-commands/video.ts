@@ -13,8 +13,9 @@ import { cleanUpFiles } from '../process-steps/clean-up-files'
 import { l, err } from '../utils/logging'
 import { readFile } from 'fs/promises'
 import { db } from '../server/db'
-import type { LLMServices, ProcessingOptions } from '../types/main'
-import type { TranscriptServices } from '../types/transcript-service-types'
+import type { ProcessingOptions } from '../types/process'
+import type { TranscriptServices } from '../types/transcription'
+import type { LLMServices } from '../types/llms'
 
 /**
  * Processes a single video by executing a series of operations:

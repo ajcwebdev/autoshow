@@ -1,6 +1,6 @@
 // src/utils/logging.ts
 
-import type { ProcessingOptions } from '../types/main'
+import type { ProcessingOptions } from '../types/process'
 import chalk from 'chalk'
 
 /**

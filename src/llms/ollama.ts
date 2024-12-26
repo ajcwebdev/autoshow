@@ -5,7 +5,7 @@ import { env } from 'node:process'
 import { spawn } from 'node:child_process'
 import { OLLAMA_MODELS } from '../utils/globals'
 import { l, err } from '../utils/logging'
-import type { LLMFunction, OllamaModelType, OllamaResponse, OllamaTagsResponse } from '../types/llm-types'
+import type { LLMFunction, OllamaModelType, OllamaResponse, OllamaTagsResponse } from '../types/llms'
 
 /**
  * Main function to call the Llama model using the Ollama REST API.

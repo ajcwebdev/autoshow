@@ -10,7 +10,7 @@ import { writeFile } from 'node:fs/promises'
 import { basename, extname } from 'node:path'
 import { execFilePromise } from '../utils/globals'
 import { l, err } from '../utils/logging'
-import type { MarkdownData, ProcessingOptions, RSSItem } from '../types/main'
+import type { MarkdownData, ProcessingOptions, RSSItem } from '../types/process'
 
 /**
  * Sanitizes a title string for use in filenames by:

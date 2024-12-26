@@ -10,8 +10,9 @@ import { processVideo } from './video'
 import { execFilePromise } from '../utils/globals'
 import { l, err, logChannelProcessingAction, logChannelProcessingStatus, logChannelSeparator } from '../utils/logging'
 import { validateChannelOptions } from '../utils/validate-option'
-import type { LLMServices, ProcessingOptions, VideoMetadata, VideoInfo } from '../types/main'
-import type { TranscriptServices } from '../types/transcript-service-types'
+import type { ProcessingOptions, VideoMetadata, VideoInfo } from '../types/process'
+import type { TranscriptServices } from '../types/transcription'
+import type { LLMServices } from '../types/llms'
 
 /**
  * Gets detailed video information using yt-dlp.

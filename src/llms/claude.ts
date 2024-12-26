@@ -5,7 +5,7 @@ import { env } from 'node:process'
 import { Anthropic } from '@anthropic-ai/sdk'
 import { CLAUDE_MODELS } from '../utils/globals'
 import { l, err } from '../utils/logging'
-import type { LLMFunction, ClaudeModelType } from '../types/llm-types'
+import type { LLMFunction, ClaudeModelType } from '../types/llms'
 
 /**
  * Main function to call Claude API.

@@ -1,6 +1,7 @@
 // src/types/main.ts
 
-import type { TranscriptServices, WhisperModelType } from './transcript-service-types'
+import type { TranscriptServices, WhisperModelType } from './transcription'
+import type { LLMServices } from './llms'
 
 // Define valid action types for processing
 export type ValidAction = 'video' | 'playlist' | 'channel' | 'urls' | 'file' | 'rss'
@@ -242,12 +243,6 @@ export type DownloadAudioOptions = {
  * Supported file types for audio and video processing.
  */
 export type SupportedFileType = 'wav' | 'mp3' | 'm4a' | 'aac' | 'ogg' | 'flac' | 'mp4' | 'mkv' | 'avi' | 'mov' | 'webm'
-
-// LLM Types
-/**
- * Options for Language Models (LLMs) that can be used in the application.
- */
-export type LLMServices = 'chatgpt' | 'claude' | 'cohere' | 'mistral' | 'ollama' | 'gemini' | 'fireworks' | 'together' | 'groq'
 
 // Prompt Types
 /**

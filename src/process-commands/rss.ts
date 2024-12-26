@@ -15,8 +15,9 @@ import { validateRSSOptions } from '../utils/validate-option'
 import { l, err, logRSSProcessingAction, logRSSProcessingStatus, logRSSSeparator } from '../utils/logging'
 import { parser } from '../utils/globals'
 import { db } from '../server/db'
-import type { LLMServices, ProcessingOptions, RSSItem } from '../types/main'
-import type { TranscriptServices } from '../types/transcript-service-types'
+import type { ProcessingOptions, RSSItem } from '../types/process'
+import type { TranscriptServices } from '../types/transcription'
+import type { LLMServices } from '../types/llms'
 
 /**
  * Fetches and parses an RSS feed with timeout handling.

@@ -8,9 +8,9 @@
 import { XMLParser } from 'fast-xml-parser'
 import { exec, execFile } from 'node:child_process'
 import { promisify } from 'node:util'
-import type { LLMServices } from '../types/main'
-import type { TranscriptServices, WhisperModelType } from '../types/transcript-service-types'
-import type { ChatGPTModelType, ClaudeModelType, CohereModelType, GeminiModelType, MistralModelType, OllamaModelType, TogetherModelType, FireworksModelType, GroqModelType } from '../types/llm-types'
+import type { LLMServices } from '../types/llms'
+import type { TranscriptServices, WhisperModelType } from '../types/transcription'
+import type { ChatGPTModelType, ClaudeModelType, CohereModelType, GeminiModelType, MistralModelType, OllamaModelType, TogetherModelType, FireworksModelType, GroqModelType } from '../types/llms'
 
 export const execPromise = promisify(exec)
 export const execFilePromise = promisify(execFile)

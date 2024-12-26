@@ -5,7 +5,7 @@ import { env } from 'node:process'
 import { Mistral } from '@mistralai/mistralai'
 import { MISTRAL_MODELS } from '../utils/globals'
 import { l, err } from '../utils/logging'
-import type { LLMFunction, MistralModelType } from '../types/llm-types'
+import type { LLMFunction, MistralModelType } from '../types/llms'
 
 /**
  * Main function to call Mistral AI API.

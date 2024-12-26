@@ -6,7 +6,6 @@ A list of scripts in Autoshow's `package.json` along with explanations for what 
 
 - [Setup Scripts](#setup-scripts)
   - [`setup`](#setup)
-  - [`setup-python`](#setup-python)
   - [`setup-docker`](#setup-docker)
   - [`setup-all`](#setup-all)
 - [Base, Main, and Serve Commands](#base,-main,-and-serve-commands)
@@ -42,22 +41,10 @@ A list of scripts in Autoshow's `package.json` along with explanations for what 
 
 ### `setup`
 
-Executes the `setup.sh` bash script located in the `./scripts/` directory.
-
-- Initializes the project by installing necessary dependencies and performing initial configuration tasks.
+Executes the `setup.sh` bash script located in the `./scripts/` directory. Initializes the project by installing necessary dependencies and performing initial configuration tasks.
 
 ```json
 "setup": "bash ./scripts/setup.sh"
-```
-
-### `setup-python`
-
-Runs the `setup-python.sh` bash script from the `./scripts/` directory.
-
-- Sets up the Python environment, installing any Python dependencies required by the project.
-
-```json
-"setup-python": "bash ./scripts/setup-python.sh"
 ```
 
 ### `setup-docker`
@@ -78,11 +65,10 @@ Prepares the Docker environment without starting the containers.
 Runs all setup scripts sequentially to fully initialize the project.
 
 - `npm run setup`: Initializes the project.
-- `npm run setup-python`: Sets up the Python environment.
 - `npm run setup-docker`: Prepares the Docker environment.
 
 ```json
-"setup-all": "npm run setup && npm run setup-python && npm run setup-docker"
+"setup-all": "npm run setup && npm run setup-docker"
 ```
 
 ## Base, Main, and Serve Commands
@@ -101,9 +87,7 @@ Sets up a base command for running TypeScript files using `tsx`, a TypeScript ex
 
 ### `as`
 
-Executes the main command-line interface (CLI) application.
-
-- Runs `src/cli/commander.ts` using `tsx` with the base options defined in `tsx:base`.
+Executes the main command-line interface (CLI) application. Runs `src/cli/commander.ts` using `tsx` with the base options defined in `tsx:base`.
 
 ```json
 "as": "npm run tsx:base -- src/cli/commander.ts"
@@ -111,9 +95,8 @@ Executes the main command-line interface (CLI) application.
 
 ### `serve`
 
-Starts the server in watch mode, recompiling on changes.
+Starts the server in watch mode, recompiling on changes. Runs `src/server/index.ts`, the server entry point.
 
-- Runs `src/server/index.ts`, the server entry point.
 - `--watch`: Enables watch mode.
 - `--experimental-sqlite`: Enables experimental SQLite features.
 
@@ -125,9 +108,7 @@ Starts the server in watch mode, recompiling on changes.
 
 ### `video`
 
-Processes a single YouTube video using the CLI.
-
-- Runs the main CLI script with the `--video` option.
+Processes a single YouTube video using the CLI. Runs the main CLI script with the `--video` option.
 
 ```json
 "video": "npm run as -- --video"
@@ -135,9 +116,7 @@ Processes a single YouTube video using the CLI.
 
 ### `urls`
 
-Processes a list of YouTube URLs from a file.
-
-- Runs the CLI with the `--urls` option.
+Processes a list of YouTube URLs from a file. Runs the CLI with the `--urls` option.
 
 ```json
 "urls": "npm run as -- --urls"
@@ -145,9 +124,7 @@ Processes a list of YouTube URLs from a file.
 
 ### `playlist`
 
-Processes all videos in a YouTube playlist.
-
-- Runs the CLI with the `--playlist` option.
+Processes all videos in a YouTube playlist. Runs the CLI with the `--playlist` option.
 
 ```json
 "playlist": "npm run as -- --playlist"
@@ -155,9 +132,7 @@ Processes all videos in a YouTube playlist.
 
 ### `file`
 
-Processes a local audio or video file.
-
-- Runs the CLI with the `--file` option.
+Processes a local audio or video file. Runs the CLI with the `--file` option.
 
 ```json
 "file": "npm run as -- --file"
@@ -165,9 +140,7 @@ Processes a local audio or video file.
 
 ### `rss`
 
-Processes a podcast RSS feed.
-
-- Runs the CLI with the `--rss` option.
+Processes a podcast RSS feed. Runs the CLI with the `--rss` option.
 
 ```json
 "rss": "npm run as -- --rss"
@@ -175,10 +148,7 @@ Processes a podcast RSS feed.
 
 ### `info`
 
-Generates JSON files containing metadata information.
-
-- Runs the CLI with the `--info` option.
-- Useful for retrieving information without processing the content.
+Generates JSON files containing metadata information. Runs the CLI with the `--info` option which is useful for retrieving information without processing the content.
 
 ```json
 "info": "npm run as -- --info"
@@ -188,9 +158,7 @@ Generates JSON files containing metadata information.
 
 ### `test-local`
 
-Runs local unit tests.
-
-- Executes `test/local.test.ts` using `tsx` in test mode.
+Runs local unit tests. Executes `test/local.test.ts` using `tsx` in test mode.
 
 ```json
 "test-local": "tsx --test test/local.test.ts"
@@ -198,9 +166,7 @@ Runs local unit tests.
 
 ### `test-docker`
 
-Runs tests related to Docker services.
-
-- Executes `test/docker.test.ts` to verify Docker integrations.
+Runs tests related to Docker services. Executes `test/docker.test.ts` to verify Docker integrations.
 
 ```json
 "test-docker": "tsx --test test/docker.test.ts"
@@ -208,9 +174,7 @@ Runs tests related to Docker services.
 
 ### `test-services`
 
-Tests external services and APIs used by the application.
-
-- Runs `test/services.test.ts` to ensure service integrations are functioning.
+Tests external services and APIs used by the application. Runs `test/services.test.ts` to ensure service integrations are functioning.
 
 ```json
 "test-services": "tsx --test test/services.test.ts"
@@ -218,21 +182,19 @@ Tests external services and APIs used by the application.
 
 ### `test-all`
 
-Runs all test suites sequentially. Test runs include:
+Runs all tests including:
 
 - Local tests.
 - Service integration tests.
 - Docker-related tests.
 
 ```json
-"test-all": "npm run test-local && npm run test-services && npm run test-docker"
+"test-all": "tsx --test test/all.test.ts"
 ```
 
 ### `t`
 
-Alias for the `test-local` script.
-
-- Provides a shorthand command for running local tests.
+Alias for the `test-local` script. Provides a shorthand command for running local tests.
 
 ```json
 "t": "npm run test-local"
@@ -240,9 +202,7 @@ Alias for the `test-local` script.
 
 ### `test-server-local`
 
-Tests the local server functionality.
-
-- Runs `src/server/tests/fetch-local.ts` using `tsx`.
+Tests the local server functionality. Runs `src/server/tests/fetch-local.ts` using `tsx`.
 
 ```json
 "test-server-local": "npm run tsx:base -- src/server/tests/fetch-local.ts"
@@ -250,9 +210,7 @@ Tests the local server functionality.
 
 ### `test-server-all`
 
-Tests all server functionalities.
-
-- Runs `src/server/tests/fetch-all.ts` using `tsx`.
+Tests all server functionalities. Runs `src/server/tests/fetch-all.ts` using `tsx`.
 
 ```json
 "test-server-all": "npm run tsx:base -- src/server/tests/fetch-all.ts"

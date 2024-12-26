@@ -11,7 +11,7 @@ import type {
   AssemblyAIPollingResponse,
   AssemblyAIUtterance,
   AssemblyAIWord
-} from '../types/transcript-service-types'
+} from '../types/transcription'
 
 /**
  * Formats the Deepgram transcript by adding timestamps and newlines based on conditions.

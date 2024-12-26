@@ -1,7 +1,8 @@
 // src/server/utils/req-to-opts.ts
 
-import type { ProcessingOptions, LLMServices } from '../../types/main'
-import type { TranscriptServices } from '../../types/transcript-service-types'
+import type { ProcessingOptions } from '../../types/process'
+import type { LLMServices } from '../../types/llms'
+import type { TranscriptServices } from '../../types/transcription'
 
 // Function to map request data to processing options
 export function reqToOpts(requestData: any): {

@@ -12,14 +12,14 @@ import { writeFile, readFile } from 'node:fs/promises'
 import { env } from 'node:process'
 import { l, err } from '../utils/logging'
 import { formatAssemblyTranscript } from '../utils/format-transcript'
-import type { ProcessingOptions } from '../types/main'
+import type { ProcessingOptions } from '../types/process'
 import type {
   AssemblyAITranscriptionOptions,
   AssemblyAIErrorResponse,
   AssemblyAIUploadResponse,
   AssemblyAITranscript,
   AssemblyAIPollingResponse
-} from '../types/transcript-service-types'
+} from '../types/transcription'
 
 const BASE_URL = 'https://api.assemblyai.com/v2'
 

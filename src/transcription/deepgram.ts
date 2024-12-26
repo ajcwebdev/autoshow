@@ -12,7 +12,7 @@ import { writeFile, readFile } from 'node:fs/promises'
 import { env } from 'node:process'
 import { l, err } from '../utils/logging'
 import { formatDeepgramTranscript } from '../utils/format-transcript'
-import type { DeepgramResponse } from '../types/transcript-service-types'
+import type { DeepgramResponse } from '../types/transcription'
 
 /**
  * Main function to handle transcription using Deepgram API.

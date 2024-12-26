@@ -16,8 +16,8 @@ import { existsSync } from 'node:fs'
 import { lrcToTxt } from '../utils/format-transcript'
 import { WHISPER_MODELS, execPromise } from '../utils/globals'
 import { l, err } from '../utils/logging'
-import type { ProcessingOptions } from '../types/main'
-import type { WhisperModelType, WhisperTranscriptServices, WhisperRunner } from '../types/transcript-service-types'
+import type { ProcessingOptions } from '../types/process'
+import type { WhisperModelType, WhisperTranscriptServices, WhisperRunner } from '../types/transcription'
 
 /**
  * Main function to handle transcription using various Whisper-based methods.

@@ -12,7 +12,7 @@ import { promisify } from 'node:util'
 import { readFile, access } from 'node:fs/promises'
 import { fileTypeFromBuffer } from 'file-type'
 import { l, err } from '../utils/logging'
-import type { SupportedFileType, ProcessingOptions } from '../types/main'
+import type { SupportedFileType, ProcessingOptions } from '../types/process'
 
 const execFilePromise = promisify(execFile)
 const execPromise = promisify(exec)

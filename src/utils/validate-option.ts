@@ -3,8 +3,9 @@
 import { exit } from 'node:process'
 import { err } from '../utils/logging'
 import { PROCESS_HANDLERS } from '../cli/commander'
-import type { ProcessingOptions, ValidAction, HandlerFunction, LLMServices } from '../types/main'
-import type { TranscriptServices } from '../types/transcript-service-types'
+import type { ProcessingOptions, ValidAction, HandlerFunction } from '../types/process'
+import type { TranscriptServices } from '../types/transcription'
+import type { LLMServices } from '../types/llms'
 
 /**
  * Type guard to check if a string is a valid action.

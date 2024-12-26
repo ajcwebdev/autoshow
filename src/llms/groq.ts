@@ -4,7 +4,7 @@ import { writeFile } from 'node:fs/promises'
 import { env } from 'node:process'
 import { GROQ_MODELS } from '../utils/globals'
 import { l, err } from '../utils/logging'
-import type { GroqChatCompletionResponse, GroqModelType } from '../types/llm-types'
+import type { GroqChatCompletionResponse, GroqModelType } from '../types/llms'
 
 // Define the Groq API URL
 const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions'

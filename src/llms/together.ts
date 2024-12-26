@@ -4,7 +4,7 @@ import { writeFile } from 'node:fs/promises'
 import { env } from 'node:process'
 import { TOGETHER_MODELS } from '../utils/globals'
 import { l, err } from '../utils/logging'
-import type { LLMFunction, TogetherModelType, TogetherResponse } from '../types/llm-types'
+import type { LLMFunction, TogetherModelType, TogetherResponse } from '../types/llms'
 
 /**
  * Main function to call Together AI API.

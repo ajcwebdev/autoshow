@@ -16,10 +16,10 @@ import { callMistral } from '../llms/mistral'
 import { callFireworks } from '../llms/fireworks'
 import { callTogether } from '../llms/together'
 import { callGroq } from '../llms/groq'
-import { generatePrompt } from '../llms/prompt'
+import { generatePrompt } from './select-prompt'
 import { l, err } from '../utils/logging'
-import type { LLMServices, ProcessingOptions } from '../types/main'
-import type { LLMFunction, LLMFunctions } from '../types/llm-types'
+import type { ProcessingOptions } from '../types/process'
+import type { LLMServices, LLMFunction, LLMFunctions } from '../types/llms'
 
 /**
  * Processes a transcript using a specified Language Model service.

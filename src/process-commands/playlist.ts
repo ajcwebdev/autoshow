@@ -10,8 +10,9 @@ import { processVideo } from './video'
 import { execFilePromise } from '../utils/globals'
 import { l, err, logPlaylistSeparator } from '../utils/logging'
 import { sanitizeTitle } from '../process-steps/generate-markdown'
-import type { LLMServices, ProcessingOptions, VideoMetadata } from '../types/main'
-import type { TranscriptServices } from '../types/transcript-service-types'
+import type { ProcessingOptions, VideoMetadata } from '../types/process'
+import type { TranscriptServices } from '../types/transcription'
+import type { LLMServices } from '../types/llms'
 
 /**
  * Processes an entire YouTube playlist by:

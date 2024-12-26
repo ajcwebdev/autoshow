@@ -23,8 +23,9 @@ import { processRSS } from '../process-commands/rss'
 import { validateOption, isValidAction, validateRSSAction } from '../utils/validate-option'
 import { ACTION_OPTIONS, LLM_OPTIONS, TRANSCRIPT_OPTIONS } from '../utils/globals'
 import { l, err, logCompletionSeparator } from '../utils/logging'
-import type { ProcessingOptions, HandlerFunction, LLMServices, ValidAction } from '../types/main'
-import type { TranscriptServices } from '../types/transcript-service-types'
+import type { ProcessingOptions, HandlerFunction, ValidAction } from '../types/process'
+import type { TranscriptServices } from '../types/transcription'
+import type { LLMServices } from '../types/llms'
 
 // Initialize the command-line interface using Commander.js
 const program = new Command()

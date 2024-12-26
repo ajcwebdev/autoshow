@@ -8,7 +8,7 @@
 import { readFile, writeFile } from 'node:fs/promises'
 import { processVideo } from './process-video'
 import { execFilePromise } from '../types/globals'
-import { l, err } from '../utils/logging'
+import { l, err, logURLsSeparator } from '../utils/logging'
 import type { LLMServices, ProcessingOptions, VideoMetadata } from '../types/main'
 import type { TranscriptServices } from '../types/transcript-service-types'
 
@@ -72,9 +72,9 @@ export async function processURLs(
             ])
 
             // Split the output into individual metadata fields
-            const [showLink, channel, channelURL, title, publishDate, coverImage] = stdout
-              .trim()
-              .split('\n')
+            const [
+              showLink, channel, channelURL, title, publishDate, coverImage
+            ] = stdout.trim().split('\n')
 
             // Validate that all required metadata fields are present
             if (!showLink || !channel || !channelURL || !title || !publishDate || !coverImage) {
@@ -83,20 +83,12 @@ export async function processURLs(
 
             // Return the metadata object
             return {
-              showLink,
-              channel,
-              channelURL,
-              title,
-              description: '',
-              publishDate,
-              coverImage,
+              showLink, channel, channelURL, title, description: '', publishDate, coverImage
             } as VideoMetadata
           } catch (error) {
             // Log error but return null to filter out failed extractions
             err(
-              `Error extracting metadata for ${url}: ${
-                error instanceof Error ? error.message : String(error)
-              }`
+              `Error extracting metadata for ${url}: ${error instanceof Error ? error.message : String(error)}`
             )
             return null
           }
@@ -121,9 +113,7 @@ export async function processURLs(
     // Process each URL sequentially, with error handling for individual videos
     for (const [index, url] of urls.entries()) {
       // Visual separator for each video in the console
-      l.opts(`\n================================================================================================`)
-      l.opts(`  Processing URL ${index + 1}/${urls.length}: ${url}`)
-      l.opts(`================================================================================================\n`)
+      logURLsSeparator(index, urls.length, url)
       try {
         // Process the video using the existing processVideo function
         await processVideo(options, url, llmServices, transcriptServices)

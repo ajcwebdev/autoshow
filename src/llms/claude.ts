@@ -46,7 +46,9 @@ export const callClaude: LLMFunction = async (
       usage, // Token usage information
       stop_reason // Reason why the generation stopped
     } = response
-    
+
+    const { input_tokens, output_tokens } = usage
+
     // Extract text content from the response
     const textContent = extractTextContent(content)
     
@@ -58,15 +60,7 @@ export const callClaude: LLMFunction = async (
     }
     
     l.wait(`  - Stop Reason: ${stop_reason}\n  - Model: ${usedModel}`)
-    
-    // Check if usage information is available
-    if (usage) {
-      const { input_tokens, output_tokens } = usage
-      l.wait(`  - Token Usage:\n    - ${input_tokens} input tokens\n    - ${output_tokens} output tokens`)
-    } else {
-      l.wait("  - Token usage information not available")
-    }
-    
+    l.wait(`  - Token Usage:\n    - ${input_tokens} input tokens\n    - ${output_tokens} output tokens`)
   } catch (error) {
     err(`Error in callClaude: ${(error as Error).message}`)
     throw error // Re-throw the error for handling in the calling function

@@ -45,24 +45,14 @@ export const callCohere: LLMFunction = async (
       meta, // Metadata including token usage
       finishReason // Reason why the generation stopped
     } = response
+
+    const { inputTokens, outputTokens } = meta?.tokens ?? {}
     
     // Write the generated text to the output file
-    if (text) {
-      await writeFile(tempPath, text)
-    } else {
-      throw new Error('No text content generated from the API')
-    }
+    await writeFile(tempPath, text)
     
     l.wait(`\n  Finish Reason: ${finishReason}\n  Model: ${actualModel}`)
-    
-    // Check if token usage information is available
-    if (meta && meta.tokens) {
-      const { inputTokens, outputTokens } = meta.tokens
-      l.wait(`  Token Usage:\n    - ${inputTokens} input tokens\n    - ${outputTokens} output tokens`)
-    } else {
-      l.wait("  - Token usage information not available")
-    }
-    
+    l.wait(`  Token Usage:\n    - ${inputTokens} input tokens\n    - ${outputTokens} output tokens`)
   } catch (error) {
     err(`Error in callCohere: ${(error as Error).message}`)
     throw error // Re-throw the error for handling in the calling function

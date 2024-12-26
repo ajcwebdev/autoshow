@@ -50,20 +50,13 @@ export const callChatGPT: LLMFunction = async (
     const finish_reason = firstChoice.finish_reason ?? 'unknown'
     const usedModel = response.model
     const usage = response.usage
+    const { prompt_tokens, completion_tokens, total_tokens } = usage ?? {}
     
     // Write the generated content to the output file
     await writeFile(tempPath, content)
     
     l.wait(`  - Finish Reason: ${finish_reason}\n  - ChatGPT Model: ${usedModel}`)
-    
-    // Check if usage information is available
-    if (usage) {
-      const { prompt_tokens, completion_tokens, total_tokens } = usage
-      l.wait(`  - Token Usage:\n    - ${prompt_tokens} prompt tokens\n    - ${completion_tokens} completion tokens\n    - ${total_tokens} total tokens`)
-    } else {
-      l.wait("  - Token usage information not available")
-    }
-    
+    l.wait(`  - Token Usage:\n    - ${prompt_tokens} prompt tokens\n    - ${completion_tokens} completion tokens\n    - ${total_tokens} total tokens`)
   } catch (error) {
     err(`Error in callChatGPT: ${(error as Error).message}`)
     throw error // Re-throw the error for handling in the calling function

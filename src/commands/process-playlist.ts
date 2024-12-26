@@ -8,7 +8,7 @@
 import { writeFile } from 'node:fs/promises'
 import { processVideo } from './process-video'
 import { execFilePromise } from '../types/globals'
-import { l, err } from '../utils/logging'
+import { l, err, logPlaylistSeparator } from '../utils/logging'
 import { sanitizeTitle } from '../utils/generate-markdown'
 import type { LLMServices, ProcessingOptions, VideoMetadata } from '../types/main'
 import type { TranscriptServices } from '../types/transcript-service-types'
@@ -135,9 +135,7 @@ export async function processPlaylist(
     // Process each video sequentially, with error handling for individual videos
     for (const [index, url] of urls.entries()) {
       // Visual separator for each video in the console
-      l.opts(`\n================================================================================================`)
-      l.opts(`  Processing video ${index + 1}/${urls.length}: ${url}`)
-      l.opts(`================================================================================================\n`)
+      logPlaylistSeparator(index, urls.length, url)
       try {
         // Process the video using the existing processVideo function
         await processVideo(options, url, llmServices, transcriptServices)

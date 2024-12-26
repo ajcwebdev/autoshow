@@ -12,7 +12,7 @@ import { runTranscription } from '../utils/run-transcription'
 import { runLLM } from '../utils/run-llm'
 import { cleanUpFiles } from '../utils/clean-up-files'
 import { validateRSSOptions } from '../utils/validate-option'
-import { l, err, logRSSProcessingAction, logRSSProcessingStatus } from '../utils/logging'
+import { l, err, logRSSProcessingAction, logRSSProcessingStatus, logRSSSeparator } from '../utils/logging'
 import { parser } from '../types/globals'
 import { db } from '../server/db'
 import type { LLMServices, ProcessingOptions, RSSItem } from '../types/main'
@@ -221,15 +221,8 @@ async function processItems(
   transcriptServices?: TranscriptServices
 ): Promise<void> {
   for (const [index, item] of items.entries()) {
-    l.opts(`\n========================================================================================`)
-    l.opts(`  Item ${index + 1}/${items.length} processing: ${item.title}`)
-    l.opts(`========================================================================================\n`)
-    
+    logRSSSeparator(index, items.length, item.title)
     await processItem(options, item, llmServices, transcriptServices)
-    
-    l.opts(`\n========================================================================================`)
-    l.opts(`  ${index + 1}/${items.length} item processing completed successfully`)
-    l.opts(`========================================================================================\n`)
   }
 }
 

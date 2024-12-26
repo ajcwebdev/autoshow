@@ -61,7 +61,7 @@ export const l = createChainableLogger()
 export const err = createChainableErrorLogger()
 
 /**
- * Logs the current processing action based on provided options.
+ * Logs the current RSS processing action based on provided options.
  * 
  * @param options - Configuration options determining what to process
  */
@@ -75,9 +75,13 @@ export function logRSSProcessingAction(options: ProcessingOptions): void {
     l.wait(`  - Skipping first ${options.skip || 0} items`)
   }
 }
-  
+
 /**
- * Logs the processing status and item counts.
+ * Logs the processing status and item counts for RSS feeds.
+ * 
+ * @param total - Total number of RSS items found.
+ * @param processing - Number of RSS items to process.
+ * @param options - Configuration options.
  */
 export function logRSSProcessingStatus(total: number, processing: number, options: ProcessingOptions): void {
   if (options.item && options.item.length > 0) {
@@ -93,7 +97,7 @@ export function logRSSProcessingStatus(total: number, processing: number, option
 }
 
 /**
- * Logs the current processing action based on provided options.
+ * Logs the current channel processing action based on provided options.
  * 
  * @param options - Configuration options determining what to process
  */
@@ -106,7 +110,7 @@ export function logChannelProcessingAction(options: ProcessingOptions): void {
 }
 
 /**
- * Logs the processing status and video counts.
+ * Logs the processing status and video counts for channel downloads.
  * 
  * @param total - Total number of videos found.
  * @param processing - Number of videos to process.
@@ -123,4 +127,40 @@ export function logChannelProcessingStatus(total: number, processing: number, op
     l.wait(`\n  - Found ${total} videos in the channel.`)
     l.wait(`  - Processing all ${processing} videos.\n`)
   }
+}
+
+/**
+ * Logs a visual separator for Channel processing (identical output).
+ */
+export function logChannelSeparator(index: number, total: number, url: string): void {
+  l.opts(`\n================================================================================================`)
+  l.opts(`  Processing video ${index + 1}/${total}: ${url}`)
+  l.opts(`================================================================================================\n`)
+}
+
+/**
+ * Logs a visual separator for Playlist processing (identical output).
+ */
+export function logPlaylistSeparator(index: number, total: number, url: string): void {
+  l.opts(`\n================================================================================================`)
+  l.opts(`  Processing video ${index + 1}/${total}: ${url}`)
+  l.opts(`================================================================================================\n`)
+}
+
+/**
+ * Logs a visual separator for an arbitrary list of URLs (identical output).
+ */
+export function logURLsSeparator(index: number, total: number, url: string): void {
+  l.opts(`\n================================================================================================`)
+  l.opts(`  Processing URL ${index + 1}/${total}: ${url}`)
+  l.opts(`================================================================================================\n`)
+}
+
+/**
+ * Logs a visual separator for RSS items (identical output).
+ */
+export function logRSSSeparator(index: number, total: number, title: string): void {
+  l.opts(`\n========================================================================================`)
+  l.opts(`  Item ${index + 1}/${total} processing: ${title}`)
+  l.opts(`========================================================================================\n`)
 }

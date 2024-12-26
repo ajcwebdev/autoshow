@@ -55,11 +55,6 @@ export const callGemini: LLMFunction = async (
       // Extract the text from the response
       const text = response.text()
       
-      // Check if text was generated
-      if (!text) {
-        throw new Error("No text generated from Gemini")
-      }
-      
       // Write the generated text to the output file
       await writeFile(tempPath, text)
       l.wait(`\nModel: ${actualModel}`)

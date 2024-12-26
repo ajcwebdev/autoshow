@@ -8,7 +8,7 @@
 import { writeFile } from 'node:fs/promises'
 import { processVideo } from './process-video'
 import { execFilePromise } from '../types/globals'
-import { l, err, logChannelProcessingAction, logChannelProcessingStatus } from '../utils/logging'
+import { l, err, logChannelProcessingAction, logChannelProcessingStatus, logChannelSeparator } from '../utils/logging'
 import { validateChannelOptions } from '../utils/validate-option'
 import type { LLMServices, ProcessingOptions, VideoMetadata, VideoInfo } from '../types/main'
 import type { TranscriptServices } from '../types/transcript-service-types'
@@ -199,9 +199,7 @@ export async function processChannel(
     for (const [index, video] of videosToProcess.entries()) {
       const url = video.url
       // Visual separator for each video in the console
-      l.opts(`\n================================================================================================`)
-      l.opts(`  Processing video ${index + 1}/${videosToProcess.length}: ${url}`)
-      l.opts(`================================================================================================\n`)
+      logChannelSeparator(index, videosToProcess.length, url)
       try {
         // Process the video using the existing processVideo function
         await processVideo(options, url, llmServices, transcriptServices)

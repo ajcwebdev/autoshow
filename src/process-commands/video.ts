@@ -1,15 +1,15 @@
-// src/commands/process-file.ts
+// src/commands/process-video.ts
 
 /**
- * @file Process a local audio or video file for transcription and analysis.
+ * @file Process a single video from YouTube or other supported platforms.
  * @packageDocumentation
  */
 
-import { generateMarkdown } from '../utils/generate-markdown'
-import { downloadAudio } from '../utils/download-audio'
-import { runTranscription } from '../utils/run-transcription'
-import { runLLM } from '../utils/run-llm'
-import { cleanUpFiles } from '../utils/clean-up-files'
+import { generateMarkdown } from '../process-steps/generate-markdown'
+import { downloadAudio } from '../process-steps/download-audio'
+import { runTranscription } from '../process-steps/run-transcription'
+import { runLLM } from '../process-steps/run-llm'
+import { cleanUpFiles } from '../process-steps/clean-up-files'
 import { l, err } from '../utils/logging'
 import { readFile } from 'fs/promises'
 import { db } from '../server/db'
@@ -17,40 +17,38 @@ import type { LLMServices, ProcessingOptions } from '../types/main'
 import type { TranscriptServices } from '../types/transcript-service-types'
 
 /**
- * Processes a local audio or video file through a series of operations:
- * 1. Generates markdown with file metadata
- * 2. Converts the file to the required audio format
- * 3. Transcribes the audio content
- * 4. Processes the transcript with a language model (if specified)
- * 5. Saves the show notes into the database
- * 6. Cleans up temporary files (unless disabled)
- * 
- * Unlike processVideo, this function handles local files and doesn't need
- * to check for external dependencies like yt-dlp.
+ * Processes a single video by executing a series of operations:
+ * 1. Validates required system dependencies
+ * 2. Generates markdown with video metadata
+ * 3. Downloads and extracts audio
+ * 4. Transcribes the audio content
+ * 5. Processes the transcript with a language model (if specified)
+ * 6. Saves the show notes into the database
+ * 7. Cleans up temporary files (unless disabled)
  * 
  * @param options - Configuration options for processing
- * @param filePath - Path to the local audio or video file to process
+ * @param url - The URL of the video to process
  * @param llmServices - Optional language model service to use for processing the transcript
  * @param transcriptServices - Optional transcription service to use for converting audio to text
- * @throws Will terminate the process with exit code 1 if any processing step fails
+ * @throws Will throw an error if any processing step fails
  * @returns Promise that resolves when all processing is complete
  */
-export async function processFile(
+export async function processVideo(
   options: ProcessingOptions,
-  filePath: string,
+  url: string,
   llmServices?: LLMServices,
   transcriptServices?: TranscriptServices
-): Promise<void> {
+): Promise<string> {
   // Log the processing parameters for debugging purposes
-  l.opts('Parameters passed to processFile:\n')
+  l.opts('Parameters passed to processVideo:\n')
   l.opts(`  - llmServices: ${llmServices}\n  - transcriptServices: ${transcriptServices}\n`)
 
   try {
-    // Generate markdown file with file metadata and get file paths
-    const { frontMatter, finalPath, filename, metadata } = await generateMarkdown(options, filePath)
+    // Generate markdown file with video metadata and get file paths
+    const { frontMatter, finalPath, filename, metadata } = await generateMarkdown(options, url)
 
-    // Convert the input file to the required audio format for processing
-    await downloadAudio(options, filePath, filename)
+    // Extract and download the audio from the video source
+    await downloadAudio(options, url, filename)
 
     // Convert the audio to text using the specified transcription service
     await runTranscription(options, finalPath, transcriptServices)
@@ -81,9 +79,12 @@ export async function processFile(
     if (!options.noCleanUp) {
       await cleanUpFiles(finalPath)
     }
+
+    // Return the content
+    return content
   } catch (error) {
-    // Log the error and terminate the process with error code
-    err(`Error processing file: ${(error as Error).message}`)
-    process.exit(1)
+    // Log the error details and re-throw for upstream handling
+    err('Error processing video:', (error as Error).message)
+    throw error
   }
 }

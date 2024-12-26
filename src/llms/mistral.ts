@@ -3,7 +3,7 @@
 import { writeFile } from 'node:fs/promises'
 import { env } from 'node:process'
 import { Mistral } from '@mistralai/mistralai'
-import { MISTRAL_MODELS } from '../types/globals'
+import { MISTRAL_MODELS } from '../utils/globals'
 import { l, err } from '../utils/logging'
 import type { LLMFunction, MistralModelType } from '../types/llm-types'
 

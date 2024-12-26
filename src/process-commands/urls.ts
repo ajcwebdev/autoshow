@@ -6,8 +6,8 @@
  */
 
 import { readFile, writeFile } from 'node:fs/promises'
-import { processVideo } from './process-video'
-import { execFilePromise } from '../types/globals'
+import { processVideo } from './video'
+import { execFilePromise } from '../utils/globals'
 import { l, err, logURLsSeparator } from '../utils/logging'
 import type { LLMServices, ProcessingOptions, VideoMetadata } from '../types/main'
 import type { TranscriptServices } from '../types/transcript-service-types'

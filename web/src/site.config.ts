@@ -33,8 +33,6 @@ export const PROMPT_CHOICES = [
 export const TRANSCRIPTION_SERVICES = [
   { value: 'whisper', label: 'Whisper.cpp' },
   { value: 'whisperDocker', label: 'Whisper.cpp (Docker)' },
-  { value: 'whisperPython', label: 'Whisper Python' },
-  { value: 'whisperDiarization', label: 'Whisper Diarization' },
   { value: 'deepgram', label: 'Deepgram' },
   { value: 'assembly', label: 'AssemblyAI' },
 ]

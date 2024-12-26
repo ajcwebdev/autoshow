@@ -11,7 +11,7 @@
 import { writeFile, readFile } from 'node:fs/promises'
 import { env } from 'node:process'
 import { l, err } from '../utils/logging'
-import { formatDeepgramTranscript } from './transcription-utils'
+import { formatDeepgramTranscript } from '../utils/format-transcript'
 import type { DeepgramResponse } from '../types/transcript-service-types'
 
 /**

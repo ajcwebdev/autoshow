@@ -123,8 +123,6 @@ type TranscriptServiceConfig = {
 export const TRANSCRIPT_SERVICES: Record<string, TranscriptServiceConfig> = {
   WHISPER: { name: 'Whisper.cpp', value: 'whisper', isWhisper: true },
   WHISPER_DOCKER: { name: 'Whisper.cpp (Docker)', value: 'whisperDocker', isWhisper: true },
-  WHISPER_PYTHON: { name: 'Whisper Python', value: 'whisperPython', isWhisper: true },
-  WHISPER_DIARIZATION: { name: 'Whisper Diarization', value: 'whisperDiarization', isWhisper: true },
   DEEPGRAM: { name: 'Deepgram', value: 'deepgram' },
   ASSEMBLY: { name: 'AssemblyAI', value: 'assembly' },
 } as const

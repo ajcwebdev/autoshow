@@ -11,7 +11,7 @@
 import { writeFile, readFile } from 'node:fs/promises'
 import { env } from 'node:process'
 import { l, err } from '../utils/logging'
-import { formatAssemblyTranscript } from './transcription-utils'
+import { formatAssemblyTranscript } from '../utils/format-transcript'
 import type { ProcessingOptions } from '../types/main'
 import type {
   AssemblyAITranscriptionOptions,

@@ -2,7 +2,7 @@
 
 import { writeFile } from 'node:fs/promises'
 import { env } from 'node:process'
-import { TOGETHER_MODELS } from '../types/globals'
+import { TOGETHER_MODELS } from '../utils/globals'
 import { l, err } from '../utils/logging'
 import type { LLMFunction, TogetherModelType, TogetherResponse } from '../types/llm-types'
 

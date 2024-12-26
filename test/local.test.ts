@@ -87,18 +87,6 @@ const commands = [
     expectedFile: 'ajcwebdev_info.json',
     newName: '12-ajcwebdev-rss-info.json',
   },
-  // {
-  //   // Process local audio file with Python Whisper 'base' model.
-  //   cmd: 'npm run as -- --file "content/audio.mp3" --whisperPython base',
-  //   expectedFile: 'audio-prompt.md',
-  //   newName: '13-whisper-python-base.md'
-  // },
-  // {
-  //   // Process local audio file with whisper-diarization 'base' model.
-  //   cmd: 'npm run as -- --file "content/audio.mp3" --whisperDiarization base',
-  //   expectedFile: 'audio-prompt.md',
-  //   newName: '14-whisper-diarization-base.md'
-  // },
 ]
 
 test('Autoshow Command Tests', async (t) => {

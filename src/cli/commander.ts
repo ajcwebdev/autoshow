@@ -12,16 +12,17 @@
  */
 
 import { argv, exit } from 'node:process'
+import { fileURLToPath } from 'node:url'
 import { Command } from 'commander'
-import { processVideo } from '../commands/process-video'
-import { processPlaylist } from '../commands/process-playlist'
-import { processChannel } from '../commands/process-channel'
-import { processURLs } from '../commands/process-urls'
-import { processFile } from '../commands/process-file'
-import { processRSS } from '../commands/process-rss'
-import { validateOption, isValidAction } from '../utils/validate-option'
-import { ACTION_OPTIONS, LLM_OPTIONS, TRANSCRIPT_OPTIONS } from '../types/globals'
-import { l, err } from '../utils/logging'
+import { processVideo } from '../process-commands/video'
+import { processPlaylist } from '../process-commands/playlist'
+import { processChannel } from '../process-commands/channel'
+import { processURLs } from '../process-commands/urls'
+import { processFile } from '../process-commands/file'
+import { processRSS } from '../process-commands/rss'
+import { validateOption, isValidAction, validateRSSAction } from '../utils/validate-option'
+import { ACTION_OPTIONS, LLM_OPTIONS, TRANSCRIPT_OPTIONS } from '../utils/globals'
+import { l, err, logCompletionSeparator } from '../utils/logging'
 import type { ProcessingOptions, HandlerFunction, LLMServices, ValidAction } from '../types/main'
 import type { TranscriptServices } from '../types/transcript-service-types'
 
@@ -65,8 +66,6 @@ program
   // Transcription service options
   .option('--whisper [model]', 'Use Whisper.cpp for transcription with optional model specification')
   .option('--whisperDocker [model]', 'Use Whisper.cpp in Docker for transcription with optional model specification')
-  .option('--whisperPython [model]', 'Use openai-whisper for transcription with optional model specification')
-  .option('--whisperDiarization [model]', 'Use whisper-diarization for transcription with optional model specification')
   .option('--deepgram', 'Use Deepgram for transcription')
   .option('--assembly', 'Use AssemblyAI for transcription')
   .option('--speakerLabels', 'Use speaker labels for AssemblyAI transcription')
@@ -146,16 +145,7 @@ program.action(async (options: ProcessingOptions) => {
     const handler = PROCESS_HANDLERS[action]
 
     if (action === 'rss') {
-      // For RSS feeds, process multiple URLs
-      const rssUrls = options.rss
-      if (!rssUrls || rssUrls.length === 0) {
-        throw new Error(`No valid RSS URLs provided for processing`)
-      }
-      // Iterate over each RSS URL and process it
-      for (const rssUrl of rssUrls) {
-        // Process each RSS feed URL individually
-        await handler(options, rssUrl, llmServices, transcriptServices)
-      }
+      await validateRSSAction(options, handler, llmServices, transcriptServices)
     } else {
       // Get input value with proper typing
       const input = options[action]
@@ -169,10 +159,8 @@ program.action(async (options: ProcessingOptions) => {
       await handler(options, input, llmServices, transcriptServices)
     }
 
-    // Log completion message
-    l.final(`\n================================================================================================`)
-    l.final(`  ${action} Processing Completed Successfully.`)
-    l.final(`================================================================================================\n`)
+    // Log completion message and exit
+    logCompletionSeparator(action)
     exit(0)
   } catch (error) {
     // Handle errors during processing
@@ -182,10 +170,13 @@ program.action(async (options: ProcessingOptions) => {
 })
 
 // Handle invalid commands
-program.on('command:*', function () {
+program.on('command:*', () => {
   err(`Error: Invalid command '${program.args.join(' ')}'. Use --help to see available commands.`)
   exit(1)
 })
 
-// Parse the command-line arguments and execute the program
-program.parse(argv)
+// Only parse if this file is the actual entry point so lack of options doesn't break the server
+const thisFilePath = fileURLToPath(import.meta.url)
+if (process.argv[1] === thisFilePath) {
+  program.parse(argv)
+}

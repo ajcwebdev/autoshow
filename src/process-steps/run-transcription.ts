@@ -23,8 +23,6 @@ import type { TranscriptServices, WhisperTranscriptServices } from '../types/tra
  * Local Services:
  * - whisper: Default Whisper.cpp implementation
  * - whisperDocker: Whisper.cpp running in Docker
- * - whisperPython: OpenAI's Python Whisper implementation
- * - whisperDiarization: Whisper with speaker diarization
  * 
  * Cloud Services:
  * - deepgram: Deepgram's API service
@@ -33,8 +31,6 @@ import type { TranscriptServices, WhisperTranscriptServices } from '../types/tra
  * @param {ProcessingOptions} options - Configuration options including:
  *   - whisper: Whisper model specification
  *   - whisperDocker: Docker-based Whisper model
- *   - whisperPython: Python-based Whisper model
- *   - whisperDiarization: Diarization model
  *   - speakerLabels: Enable speaker detection (Assembly)
  *   - Additional service-specific options
  * 
@@ -48,8 +44,6 @@ import type { TranscriptServices, WhisperTranscriptServices } from '../types/tra
  * @param {TranscriptServices} [transcriptServices] - The transcription service to use:
  *   - 'whisper': Local Whisper.cpp
  *   - 'whisperDocker': Containerized Whisper
- *   - 'whisperPython': Python Whisper
- *   - 'whisperDiarization': Whisper with speaker detection
  *   - 'deepgram': Deepgram API
  *   - 'assembly': AssemblyAI API
  * 
@@ -100,8 +94,6 @@ export async function runTranscription(
 
     case 'whisper':
     case 'whisperDocker':
-    case 'whisperPython':
-    case 'whisperDiarization':
       // Use the unified callWhisper function for all Whisper options
       await callWhisper(options, finalPath, transcriptServices as WhisperTranscriptServices)
       break

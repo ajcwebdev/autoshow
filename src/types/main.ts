@@ -39,12 +39,6 @@ export type ProcessingOptions = {
   /** The Whisper model to use (e.g., 'tiny', 'base'). */
   whisper?: WhisperModelType
 
-  /** The Whisper Python model to use (e.g., 'tiny', 'base'). */
-  whisperPython?: WhisperModelType
-
-  /** The Whisper Diarization model to use (e.g., 'tiny', 'base'). */
-  whisperDiarization?: WhisperModelType
-
   /** The Whisper model to use with Docker (e.g., 'tiny', 'base'). */
   whisperDocker?: WhisperModelType
 

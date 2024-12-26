@@ -18,9 +18,8 @@
   "scripts": {
     "tsx:base": "tsx --env-file=.env --no-warnings --experimental-sqlite",
     "setup": "bash ./scripts/setup.sh",
-    "setup-python": "bash ./scripts/setup-python.sh",
     "setup-docker": "docker compose up --build -d --remove-orphans --no-start",
-    "setup-all": "npm run setup && npm run setup-python && npm run setup-docker",
+    "setup-all": "npm run setup && npm run setup-docker",
     "as": "npm run tsx:base -- src/cli/commander.ts",
     "video": "npm run as -- --video",
     "urls": "npm run as -- --urls",

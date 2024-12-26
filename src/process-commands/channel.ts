@@ -6,8 +6,8 @@
  */
 
 import { writeFile } from 'node:fs/promises'
-import { processVideo } from './process-video'
-import { execFilePromise } from '../types/globals'
+import { processVideo } from './video'
+import { execFilePromise } from '../utils/globals'
 import { l, err, logChannelProcessingAction, logChannelProcessingStatus, logChannelSeparator } from '../utils/logging'
 import { validateChannelOptions } from '../utils/validate-option'
 import type { LLMServices, ProcessingOptions, VideoMetadata, VideoInfo } from '../types/main'

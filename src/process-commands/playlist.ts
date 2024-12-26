@@ -6,10 +6,10 @@
  */
 
 import { writeFile } from 'node:fs/promises'
-import { processVideo } from './process-video'
-import { execFilePromise } from '../types/globals'
+import { processVideo } from './video'
+import { execFilePromise } from '../utils/globals'
 import { l, err, logPlaylistSeparator } from '../utils/logging'
-import { sanitizeTitle } from '../utils/generate-markdown'
+import { sanitizeTitle } from '../process-steps/generate-markdown'
 import type { LLMServices, ProcessingOptions, VideoMetadata } from '../types/main'
 import type { TranscriptServices } from '../types/transcript-service-types'
 

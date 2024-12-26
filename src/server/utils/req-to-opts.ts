@@ -25,8 +25,6 @@ export function reqToOpts(requestData: any): {
   const transcriptOptions = [
     'whisper',
     'whisperDocker',
-    'whisperPython',
-    'whisperDiarization',
     'deepgram',
     'assembly',
   ] as const
@@ -59,10 +57,6 @@ export function reqToOpts(requestData: any): {
     options.whisper = requestData.whisperModel || 'large-v3-turbo'
   } else if (transcriptServices === 'whisperDocker') {
     options.whisperDocker = requestData.whisperModel || 'large-v3-turbo'
-  } else if (transcriptServices === 'whisperPython') {
-    options.whisperPython = requestData.whisperModel || 'large-v3-turbo'
-  } else if (transcriptServices === 'whisperDiarization') {
-    options.whisperDiarization = requestData.whisperModel || 'large-v3-turbo'
   } else if (transcriptServices === 'deepgram') {
     options.deepgram = true
   } else if (transcriptServices === 'assembly') {

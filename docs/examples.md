@@ -570,26 +570,6 @@ npm run as -- \
   --whisperDocker base
 ```
 
-### Whisper Python
-
-Use the original [`openai/whisper`](https://github.com/openai/whisper) Python library with the newly released [`turbo`](https://github.com/openai/whisper/discussions/2363) model:
-
-```bash
-npm run as -- \
-  --file "content/audio.mp3" \
-  --whisperPython turbo
-```
-
-### Whisper Diarization
-
-Use [`whisper-diarization`](https://github.com/MahmoudAshraf97/whisper-diarization) to provide speaker labels:
-
-```bash
-npm run as -- \
-  --file "content/audio.mp3" \
-  --whisperDiarization tiny
-```
-
 ### Deepgram
 
 Create a `.env` file and set API key as demonstrated in `.env.example` for `DEEPGRAM_API_KEY`.
@@ -713,7 +693,7 @@ docker history autoshow-autoshow:latest
 docker history autoshow-whisper:latest
 ```
 
-Replace `as` with `docker` to run most other commands explained in this document. Does not support all options at this time, notably `--whisperPython` and `--whisperDiarization`.
+Replace `as` with `docker` to run most other commands explained in this document.
 
 ```bash
 npm run docker -- \

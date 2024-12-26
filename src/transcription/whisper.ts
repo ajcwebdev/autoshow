@@ -3,8 +3,6 @@
 // This file manages transcription using various Whisper-based methods:
 // - whisper: Local whisper.cpp
 // - whisperDocker: Whisper.cpp inside Docker
-// - whisperPython: OpenAI Whisper via Python CLI
-// - whisperDiarization: Whisper with speaker diarization
 
 // Steps:
 // 1. Based on the provided transcriptServices option, determine which Whisper runner to use.
@@ -13,10 +11,10 @@
 //    using lrcToTxt or srtToTxt from transcription-utils.
 // 4. Return the final TXT content.
 
-import { readFile, writeFile, unlink } from 'node:fs/promises'
+import { readFile, writeFile } from 'node:fs/promises'
 import { existsSync } from 'node:fs'
-import { lrcToTxt, srtToTxt } from './transcription-utils'
-import { WHISPER_MODELS, execPromise } from '../types/globals'
+import { lrcToTxt } from '../utils/format-transcript'
+import { WHISPER_MODELS, execPromise } from '../utils/globals'
 import { l, err } from '../utils/logging'
 import type { ProcessingOptions } from '../types/main'
 import type { WhisperModelType, WhisperTranscriptServices, WhisperRunner } from '../types/transcript-service-types'
@@ -49,16 +47,6 @@ export async function callWhisper(
         modelList: WHISPER_MODELS,
         runner: runWhisperDocker
       },
-      whisperPython: {
-        option: options.whisperPython,
-        modelList: WHISPER_MODELS,
-        runner: runWhisperPython
-      },
-      whisperDiarization: {
-        option: options.whisperDiarization,
-        modelList: WHISPER_MODELS,
-        runner: runWhisperDiarization
-      }
     } as const
 
     const config = serviceConfig[transcriptServices]
@@ -164,95 +152,4 @@ const runWhisperDocker: WhisperRunner = async (finalPath, whisperModel) => {
   const txtContent = lrcToTxt(lrcContent)
   await writeFile(`${finalPath}.txt`, txtContent)
   l.success(`  Transcript transformation successfully completed:\n    - ${finalPath}.txt\n`)
-}
-
-/**
- * Runs transcription using the openai-whisper Python CLI tool.
- *
- * This runner:
- * - Checks for required dependencies (ffmpeg, Python, openai-whisper).
- * - If openai-whisper is not found, installs it.
- * - Runs whisper via Python CLI to produce an SRT file.
- * - Converts the SRT file to TXT format using `srtToTxt`.
- * - Creates an empty LRC file for consistency, then deletes the SRT file.
- *
- * @param {string} finalPath - The base filename (without extension) of the input (WAV) and output files.
- * @param {string} whisperModel - The Whisper model name to use.
- * @returns {Promise<void>} A promise that resolves when the transcription process is complete.
- * @throws {Error} If ffmpeg or Python are not available, or if installing/running whisper fails.
- */
-const runWhisperPython: WhisperRunner = async (finalPath, whisperModel) => {
-  try {
-    await execPromise('ffmpeg -version')
-  } catch {
-    throw new Error('ffmpeg is not installed or not available in PATH')
-  }
-
-  try {
-    await execPromise('python3 --version')
-  } catch {
-    throw new Error('Python is not installed or not available in PATH')
-  }
-
-  try {
-    await execPromise('which whisper')
-  } catch {
-    l.wait('\n  openai-whisper not found, installing...')
-    await execPromise('pip install -U openai-whisper')
-    l.wait('    - openai-whisper installed')
-  }
-
-  const command = `whisper "${finalPath}.wav" --model ${whisperModel} --output_dir "content" --output_format srt --language en --word_timestamps True`
-  l.wait(`\n  Running transcription with command:\n    ${command}\n`)
-  await execPromise(command)
-
-  const srtContent = await readFile(`${finalPath}.srt`, 'utf8')
-  const txtContent = srtToTxt(srtContent)
-  await writeFile(`${finalPath}.txt`, txtContent)
-  l.wait(`\n  Transcript transformation successfully completed:\n    - ${finalPath}.txt\n`)
-
-  await writeFile(`${finalPath}.lrc`, '')
-  l.wait(`\n  Empty LRC file created:\n    - ${finalPath}.lrc\n`)
-  await unlink(`${finalPath}.srt`)
-  l.wait(`\n  SRT file deleted:\n    - ${finalPath}.srt\n`)
-}
-
-/**
- * Runs transcription using Whisper with speaker diarization.
- *
- * This runner:
- * - Ensures the whisper-diarization environment is set up (creating a virtual environment if needed).
- * - Runs the diarization script to produce an SRT file.
- * - Converts the SRT file to TXT format using `srtToTxt`.
- * - Creates an empty LRC file, then cleans up by deleting the SRT file.
- *
- * @param {string} finalPath - The base filename (without extension) of the input (WAV) and output files.
- * @param {string} whisperModel - The Whisper model name to use.
- * @returns {Promise<void>} A promise that resolves when the transcription process is complete.
- * @throws {Error} If setting up the environment or running the diarization script fails.
- */
-const runWhisperDiarization: WhisperRunner = async (finalPath, whisperModel) => {
-  const venvPythonPath = 'whisper-diarization/venv/bin/python'
-  if (!existsSync(venvPythonPath)) {
-    l.wait(`\n  Virtual environment not found, running setup script...\n`)
-    await execPromise('bash scripts/setup-python.sh')
-    l.wait(`    - whisper-diarization setup complete.\n`)
-  }
-
-  const command = `${venvPythonPath} whisper-diarization/diarize.py -a ${finalPath}.wav --whisper-model ${whisperModel}`
-  l.wait(`\n  Running transcription with command:\n    ${command}\n`)
-  await execPromise(command)
-
-  // The diarization script initially produces a TXT, which we remove before converting from SRT
-  await unlink(`${finalPath}.txt`)
-
-  const srtContent = await readFile(`${finalPath}.srt`, 'utf8')
-  const txtContent = srtToTxt(srtContent)
-  await writeFile(`${finalPath}.txt`, txtContent)
-  l.wait(`\n  Transcript transformation successfully completed:\n    - ${finalPath}.txt\n`)
-
-  await writeFile(`${finalPath}.lrc`, '')
-  l.success(`  Empty LRC file created:\n    - ${finalPath}.lrc`)
-  await unlink(`${finalPath}.srt`)
-  l.success(`  SRT file deleted:\n    - ${finalPath}.srt`)
 }

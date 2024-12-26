@@ -336,3 +336,14 @@ input[type="checkbox"]:focus {
     width: 100%; /* Single column layout for checkboxes on narrow screens */
   }
 }
+.checkbox-group {
+  display: flex; 
+  flex-wrap: wrap; 
+  gap: 10px; 
+  align-items: center; 
+}
+.checkbox-group div {
+  display: flex; 
+  align-items: center; 
+  gap: 5px; 
+}

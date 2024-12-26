@@ -1,12 +1,12 @@
 // src/server/routes/process.ts
 
 import type { FastifyRequest, FastifyReply } from 'fastify'
-import { processVideo } from '../../commands/process-video'
-import { processURLs } from '../../commands/process-urls'
-import { processRSS } from '../../commands/process-rss'
-import { processPlaylist } from '../../commands/process-playlist'
-import { processChannel } from '../../commands/process-channel'
-import { processFile } from '../../commands/process-file'
+import { processVideo } from '../../process-commands/video'
+import { processURLs } from '../../process-commands/urls'
+import { processRSS } from '../../process-commands/rss'
+import { processPlaylist } from '../../process-commands/playlist'
+import { processChannel } from '../../process-commands/channel'
+import { processFile } from '../../process-commands/file'
 import { reqToOpts } from '../utils/req-to-opts'
 import { l, err } from '../../../src/utils/logging'
 

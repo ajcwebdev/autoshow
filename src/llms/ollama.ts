@@ -2,10 +2,10 @@
 
 import { writeFile } from 'node:fs/promises'
 import { env } from 'node:process'
-import { OLLAMA_MODELS } from '../types/globals'
-import { l, err, wait } from '../utils/logging'
 import { spawn } from 'node:child_process'
-import type { LLMFunction, OllamaModelType, OllamaResponse, OllamaTagsResponse } from '../types/llm-types'
+import { OLLAMA_MODELS } from '../utils/globals'
+import { l, err } from '../utils/logging'
+import type { LLMFunction, OllamaModelType, OllamaResponse, OllamaTagsResponse } from '../types/llms'
 
 /**
  * Main function to call the Llama model using the Ollama REST API.
@@ -25,7 +25,7 @@ export const callOllama: LLMFunction = async (
   try {
     // Map the model name to the Ollama model identifier
     const ollamaModelName = OLLAMA_MODELS[modelName as OllamaModelType]?.modelId || 'llama3.2:3b'
-    l(wait(`    - modelName: ${modelName}\n    - ollamaModelName: ${ollamaModelName}`))
+    l.wait(`    - modelName: ${modelName}\n    - ollamaModelName: ${ollamaModelName}`)
     
     // Get host and port from environment variables or use defaults
     const ollamaHost = env['OLLAMA_HOST'] || 'localhost'
@@ -42,14 +42,14 @@ export const callOllama: LLMFunction = async (
     }
 
     if (await checkServer()) {
-      l(wait('\n  Ollama server is already running...'))
+      l.wait('\n  Ollama server is already running...')
     } else {
       if (ollamaHost === 'ollama') {
         // Running inside Docker, do not attempt to start the server
         throw new Error('Ollama server is not running. Please ensure the Ollama server is running and accessible.')
       } else {
         // Not running in Docker, attempt to start the server
-        l(wait('\n  Ollama server is not running. Attempting to start...'))
+        l.wait('\n  Ollama server is not running. Attempting to start...')
         const ollamaProcess = spawn('ollama', ['serve'], {
           detached: true,
           stdio: 'ignore'
@@ -60,7 +60,7 @@ export const callOllama: LLMFunction = async (
         let attempts = 0
         while (attempts < 30) {  // Wait up to 30 seconds
           if (await checkServer()) {
-            l(wait('    - Ollama server is now ready.'))
+            l.wait('    - Ollama server is now ready.')
             break
           }
           await new Promise(resolve => setTimeout(resolve, 1000))
@@ -81,7 +81,7 @@ export const callOllama: LLMFunction = async (
       const tagsData = await tagsResponse.json() as OllamaTagsResponse
       const isModelAvailable = tagsData.models.some(model => model.name === ollamaModelName)
       if (!isModelAvailable) {
-        l(wait(`\n  Model ${ollamaModelName} is not available, pulling the model...`))
+        l.wait(`\n  Model ${ollamaModelName} is not available, pulling the model...`)
         const pullResponse = await fetch(`http://${ollamaHost}:${ollamaPort}/api/pull`, {
           method: 'POST',
           headers: {
@@ -107,7 +107,7 @@ export const callOllama: LLMFunction = async (
             try {
               const response = JSON.parse(line)
               if (response.status === 'success') {
-                l(wait(`    - Model ${ollamaModelName} has been pulled successfully...\n`))
+                l.wait(`    - Model ${ollamaModelName} has been pulled successfully...\n`)
                 break
               }
             } catch (parseError) {
@@ -116,14 +116,14 @@ export const callOllama: LLMFunction = async (
           }
         }
       } else {
-        l(wait(`\n  Model ${ollamaModelName} is already available...\n`))
+        l.wait(`\n  Model ${ollamaModelName} is already available...\n`)
       }
     } catch (error) {
       err(`Error checking/pulling model: ${error instanceof Error ? error.message : String(error)}`)
       throw error
     }
     
-    l(wait(`    - Sending chat request to http://${ollamaHost}:${ollamaPort} using ${ollamaModelName} model`))
+    l.wait(`    - Sending chat request to http://${ollamaHost}:${ollamaPort} using ${ollamaModelName} model`)
     
     // Call the Ollama chat API with streaming enabled
     const response = await fetch(`http://${ollamaHost}:${ollamaPort}/api/chat`, {
@@ -165,14 +165,14 @@ export const callOllama: LLMFunction = async (
           const parsedResponse = JSON.parse(line) as OllamaResponse
           if (parsedResponse.message?.content) {
             if (isFirstChunk) {
-              l(wait(`    - Receiving streaming response from Ollama...`))
+              l.wait(`    - Receiving streaming response from Ollama...`)
               isFirstChunk = false
             }
             fullContent += parsedResponse.message.content
           }
 
           if (parsedResponse.done) {
-            l(wait(`    - Completed receiving response from Ollama.`))
+            l.wait(`    - Completed receiving response from Ollama.`)
           }
         } catch (parseError) {
           err(`Error parsing JSON: ${parseError}`)

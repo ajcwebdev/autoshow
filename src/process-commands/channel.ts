@@ -1,4 +1,4 @@
-// src/commands/processChannel.ts
+// src/process-commands/channel.ts
 
 /**
  * @file Processes an entire YouTube channel, handling metadata extraction and individual video processing.
@@ -6,64 +6,13 @@
  */
 
 import { writeFile } from 'node:fs/promises'
-import { processVideo } from './process-video'
-import { execFilePromise } from '../types/globals'
-import { l, err, opts, success, wait } from '../utils/logging'
-import type { LLMServices, ProcessingOptions, VideoMetadata } from '../types/main'
-import type { TranscriptServices } from '../types/transcript-service-types'
-
-/**
- * Validates channel processing options for consistency and correct values.
- * 
- * @param options - Configuration options to validate
- * @throws Will exit process if validation fails
- */
-function validateChannelOptions(options: ProcessingOptions): void {
-  if (options.last !== undefined) {
-    if (!Number.isInteger(options.last) || options.last < 1) {
-      err('Error: The --last option must be a positive integer.')
-      process.exit(1)
-    }
-    if (options.skip !== undefined || options.order !== undefined) {
-      err('Error: The --last option cannot be used with --skip or --order.')
-      process.exit(1)
-    }
-  }
-
-  if (options.skip !== undefined && (!Number.isInteger(options.skip) || options.skip < 0)) {
-    err('Error: The --skip option must be a non-negative integer.')
-    process.exit(1)
-  }
-
-  if (options.order !== undefined && !['newest', 'oldest'].includes(options.order)) {
-    err("Error: The --order option must be either 'newest' or 'oldest'.")
-    process.exit(1)
-  }
-}
-
-/**
- * Logs the current processing action based on provided options.
- * 
- * @param options - Configuration options determining what to process
- */
-function logProcessingAction(options: ProcessingOptions): void {
-  if (options.last) {
-    l(wait(`\nProcessing the last ${options.last} videos`))
-  } else if (options.skip) {
-    l(wait(`\nSkipping first ${options.skip || 0} videos`))
-  }
-}
-
-/**
- * Video information including upload date, URL, and type.
- */
-interface VideoInfo {
-  uploadDate: string
-  url: string
-  date: Date
-  timestamp: number  // Unix timestamp for more precise sorting
-  isLive: boolean   // Flag to identify live streams
-}
+import { processVideo } from './video'
+import { execFilePromise } from '../utils/globals'
+import { l, err, logChannelProcessingAction, logChannelProcessingStatus, logChannelSeparator } from '../utils/logging'
+import { validateChannelOptions } from '../utils/validate-option'
+import type { ProcessingOptions, VideoMetadata, VideoInfo } from '../types/process'
+import type { TranscriptServices } from '../types/transcription'
+import type { LLMServices } from '../types/llms'
 
 /**
  * Gets detailed video information using yt-dlp.
@@ -119,26 +68,6 @@ function selectVideosToProcess(videos: VideoInfo[], options: ProcessingOptions):
 }
 
 /**
- * Logs the processing status and video counts.
- * 
- * @param total - Total number of videos found.
- * @param processing - Number of videos to process.
- * @param options - Configuration options.
- */
-function logProcessingStatus(total: number, processing: number, options: ProcessingOptions): void {
-  if (options.last) {
-    l(wait(`\n  - Found ${total} videos in the channel.`))
-    l(wait(`  - Processing the last ${processing} videos.`))
-  } else if (options.skip) {
-    l(wait(`\n  - Found ${total} videos in the channel.`))
-    l(wait(`  - Processing ${processing} videos after skipping ${options.skip || 0}.\n`))
-  } else {
-    l(wait(`\n  - Found ${total} videos in the channel.`))
-    l(wait(`  - Processing all ${processing} videos.\n`))
-  }
-}
-
-/**
  * Processes an entire YouTube channel by:
  * 1. Fetching all video URLs from the channel using yt-dlp.
  * 2. Optionally extracting metadata for all videos.
@@ -160,13 +89,13 @@ export async function processChannel(
   transcriptServices?: TranscriptServices
 ): Promise<void> {
   // Log the processing parameters for debugging purposes
-  l(opts('Parameters passed to processChannel:\n'))
-  l(opts(`  - llmServices: ${llmServices}\n  - transcriptServices: ${transcriptServices}`))
+  l.opts('Parameters passed to processChannel:\n')
+  l.opts(`  - llmServices: ${llmServices}\n  - transcriptServices: ${transcriptServices}`)
 
   try {
     // Validate options
     validateChannelOptions(options)
-    logProcessingAction(options)
+    logChannelProcessingAction(options)
 
     // Get list of videos from channel
     const { stdout, stderr } = await execFilePromise('yt-dlp', [
@@ -183,7 +112,7 @@ export async function processChannel(
 
     // Get detailed information for each video
     const videoUrls = stdout.trim().split('\n').filter(Boolean)
-    l(opts(`\nFetching detailed information for ${videoUrls.length} videos...`))
+    l.opts(`\nFetching detailed information for ${videoUrls.length} videos...`)
 
     const videoDetailsPromises = videoUrls.map(url => getVideoDetails(url))
     const videoDetailsResults = await Promise.all(videoDetailsPromises)
@@ -203,11 +132,11 @@ export async function processChannel(
       videos.reverse()
     }
 
-    l(opts(`\nFound ${videos.length} videos in the channel...`))
+    l.opts(`\nFound ${videos.length} videos in the channel...`)
 
     // Select videos to process based on options
     const videosToProcess = selectVideosToProcess(videos, options)
-    logProcessingStatus(videos.length, videosToProcess.length, options)
+    logChannelProcessingStatus(videos.length, videosToProcess.length, options)
 
     // If the --info option is provided, extract metadata for selected videos
     if (options.info) {
@@ -229,9 +158,9 @@ export async function processChannel(
             ])
 
             // Split the output into individual metadata fields
-            const [showLink, channel, channelURL, title, publishDate, coverImage] = stdout
-              .trim()
-              .split('\n')
+            const [
+              showLink, channel, channelURL, title, publishDate, coverImage
+            ] = stdout.trim().split('\n')
 
             // Validate that all required metadata fields are present
             if (!showLink || !channel || !channelURL || !title || !publishDate || !coverImage) {
@@ -240,13 +169,7 @@ export async function processChannel(
 
             // Return the metadata object
             return {
-              showLink,
-              channel,
-              channelURL,
-              title,
-              description: '',
-              publishDate,
-              coverImage,
+              showLink, channel, channelURL, title, description: '', publishDate, coverImage
             } as VideoMetadata
           } catch (error) {
             // Log error but return null to filter out failed extractions
@@ -269,7 +192,7 @@ export async function processChannel(
       const jsonContent = JSON.stringify(validMetadata, null, 2)
       const jsonFilePath = 'content/channel_info.json'
       await writeFile(jsonFilePath, jsonContent)
-      l(success(`Channel information saved to: ${jsonFilePath}`))
+      l.success(`Channel information saved to: ${jsonFilePath}`)
       return
     }
 
@@ -277,9 +200,7 @@ export async function processChannel(
     for (const [index, video] of videosToProcess.entries()) {
       const url = video.url
       // Visual separator for each video in the console
-      l(opts(`\n================================================================================================`))
-      l(opts(`  Processing video ${index + 1}/${videosToProcess.length}: ${url}`))
-      l(opts(`================================================================================================\n`))
+      logChannelSeparator(index, videosToProcess.length, url)
       try {
         // Process the video using the existing processVideo function
         await processVideo(options, url, llmServices, transcriptServices)

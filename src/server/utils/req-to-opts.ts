@@ -1,7 +1,8 @@
 // src/server/utils/req-to-opts.ts
 
-import type { ProcessingOptions, LLMServices } from '../../types/main'
-import type { TranscriptServices } from '../../types/transcript-service-types'
+import type { ProcessingOptions } from '../../types/process'
+import type { LLMServices } from '../../types/llms'
+import type { TranscriptServices } from '../../types/transcription'
 
 // Function to map request data to processing options
 export function reqToOpts(requestData: any): {
@@ -25,8 +26,6 @@ export function reqToOpts(requestData: any): {
   const transcriptOptions = [
     'whisper',
     'whisperDocker',
-    'whisperPython',
-    'whisperDiarization',
     'deepgram',
     'assembly',
   ] as const
@@ -59,10 +58,6 @@ export function reqToOpts(requestData: any): {
     options.whisper = requestData.whisperModel || 'large-v3-turbo'
   } else if (transcriptServices === 'whisperDocker') {
     options.whisperDocker = requestData.whisperModel || 'large-v3-turbo'
-  } else if (transcriptServices === 'whisperPython') {
-    options.whisperPython = requestData.whisperModel || 'large-v3-turbo'
-  } else if (transcriptServices === 'whisperDiarization') {
-    options.whisperDiarization = requestData.whisperModel || 'large-v3-turbo'
   } else if (transcriptServices === 'deepgram') {
     options.deepgram = true
   } else if (transcriptServices === 'assembly') {

@@ -2,9 +2,9 @@
 
 import { writeFile } from 'node:fs/promises'
 import { env } from 'node:process'
-import { TOGETHER_MODELS } from '../types/globals'
-import { l, wait, err } from '../utils/logging'
-import type { LLMFunction, TogetherModelType, TogetherResponse } from '../types/llm-types'
+import { TOGETHER_MODELS } from '../utils/globals'
+import { l, err } from '../utils/logging'
+import type { LLMFunction, TogetherModelType, TogetherResponse } from '../types/llms'
 
 /**
  * Main function to call Together AI API.
@@ -60,29 +60,18 @@ export const callTogether: LLMFunction = async (
     const data = await response.json() as TogetherResponse
 
     // Extract the generated content
-    const content = data.choices[0]?.message?.content
+    const content = data.choices[0]?.message?.content ?? ''
     const finishReason = data.choices[0]?.finish_reason
     const usedModel = data.model
     const usage = data.usage
-
-    if (!content) {
-      throw new Error('No content generated from the Together AI API')
-    }
+    const { prompt_tokens, completion_tokens, total_tokens } = usage
 
     // Write the generated content to the specified output file
     await writeFile(tempPath, content)
-    l(wait(`\n  Together AI response saved to ${tempPath}`))
 
     // Log finish reason, used model, and token usage
-    l(wait(`\n  Finish Reason: ${finishReason}\n  Model Used: ${usedModel}`))
-    if (usage) {
-      const { prompt_tokens, completion_tokens, total_tokens } = usage
-      l(
-        wait(
-          `  Token Usage:\n    - ${prompt_tokens} prompt tokens\n    - ${completion_tokens} completion tokens\n    - ${total_tokens} total tokens`
-        )
-      )
-    }
+    l.wait(`\n  Finish Reason: ${finishReason}\n  Model Used: ${usedModel}`)
+    l.wait(`  Token Usage:\n    - ${prompt_tokens} prompt tokens\n    - ${completion_tokens} completion tokens\n    - ${total_tokens} total tokens`)
   } catch (error) {
     // Log any errors that occur during the process
     err(`Error in callTogether: ${(error as Error).message}`)

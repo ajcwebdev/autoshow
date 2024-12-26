@@ -2,9 +2,9 @@
 
 import { writeFile } from 'node:fs/promises'
 import { env } from 'node:process'
-import { FIREWORKS_MODELS } from '../types/globals'
-import { l, wait, err } from '../utils/logging'
-import type { LLMFunction, FireworksModelType, FireworksResponse } from '../types/llm-types'
+import { FIREWORKS_MODELS } from '../utils/globals'
+import { l, err } from '../utils/logging'
+import type { LLMFunction, FireworksModelType, FireworksResponse } from '../types/llms'
 
 /**
  * Main function to call Fireworks AI API.
@@ -61,6 +61,7 @@ export const callFireworks: LLMFunction = async (
     const finishReason = data.choices[0]?.finish_reason
     const usedModel = data.model
     const usage = data.usage
+    const { prompt_tokens, completion_tokens, total_tokens } = usage
 
     if (!content) {
       throw new Error('No content generated from the Fireworks API')
@@ -68,18 +69,11 @@ export const callFireworks: LLMFunction = async (
 
     // Write the generated content to the specified output file
     await writeFile(tempPath, content)
-    l(wait(`\n  Fireworks response saved to ${tempPath}`))
+    l.wait(`\n  Fireworks response saved to ${tempPath}`)
 
     // Log finish reason, used model, and token usage
-    l(wait(`\n  Finish Reason: ${finishReason}\n  Model Used: ${usedModel}`))
-    if (usage) {
-      const { prompt_tokens, completion_tokens, total_tokens } = usage
-      l(
-        wait(
-          `  Token Usage:\n    - ${prompt_tokens} prompt tokens\n    - ${completion_tokens} completion tokens\n    - ${total_tokens} total tokens`
-        )
-      )
-    }
+    l.wait(`\n  Finish Reason: ${finishReason}\n  Model Used: ${usedModel}`)
+    l.wait(`  Token Usage:\n    - ${prompt_tokens} prompt tokens\n    - ${completion_tokens} completion tokens\n    - ${total_tokens} total tokens`)
   } catch (error) {
     // Log any errors that occur during the process
     err(`Error in callFireworks: ${(error as Error).message}`)

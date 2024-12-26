@@ -11,40 +11,33 @@
  * @packageDocumentation
  */
 
-import { Command } from 'commander'
-import { handleInteractivePrompt } from './interactive'
-import { processVideo } from '../commands/process-video'
-import { processPlaylist } from '../commands/process-playlist'
-import { processChannel } from '../commands/process-channel'
-import { processURLs } from '../commands/process-urls'
-import { processFile } from '../commands/process-file'
-import { processRSS } from '../commands/process-rss'
-import { validateOption } from '../utils/validate-option'
 import { argv, exit } from 'node:process'
-import { ACTION_OPTIONS, LLM_OPTIONS, TRANSCRIPT_OPTIONS } from '../types/globals'
-import { l, err, opts, final } from '../utils/logging'
-import type { ProcessingOptions, HandlerFunction, LLMServices } from '../types/main'
-import type { TranscriptServices } from '../types/transcript-service-types'
+import { fileURLToPath } from 'node:url'
+import { Command } from 'commander'
+import { processVideo } from '../process-commands/video'
+import { processPlaylist } from '../process-commands/playlist'
+import { processChannel } from '../process-commands/channel'
+import { processURLs } from '../process-commands/urls'
+import { processFile } from '../process-commands/file'
+import { processRSS } from '../process-commands/rss'
+import { validateOption, isValidAction, validateRSSAction } from '../utils/validate-option'
+import { ACTION_OPTIONS, LLM_OPTIONS, TRANSCRIPT_OPTIONS } from '../utils/globals'
+import { l, err, logCompletionSeparator } from '../utils/logging'
+import type { ProcessingOptions, HandlerFunction, ValidAction } from '../types/process'
+import type { TranscriptServices } from '../types/transcription'
+import type { LLMServices } from '../types/llms'
 
 // Initialize the command-line interface using Commander.js
 const program = new Command()
 
-// Define valid action types for processing
-type ValidAction = 'video' | 'playlist' | 'channel' | 'urls' | 'file' | 'rss'
-
 // Map each action to its corresponding handler function
-const PROCESS_HANDLERS: Record<ValidAction, HandlerFunction> = {
+export const PROCESS_HANDLERS: Record<ValidAction, HandlerFunction> = {
   video: processVideo,
   playlist: processPlaylist,
   channel: processChannel,
   urls: processURLs,
   file: processFile,
   rss: processRSS,
-}
-
-// Type guard to check if a string is a valid action
-function isValidAction(action: string | undefined): action is ValidAction {
-  return Boolean(action && action in PROCESS_HANDLERS)
 }
 
 /**
@@ -74,8 +67,6 @@ program
   // Transcription service options
   .option('--whisper [model]', 'Use Whisper.cpp for transcription with optional model specification')
   .option('--whisperDocker [model]', 'Use Whisper.cpp in Docker for transcription with optional model specification')
-  .option('--whisperPython [model]', 'Use openai-whisper for transcription with optional model specification')
-  .option('--whisperDiarization [model]', 'Use whisper-diarization for transcription with optional model specification')
   .option('--deepgram', 'Use Deepgram for transcription')
   .option('--assembly', 'Use AssemblyAI for transcription')
   .option('--speakerLabels', 'Use speaker labels for AssemblyAI transcription')
@@ -92,7 +83,6 @@ program
   // Utility options
   .option('--prompt <sections...>', 'Specify prompt sections to include')
   .option('--noCleanUp', 'Do not delete intermediary files after processing')
-  .option('-i, --interactive', 'Run in interactive mode')
   // Add examples and additional help text
   .addHelpText(
     'after',
@@ -117,17 +107,9 @@ program
  */
 program.action(async (options: ProcessingOptions) => {
   // Log received options for debugging purposes
-  l(opts(`Options received at beginning of command:\n`))
-  l(opts(JSON.stringify(options, null, 2)))
-  l(``)
-
-  // Extract interactive mode flag
-  const { interactive } = options
-
-  // If in interactive mode, prompt user for input
-  if (interactive) {
-    options = await handleInteractivePrompt(options)
-  }
+  l.opts(`Options received at beginning of command:\n`)
+  l.opts(JSON.stringify(options, null, 2))
+  l.opts(``)
 
   // Ensure options.item is always an array if provided via command line
   if (options.item && !Array.isArray(options.item)) {
@@ -164,16 +146,7 @@ program.action(async (options: ProcessingOptions) => {
     const handler = PROCESS_HANDLERS[action]
 
     if (action === 'rss') {
-      // For RSS feeds, process multiple URLs
-      const rssUrls = options.rss
-      if (!rssUrls || rssUrls.length === 0) {
-        throw new Error(`No valid RSS URLs provided for processing`)
-      }
-      // Iterate over each RSS URL and process it
-      for (const rssUrl of rssUrls) {
-        // Process each RSS feed URL individually
-        await handler(options, rssUrl, llmServices, transcriptServices)
-      }
+      await validateRSSAction(options, handler, llmServices, transcriptServices)
     } else {
       // Get input value with proper typing
       const input = options[action]
@@ -187,10 +160,8 @@ program.action(async (options: ProcessingOptions) => {
       await handler(options, input, llmServices, transcriptServices)
     }
 
-    // Log completion message
-    l(final(`\n================================================================================================`))
-    l(final(`  ${action} Processing Completed Successfully.`))
-    l(final(`================================================================================================\n`))
+    // Log completion message and exit
+    logCompletionSeparator(action)
     exit(0)
   } catch (error) {
     // Handle errors during processing
@@ -200,10 +171,13 @@ program.action(async (options: ProcessingOptions) => {
 })
 
 // Handle invalid commands
-program.on('command:*', function () {
+program.on('command:*', () => {
   err(`Error: Invalid command '${program.args.join(' ')}'. Use --help to see available commands.`)
   exit(1)
 })
 
-// Parse the command-line arguments and execute the program
-program.parse(argv)
+// Only parse if this file is the actual entry point so lack of options doesn't break the server
+const thisFilePath = fileURLToPath(import.meta.url)
+if (process.argv[1] === thisFilePath) {
+  program.parse(argv)
+}

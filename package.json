@@ -18,9 +18,8 @@
   "scripts": {
     "tsx:base": "tsx --env-file=.env --no-warnings --experimental-sqlite",
     "setup": "bash ./scripts/setup.sh",
-    "setup-python": "bash ./scripts/setup-python.sh",
     "setup-docker": "docker compose up --build -d --remove-orphans --no-start",
-    "setup-all": "npm run setup && npm run setup-python && npm run setup-docker",
+    "setup-all": "npm run setup && npm run setup-docker",
     "as": "npm run tsx:base -- src/cli/commander.ts",
     "video": "npm run as -- --video",
     "urls": "npm run as -- --urls",
@@ -42,6 +41,7 @@
     "test-docker": "tsx --test test/docker.test.ts",
     "test-services": "tsx --test test/services.test.ts",
     "test-all": "tsx --test test/all.test.ts",
+    "ta": "tsx --test test/all.test.ts",
     "clean": "tsx scripts/cleanContent.ts",
     "docker": "docker compose run --remove-orphans --rm autoshow --whisperDocker",
     "docker-up": "docker compose up --build -d --remove-orphans --no-start",
@@ -64,14 +64,12 @@
     "fast-xml-parser": "4.5.0",
     "fastify": "5.2.0",
     "file-type": "19.6.0",
-    "inquirer": "12.2.0",
     "js-yaml": "4.1.0",
     "ollama": "0.5.11",
     "openai": "4.76.3",
     "sqlite-vec": "^0.1.6"
   },
   "devDependencies": {
-    "@types/inquirer": "9.0.7",
     "@types/js-yaml": "4.0.9",
     "@types/node": "22.10.2",
     "tsx": "4.19.2",

@@ -1,20 +1,21 @@
-// src/commands/processFile.ts
+// src/process-commands/file.ts
 
 /**
  * @file Process a local audio or video file for transcription and analysis.
  * @packageDocumentation
  */
 
-import { generateMarkdown } from '../utils/generate-markdown'
-import { downloadAudio } from '../utils/download-audio'
-import { runTranscription } from '../utils/run-transcription'
-import { runLLM } from '../utils/run-llm'
-import { cleanUpFiles } from '../utils/clean-up-files'
-import { l, err, opts } from '../utils/logging'
+import { generateMarkdown } from '../process-steps/01-generate-markdown'
+import { downloadAudio } from '../process-steps/02-download-audio'
+import { runTranscription } from '../process-steps/03-run-transcription'
+import { runLLM } from '../process-steps/05-run-llm'
+import { cleanUpFiles } from '../process-steps/06-clean-up-files'
+import { l, err } from '../utils/logging'
 import { readFile } from 'fs/promises'
 import { db } from '../server/db'
-import type { LLMServices, ProcessingOptions } from '../types/main'
-import type { TranscriptServices } from '../types/transcript-service-types'
+import type { ProcessingOptions } from '../types/process'
+import type { TranscriptServices } from '../types/transcription'
+import type { LLMServices } from '../types/llms'
 
 /**
  * Processes a local audio or video file through a series of operations:
@@ -42,8 +43,8 @@ export async function processFile(
   transcriptServices?: TranscriptServices
 ): Promise<void> {
   // Log the processing parameters for debugging purposes
-  l(opts('Parameters passed to processFile:\n'))
-  l(opts(`  - llmServices: ${llmServices}\n  - transcriptServices: ${transcriptServices}\n`))
+  l.opts('Parameters passed to processFile:\n')
+  l.opts(`  - llmServices: ${llmServices}\n  - transcriptServices: ${transcriptServices}\n`)
 
   try {
     // Generate markdown file with file metadata and get file paths

@@ -3,9 +3,9 @@
 import { writeFile } from 'node:fs/promises'
 import { env } from 'node:process'
 import { Anthropic } from '@anthropic-ai/sdk'
-import { CLAUDE_MODELS } from '../types/globals'
-import { l, wait, err } from '../utils/logging'
-import type { LLMFunction, ClaudeModelType } from '../types/llm-types'
+import { CLAUDE_MODELS } from '../utils/globals'
+import { l, err } from '../utils/logging'
+import type { LLMFunction, ClaudeModelType } from '../types/llms'
 
 /**
  * Main function to call Claude API.
@@ -46,7 +46,9 @@ export const callClaude: LLMFunction = async (
       usage, // Token usage information
       stop_reason // Reason why the generation stopped
     } = response
-    
+
+    const { input_tokens, output_tokens } = usage
+
     // Extract text content from the response
     const textContent = extractTextContent(content)
     
@@ -57,16 +59,8 @@ export const callClaude: LLMFunction = async (
       throw new Error('No text content generated from the API')
     }
     
-    l(wait(`  - Stop Reason: ${stop_reason}\n  - Model: ${usedModel}`))
-    
-    // Check if usage information is available
-    if (usage) {
-      const { input_tokens, output_tokens } = usage
-      l(wait(`  - Token Usage:\n    - ${input_tokens} input tokens\n    - ${output_tokens} output tokens`))
-    } else {
-      l(wait("  - Token usage information not available"))
-    }
-    
+    l.wait(`  - Stop Reason: ${stop_reason}\n  - Model: ${usedModel}`)
+    l.wait(`  - Token Usage:\n    - ${input_tokens} input tokens\n    - ${output_tokens} output tokens`)
   } catch (error) {
     err(`Error in callClaude: ${(error as Error).message}`)
     throw error // Re-throw the error for handling in the calling function

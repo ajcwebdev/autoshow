@@ -1,18 +1,29 @@
-// src/types/globals.ts
+// src/utils/globals.ts
 
 /**
  * @file Defines constants, model mappings, and utility functions used throughout the application.
  * @packageDocumentation
  */
 
+import { XMLParser } from 'fast-xml-parser'
 import { exec, execFile } from 'node:child_process'
 import { promisify } from 'node:util'
-import type { LLMServices } from '../types/main'
-import type { TranscriptServices, WhisperModelType } from '../types/transcript-service-types'
-import type { ChatGPTModelType, ClaudeModelType, CohereModelType, GeminiModelType, MistralModelType, OllamaModelType, TogetherModelType, FireworksModelType, GroqModelType } from '../types/llm-types'
+import type { LLMServices } from '../types/llms'
+import type { TranscriptServices, WhisperModelType } from '../types/transcription'
+import type { ChatGPTModelType, ClaudeModelType, CohereModelType, GeminiModelType, MistralModelType, OllamaModelType, TogetherModelType, FireworksModelType, GroqModelType } from '../types/llms'
 
 export const execPromise = promisify(exec)
 export const execFilePromise = promisify(execFile)
+
+/**
+ * Configure XML parser for RSS feed processing
+ * Handles attributes without prefixes and allows boolean values
+ */
+export const parser = new XMLParser({
+  ignoreAttributes: false,
+  attributeNamePrefix: '',
+  allowBooleanAttributes: true,
+})
 
 export const PROMPT_CHOICES = [
   { name: 'Titles', value: 'titles' },
@@ -112,8 +123,6 @@ type TranscriptServiceConfig = {
 export const TRANSCRIPT_SERVICES: Record<string, TranscriptServiceConfig> = {
   WHISPER: { name: 'Whisper.cpp', value: 'whisper', isWhisper: true },
   WHISPER_DOCKER: { name: 'Whisper.cpp (Docker)', value: 'whisperDocker', isWhisper: true },
-  WHISPER_PYTHON: { name: 'Whisper Python', value: 'whisperPython', isWhisper: true },
-  WHISPER_DIARIZATION: { name: 'Whisper Diarization', value: 'whisperDiarization', isWhisper: true },
   DEEPGRAM: { name: 'Deepgram', value: 'deepgram' },
   ASSEMBLY: { name: 'AssemblyAI', value: 'assembly' },
 } as const

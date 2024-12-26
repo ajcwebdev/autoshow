@@ -32,7 +32,7 @@ RUN apt-get update && \
 COPY --from=build /app /app
 
 # Ensure that the main executable and scripts have execute permissions
-RUN chmod +x /app/build/bin/main && \
+RUN chmod +x /app/build/bin/whisper-cli && \
     chmod +x /app/models/download-ggml-model.sh
 
 # Set the entrypoint to bash

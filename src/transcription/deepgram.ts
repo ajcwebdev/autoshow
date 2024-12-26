@@ -10,9 +10,9 @@
 
 import { writeFile, readFile } from 'node:fs/promises'
 import { env } from 'node:process'
-import { l, wait, err } from '../utils/logging'
-import { formatDeepgramTranscript } from './transcription-utils'
-import type { DeepgramResponse } from '../types/transcript-service-types'
+import { l, err } from '../utils/logging'
+import { formatDeepgramTranscript } from '../utils/format-transcript'
+import type { DeepgramResponse } from '../types/transcription'
 
 /**
  * Main function to handle transcription using Deepgram API.
@@ -21,7 +21,7 @@ import type { DeepgramResponse } from '../types/transcript-service-types'
  * @throws Error if any step of the process fails (upload, transcription request, formatting)
  */
 export async function callDeepgram(finalPath: string): Promise<string> {
-  l(wait('\n  Using Deepgram for transcription...\n'))
+  l.wait('\n  Using Deepgram for transcription...\n')
 
   if (!env['DEEPGRAM_API_KEY']) {
     throw new Error('DEEPGRAM_API_KEY environment variable is not set. Please set it to your Deepgram API key.')
@@ -70,11 +70,11 @@ export async function callDeepgram(finalPath: string): Promise<string> {
 
     // Write the formatted transcript to a .txt file
     await writeFile(`${finalPath}.txt`, txtContent)
-    l(wait(`\n  Transcript saved:\n    - ${finalPath}.txt\n`))
+    l.wait(`\n  Transcript saved:\n    - ${finalPath}.txt\n`)
 
     // Create an empty LRC file to meet pipeline expectations
     await writeFile(`${finalPath}.lrc`, '')
-    l(wait(`\n  Empty LRC file created:\n    - ${finalPath}.lrc\n`))
+    l.wait(`\n  Empty LRC file created:\n    - ${finalPath}.lrc\n`)
 
     return txtContent
   } catch (error) {

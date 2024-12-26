@@ -1,6 +1,9 @@
-// src/types/llm-types.ts
+// src/types/llms.ts
 
-import type { LLMServices } from "./main"
+/**
+ * Options for Language Models (LLMs) that can be used in the application.
+ */
+export type LLMServices = 'chatgpt' | 'claude' | 'cohere' | 'mistral' | 'ollama' | 'gemini' | 'fireworks' | 'together' | 'groq'
 
 /**
  * Options for LLM processing.

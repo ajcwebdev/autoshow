@@ -10,16 +10,16 @@
 
 import { writeFile, readFile } from 'node:fs/promises'
 import { env } from 'node:process'
-import { l, wait, success, err } from '../utils/logging'
-import { formatAssemblyTranscript } from './transcription-utils'
-import type { ProcessingOptions } from '../types/main'
+import { l, err } from '../utils/logging'
+import { formatAssemblyTranscript } from '../utils/format-transcript'
+import type { ProcessingOptions } from '../types/process'
 import type {
   AssemblyAITranscriptionOptions,
   AssemblyAIErrorResponse,
   AssemblyAIUploadResponse,
   AssemblyAITranscript,
   AssemblyAIPollingResponse
-} from '../types/transcript-service-types'
+} from '../types/transcription'
 
 const BASE_URL = 'https://api.assemblyai.com/v2'
 
@@ -31,7 +31,7 @@ const BASE_URL = 'https://api.assemblyai.com/v2'
  * @throws Error if any step of the process fails (upload, transcription request, polling, formatting)
  */
 export async function callAssembly(options: ProcessingOptions, finalPath: string): Promise<string> {
-  l(wait('\n  Using AssemblyAI for transcription...'))
+  l.wait('\n  Using AssemblyAI for transcription...')
 
   if (!env['ASSEMBLY_API_KEY']) {
     throw new Error('ASSEMBLY_API_KEY environment variable is not set. Please set it to your AssemblyAI API key.')
@@ -47,7 +47,7 @@ export async function callAssembly(options: ProcessingOptions, finalPath: string
     const audioFilePath = `${finalPath}.wav`
 
     // Step 1: Uploading the audio file to AssemblyAI
-    l(wait('\n  Uploading audio file to AssemblyAI...'))
+    l.wait('\n  Uploading audio file to AssemblyAI...')
     const fileBuffer = await readFile(audioFilePath)
 
     const uploadResponse = await fetch(`${BASE_URL}/upload`, {
@@ -69,7 +69,7 @@ export async function callAssembly(options: ProcessingOptions, finalPath: string
     if (!upload_url) {
       throw new Error('Upload URL not returned by AssemblyAI.')
     }
-    l(success('  Audio file uploaded successfully.'))
+    l.success('  Audio file uploaded successfully.')
 
     // Step 2: Requesting the transcription
     const transcriptionOptions: AssemblyAITranscriptionOptions = {
@@ -114,11 +114,11 @@ export async function callAssembly(options: ProcessingOptions, finalPath: string
 
     // Step 5: Write the formatted transcript to a .txt file
     await writeFile(`${finalPath}.txt`, txtContent)
-    l(wait(`\n  Transcript saved...\n  - ${finalPath}.txt\n`))
+    l.wait(`\n  Transcript saved...\n  - ${finalPath}.txt\n`)
 
     // Create an empty LRC file to satisfy pipeline expectations (even if we don't use it for this service)
     await writeFile(`${finalPath}.lrc`, '')
-    l(wait(`\n  Empty LRC file created:\n    - ${finalPath}.lrc\n`))
+    l.wait(`\n  Empty LRC file created:\n    - ${finalPath}.lrc\n`)
 
     return txtContent
   } catch (error) {

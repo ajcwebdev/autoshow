@@ -1,4 +1,4 @@
-// src/utils/generateMarkdown.ts
+// src/process-steps/01-generate-markdown.ts
 
 /**
  * @file Utility for generating markdown files with front matter for different content types.
@@ -8,9 +8,9 @@
 
 import { writeFile } from 'node:fs/promises'
 import { basename, extname } from 'node:path'
-import { execFilePromise } from '../types/globals'
-import { l, dim, step, success, err } from '../utils/logging'
-import type { MarkdownData, ProcessingOptions, RSSItem } from '../types/main'
+import { execFilePromise } from '../utils/globals'
+import { l, err } from '../utils/logging'
+import type { MarkdownData, ProcessingOptions, RSSItem } from '../types/process'
 
 /**
  * Sanitizes a title string for use in filenames by:
@@ -290,11 +290,11 @@ export async function generateMarkdown(
   await writeFile(`${finalPath}.md`, frontMatterContent)
 
   // Log the front matter content in dimmed text
-  l(dim(frontMatterContent))
+  l.dim(frontMatterContent)
   // Log the current step in the process
-  l(step('\nStep 1 - Generating markdown...\n'))
+  l.step('\nStep 1 - Generating markdown...\n')
   // Log a success message indicating where the file was saved
-  l(success(`  Front matter successfully created and saved:\n    - ${finalPath}.md`))
+  l.success(`  Front matter successfully created and saved:\n    - ${finalPath}.md`)
 
   // Return an object containing the front matter, final path, filename, and metadata
   return { frontMatter: frontMatterContent, finalPath, filename, metadata }

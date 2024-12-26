@@ -3,9 +3,9 @@
 import { writeFile } from 'node:fs/promises'
 import { env } from 'node:process'
 import { GoogleGenerativeAI } from "@google/generative-ai"
-import { GEMINI_MODELS } from '../types/globals'
-import { l, wait, err } from '../utils/logging'
-import type { LLMFunction, GeminiModelType } from '../types/llm-types'
+import { GEMINI_MODELS } from '../utils/globals'
+import { l, err } from '../utils/logging'
+import type { LLMFunction, GeminiModelType } from '../types/llms'
 
 /**
  * Utility function to introduce a delay
@@ -55,14 +55,9 @@ export const callGemini: LLMFunction = async (
       // Extract the text from the response
       const text = response.text()
       
-      // Check if text was generated
-      if (!text) {
-        throw new Error("No text generated from Gemini")
-      }
-      
       // Write the generated text to the output file
       await writeFile(tempPath, text)
-      l(wait(`\nModel: ${actualModel}`))
+      l.wait(`\nModel: ${actualModel}`)
       
       return
     } catch (error) {

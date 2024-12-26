@@ -1,4 +1,4 @@
-// src/commands/process-playlist.ts
+// src/process-commands/playlist.ts
 
 /**
  * @file Processes all videos from a YouTube playlist, handling metadata extraction and individual video processing.
@@ -9,7 +9,7 @@ import { writeFile } from 'node:fs/promises'
 import { processVideo } from './video'
 import { execFilePromise } from '../utils/globals'
 import { l, err, logPlaylistSeparator } from '../utils/logging'
-import { sanitizeTitle } from '../process-steps/generate-markdown'
+import { sanitizeTitle } from '../process-steps/01-generate-markdown'
 import type { ProcessingOptions, VideoMetadata } from '../types/process'
 import type { TranscriptServices } from '../types/transcription'
 import type { LLMServices } from '../types/llms'

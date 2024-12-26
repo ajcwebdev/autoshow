@@ -1,4 +1,4 @@
-// src/utils/clean-up-files.ts
+// src/process-steps/06-clean-up-files.ts
 
 /**
  * @file Utility for cleaning up temporary files generated during processing.

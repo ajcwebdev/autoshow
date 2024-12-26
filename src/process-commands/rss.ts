@@ -1,4 +1,4 @@
-// src/commands/process-rss.ts
+// src/process-commands/rss.ts
 
 /**
  * @file Process podcast episodes and other media content from RSS feeds with robust error handling and filtering options.
@@ -6,11 +6,11 @@
  */
 
 import { writeFile, readFile } from 'node:fs/promises'
-import { generateMarkdown, sanitizeTitle } from '../process-steps/generate-markdown'
-import { downloadAudio } from '../process-steps/download-audio'
-import { runTranscription } from '../process-steps/run-transcription'
-import { runLLM } from '../process-steps/run-llm'
-import { cleanUpFiles } from '../process-steps/clean-up-files'
+import { generateMarkdown, sanitizeTitle } from '../process-steps/01-generate-markdown'
+import { downloadAudio } from '../process-steps/02-download-audio'
+import { runTranscription } from '../process-steps/03-run-transcription'
+import { runLLM } from '../process-steps/05-run-llm'
+import { cleanUpFiles } from '../process-steps/06-clean-up-files'
 import { validateRSSOptions } from '../utils/validate-option'
 import { l, err, logRSSProcessingAction, logRSSProcessingStatus, logRSSSeparator } from '../utils/logging'
 import { parser } from '../utils/globals'

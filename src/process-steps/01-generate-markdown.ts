@@ -1,4 +1,4 @@
-// src/utils/generate-markdown.ts
+// src/process-steps/01-generate-markdown.ts
 
 /**
  * @file Utility for generating markdown files with front matter for different content types.

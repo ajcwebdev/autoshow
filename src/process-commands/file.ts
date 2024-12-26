@@ -1,15 +1,15 @@
-// src/commands/process-file.ts
+// src/process-commands/file.ts
 
 /**
  * @file Process a local audio or video file for transcription and analysis.
  * @packageDocumentation
  */
 
-import { generateMarkdown } from '../process-steps/generate-markdown'
-import { downloadAudio } from '../process-steps/download-audio'
-import { runTranscription } from '../process-steps/run-transcription'
-import { runLLM } from '../process-steps/run-llm'
-import { cleanUpFiles } from '../process-steps/clean-up-files'
+import { generateMarkdown } from '../process-steps/01-generate-markdown'
+import { downloadAudio } from '../process-steps/02-download-audio'
+import { runTranscription } from '../process-steps/03-run-transcription'
+import { runLLM } from '../process-steps/05-run-llm'
+import { cleanUpFiles } from '../process-steps/06-clean-up-files'
 import { l, err } from '../utils/logging'
 import { readFile } from 'fs/promises'
 import { db } from '../server/db'

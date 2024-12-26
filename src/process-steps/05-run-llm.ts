@@ -1,4 +1,4 @@
-// src/utils/run-llm.ts
+// src/process-steps/05-run-llm.ts
 
 /**
  * @file Orchestrator for running Language Model (LLM) processing on transcripts.
@@ -16,7 +16,7 @@ import { callMistral } from '../llms/mistral'
 import { callFireworks } from '../llms/fireworks'
 import { callTogether } from '../llms/together'
 import { callGroq } from '../llms/groq'
-import { generatePrompt } from './select-prompt'
+import { generatePrompt } from './04-select-prompt'
 import { l, err } from '../utils/logging'
 import type { ProcessingOptions } from '../types/process'
 import type { LLMServices, LLMFunction, LLMFunctions } from '../types/llms'

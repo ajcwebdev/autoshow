@@ -1,4 +1,4 @@
-// src/types/llm-types.ts
+// src/types/llms.ts
 
 /**
  * Options for Language Models (LLMs) that can be used in the application.

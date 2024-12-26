@@ -1,4 +1,4 @@
-// src/types/main.ts
+// src/types/process.ts
 
 import type { TranscriptServices, WhisperModelType } from './transcription'
 import type { LLMServices } from './llms'

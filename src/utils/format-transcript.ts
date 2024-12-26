@@ -1,4 +1,4 @@
-// src/transcription/transcription-utils.ts
+// src/utils/format-transcript.ts
 
 // This file contains utility functions to format transcripts from different transcription services into
 // a uniform plain text format with timestamps. It includes:

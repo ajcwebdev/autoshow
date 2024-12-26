@@ -1,4 +1,4 @@
-// src/commands/process-channel.ts
+// src/process-commands/channel.ts
 
 /**
  * @file Processes an entire YouTube channel, handling metadata extraction and individual video processing.

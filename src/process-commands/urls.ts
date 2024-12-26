@@ -1,4 +1,4 @@
-// src/commands/process-urls.ts
+// src/process-commands/urls.ts
 
 /**
  * @file Processes multiple YouTube videos from a list of URLs stored in a file.

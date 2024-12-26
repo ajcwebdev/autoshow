@@ -1,4 +1,4 @@
-// src/llms/prompt.ts
+// src/process-steps/04-prompt.ts
 
 import type { PromptSection } from '../types/process'
 

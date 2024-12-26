@@ -1,4 +1,4 @@
-// src/types/globals.ts
+// src/utils/globals.ts
 
 /**
  * @file Defines constants, model mappings, and utility functions used throughout the application.

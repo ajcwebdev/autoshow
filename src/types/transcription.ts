@@ -1,4 +1,4 @@
-// src/types/transcript-service-types.ts
+// src/types/transcription.ts
 
 // Transcription Service Types
 /**

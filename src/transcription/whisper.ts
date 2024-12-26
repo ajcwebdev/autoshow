@@ -116,7 +116,7 @@ const runWhisperCpp: WhisperRunner = async (finalPath, whisperModel) => {
     l(wait('    - Model download completed, running transcription...\n'))
   }
 
-  await execPromise(`./whisper.cpp/build/bin/main -m "whisper.cpp/models/${modelGGMLName}" -f "${finalPath}.wav" -of "${finalPath}" --output-lrc`)
+  await execPromise(`./whisper.cpp/build/bin/whisper-cli -m "whisper.cpp/models/${modelGGMLName}" -f "${finalPath}.wav" -of "${finalPath}" --output-lrc`)
   l(success(`\n  Transcript LRC file successfully created:\n    - ${finalPath}.lrc`))
 
   const lrcContent = await readFile(`${finalPath}.lrc`, 'utf8')
@@ -156,7 +156,7 @@ const runWhisperDocker: WhisperRunner = async (finalPath, whisperModel) => {
     .catch(() => execPromise(`docker exec ${CONTAINER_NAME} /app/models/download-ggml-model.sh ${whisperModel}`))
 
   await execPromise(
-    `docker exec ${CONTAINER_NAME} /app/build/bin/main -m ${modelPathContainer} -f "/app/content/${finalPath.split('/').pop()}.wav" -of "/app/content/${finalPath.split('/').pop()}" --output-lrc`
+    `docker exec ${CONTAINER_NAME} /app/build/bin/whisper-cli -m ${modelPathContainer} -f "/app/content/${finalPath.split('/').pop()}.wav" -of "/app/content/${finalPath.split('/').pop()}" --output-lrc`
   )
   l(success(`\n  Transcript LRC file successfully created:\n    - ${finalPath}.lrc`))
 

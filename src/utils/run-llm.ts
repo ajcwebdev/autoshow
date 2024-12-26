@@ -1,4 +1,4 @@
-// src/utils/runLLM.ts
+// src/utils/run-llm.ts
 
 /**
  * @file Orchestrator for running Language Model (LLM) processing on transcripts.
@@ -17,7 +17,7 @@ import { callFireworks } from '../llms/fireworks'
 import { callTogether } from '../llms/together'
 import { callGroq } from '../llms/groq'
 import { generatePrompt } from '../llms/prompt'
-import { l, err, step, success, wait } from '../utils/logging'
+import { l, err } from '../utils/logging'
 import type { LLMServices, ProcessingOptions } from '../types/main'
 import type { LLMFunction, LLMFunctions } from '../types/llm-types'
 
@@ -87,7 +87,7 @@ export async function runLLM(
   frontMatter: string,
   llmServices?: LLMServices
 ): Promise<void> {
-  l(step(`\nStep 4 - Running LLM processing on transcript...\n`))
+  l.step(`\nStep 4 - Running LLM processing on transcript...\n`)
 
   // Map of available LLM service handlers
   const LLM_FUNCTIONS: LLMFunctions = {
@@ -112,7 +112,7 @@ export async function runLLM(
     const promptAndTranscript = `${prompt}${transcript}`
 
     if (llmServices) {
-      l(wait(`  Preparing to process with ${llmServices} Language Model...\n`))
+      l.wait(`  Preparing to process with ${llmServices} Language Model...\n`)
 
       // Get the appropriate LLM handler function
       const llmFunction: LLMFunction = LLM_FUNCTIONS[llmServices]
@@ -129,7 +129,7 @@ export async function runLLM(
       while (attempt < maxRetries) {
         try {
           attempt++
-          l(wait(`  Attempt ${attempt} - Processing with ${llmServices} Language Model...\n`))
+          l.wait(`  Attempt ${attempt} - Processing with ${llmServices} Language Model...\n`)
           // Process content with selected LLM
           await llmFunction(promptAndTranscript, tempPath, options[llmServices])
           // If successful, break out of the loop
@@ -140,14 +140,14 @@ export async function runLLM(
             err(`  Max retries reached. Unable to process with ${llmServices}.`)
             throw error
           }
-          l(err(`  Attempt ${attempt} failed with error: ${(error as Error).message}`))
-          l(wait(`  Retrying in ${delayBetweenRetries / 1000} seconds...`))
+          err(`  Attempt ${attempt} failed with error: ${(error as Error).message}`)
+          l.wait(`  Retrying in ${delayBetweenRetries / 1000} seconds...`)
           // Wait before retrying
           await new Promise(resolve => setTimeout(resolve, delayBetweenRetries))
         }
       }
 
-      l(success(`\n  LLM processing completed successfully after ${attempt} attempt(s).\n`))
+      l.success(`\n  LLM processing completed successfully after ${attempt} attempt(s).\n`)
 
       // Combine results with front matter and original transcript
       const showNotes = await readFile(tempPath, 'utf8')
@@ -158,12 +158,12 @@ export async function runLLM(
 
       // Clean up temporary file
       await unlink(tempPath)
-      l(success(`\n  Generated show notes saved to markdown file:\n    - ${finalPath}-${llmServices}-shownotes.md`))
+      l.success(`\n  Generated show notes saved to markdown file:\n    - ${finalPath}-${llmServices}-shownotes.md`)
     } else {
       // Handle case when no LLM is selected
-      l(wait('  No LLM selected, skipping processing...'))
+      l.wait('  No LLM selected, skipping processing...')
       await writeFile(`${finalPath}-prompt.md`, `${frontMatter}\n${promptAndTranscript}`)
-      l(success(`\n  Prompt and transcript saved to markdown file:\n    - ${finalPath}-prompt.md`))
+      l.success(`\n  Prompt and transcript saved to markdown file:\n    - ${finalPath}-prompt.md`)
     }
   } catch (error) {
     err(`Error running Language Model: ${(error as Error).message}`)

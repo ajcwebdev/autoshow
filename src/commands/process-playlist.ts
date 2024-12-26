@@ -1,4 +1,4 @@
-// src/commands/processPlaylist.ts
+// src/commands/process-playlist.ts
 
 /**
  * @file Processes all videos from a YouTube playlist, handling metadata extraction and individual video processing.
@@ -8,7 +8,7 @@
 import { writeFile } from 'node:fs/promises'
 import { processVideo } from './process-video'
 import { execFilePromise } from '../types/globals'
-import { l, err, opts, success } from '../utils/logging'
+import { l, err } from '../utils/logging'
 import { sanitizeTitle } from '../utils/generate-markdown'
 import type { LLMServices, ProcessingOptions, VideoMetadata } from '../types/main'
 import type { TranscriptServices } from '../types/transcript-service-types'
@@ -35,8 +35,8 @@ export async function processPlaylist(
   transcriptServices?: TranscriptServices
 ): Promise<void> {
   // Log the processing parameters for debugging purposes
-  l(opts('Parameters passed to processPlaylist:\n'))
-  l(opts(`  - llmServices: ${llmServices}\n  - transcriptServices: ${transcriptServices}`))
+  l.opts('Parameters passed to processPlaylist:\n')
+  l.opts(`  - llmServices: ${llmServices}\n  - transcriptServices: ${transcriptServices}`)
 
   try {
     // Fetch playlist metadata
@@ -66,7 +66,7 @@ export async function processPlaylist(
       process.exit(1)
     }
 
-    l(opts(`\nFound ${urls.length} videos in the playlist: ${playlistTitle}...`))
+    l.opts(`\nFound ${urls.length} videos in the playlist: ${playlistTitle}...`)
 
     // If the --info option is provided, extract metadata for all videos
     if (options.info) {
@@ -128,16 +128,16 @@ export async function processPlaylist(
       const sanitizedTitle = sanitizeTitle(playlistTitle)
       const jsonFilePath = `content/${sanitizedTitle}_info.json`
       await writeFile(jsonFilePath, jsonContent)
-      l(success(`Playlist information saved to: ${jsonFilePath}`))
+      l.success(`Playlist information saved to: ${jsonFilePath}`)
       return
     }
 
     // Process each video sequentially, with error handling for individual videos
     for (const [index, url] of urls.entries()) {
       // Visual separator for each video in the console
-      l(opts(`\n================================================================================================`))
-      l(opts(`  Processing video ${index + 1}/${urls.length}: ${url}`))
-      l(opts(`================================================================================================\n`))
+      l.opts(`\n================================================================================================`)
+      l.opts(`  Processing video ${index + 1}/${urls.length}: ${url}`)
+      l.opts(`================================================================================================\n`)
       try {
         // Process the video using the existing processVideo function
         await processVideo(options, url, llmServices, transcriptServices)

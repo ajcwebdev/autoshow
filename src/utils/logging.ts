@@ -1,96 +1,126 @@
 // src/utils/logging.ts
 
 import type { ProcessingOptions } from '../types/main'
-import { XMLParser } from 'fast-xml-parser'
 import chalk from 'chalk'
-import type { ChalkInstance } from 'chalk'
 
 /**
- * Configure XML parser for RSS feed processing
- * Handles attributes without prefixes and allows boolean values
+ * Interface for chainable logger with style methods
  */
-export const parser = new XMLParser({
-  ignoreAttributes: false,
-  attributeNamePrefix: '',
-  allowBooleanAttributes: true,
-})
+export interface ChainableLogger {
+  (...args: any[]): void
+  step: (...args: any[]) => void
+  dim: (...args: any[]) => void
+  success: (...args: any[]) => void
+  opts: (...args: any[]) => void
+  wait: (...args: any[]) => void
+  final: (...args: any[]) => void
+}
 
 /**
- * Chalk styling for step indicators in the CLI
- * @type {ChalkInstance}
+ * Creates a chainable logger function that maintains both function call and method syntax
  */
-export const step: ChalkInstance = chalk.bold.underline
+function createChainableLogger(): ChainableLogger {
+  // Base logging function
+  const logger = (...args: any[]) => console.log(...args)
+
+  // Add chalk styles as methods
+  const styledLogger = Object.assign(logger, {
+    step: (...args: any[]) => console.log(chalk.bold.underline(...args)),
+    dim: (...args: any[]) => console.log(chalk.dim(...args)),
+    success: (...args: any[]) => console.log(chalk.bold.blue(...args)),
+    opts: (...args: any[]) => console.log(chalk.magentaBright.bold(...args)),
+    wait: (...args: any[]) => console.log(chalk.bold.cyan(...args)),
+    final: (...args: any[]) => console.log(chalk.bold.italic(...args))
+  })
+
+  return styledLogger
+}
 
 /**
- * Chalk styling for dimmed text
- * @type {ChalkInstance}
+ * Creates a chainable error logger function
  */
-export const dim: ChalkInstance = chalk.dim
+function createChainableErrorLogger(): ChainableLogger {
+  // Base error logging function
+  const errorLogger = (...args: any[]) => console.error(...args)
 
-/**
- * Chalk styling for success messages
- * @type {ChalkInstance}
- */
-export const success: ChalkInstance = chalk.bold.blue
+  // Add chalk styles as methods
+  const styledErrorLogger = Object.assign(errorLogger, {
+    step: (...args: any[]) => console.error(chalk.bold.underline(...args)),
+    dim: (...args: any[]) => console.error(chalk.dim(...args)),
+    success: (...args: any[]) => console.error(chalk.bold.blue(...args)),
+    opts: (...args: any[]) => console.error(chalk.magentaBright.bold(...args)),
+    wait: (...args: any[]) => console.error(chalk.bold.cyan(...args)),
+    final: (...args: any[]) => console.error(chalk.bold.italic(...args))
+  })
 
-/**
- * Chalk styling for options display
- * @type {ChalkInstance}
- */
-export const opts: ChalkInstance = chalk.magentaBright.bold
+  return styledErrorLogger
+}
 
-/**
- * Chalk styling for wait/processing messages
- * @type {ChalkInstance}
- */
-export const wait: ChalkInstance = chalk.bold.cyan
-
-/**
- * Chalk styling for final messages
- * @type {ChalkInstance}
- */
-export const final: ChalkInstance = chalk.bold.italic
-
-/**
- * Convenience export for console.log
- * @type {typeof console.log}
- */
-export const l: typeof console.log = console.log
-
-/**
- * Convenience export for console.error
- * @type {typeof console.log}
- */
-export const err: typeof console.error = console.error
+// Create and export the chainable loggers
+export const l = createChainableLogger()
+export const err = createChainableErrorLogger()
 
 /**
  * Logs the current processing action based on provided options.
  * 
  * @param options - Configuration options determining what to process
  */
-export function logProcessingAction(options: ProcessingOptions): void {
+export function logRSSProcessingAction(options: ProcessingOptions): void {
   if (options.item && options.item.length > 0) {
-    l(wait('\nProcessing specific items:'))
-    options.item.forEach((url) => l(wait(`  - ${url}`)))
+    l.wait('\nProcessing specific items:')
+    options.item.forEach((url) => l.wait(`  - ${url}`))
   } else if (options.last) {
-    l(wait(`\nProcessing the last ${options.last} items`))
+    l.wait(`\nProcessing the last ${options.last} items`)
   } else if (options.skip) {
-    l(wait(`  - Skipping first ${options.skip || 0} items`))
+    l.wait(`  - Skipping first ${options.skip || 0} items`)
   }
 }
   
 /**
  * Logs the processing status and item counts.
  */
-export function logProcessingStatus(total: number, processing: number, options: ProcessingOptions): void {
+export function logRSSProcessingStatus(total: number, processing: number, options: ProcessingOptions): void {
   if (options.item && options.item.length > 0) {
-    l(wait(`\n  - Found ${total} items in the RSS feed.`))
-    l(wait(`  - Processing ${processing} specified items.`))
+    l.wait(`\n  - Found ${total} items in the RSS feed.`)
+    l.wait(`  - Processing ${processing} specified items.`)
   } else if (options.last) {
-    l(wait(`\n  - Found ${total} items in the RSS feed.`))
-    l(wait(`  - Processing the last ${options.last} items.`))
+    l.wait(`\n  - Found ${total} items in the RSS feed.`)
+    l.wait(`  - Processing the last ${options.last} items.`)
   } else {
-    l(wait(`\n  - Found ${total} item(s) in the RSS feed.`))
-    l(wait(`  - Processing ${processing} item(s) after skipping ${options.skip || 0}.\n`))
+    l.wait(`\n  - Found ${total} item(s) in the RSS feed.`)
+    l.wait(`  - Processing ${processing} item(s) after skipping ${options.skip || 0}.\n`)
+  }
+}
+
+/**
+ * Logs the current processing action based on provided options.
+ * 
+ * @param options - Configuration options determining what to process
+ */
+export function logChannelProcessingAction(options: ProcessingOptions): void {
+  if (options.last) {
+    l.wait(`\nProcessing the last ${options.last} videos`)
+  } else if (options.skip) {
+    l.wait(`\nSkipping first ${options.skip || 0} videos`)
+  }
+}
+
+/**
+ * Logs the processing status and video counts.
+ * 
+ * @param total - Total number of videos found.
+ * @param processing - Number of videos to process.
+ * @param options - Configuration options.
+ */
+export function logChannelProcessingStatus(total: number, processing: number, options: ProcessingOptions): void {
+  if (options.last) {
+    l.wait(`\n  - Found ${total} videos in the channel.`)
+    l.wait(`  - Processing the last ${processing} videos.`)
+  } else if (options.skip) {
+    l.wait(`\n  - Found ${total} videos in the channel.`)
+    l.wait(`  - Processing ${processing} videos after skipping ${options.skip || 0}.\n`)
+  } else {
+    l.wait(`\n  - Found ${total} videos in the channel.`)
+    l.wait(`  - Processing all ${processing} videos.\n`)
   }
 }

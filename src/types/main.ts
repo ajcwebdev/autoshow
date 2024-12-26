@@ -2,6 +2,9 @@
 
 import type { TranscriptServices, WhisperModelType } from './transcript-service-types'
 
+// Define valid action types for processing
+export type ValidAction = 'video' | 'playlist' | 'channel' | 'urls' | 'file' | 'rss'
+
 /**
  * Processing options passed through command-line arguments.
  */
@@ -172,6 +175,17 @@ export type VideoMetadata = {
 
   /** The URL to the video's thumbnail image. */
   coverImage: string
+}
+
+/**
+ * Video information including upload date, URL, and type.
+ */
+export interface VideoInfo {
+  uploadDate: string
+  url: string
+  date: Date
+  timestamp: number  // Unix timestamp for more precise sorting
+  isLive: boolean   // Flag to identify live streams
 }
 
 // RSS Feed Types

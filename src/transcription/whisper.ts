@@ -17,7 +17,7 @@ import { readFile, writeFile, unlink } from 'node:fs/promises'
 import { existsSync } from 'node:fs'
 import { lrcToTxt, srtToTxt } from './transcription-utils'
 import { WHISPER_MODELS, execPromise } from '../types/globals'
-import { l, err, wait, success } from '../utils/logging'
+import { l, err } from '../utils/logging'
 import type { ProcessingOptions } from '../types/main'
 import type { WhisperModelType, WhisperTranscriptServices, WhisperRunner } from '../types/transcript-service-types'
 
@@ -35,7 +35,7 @@ export async function callWhisper(
   finalPath: string,
   transcriptServices: WhisperTranscriptServices
 ): Promise<string> {
-  l(wait(`\n  Using ${transcriptServices} for transcription...`))
+  l.wait(`\n  Using ${transcriptServices} for transcription...`)
   
   try {
     const serviceConfig = {
@@ -73,7 +73,7 @@ export async function callWhisper(
       throw new Error(`Unknown model type: ${whisperModel}`)
     }
 
-    l(wait(`\n    - whisperModel: ${whisperModel}`))
+    l.wait(`\n    - whisperModel: ${whisperModel}`)
     
     await config.runner(finalPath, whisperModel)
 
@@ -102,27 +102,27 @@ export async function callWhisper(
  */
 const runWhisperCpp: WhisperRunner = async (finalPath, whisperModel) => {
   const modelGGMLName = WHISPER_MODELS[whisperModel as WhisperModelType]
-  l(wait(`    - modelGGMLName: ${modelGGMLName}`))
+  l.wait(`    - modelGGMLName: ${modelGGMLName}`)
 
   if (!existsSync('./whisper.cpp')) {
-    l(wait(`\n  No whisper.cpp repo found, cloning and compiling...\n`))
+    l.wait(`\n  No whisper.cpp repo found, cloning and compiling...\n`)
     await execPromise('git clone https://github.com/ggerganov/whisper.cpp.git && make -C whisper.cpp')
-    l(wait(`\n    - whisper.cpp clone and compilation complete.\n`))
+    l.wait(`\n    - whisper.cpp clone and compilation complete.\n`)
   }
 
   if (!existsSync(`./whisper.cpp/models/${modelGGMLName}`)) {
-    l(wait(`\n  Model not found, downloading...\n    - ${whisperModel}\n`))
+    l.wait(`\n  Model not found, downloading...\n    - ${whisperModel}\n`)
     await execPromise(`bash ./whisper.cpp/models/download-ggml-model.sh ${whisperModel}`)
-    l(wait('    - Model download completed, running transcription...\n'))
+    l.wait('    - Model download completed, running transcription...\n')
   }
 
   await execPromise(`./whisper.cpp/build/bin/whisper-cli -m "whisper.cpp/models/${modelGGMLName}" -f "${finalPath}.wav" -of "${finalPath}" --output-lrc`)
-  l(success(`\n  Transcript LRC file successfully created:\n    - ${finalPath}.lrc`))
+  l.success(`\n  Transcript LRC file successfully created:\n    - ${finalPath}.lrc`)
 
   const lrcContent = await readFile(`${finalPath}.lrc`, 'utf8')
   const txtContent = lrcToTxt(lrcContent)
   await writeFile(`${finalPath}.txt`, txtContent)
-  l(success(`  Transcript transformation successfully completed:\n    - ${finalPath}.txt\n`))
+  l.success(`  Transcript transformation successfully completed:\n    - ${finalPath}.txt\n`)
 }
 
 /**
@@ -145,9 +145,9 @@ const runWhisperDocker: WhisperRunner = async (finalPath, whisperModel) => {
   const CONTAINER_NAME = 'autoshow-whisper-1'
   const modelPathContainer = `/app/models/${modelGGMLName}`
 
-  l(wait(`    - modelGGMLName: ${modelGGMLName}`))
-  l(wait(`    - CONTAINER_NAME: ${CONTAINER_NAME}`))
-  l(wait(`    - modelPathContainer: ${modelPathContainer}`))
+  l.wait(`    - modelGGMLName: ${modelGGMLName}`)
+  l.wait(`    - CONTAINER_NAME: ${CONTAINER_NAME}`)
+  l.wait(`    - modelPathContainer: ${modelPathContainer}`)
 
   await execPromise(`docker ps | grep ${CONTAINER_NAME}`)
     .catch(() => execPromise('docker-compose up -d whisper'))
@@ -158,12 +158,12 @@ const runWhisperDocker: WhisperRunner = async (finalPath, whisperModel) => {
   await execPromise(
     `docker exec ${CONTAINER_NAME} /app/build/bin/whisper-cli -m ${modelPathContainer} -f "/app/content/${finalPath.split('/').pop()}.wav" -of "/app/content/${finalPath.split('/').pop()}" --output-lrc`
   )
-  l(success(`\n  Transcript LRC file successfully created:\n    - ${finalPath}.lrc`))
+  l.success(`\n  Transcript LRC file successfully created:\n    - ${finalPath}.lrc`)
 
   const lrcContent = await readFile(`${finalPath}.lrc`, 'utf8')
   const txtContent = lrcToTxt(lrcContent)
   await writeFile(`${finalPath}.txt`, txtContent)
-  l(success(`  Transcript transformation successfully completed:\n    - ${finalPath}.txt\n`))
+  l.success(`  Transcript transformation successfully completed:\n    - ${finalPath}.txt\n`)
 }
 
 /**
@@ -197,24 +197,24 @@ const runWhisperPython: WhisperRunner = async (finalPath, whisperModel) => {
   try {
     await execPromise('which whisper')
   } catch {
-    l(wait('\n  openai-whisper not found, installing...'))
+    l.wait('\n  openai-whisper not found, installing...')
     await execPromise('pip install -U openai-whisper')
-    l(wait('    - openai-whisper installed'))
+    l.wait('    - openai-whisper installed')
   }
 
   const command = `whisper "${finalPath}.wav" --model ${whisperModel} --output_dir "content" --output_format srt --language en --word_timestamps True`
-  l(wait(`\n  Running transcription with command:\n    ${command}\n`))
+  l.wait(`\n  Running transcription with command:\n    ${command}\n`)
   await execPromise(command)
 
   const srtContent = await readFile(`${finalPath}.srt`, 'utf8')
   const txtContent = srtToTxt(srtContent)
   await writeFile(`${finalPath}.txt`, txtContent)
-  l(wait(`\n  Transcript transformation successfully completed:\n    - ${finalPath}.txt\n`))
+  l.wait(`\n  Transcript transformation successfully completed:\n    - ${finalPath}.txt\n`)
 
   await writeFile(`${finalPath}.lrc`, '')
-  l(wait(`\n  Empty LRC file created:\n    - ${finalPath}.lrc\n`))
+  l.wait(`\n  Empty LRC file created:\n    - ${finalPath}.lrc\n`)
   await unlink(`${finalPath}.srt`)
-  l(wait(`\n  SRT file deleted:\n    - ${finalPath}.srt\n`))
+  l.wait(`\n  SRT file deleted:\n    - ${finalPath}.srt\n`)
 }
 
 /**
@@ -234,13 +234,13 @@ const runWhisperPython: WhisperRunner = async (finalPath, whisperModel) => {
 const runWhisperDiarization: WhisperRunner = async (finalPath, whisperModel) => {
   const venvPythonPath = 'whisper-diarization/venv/bin/python'
   if (!existsSync(venvPythonPath)) {
-    l(wait(`\n  Virtual environment not found, running setup script...\n`))
+    l.wait(`\n  Virtual environment not found, running setup script...\n`)
     await execPromise('bash scripts/setup-python.sh')
-    l(wait(`    - whisper-diarization setup complete.\n`))
+    l.wait(`    - whisper-diarization setup complete.\n`)
   }
 
   const command = `${venvPythonPath} whisper-diarization/diarize.py -a ${finalPath}.wav --whisper-model ${whisperModel}`
-  l(wait(`\n  Running transcription with command:\n    ${command}\n`))
+  l.wait(`\n  Running transcription with command:\n    ${command}\n`)
   await execPromise(command)
 
   // The diarization script initially produces a TXT, which we remove before converting from SRT
@@ -249,10 +249,10 @@ const runWhisperDiarization: WhisperRunner = async (finalPath, whisperModel) => 
   const srtContent = await readFile(`${finalPath}.srt`, 'utf8')
   const txtContent = srtToTxt(srtContent)
   await writeFile(`${finalPath}.txt`, txtContent)
-  l(wait(`\n  Transcript transformation successfully completed:\n    - ${finalPath}.txt\n`))
+  l.wait(`\n  Transcript transformation successfully completed:\n    - ${finalPath}.txt\n`)
 
   await writeFile(`${finalPath}.lrc`, '')
-  l(success(`  Empty LRC file created:\n    - ${finalPath}.lrc`))
+  l.success(`  Empty LRC file created:\n    - ${finalPath}.lrc`)
   await unlink(`${finalPath}.srt`)
-  l(success(`  SRT file deleted:\n    - ${finalPath}.srt`))
+  l.success(`  SRT file deleted:\n    - ${finalPath}.srt`)
 }

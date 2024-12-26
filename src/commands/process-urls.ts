@@ -1,4 +1,4 @@
-// src/commands/processURLs.ts
+// src/commands/process-urls.ts
 
 /**
  * @file Processes multiple YouTube videos from a list of URLs stored in a file.
@@ -8,7 +8,7 @@
 import { readFile, writeFile } from 'node:fs/promises'
 import { processVideo } from './process-video'
 import { execFilePromise } from '../types/globals'
-import { l, err, wait, opts } from '../utils/logging'
+import { l, err } from '../utils/logging'
 import type { LLMServices, ProcessingOptions, VideoMetadata } from '../types/main'
 import type { TranscriptServices } from '../types/transcript-service-types'
 
@@ -34,8 +34,8 @@ export async function processURLs(
   transcriptServices?: TranscriptServices
 ): Promise<void> {
   // Log the processing parameters for debugging purposes
-  l(opts('Parameters passed to processURLs:\n'))
-  l(opts(`  - llmServices: ${llmServices}\n  - transcriptServices: ${transcriptServices}\n`))
+  l.opts('Parameters passed to processURLs:\n')
+  l.opts(`  - llmServices: ${llmServices}\n  - transcriptServices: ${transcriptServices}\n`)
 
   try {
     // Read the file and extract valid URLs
@@ -51,7 +51,7 @@ export async function processURLs(
       process.exit(1)
     }
 
-    l(opts(`\nFound ${urls.length} URLs in the file...`))
+    l.opts(`\nFound ${urls.length} URLs in the file...`)
 
     // If the --info option is provided, extract metadata for all videos
     if (options.info) {
@@ -114,16 +114,16 @@ export async function processURLs(
       const uniqueId = Date.now()
       const jsonFilePath = `content/urls_info_${date}_${uniqueId}.json`
       await writeFile(jsonFilePath, jsonContent)
-      l(wait(`Video information saved to: ${jsonFilePath}`))
+      l.wait(`Video information saved to: ${jsonFilePath}`)
       return
     }
 
     // Process each URL sequentially, with error handling for individual videos
     for (const [index, url] of urls.entries()) {
       // Visual separator for each video in the console
-      l(opts(`\n================================================================================================`))
-      l(opts(`  Processing URL ${index + 1}/${urls.length}: ${url}`))
-      l(opts(`================================================================================================\n`))
+      l.opts(`\n================================================================================================`)
+      l.opts(`  Processing URL ${index + 1}/${urls.length}: ${url}`)
+      l.opts(`================================================================================================\n`)
       try {
         // Process the video using the existing processVideo function
         await processVideo(options, url, llmServices, transcriptServices)

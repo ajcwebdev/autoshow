@@ -11,6 +11,7 @@
  * @packageDocumentation
  */
 
+import { argv, exit } from 'node:process'
 import { Command } from 'commander'
 import { processVideo } from '../commands/process-video'
 import { processPlaylist } from '../commands/process-playlist'
@@ -18,32 +19,23 @@ import { processChannel } from '../commands/process-channel'
 import { processURLs } from '../commands/process-urls'
 import { processFile } from '../commands/process-file'
 import { processRSS } from '../commands/process-rss'
-import { validateOption } from '../utils/validate-option'
-import { argv, exit } from 'node:process'
+import { validateOption, isValidAction } from '../utils/validate-option'
 import { ACTION_OPTIONS, LLM_OPTIONS, TRANSCRIPT_OPTIONS } from '../types/globals'
-import { l, err, opts, final } from '../utils/logging'
-import type { ProcessingOptions, HandlerFunction, LLMServices } from '../types/main'
+import { l, err } from '../utils/logging'
+import type { ProcessingOptions, HandlerFunction, LLMServices, ValidAction } from '../types/main'
 import type { TranscriptServices } from '../types/transcript-service-types'
 
 // Initialize the command-line interface using Commander.js
 const program = new Command()
 
-// Define valid action types for processing
-type ValidAction = 'video' | 'playlist' | 'channel' | 'urls' | 'file' | 'rss'
-
 // Map each action to its corresponding handler function
-const PROCESS_HANDLERS: Record<ValidAction, HandlerFunction> = {
+export const PROCESS_HANDLERS: Record<ValidAction, HandlerFunction> = {
   video: processVideo,
   playlist: processPlaylist,
   channel: processChannel,
   urls: processURLs,
   file: processFile,
   rss: processRSS,
-}
-
-// Type guard to check if a string is a valid action
-function isValidAction(action: string | undefined): action is ValidAction {
-  return Boolean(action && action in PROCESS_HANDLERS)
 }
 
 /**
@@ -115,9 +107,9 @@ program
  */
 program.action(async (options: ProcessingOptions) => {
   // Log received options for debugging purposes
-  l(opts(`Options received at beginning of command:\n`))
-  l(opts(JSON.stringify(options, null, 2)))
-  l(``)
+  l.opts(`Options received at beginning of command:\n`)
+  l.opts(JSON.stringify(options, null, 2))
+  l.opts(``)
 
   // Ensure options.item is always an array if provided via command line
   if (options.item && !Array.isArray(options.item)) {
@@ -178,9 +170,9 @@ program.action(async (options: ProcessingOptions) => {
     }
 
     // Log completion message
-    l(final(`\n================================================================================================`))
-    l(final(`  ${action} Processing Completed Successfully.`))
-    l(final(`================================================================================================\n`))
+    l.final(`\n================================================================================================`)
+    l.final(`  ${action} Processing Completed Successfully.`)
+    l.final(`================================================================================================\n`)
     exit(0)
   } catch (error) {
     // Handle errors during processing

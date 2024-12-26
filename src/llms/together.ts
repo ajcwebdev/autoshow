@@ -3,7 +3,7 @@
 import { writeFile } from 'node:fs/promises'
 import { env } from 'node:process'
 import { TOGETHER_MODELS } from '../types/globals'
-import { l, wait, err } from '../utils/logging'
+import { l, err } from '../utils/logging'
 import type { LLMFunction, TogetherModelType, TogetherResponse } from '../types/llm-types'
 
 /**
@@ -71,17 +71,13 @@ export const callTogether: LLMFunction = async (
 
     // Write the generated content to the specified output file
     await writeFile(tempPath, content)
-    l(wait(`\n  Together AI response saved to ${tempPath}`))
+    l.wait(`\n  Together AI response saved to ${tempPath}`)
 
     // Log finish reason, used model, and token usage
-    l(wait(`\n  Finish Reason: ${finishReason}\n  Model Used: ${usedModel}`))
+    l.wait(`\n  Finish Reason: ${finishReason}\n  Model Used: ${usedModel}`)
     if (usage) {
       const { prompt_tokens, completion_tokens, total_tokens } = usage
-      l(
-        wait(
-          `  Token Usage:\n    - ${prompt_tokens} prompt tokens\n    - ${completion_tokens} completion tokens\n    - ${total_tokens} total tokens`
-        )
-      )
+      l.wait(`  Token Usage:\n    - ${prompt_tokens} prompt tokens\n    - ${completion_tokens} completion tokens\n    - ${total_tokens} total tokens`)
     }
   } catch (error) {
     // Log any errors that occur during the process

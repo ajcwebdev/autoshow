@@ -1,4 +1,4 @@
-// src/utils/runTranscription.ts
+// src/utils/run-transcription.ts
 
 /**
  * @file Orchestrator for running transcription services on audio files.
@@ -10,7 +10,7 @@
 import { callWhisper } from '../transcription/whisper'
 import { callDeepgram } from '../transcription/deepgram'
 import { callAssembly } from '../transcription/assembly'
-import { l, step } from '../utils/logging'
+import { l } from '../utils/logging'
 import type { ProcessingOptions } from '../types/main'
 import type { TranscriptServices, WhisperTranscriptServices } from '../types/transcript-service-types'
 
@@ -84,7 +84,7 @@ export async function runTranscription(
   finalPath: string,
   transcriptServices?: TranscriptServices
 ): Promise<void> {
-  l(step(`\nStep 3 - Running transcription on audio file using ${transcriptServices}...`))
+  l.step(`\nStep 3 - Running transcription on audio file using ${transcriptServices}...`)
 
   // Route to appropriate transcription service
   switch (transcriptServices) {

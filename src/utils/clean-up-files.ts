@@ -1,4 +1,4 @@
-// src/utils/cleanUpFiles.ts
+// src/utils/clean-up-files.ts
 
 /**
  * @file Utility for cleaning up temporary files generated during processing.
@@ -7,7 +7,7 @@
  */
 
 import { unlink } from 'node:fs/promises'
-import { l, err, step, success } from '../utils/logging'
+import { l, err } from '../utils/logging'
 
 /**
  * Removes temporary files generated during content processing.
@@ -43,7 +43,7 @@ import { l, err, step, success } from '../utils/logging'
  * }
  */
 export async function cleanUpFiles(id: string): Promise<void> {
-  l(step('\nStep 5 - Cleaning up temporary files...\n'))
+  l.step('\nStep 5 - Cleaning up temporary files...\n')
 
   // Define extensions of temporary files to be cleaned up
   const extensions = [
@@ -53,14 +53,14 @@ export async function cleanUpFiles(id: string): Promise<void> {
     '.lrc'   // Lyrics/subtitles
   ]
 
-  l(success(`  Temporary files deleted:`))
+  l.success(`  Temporary files deleted:`)
 
   // Attempt to delete each file type
   for (const ext of extensions) {
     try {
       // Delete file and log success
       await unlink(`${id}${ext}`)
-      l(success(`    - ${id}${ext}`))
+      l.success(`    - ${id}${ext}`)
     } catch (error) {
       // Only log errors that aren't "file not found" (ENOENT)
       if (error instanceof Error && (error as Error).message !== 'ENOENT') {

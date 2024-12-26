@@ -1,4 +1,4 @@
-// src/commands/processFile.ts
+// src/commands/process-file.ts
 
 /**
  * @file Process a local audio or video file for transcription and analysis.
@@ -10,7 +10,7 @@ import { downloadAudio } from '../utils/download-audio'
 import { runTranscription } from '../utils/run-transcription'
 import { runLLM } from '../utils/run-llm'
 import { cleanUpFiles } from '../utils/clean-up-files'
-import { l, err, opts } from '../utils/logging'
+import { l, err } from '../utils/logging'
 import { readFile } from 'fs/promises'
 import { db } from '../server/db'
 import type { LLMServices, ProcessingOptions } from '../types/main'
@@ -42,8 +42,8 @@ export async function processFile(
   transcriptServices?: TranscriptServices
 ): Promise<void> {
   // Log the processing parameters for debugging purposes
-  l(opts('Parameters passed to processFile:\n'))
-  l(opts(`  - llmServices: ${llmServices}\n  - transcriptServices: ${transcriptServices}\n`))
+  l.opts('Parameters passed to processFile:\n')
+  l.opts(`  - llmServices: ${llmServices}\n  - transcriptServices: ${transcriptServices}\n`)
 
   try {
     // Generate markdown file with file metadata and get file paths

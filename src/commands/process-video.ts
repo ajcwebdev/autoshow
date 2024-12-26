@@ -1,4 +1,4 @@
-// src/commands/processVideo.ts
+// src/commands/process-video.ts
 
 /**
  * @file Process a single video from YouTube or other supported platforms.
@@ -10,7 +10,7 @@ import { downloadAudio } from '../utils/download-audio'
 import { runTranscription } from '../utils/run-transcription'
 import { runLLM } from '../utils/run-llm'
 import { cleanUpFiles } from '../utils/clean-up-files'
-import { l, err, opts } from '../utils/logging'
+import { l, err } from '../utils/logging'
 import { readFile } from 'fs/promises'
 import { db } from '../server/db'
 import type { LLMServices, ProcessingOptions } from '../types/main'
@@ -40,8 +40,8 @@ export async function processVideo(
   transcriptServices?: TranscriptServices
 ): Promise<string> {
   // Log the processing parameters for debugging purposes
-  l(opts('Parameters passed to processVideo:\n'))
-  l(opts(`  - llmServices: ${llmServices}\n  - transcriptServices: ${transcriptServices}\n`))
+  l.opts('Parameters passed to processVideo:\n')
+  l.opts(`  - llmServices: ${llmServices}\n  - transcriptServices: ${transcriptServices}\n`)
 
   try {
     // Generate markdown file with video metadata and get file paths

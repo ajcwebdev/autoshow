@@ -5,6 +5,7 @@
  * @packageDocumentation
  */
 
+import { XMLParser } from 'fast-xml-parser'
 import { exec, execFile } from 'node:child_process'
 import { promisify } from 'node:util'
 import type { LLMServices } from '../types/main'
@@ -13,6 +14,16 @@ import type { ChatGPTModelType, ClaudeModelType, CohereModelType, GeminiModelTyp
 
 export const execPromise = promisify(exec)
 export const execFilePromise = promisify(execFile)
+
+/**
+ * Configure XML parser for RSS feed processing
+ * Handles attributes without prefixes and allows boolean values
+ */
+export const parser = new XMLParser({
+  ignoreAttributes: false,
+  attributeNamePrefix: '',
+  allowBooleanAttributes: true,
+})
 
 export const PROMPT_CHOICES = [
   { name: 'Titles', value: 'titles' },

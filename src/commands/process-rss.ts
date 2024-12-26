@@ -1,4 +1,4 @@
-// src/commands/processRSS.ts
+// src/commands/process-rss.ts
 
 /**
  * @file Process podcast episodes and other media content from RSS feeds with robust error handling and filtering options.
@@ -12,8 +12,8 @@ import { runTranscription } from '../utils/run-transcription'
 import { runLLM } from '../utils/run-llm'
 import { cleanUpFiles } from '../utils/clean-up-files'
 import { validateRSSOptions } from '../utils/validate-option'
-import { logProcessingAction, logProcessingStatus } from '../utils/logging'
-import { l, err, wait, opts, parser } from '../utils/logging'
+import { l, err, logRSSProcessingAction, logRSSProcessingStatus } from '../utils/logging'
+import { parser } from '../types/globals'
 import { db } from '../server/db'
 import type { LLMServices, ProcessingOptions, RSSItem } from '../types/main'
 import type { TranscriptServices } from '../types/transcript-service-types'
@@ -115,7 +115,7 @@ async function saveFeedInfo(items: RSSItem[], channelTitle: string): Promise<voi
   const sanitizedTitle = sanitizeTitle(channelTitle)
   const jsonFilePath = `content/${sanitizedTitle}_info.json`
   await writeFile(jsonFilePath, jsonContent)
-  l(wait(`RSS feed information saved to: ${jsonFilePath}`))
+  l.wait(`RSS feed information saved to: ${jsonFilePath}`)
 }
 
 /**
@@ -175,8 +175,8 @@ async function processItem(
   llmServices?: LLMServices,
   transcriptServices?: TranscriptServices
 ): Promise<void> {
-  l(opts('Parameters passed to processItem:\n'))
-  l(opts(`  - llmServices: ${llmServices}\n  - transcriptServices: ${transcriptServices}\n`))
+  l.opts('Parameters passed to processItem:\n')
+  l.opts(`  - llmServices: ${llmServices}\n  - transcriptServices: ${transcriptServices}\n`)
 
   try {
     const { frontMatter, finalPath, filename, metadata } = await generateMarkdown(options, item)
@@ -221,15 +221,15 @@ async function processItems(
   transcriptServices?: TranscriptServices
 ): Promise<void> {
   for (const [index, item] of items.entries()) {
-    l(opts(`\n========================================================================================`))
-    l(opts(`  Item ${index + 1}/${items.length} processing: ${item.title}`))
-    l(opts(`========================================================================================\n`))
+    l.opts(`\n========================================================================================`)
+    l.opts(`  Item ${index + 1}/${items.length} processing: ${item.title}`)
+    l.opts(`========================================================================================\n`)
     
     await processItem(options, item, llmServices, transcriptServices)
     
-    l(opts(`\n========================================================================================`))
-    l(opts(`  ${index + 1}/${items.length} item processing completed successfully`))
-    l(opts(`========================================================================================\n`))
+    l.opts(`\n========================================================================================`)
+    l.opts(`  ${index + 1}/${items.length} item processing completed successfully`)
+    l.opts(`========================================================================================\n`)
   }
 }
 
@@ -243,12 +243,12 @@ export async function processRSS(
   llmServices?: LLMServices,
   transcriptServices?: TranscriptServices
 ): Promise<void> {
-  l(opts('Parameters passed to processRSS:\n'))
-  l(wait(`  - llmServices: ${llmServices}\n  - transcriptServices: ${transcriptServices}`))
+  l.opts('Parameters passed to processRSS:\n')
+  l.wait(`  - llmServices: ${llmServices}\n  - transcriptServices: ${transcriptServices}`)
 
   try {
     validateRSSOptions(options)
-    logProcessingAction(options)
+    logRSSProcessingAction(options)
 
     const feed = await fetchRSSFeed(rssUrl)
     const { items, channelTitle } = extractFeedItems(feed)
@@ -260,10 +260,10 @@ export async function processRSS(
 
     const itemsToProcess = selectItemsToProcess(items, options)
     if (itemsToProcess.length === 0) {
-      l(wait(`\nNo items found matching the provided criteria for this feed. Skipping...`))
+      l.wait(`\nNo items found matching the provided criteria for this feed. Skipping...`)
       return
     }
-    logProcessingStatus(items.length, itemsToProcess.length, options)
+    logRSSProcessingStatus(items.length, itemsToProcess.length, options)
     await processItems(itemsToProcess, options, llmServices, transcriptServices)
   } catch (error) {
     err(`Error processing RSS feed: ${(error as Error).message}`)

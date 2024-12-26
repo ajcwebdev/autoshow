@@ -1,8 +1,14 @@
-// src/utils/validateOption.ts
+// src/utils/validate-option.ts
 
 import { exit } from 'node:process'
 import { err } from '../utils/logging'
-import type { ProcessingOptions } from '../types/main'
+import { PROCESS_HANDLERS } from '../cli/commander'
+import type { ProcessingOptions, ValidAction } from '../types/main'
+
+// Type guard to check if a string is a valid action
+export function isValidAction(action: string | undefined): action is ValidAction {
+  return Boolean(action && action in PROCESS_HANDLERS)
+}
 
 /**
  * Helper function to validate that only one option from a list is provided.
@@ -89,5 +95,34 @@ export function validateRSSOptions(options: ProcessingOptions): void {
       err('Error: The --date option cannot be used with --last, --skip, or --order.')
       process.exit(1)
     }
+  }
+}
+
+/**
+ * Validates channel processing options for consistency and correct values.
+ * 
+ * @param options - Configuration options to validate
+ * @throws Will exit process if validation fails
+ */
+export function validateChannelOptions(options: ProcessingOptions): void {
+  if (options.last !== undefined) {
+    if (!Number.isInteger(options.last) || options.last < 1) {
+      err('Error: The --last option must be a positive integer.')
+      process.exit(1)
+    }
+    if (options.skip !== undefined || options.order !== undefined) {
+      err('Error: The --last option cannot be used with --skip or --order.')
+      process.exit(1)
+    }
+  }
+
+  if (options.skip !== undefined && (!Number.isInteger(options.skip) || options.skip < 0)) {
+    err('Error: The --skip option must be a non-negative integer.')
+    process.exit(1)
+  }
+
+  if (options.order !== undefined && !['newest', 'oldest'].includes(options.order)) {
+    err("Error: The --order option must be either 'newest' or 'oldest'.")
+    process.exit(1)
   }
 }

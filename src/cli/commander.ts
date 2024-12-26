@@ -12,7 +12,6 @@
  */
 
 import { Command } from 'commander'
-import { handleInteractivePrompt } from './interactive'
 import { processVideo } from '../commands/process-video'
 import { processPlaylist } from '../commands/process-playlist'
 import { processChannel } from '../commands/process-channel'
@@ -92,7 +91,6 @@ program
   // Utility options
   .option('--prompt <sections...>', 'Specify prompt sections to include')
   .option('--noCleanUp', 'Do not delete intermediary files after processing')
-  .option('-i, --interactive', 'Run in interactive mode')
   // Add examples and additional help text
   .addHelpText(
     'after',
@@ -120,14 +118,6 @@ program.action(async (options: ProcessingOptions) => {
   l(opts(`Options received at beginning of command:\n`))
   l(opts(JSON.stringify(options, null, 2)))
   l(``)
-
-  // Extract interactive mode flag
-  const { interactive } = options
-
-  // If in interactive mode, prompt user for input
-  if (interactive) {
-    options = await handleInteractivePrompt(options)
-  }
 
   // Ensure options.item is always an array if provided via command line
   if (options.item && !Array.isArray(options.item)) {

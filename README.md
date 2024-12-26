@@ -103,7 +103,6 @@ Example commands for all available CLI options can be found in [`docs/examples.m
 
 - Main Entry Points (`src/cli`)
   - `commander.ts`: Defines the command-line interface using Commander
-  - `interactive.ts`: Defines the interactive terminal interface using Inquirer
 
 - Command Processors (`src/commands`)
   - `process-file.ts`: Handles local audio/video file processing

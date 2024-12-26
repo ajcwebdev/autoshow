@@ -53,9 +53,10 @@ export const callMistral: LLMFunction = async (
     const content = firstChoice.message.content
     const finishReason = firstChoice.finishReason ?? 'unknown'
     const usage = response.usage ?? { promptTokens: 0, completionTokens: 0, totalTokens: 0 }
+    const contentString = Array.isArray(content) ? content.join('') : content
     
     // Write the generated content to the specified output file
-    await writeFile(tempPath, content)
+    await writeFile(tempPath, contentString)
 
     // Log finish reason, used model, and token usage
     l(wait(`\n  Finish Reason: ${finishReason}\n  Model Used: ${actualModel}`))

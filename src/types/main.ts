@@ -3,7 +3,7 @@
 import type { TranscriptServices, WhisperModelType } from './transcript-service-types'
 
 /**
- * Processing options passed through command-line arguments or interactive prompts.
+ * Processing options passed through command-line arguments.
  */
 export type ProcessingOptions = {
   /** URL of the YouTube video to process. */
@@ -104,105 +104,7 @@ export type ProcessingOptions = {
 
   /** Number of previous days to check for RSS items to process. */
   lastDays?: number
-
-  /** Whether to run in interactive mode. */
-  interactive?: boolean
 }
-
-// Interactive CLI Types
-/**
- * Answers received from inquirer prompts in interactive mode.
- */
-export type InquirerAnswers = {
-  /** The action selected by the user (e.g., 'video', 'playlist'). */
-  action?: string
-
-  /** YouTube video URL provided by the user. */
-  video?: string
-
-  /** YouTube playlist URL provided by the user. */
-  playlist?: string
-
-  /** YouTube channel URL provided by the user. */
-  channel?: string
-
-  /** File path containing URLs provided by the user. */
-  urls?: string
-
-  /** Local audio/video file path provided by the user. */
-  file?: string
-
-  /** RSS feed URL provided by the user. */
-  rss?: string | string[]
-
-  /** Whether the user wants to specify specific RSS items. */
-  specifyItem?: boolean
-
-  /** Comma-separated audio URLs of specific RSS items. */
-  item?: string | string[]
-
-  /** Whether to generate JSON file with RSS feed information instead of processing items. */
-  info?: boolean
-
-  /** Number of items to skip in RSS feed processing. */
-  skip?: number
-
-  /** Number of most recent items to process (overrides order and skip). */
-  last?: number
-
-  /** Order in which to process RSS feed items ('newest' or 'oldest'). */
-  order?: string
-
-  /** LLM option selected by the user. */
-  llmServices?: LLMServices
-
-  /** Specific LLM model selected by the user. */
-  llmModel?: string
-
-  /** Transcription option selected by the user. */
-  transcriptServices?: TranscriptServices
-
-  /** Whisper model type selected by the user. */
-  whisperModel?: WhisperModelType
-
-  /** Whether to use speaker labels in transcription. */
-  speakerLabels?: boolean
-
-  /** Prompt sections selected by the user. */
-  prompt?: string[]
-
-  /** Whether to keep temporary files after processing. */
-  noCleanUp?: boolean
-
-  /** Whether to proceed with the action. */
-  confirmAction?: boolean
-}
-
-/**
- * Structure of the inquirer prompt questions.
- */
-export type InquirerQuestions = Array<{
-  /** The type of the prompt (e.g., 'input', 'list', 'confirm', 'checkbox'). */
-  type: string
-
-  /** The name of the answer property. */
-  name: string
-
-  /** The message to display to the user. */
-  message: string
-
-  /** The choices available for selection (for 'list' and 'checkbox' types). */
-  choices?: Array<any> | (() => Array<any>)
-
-  /** A function to determine when to display the prompt. */
-  when?: () => boolean
-
-  /** A function to validate the user's input. */
-  validate?: (input: any) => boolean | string
-
-  /** The default value for the prompt. */
-  default?: any
-}>
 
 // Handler and Processing Types
 /**

@@ -557,14 +557,6 @@ npm run as -- \
   --whisper large-v3-turbo
 ```
 
-Run `whisper.cpp` in a Docker container with `--whisperDocker`:
-
-```bash
-npm run as -- \
-  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
-  --whisperDocker base
-```
-
 ### Deepgram
 
 Create a `.env` file and set API key as demonstrated in `.env.example` for `DEEPGRAM_API_KEY`.
@@ -669,6 +661,15 @@ npm run as -- \
 ```
 
 ## Docker
+
+Without Compose:
+
+```bash
+docker build -t autoshow -f .github/Dockerfile .
+docker run -v ./content:/usr/src/app/content autoshow --video "https://www.youtube.com/watch?v=MORMZXEaONk" --whisper base --ollama LLAMA_3_2_3B
+```
+
+With Compose:
 
 ```bash
 npm run setup-docker

@@ -2,13 +2,9 @@
 
 services:
   autoshow:
-    # Use the parent directory (..) as the Docker build context
+    image: autoshow
     build:
       context: ..
       dockerfile: .github/Dockerfile
-    # Mount directories/files from host to container
     volumes:
       - ../content:/usr/src/app/content
-      - ../.env:/usr/src/app/.env
-    stdin_open: true
-    tty: true

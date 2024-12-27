@@ -21,16 +21,11 @@
   - [Llama.cpp](#llamacpp)
   - [Ollama](#ollama)
 - [Transcription Options](#transcription-options)
-  - [Whisper.cpp](#whispercpp)
-  - [Whisper Python](#whisper-python)
-  - [Whisper Diarization](#whisper-diarization)
+  - [Whisper](#whisper)
   - [Deepgram](#deepgram)
   - [Assembly](#assembly)
 - [Prompt Options](#prompt-options)
-- [Alternative Runtimes](#alternative-runtimes)
-  - [Docker Compose](#docker-compose)
-  - [Deno](#deno)
-  - [Bun](#bun)
+- [Docker](#docker)
 - [Test Suite](#test-suite)
 - [Chat with Show Notes](#chat-with-show-notes)
 
@@ -526,7 +521,7 @@ npm run as -- \
 
 ## Transcription Options
 
-### Whisper.cpp
+### Whisper
 
 If neither the `--deepgram` or `--assembly` option is included for transcription, `autoshow` will default to running the largest Whisper.cpp model. To configure the size of the Whisper model, use the `--model` option and select one of the following:
 
@@ -673,24 +668,11 @@ npm run as -- \
   --prompt titles summary longChapters takeaways questions
 ```
 
-## Alternative Runtimes
-
-### Docker Compose
-
-This will start `whisper.cpp`, Ollama, and the AutoShow Commander CLI in their own Docker containers.
+## Docker
 
 ```bash
-npm run docker-up
-```
-
-Inspect various aspects of the containers, images, and volumes:
-
-```bash
-docker images && docker ps -a && docker system df -v && docker volume ls
-docker volume inspect autoshow_ollama
-du -sh ./whisper.cpp/models
-docker history autoshow-autoshow:latest
-docker history autoshow-whisper:latest
+npm run setup-docker
+# docker compose -f .github/docker-compose.yml build
 ```
 
 Replace `as` with `docker` to run most other commands explained in this document.
@@ -701,36 +683,12 @@ npm run docker -- \
 
 npm run docker -- \
   --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
-  --whisperDocker tiny
-```
+  --whisper base
 
-Currently supports Ollama's official Docker image so the entire project can be encapsulated in one local Docker Compose file:
-
-```bash
 npm run docker -- \
   --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
-  --whisperDocker tiny \
-  --ollama
-```
-
-To reset your Docker images and containers, run:
-
-```bash
-npm run prune
-```
-
-### Bun
-
-```bash
-npm run bun -- \
-  --video "https://www.youtube.com/watch?v=MORMZXEaONk"
-```
-
-### Deno
-
-```bash
-npm run deno -- \
-  --video "https://www.youtube.com/watch?v=MORMZXEaONk"
+  --whisper base \
+  --ollama "LLAMA_3_2_3B"
 ```
 
 ## Test Suite
@@ -756,7 +714,7 @@ Docker test, also uses Whisper for transcription and Ollama for LLM operations b
 npm run test-docker
 ```
 
-Benchmark tests, each compare different size models for `whisper.cpp`, `openai-whisper`, and `whisper-diarization`.
+Benchmark tests, each compare different size models for `whisper.cpp` and a Dockerized version.
 
 ```bash
 npm run bench-tiny

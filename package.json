@@ -18,7 +18,7 @@
   "scripts": {
     "tsx:base": "tsx --env-file=.env --no-warnings --experimental-sqlite",
     "setup": "bash ./scripts/setup.sh",
-    "setup-docker": "docker compose up --build -d --remove-orphans --no-start",
+    "setup-docker": "docker compose -f .github/docker-compose.yml build",
     "setup-all": "npm run setup && npm run setup-docker",
     "as": "npm run tsx:base -- src/cli/commander.ts",
     "video": "npm run as -- --video",
@@ -43,7 +43,7 @@
     "test-all": "tsx --test test/all.test.ts",
     "ta": "tsx --test test/all.test.ts",
     "clean": "tsx scripts/cleanContent.ts",
-    "docker": "docker compose run --remove-orphans --rm autoshow --whisperDocker",
+    "docker": "docker compose -f .github/docker-compose.yml run --rm autoshow",
     "docker-up": "docker compose up --build -d --remove-orphans --no-start",
     "docker-list": "docker compose images && docker compose ls",
     "prune": "docker system prune -af --volumes && docker image prune -af && docker container prune -f && docker volume prune -af",

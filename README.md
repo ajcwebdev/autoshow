@@ -120,7 +120,7 @@ Example commands for all available CLI options can be found in [`docs/examples.m
   - Step 6 - `clean-up-files.ts` removes temporary files after processing
 
 - Transcription Services (`src/transcription`)
-  - `whisper.ts`: Uses Whisper.cpp, openai-whisper, or whisper-diarization for transcription
+  - `whisper.ts`: Uses Whisper.cpp for transcription
   - `deepgram.ts`: Integrates Deepgram transcription service
   - `assembly.ts`: Integrates AssemblyAI transcription service
 

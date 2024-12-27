@@ -6,5 +6,8 @@ services:
     build:
       context: ..
       dockerfile: .github/Dockerfile
+    command: ["serve"]
     volumes:
       - ../content:/usr/src/app/content
+    ports:
+      - "3000:3000"

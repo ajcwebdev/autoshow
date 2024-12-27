@@ -1,7 +1,7 @@
 # .github/Dockerfile
 
 # ---------------------------------------------------
-# 1) Node base image with your usual packages
+# 1) Node base image
 # ---------------------------------------------------
 FROM node:22 AS base
 RUN apt-get update && apt-get install -y \
@@ -36,7 +36,7 @@ RUN git clone https://github.com/ggerganov/whisper.cpp.git && \
 COPY package*.json ./
 RUN npm ci
 
-# Copy source
+# Copy source code
 COPY src ./src
 COPY .github/docker-entrypoint.sh ./
 RUN chmod +x /usr/src/app/docker-entrypoint.sh
@@ -63,5 +63,6 @@ COPY --from=ollama /root/.ollama /root/.ollama
 # Create content directory
 RUN mkdir -p content
 
+EXPOSE 3000
 ENTRYPOINT ["/usr/src/app/docker-entrypoint.sh"]
 CMD ["--help"]

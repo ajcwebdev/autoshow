@@ -27,6 +27,7 @@
 - [Prompt Options](#prompt-options)
 - [Docker](#docker)
 - [Test Suite](#test-suite)
+- [Skip Cleanup of Intermediate Files](#skip-cleanup-of-intermediate-files)
 - [Chat with Show Notes](#chat-with-show-notes)
 
 ## Content and Feed Inputs
@@ -692,6 +693,17 @@ npm run docker -- \
   --ollama "LLAMA_3_2_3B"
 ```
 
+Run server in Docker container:
+
+```bash
+docker run -d \
+  -p 3000:3000 \
+  -v "./content:/usr/src/app/content" \
+  autoshow serve
+
+docker compose -f .github/docker-compose.yml run --rm autoshow serve
+```
+
 ## Test Suite
 
 Integration test.
@@ -724,6 +736,16 @@ npm run bench-small
 npm run bench-medium
 npm run bench-large
 npm run bench-turbo
+```
+
+## Skip Cleanup of Intermediate Files
+
+If you want to keep downloaded or temporary files for debugging or reprocessing purposes, use `--noCleanUp`. This prevents the CLI from deleting intermediary or cached files after finishing its run.
+
+```bash
+npm run as -- \
+  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
+  --noCleanUp
 ```
 
 ## Chat with Show Notes

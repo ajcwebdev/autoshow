@@ -18,8 +18,8 @@
   "scripts": {
     "tsx:base": "tsx --env-file=.env --no-warnings --experimental-sqlite",
     "setup": "bash ./scripts/setup.sh",
-    "setup-docker": "docker compose -f .github/docker-compose.yml build",
-    "setup-all": "npm run setup && npm run setup-docker",
+    "docker-setup": "docker build -t autoshow -f .github/Dockerfile .",
+    "setup-all": "npm run setup && npm run docker-setup",
     "as": "npm run tsx:base -- src/cli/commander.ts",
     "video": "npm run as -- --video",
     "urls": "npm run as -- --urls",
@@ -43,9 +43,8 @@
     "test-all": "tsx --test test/all.test.ts",
     "ta": "tsx --test test/all.test.ts",
     "clean": "tsx scripts/cleanContent.ts",
-    "docker": "docker compose -f .github/docker-compose.yml run --rm autoshow",
-    "docker-up": "docker compose up --build -d --remove-orphans --no-start",
-    "docker-list": "docker compose images && docker compose ls",
+    "docker-cli": "docker run --rm -it -v $PWD/content:/usr/src/app/content autoshow",
+    "docker-serve": "docker run -d -p 3000:3000 -v $PWD/content:/usr/src/app/content autoshow serve",
     "prune": "docker system prune -af --volumes && docker image prune -af && docker container prune -f && docker volume prune -af",
     "bun": "bun --env-file=.env --no-warnings src/cli/commander.ts",
     "deno": "deno run --allow-sys --allow-read --allow-run --allow-write --allow-env --unstable-sloppy-imports src/cli/commander.ts"

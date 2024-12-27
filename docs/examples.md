@@ -663,45 +663,31 @@ npm run as -- \
 
 ## Docker
 
-Without Compose:
+### Build the Image
 
 ```bash
-docker build -t autoshow -f .github/Dockerfile .
-docker run -v ./content:/usr/src/app/content autoshow --video "https://www.youtube.com/watch?v=MORMZXEaONk" --whisper base --ollama LLAMA_3_2_3B
+npm run docker-setup
+
+# Expands out to `docker build -t autoshow -f .github/Dockerfile .`
 ```
 
-With Compose:
+### Run CLI Commands with Docker
+
+You can run any of the `as` CLI commands by passing arguments to the container via `docker-cli`.
 
 ```bash
-npm run setup-docker
-# docker compose -f .github/docker-compose.yml build
-```
-
-Replace `as` with `docker` to run most other commands explained in this document.
-
-```bash
-npm run docker -- \
-  --video "https://www.youtube.com/watch?v=MORMZXEaONk"
-
-npm run docker -- \
-  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
-  --whisper base
-
-npm run docker -- \
+npm run docker-cli -- \
   --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
   --whisper base \
   --ollama "LLAMA_3_2_3B"
 ```
 
-Run server in Docker container:
+### Run the Server with Docker
+
+To spin up the server on port 3000, run:
 
 ```bash
-docker run -d \
-  -p 3000:3000 \
-  -v "./content:/usr/src/app/content" \
-  autoshow serve
-
-docker compose -f .github/docker-compose.yml run --rm autoshow serve
+npm run docker-serve
 ```
 
 ## Test Suite

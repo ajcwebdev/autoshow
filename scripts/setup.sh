@@ -80,11 +80,6 @@ else
     echo "Compiling whisper.cpp..."
     cmake -B whisper.cpp/build -S whisper.cpp
     cmake --build whisper.cpp/build --config Release
-    
-    # Copy Dockerfile
-    echo "Copying Dockerfile..."
-    cp .github/whisper.Dockerfile whisper.cpp/Dockerfile
-    cp .github/whisper.dockerignore whisper.cpp/.dockerignore
     rm -rf whisper.cpp/.git
 fi
 

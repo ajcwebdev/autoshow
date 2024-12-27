@@ -1,10 +1,9 @@
 # .github/Dockerfile
 
 # ---------------------------------------------------
-# 1) Node base image with your usual packages
+# 1) Node base image
 # ---------------------------------------------------
 FROM node:22 AS base
-
 RUN apt-get update && apt-get install -y \
     ffmpeg \
     git \
@@ -15,45 +14,55 @@ RUN apt-get update && apt-get install -y \
     cmake \
     libopenblas-dev \
  && rm -rf /var/lib/apt/lists/*
-
 RUN update-ca-certificates
 WORKDIR /usr/src/app
 
+# Install yt-dlp
 RUN curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp \
     -o /usr/local/bin/yt-dlp && \
     chmod a+rx /usr/local/bin/yt-dlp
 
+# Install tsx globally
 RUN npm install -g tsx
 
-# Copy package.json and package-lock.json from build context (..)
-# (Because of "context: .." in docker-compose.yml)
-COPY package*.json ./
+# Install whisper.cpp and download models
+RUN git clone https://github.com/ggerganov/whisper.cpp.git && \
+    cd whisper.cpp && \
+    make && \
+    ./models/download-ggml-model.sh base && \
+    ./models/download-ggml-model.sh tiny
 
+# Copy package files and install deps
+COPY package*.json ./
 RUN npm ci
 
 # Copy source code
 COPY src ./src
-
-# Copy entrypoint script from .github directory
 COPY .github/docker-entrypoint.sh ./
 RUN chmod +x /usr/src/app/docker-entrypoint.sh
 
 # ---------------------------------------------------
-# 2) Pull the official Ollama image to copy out `ollama`
+# 2) Setup Ollama with models
 # ---------------------------------------------------
-FROM ollama/ollama:latest AS ollama-stage
-# The official image might have /bin/ollama or /usr/local/bin/ollama
+FROM ollama/ollama:latest AS ollama
+WORKDIR /root/.ollama
+# Start Ollama server and pull models
+RUN ollama serve & \
+    sleep 10 && \
+    ollama pull llama2 && \
+    pkill ollama
 
 # ---------------------------------------------------
-# 3) Final stage: combine everything
+# 3) Final stage combining everything
 # ---------------------------------------------------
 FROM base
+# Copy Ollama binary and the pre-downloaded models
+COPY --from=ollama /bin/ollama /usr/local/bin/ollama
+COPY --from=ollama /root/.ollama /root/.ollama
 
-# COPY from the Ollama stage to your final image:
-# (Check which path works for your version of the image)
-COPY --from=ollama-stage /bin/ollama /usr/local/bin/ollama
-# If that fails, try:
-# COPY --from=ollama-stage /usr/local/bin/ollama /usr/local/bin/ollama
+# Create content directory
+RUN mkdir -p content
 
+EXPOSE 3000
 ENTRYPOINT ["/usr/src/app/docker-entrypoint.sh"]
 CMD ["--help"]

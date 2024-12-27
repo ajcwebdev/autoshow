@@ -8,14 +8,14 @@ import { l, err } from '../utils/logging'
 import type { LLMFunction, OllamaModelType, OllamaResponse, OllamaTagsResponse } from '../types/llms'
 
 /**
- * Main function to call the Llama model using the Ollama REST API.
- * This function ensures the Ollama server is running, checks if the model is available,
- * and then proceeds with the chat using a streaming response.
- * @param promptAndTranscript - The combined prompt and transcript content.
- * @param tempPath - The temporary file path to write the LLM output.
- * @param modelName - The name of the model to use.
- * @returns A Promise that resolves when the processing is complete.
- * @throws {Error} - If an error occurs during processing.
+ * callOllama()
+ * -----------
+ * Main function to call the Llama-based model using the Ollama server API.
+ *
+ * In a single-container approach:
+ * - We assume 'ollama' binary is installed inside the container.
+ * - We'll try to connect to 'localhost:11434' or a custom port from env,
+ *   and if it's not running, we'll spawn `ollama serve`.
  */
 export const callOllama: LLMFunction = async (
   promptAndTranscript: string,
@@ -23,15 +23,15 @@ export const callOllama: LLMFunction = async (
   modelName: string = 'LLAMA_3_2_3B'
 ) => {
   try {
-    // Map the model name to the Ollama model identifier
+    // Map the user-friendly name (e.g. 'LLAMA_3_2_3B') to the actual model ID
     const ollamaModelName = OLLAMA_MODELS[modelName as OllamaModelType]?.modelId || 'llama3.2:3b'
     l.wait(`    - modelName: ${modelName}\n    - ollamaModelName: ${ollamaModelName}`)
     
-    // Get host and port from environment variables or use defaults
+    // Host & port for Ollama
     const ollamaHost = env['OLLAMA_HOST'] || 'localhost'
     const ollamaPort = env['OLLAMA_PORT'] || '11434'
-    
-    // Check if Ollama server is running, start if not
+
+    // Check if Ollama server is up
     async function checkServer(): Promise<boolean> {
       try {
         const serverResponse = await fetch(`http://${ollamaHost}:${ollamaPort}`)
@@ -44,11 +44,11 @@ export const callOllama: LLMFunction = async (
     if (await checkServer()) {
       l.wait('\n  Ollama server is already running...')
     } else {
+      // If not running, attempt to start locally (unless you're in Docker with a different approach)
       if (ollamaHost === 'ollama') {
-        // Running inside Docker, do not attempt to start the server
+        // In older multi-container approach, the server might be on a different host.
         throw new Error('Ollama server is not running. Please ensure the Ollama server is running and accessible.')
       } else {
-        // Not running in Docker, attempt to start the server
         l.wait('\n  Ollama server is not running. Attempting to start...')
         const ollamaProcess = spawn('ollama', ['serve'], {
           detached: true,
@@ -56,9 +56,9 @@ export const callOllama: LLMFunction = async (
         })
         ollamaProcess.unref()
 
-        // Wait for the server to be ready
+        // Wait a few seconds for server to start
         let attempts = 0
-        while (attempts < 30) {  // Wait up to 30 seconds
+        while (attempts < 30) {
           if (await checkServer()) {
             l.wait('    - Ollama server is now ready.')
             break
@@ -71,8 +71,8 @@ export const callOllama: LLMFunction = async (
         }
       }
     }
-    
-    // Check if the model is available, pull if not
+
+    // Check if the model is available, pull it if not
     try {
       const tagsResponse = await fetch(`http://${ollamaHost}:${ollamaPort}/api/tags`)
       if (!tagsResponse.ok) {
@@ -80,6 +80,7 @@ export const callOllama: LLMFunction = async (
       }
       const tagsData = await tagsResponse.json() as OllamaTagsResponse
       const isModelAvailable = tagsData.models.some(model => model.name === ollamaModelName)
+
       if (!isModelAvailable) {
         l.wait(`\n  Model ${ollamaModelName} is not available, pulling the model...`)
         const pullResponse = await fetch(`http://${ollamaHost}:${ollamaPort}/api/pull`, {
@@ -122,10 +123,10 @@ export const callOllama: LLMFunction = async (
       err(`Error checking/pulling model: ${error instanceof Error ? error.message : String(error)}`)
       throw error
     }
-    
+
     l.wait(`    - Sending chat request to http://${ollamaHost}:${ollamaPort} using ${ollamaModelName} model`)
-    
-    // Call the Ollama chat API with streaming enabled
+
+    // Call Ollama's /api/chat endpoint in streaming mode
     const response = await fetch(`http://${ollamaHost}:${ollamaPort}/api/chat`, {
       method: 'POST',
       headers: {
@@ -141,7 +142,6 @@ export const callOllama: LLMFunction = async (
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`)
     }
-
     if (!response.body) {
       throw new Error('Response body is null')
     }
@@ -180,8 +180,9 @@ export const callOllama: LLMFunction = async (
       }
     }
 
-    // Write the full content to the output file
+    // Write final content to the specified temp file
     await writeFile(tempPath, fullContent)
+
   } catch (error) {
     err(`Error in callOllama: ${error instanceof Error ? error.message : String(error)}`)
     err(`Stack Trace: ${error instanceof Error ? error.stack : 'No stack trace available'}`)

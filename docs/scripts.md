@@ -6,7 +6,6 @@ A list of scripts in Autoshow's `package.json` along with explanations for what 
 
 - [Setup Scripts](#setup-scripts)
   - [`setup`](#setup)
-  - [`setup-docker`](#setup-docker)
   - [`setup-all`](#setup-all)
 - [Base, Main, and Serve Commands](#base,-main,-and-serve-commands)
   - [`tsx:base`](#tsx:base)
@@ -29,13 +28,12 @@ A list of scripts in Autoshow's `package.json` along with explanations for what 
   - [`test-server-local`](#test-server-local)
   - [`test-server-all`](#test-server-all)
 - [Benchmarking Commands](#benchmarking-commands)
-- [Docker and Alternative Runtime Commands](#docker-and-alternative-runtime-commands)
-  - [`docker`](#docker)
-  - [`docker-up`](#docker-up)
-  - [`docker-list`](#docker-list)
-  - [`prune`](#prune)
-  - [`bun`](#bun)
-  - [`deno`](#deno)
+- [Docker Commands](#docker-commands)
+  - [`docker-setup`](#docker-setup)
+  - [`docker-cli`](#docker-cli)
+  - [`docker-serve`](#docker-serve)
+- [`bun`](#bun)
+- [`deno`](#deno)
 
 ## Setup Scripts
 
@@ -47,28 +45,15 @@ Executes the `setup.sh` bash script located in the `./scripts/` directory. Initi
 "setup": "bash ./scripts/setup.sh"
 ```
 
-### `setup-docker`
-
-Prepares the Docker environment without starting the containers.
-
-- `--build`: Builds images before starting containers.
-- `-d`: Runs containers in detached mode.
-- `--remove-orphans`: Removes containers not defined in the `docker-compose.yml`.
-- `--no-start`: Does not start the containers after creating them.
-
-```json
-"setup-docker": "docker compose up --build -d --remove-orphans --no-start"
-```
-
 ### `setup-all`
 
 Runs all setup scripts sequentially to fully initialize the project.
 
 - `npm run setup`: Initializes the project.
-- `npm run setup-docker`: Prepares the Docker environment.
+- `npm run docker-setup`: Prepares the Docker environment.
 
 ```json
-"setup-all": "npm run setup && npm run setup-docker"
+"setup-all": "npm run setup && npm run docker-setup"
 ```
 
 ## Base, Main, and Serve Commands
@@ -232,52 +217,30 @@ Scripts include:
 - `bench-large`: `tsx --test test/bench/large.test.ts`
 - `bench-turbo`: `tsx --test test/bench/turbo.test.ts`
 
-## Docker and Alternative Runtime Commands
+## Docker
 
-### `docker`
+### `docker-setup`
 
-Runs the `autoshow` service inside a Docker container with the `--whisperDocker` option.
+Prepares the Docker environment without starting the containers.
 
-- Allows you to run the application using the Dockerized `whisper` transcription service.
+- `--build`: Builds images before starting containers.
+- `-d`: Runs containers in detached mode.
 - `--remove-orphans`: Removes containers not defined in the `docker-compose.yml`.
-- `--rm`: Automatically removes the container when it exits.
+- `--no-start`: Does not start the containers after creating them.
 
 ```json
-"docker": "docker compose run --remove-orphans --rm autoshow --whisperDocker"
+"docker-setup": "docker compose up --build -d --remove-orphans --no-start"
 ```
 
-### `docker-up`
+### `docker-cli`
 
-Similar to `setup-docker`, prepares the Docker environment without starting containers.
+TODO
 
-- Ensures the Docker images are built and ready to start.
+### `docker-serve`
 
-```json
-"docker-up": "docker compose up --build -d --remove-orphans --no-start"
-```
+TODO
 
-### `docker-list`
-
-Lists Docker images and Docker Compose services.
-
-- `docker compose images`: Lists images used by the services.
-- `docker compose ls`: Lists all Docker Compose projects.
-
-```json
-"docker-list": "docker compose images && docker compose ls"
-```
-
-### `prune`
-
-Aggressively cleans up all unused Docker data such as stopped containers, networks, images, and volumes.
-
-- **Warning: This is a destructive operation that cannot be undone.**
-
-```json
-"prune": "docker system prune -af --volumes && docker image prune -af && docker container prune -f && docker volume prune -af"
-```
-
-### `bun`
+## `bun`
 
 Runs the CLI application using `Bun`, an alternative JavaScript runtime.
 
@@ -288,7 +251,7 @@ Runs the CLI application using `Bun`, an alternative JavaScript runtime.
 "bun": "bun --env-file=.env --no-warnings src/cli/commander.ts"
 ```
 
-### `deno`
+## `deno`
 
 Runs the CLI application using `Deno`, another JavaScript and TypeScript runtime.
 

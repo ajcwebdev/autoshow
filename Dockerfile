@@ -57,5 +57,7 @@ COPY --from=ollama-stage /bin/ollama /usr/local/bin/ollama
 # or if that fails, try:
 # COPY --from=ollama-stage /usr/local/bin/ollama /usr/local/bin/ollama
 
+COPY .env .env
+
 ENTRYPOINT ["/usr/src/app/docker-entrypoint.sh"]
 CMD ["--help"]

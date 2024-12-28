@@ -9,23 +9,21 @@
   - [Process Multiple Videos Specified in a URLs File](#process-multiple-videos-specified-in-a-urls-file)
   - [Process Single Audio or Video File](#process-single-audio-or-video-file)
   - [Process Podcast RSS Feed](#process-podcast-rss-feed)
-- [Language Model (LLM) Options](#language-model-llm-options)
-  - [OpenAI's ChatGPT Models](#openais-chatgpt-models)
-  - [Anthropic's Claude Models](#anthropics-claude-models)
-  - [Google's Gemini Models](#googles-gemini-models)
-  - [Cohere's Command Models](#coheres-command-models)
-  - [Mistral's Mistral Models](#mistrals-mistral-models)
-  - [Fireworks](#fireworks)
-  - [Together](#together)
-  - [Groq](#groq)
-  - [Llama.cpp](#llamacpp)
-  - [Ollama](#ollama)
 - [Transcription Options](#transcription-options)
   - [Whisper](#whisper)
   - [Deepgram](#deepgram)
   - [Assembly](#assembly)
+- [Language Model (LLM) Options](#language-model-llm-options)
+  - [Ollama Local Models](#ollama-local-models)
+  - [OpenAI ChatGPT Models](#openai-chatgpt-models)
+  - [Anthropic Claude Models](#anthropic-claude-models)
+  - [Google Gemini Models](#google-gemini-models)
+  - [Cohere Command Models](#cohere-command-models)
+  - [Mistral Models](#mistral-models)
+  - [Fireworks Open Source Models](#fireworks-open-source-models)
+  - [Together Open Source Models](#together-open-source-models)
+  - [Groq Open Source Models](#groq-open-source-models)
 - [Prompt Options](#prompt-options)
-- [Docker](#docker)
 - [Test Suite](#test-suite)
 - [Skip Cleanup of Intermediate Files](#skip-cleanup-of-intermediate-files)
 - [Chat with Show Notes](#chat-with-show-notes)
@@ -98,6 +96,33 @@ npm run as -- \
   --channel "https://www.youtube.com/@ajcwebdev" \
   --info
 ```
+
+#### Advanced Channel Example
+
+Below is an example of running multiple flags at once on a **YouTube channel**:
+
+```bash
+npm run as -- \
+  --channel "https://www.youtube.com/@ajcwebdev" \
+  --order oldest \
+  --skip 2 \
+  --last 5 \
+  --whisperDocker small \
+  --chatgpt GPT_4_TURBO \
+  --prompt summary shortChapters \
+  --noCleanUp
+```
+
+Here’s what’s happening in this single command:
+
+1. **Channel**: Processes videos from the provided channel URL (`@ajcwebdev`).
+2. **Order**: Starts from the oldest videos in the channel rather than the most recent.
+3. **Skip**: Skips the first 2 videos from that oldest-first sequence.
+4. **Last**: Processes the next 5 videos (after skipping).
+5. **Transcription**: Uses the `--whisperDocker small` model to transcribe each video in a Docker container.
+6. **LLM**: Uses OpenAI ChatGPT’s GPT-4 Turbo model (`--chatgpt GPT_4_TURBO`) to process the transcripts.
+7. **Prompt**: Generates both a summary and short chapter descriptions (`--prompt summary shortChapters`).
+8. **No Clean Up**: Keeps any intermediary or downloaded files around (`--noCleanUp`) so you can inspect them after the run.
 
 ### Process Multiple Videos Specified in a URLs File
 
@@ -217,308 +242,33 @@ npm run as -- \
   --lastDays 7
 ```
 
-## Language Model (LLM) Options
+#### Advanced RSS Example
 
-Create a `.env` file and set API key as demonstrated in `.env.example` for either:
+Below is an example of running multiple steps in a single RSS process command. This one command will:
 
-- `OPENAI_API_KEY`
-- `ANTHROPIC_API_KEY`
-- `GEMINI_API_KEY`
-- `COHERE_API_KEY`
-- `MISTRAL_API_KEY`
-- `TOGETHER_API_KEY`
-- `FIREWORKS_API_KEY`
-- `GROQ_API_KEY`
-
-For each model available for each provider, I have collected the following details:
-
-- Context Window, the limit of tokens a model can process at once.
-- Max Output, the upper limit of tokens a model can generate in a response, influencing response length and detail.
-- Cost of input and output tokens per million tokens.
-  - Some model providers also offer a Batch API with input/output tokens at half the price.
-
-### OpenAI's ChatGPT Models
+1. Download and parse the specified RSS feed.  
+2. Skip the first 2 items in the feed.  
+3. Transcribe the remaining episodes using AssemblyAI with speaker labels.  
+4. Generate content summaries and long-form chapter notes using ChatGPT’s GPT-4 model.  
+5. Leave all downloaded and intermediate files in place for further inspection.
 
 ```bash
 npm run as -- \
-  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
-  --chatgpt
+  --rss "https://ajcwebdev.substack.com/feed" \
+  --skip 2 \
+  --assembly \
+  --speakerLabels \
+  --chatgpt GPT_4 \
+  --prompt summary longChapters \
+  --noCleanUp
 ```
 
-Select ChatGPT model:
-
-```bash
-# Select GPT-4o mini model - https://platform.openai.com/docs/models/gpt-4o-mini
-npm run as -- \
-  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
-  --chatgpt GPT_4o_MINI
-
-# Select GPT-4o model - https://platform.openai.com/docs/models/gpt-4o
-npm run as -- \
-  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
-  --chatgpt GPT_4o
-
-# Select GPT-4 Turbo model - https://platform.openai.com/docs/models/gpt-4-turbo-and-gpt-4
-npm run as -- \
-  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
-  --chatgpt GPT_4_TURBO
-
-# Select GPT-4 model - https://platform.openai.com/docs/models/gpt-4-turbo-and-gpt-4
-npm run as -- \
-  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
-  --chatgpt GPT_4
-```
-
-| Model        | Context Window | Max Output | Input Tokens | Output Tokens | Batch Input | Batch Output |
-|--------------|----------------|------------|--------------|---------------|-------------|--------------|
-| GPT-4o mini  | 128,000        | 16,384     | $0.15        | $0.60         | $0.075      | $0.30        |
-| GPT-4o       | 128,000        | 4,096      | $5           | $15           | $2.50       | $7.50        |
-| GPT-4 Turbo  | 128,000        | 4,096      | $10          | $30           | $5          | $15          |
-| GPT-4        | 8,192          | 8,192      | $30          | $60           | $15         | $30          |
-
-### Anthropic's Claude Models
-
-```bash
-npm run as -- \
-  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
-  --claude
-```
-
-Select Claude model:
-
-```bash
-npm run as -- \
-  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
-  --claude CLAUDE_3_5_SONNET
-
-npm run as -- \
-  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
-  --claude CLAUDE_3_OPUS
-
-npm run as -- \
-  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
-  --claude CLAUDE_3_SONNET
-
-npm run as -- \
-  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
-  --claude CLAUDE_3_HAIKU
-```
-
-### Google's Gemini Models
-
-```bash
-npm run as -- \
-  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
-  --gemini
-```
-
-Select Gemini model:
-
-```bash
-npm run as -- \
-  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
-  --gemini GEMINI_1_5_FLASH
-
-npm run as -- \
-  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
-  --gemini GEMINI_1_5_PRO
-```
-
-### Cohere's Command Models
-
-```bash
-npm run as -- \
-  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
-  --cohere
-```
-
-Select Cohere model:
-
-```bash
-npm run as -- \
-  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
-  --cohere COMMAND_R
-
-npm run as -- \
-  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
-  --cohere COMMAND_R_PLUS
-```
-
-### Mistral's Mistral Models
-
-```bash
-npm run as -- \
-  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
-  --mistral
-```
-
-Select Mistral model:
-
-```bash
-npm run as -- \
-  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
-  --mistral MIXTRAL_8x7b
-
-npm run as -- \
-  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
-  --mistral MIXTRAL_8x22b
-
-npm run as -- \
-  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
-  --mistral MISTRAL_LARGE
-
-npm run as -- \
-  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
-  --mistral MISTRAL_NEMO
-```
-
-### Fireworks
-
-```bash
-npm run as -- \
-  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
-  --fireworks
-```
-
-Select Fireworks model:
-
-```bash
-npm run as -- \
-  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
-  --fireworks LLAMA_3_1_405B
-
-npm run as -- \
-  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
-  --fireworks LLAMA_3_1_70B
-
-npm run as -- \
-  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
-  --fireworks LLAMA_3_1_8B
-
-npm run as -- \
-  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
-  --fireworks LLAMA_3_2_3B
-
-npm run as -- \
-  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
-  --fireworks LLAMA_3_2_1B
-
-npm run as -- \
-  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
-  --fireworks QWEN_2_5_72B
-```
-
-### Together
-
-```bash
-npm run as -- \
-  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
-  --together
-```
-
-Select Together model:
-
-```bash
-npm run as -- \
-  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
-  --together LLAMA_3_2_3B
-
-npm run as -- \
-  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
-  --together LLAMA_3_1_405B
-
-npm run as -- \
-  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
-  --together LLAMA_3_1_70B
-
-npm run as -- \
-  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
-  --together LLAMA_3_1_8B
-
-npm run as -- \
-  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
-  --together GEMMA_2_27B
-
-npm run as -- \
-  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
-  --together GEMMA_2_9B
-
-npm run as -- \
-  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
-  --together QWEN_2_5_72B
-
-npm run as -- \
-  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
-  --together QWEN_2_5_7B
-```
-
-### Groq
-
-```bash
-npm run as -- \
-  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
-  --groq
-```
-
-Select Groq model:
-
-```bash
-npm run as -- \
-  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
-  --groq LLAMA_3_1_70B_VERSATILE
-
-npm run as -- \
-  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
-  --groq LLAMA_3_1_8B_INSTANT
-
-npm run as -- \
-  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
-  --groq LLAMA_3_2_1B_PREVIEW
-
-npm run as -- \
-  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
-  --groq LLAMA_3_2_3B_PREVIEW
-
-npm run as -- \
-  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
-  --groq MIXTRAL_8X7B_32768
-```
-
-### Ollama
-
-```bash
-npm run as -- \
-  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
-  --ollama
-```
-
-Select Ollama model:
-
-```bash
-npm run as -- \
-  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
-  --ollama LLAMA_3_2_1B
-
-npm run as -- \
-  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
-  --ollama LLAMA_3_2_3B
-
-npm run as -- \
-  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
-  --ollama GEMMA_2_2B
-
-npm run as -- \
-  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
-  --ollama PHI_3_5
-
-npm run as -- \
-  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
-  --ollama QWEN_2_5_1B
-
-npm run as -- \
-  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
-  --ollama QWEN_2_5_3B
-```
+- **Input**: Process an RSS feed
+- **RSS**: Skip the first 2 items with `--skip 2`
+- **Transcription**: Use AssemblyAI (`--assembly`) with speaker labels (`--speakerLabels`)
+- **LLM**: Use ChatGPT’s GPT-4 model (`--chatgpt GPT_4`)
+- **Prompt**: Request both a summary and long chapters
+- **Utility**: Keep all intermediate files (`--noCleanUp`)
 
 ## Transcription Options
 
@@ -587,107 +337,236 @@ npm run as -- \
   --speakerLabels
 ```
 
+## Language Model (LLM) Options
+
+Create a `.env` file and set API key as demonstrated in `.env.example` for either:
+
+- `OPENAI_API_KEY`
+- `ANTHROPIC_API_KEY`
+- `GEMINI_API_KEY`
+- `COHERE_API_KEY`
+- `MISTRAL_API_KEY`
+- `TOGETHER_API_KEY`
+- `FIREWORKS_API_KEY`
+- `GROQ_API_KEY`
+
+For each model available for each provider, I have collected the following details:
+
+- Context Window, the limit of tokens a model can process at once.
+- Max Output, the upper limit of tokens a model can generate in a response, influencing response length and detail.
+- Cost of input and output tokens per million tokens.
+  - Some model providers also offer a Batch API with input/output tokens at half the price.
+
+### Ollama Local Models
+
+```bash
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --ollama
+```
+
+Select Ollama model:
+
+```bash
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --ollama LLAMA_3_2_1B
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --ollama LLAMA_3_2_3B
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --ollama GEMMA_2_2B
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --ollama PHI_3_5
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --ollama QWEN_2_5_1B
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --ollama QWEN_2_5_3B
+```
+
+### OpenAI's ChatGPT Models
+
+```bash
+npm run as -- \
+  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
+  --chatgpt
+```
+
+Select ChatGPT model:
+
+```bash
+# Select GPT-4o mini model - https://platform.openai.com/docs/models/gpt-4o-mini
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --chatgpt GPT_4o_MINI
+
+# Select GPT-4o model - https://platform.openai.com/docs/models/gpt-4o
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --chatgpt GPT_4o
+
+# Select GPT-4 Turbo model - https://platform.openai.com/docs/models/gpt-4-turbo-and-gpt-4
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --chatgpt GPT_4_TURBO
+
+# Select GPT-4 model - https://platform.openai.com/docs/models/gpt-4-turbo-and-gpt-4
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --chatgpt GPT_4
+```
+
+| Model        | Context Window | Max Output | Input Tokens | Output Tokens | Batch Input | Batch Output |
+|--------------|----------------|------------|--------------|---------------|-------------|--------------|
+| GPT-4o mini  | 128,000        | 16,384     | $0.15        | $0.60         | $0.075      | $0.30        |
+| GPT-4o       | 128,000        | 4,096      | $5           | $15           | $2.50       | $7.50        |
+| GPT-4 Turbo  | 128,000        | 4,096      | $10          | $30           | $5          | $15          |
+| GPT-4        | 8,192          | 8,192      | $30          | $60           | $15         | $30          |
+
+### Anthropic Claude Models
+
+```bash
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --claude
+```
+
+Select Claude model:
+
+```bash
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --claude CLAUDE_3_5_SONNET
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --claude CLAUDE_3_OPUS
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --claude CLAUDE_3_SONNET
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --claude CLAUDE_3_HAIKU
+```
+
+### Google Gemini Models
+
+```bash
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --gemini
+```
+
+Select Gemini model:
+
+```bash
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --gemini GEMINI_1_5_FLASH
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --gemini GEMINI_1_5_PRO
+```
+
+### Cohere Command Models
+
+```bash
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --cohere
+```
+
+Select Cohere model:
+
+```bash
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --cohere COMMAND_R
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --cohere COMMAND_R_PLUS
+```
+
+### Mistral Models
+
+```bash
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --mistral
+```
+
+Select Mistral model:
+
+```bash
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --mistral MIXTRAL_8x7b
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --mistral MIXTRAL_8x22b
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --mistral MISTRAL_LARGE
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --mistral MISTRAL_NEMO
+```
+
+### Fireworks Open Source Models
+
+```bash
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --fireworks
+```
+
+Select Fireworks model:
+
+```bash
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --fireworks LLAMA_3_1_405B
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --fireworks LLAMA_3_1_70B
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --fireworks LLAMA_3_1_8B
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --fireworks LLAMA_3_2_3B
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --fireworks LLAMA_3_2_1B
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --fireworks QWEN_2_5_72B
+```
+
+### Together Open Source Models
+
+```bash
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --together
+```
+
+Select Together model:
+
+```bash
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --together LLAMA_3_2_3B
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --together LLAMA_3_1_405B
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --together LLAMA_3_1_70B
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --together LLAMA_3_1_8B
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --together GEMMA_2_27B
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --together GEMMA_2_9B
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --together QWEN_2_5_72B
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --together QWEN_2_5_7B
+```
+
+### Groq Open Source Models
+
+```bash
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --groq
+```
+
+Select Groq model:
+
+```bash
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --groq LLAMA_3_1_70B_VERSATILE
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --groq LLAMA_3_1_8B_INSTANT
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --groq LLAMA_3_2_1B_PREVIEW
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --groq LLAMA_3_2_3B_PREVIEW
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --groq MIXTRAL_8X7B_32768
+```
+
 ## Prompt Options
 
 Default includes summary and long chapters, equivalent to running this:
 
 ```bash
-npm run as -- \
-  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
-  --prompt summary longChapters
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --prompt summary longChapters
 ```
 
 Create five title ideas:
 
 ```bash
-npm run as -- \
-  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
-  --prompt titles
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --prompt titles
 ```
 
 Create a one sentence and one paragraph summary:
 
 ```bash
-npm run as -- \
-  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
-  --prompt summary
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --prompt summary
 ```
 
 Create a short, one sentence description for each chapter that's 25 words or shorter.
 
 ```bash
-npm run as -- \
-  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
-  --prompt shortChapters
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --prompt shortChapters
 ```
 
 Create a one paragraph description for each chapter that's around 50 words.
 
 ```bash
-npm run as -- \
-  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
-  --prompt mediumChapters
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --prompt mediumChapters
 ```
 
 Create a two paragraph description for each chapter that's over 75 words.
 
 ```bash
-npm run as -- \
-  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
-  --prompt longChapters
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --prompt longChapters
 ```
 
 Create three key takeaways about the content:
 
 ```bash
-npm run as -- \
-  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
-  --prompt takeaways
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --prompt takeaways
 ```
 
 Create ten questions about the content to check for comprehension:
 
 ```bash
-npm run as -- \
-  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
-  --prompt questions
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --prompt questions
 ```
 
 Include all prompt options:
 
 ```bash
-npm run as -- \
-  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
-  --prompt titles summary longChapters takeaways questions
-```
-
-## Docker
-
-### Build the Image
-
-```bash
-npm run docker-setup
-
-# Expands out to `docker build -t autoshow -f .github/Dockerfile .`
-```
-
-### Run CLI Commands with Docker
-
-You can run any of the `as` CLI commands by passing arguments to the container via `docker-cli`.
-
-```bash
-npm run docker-cli -- \
-  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
-  --whisper base \
-  --ollama "LLAMA_3_2_3B"
-```
-
-### Run the Server with Docker
-
-To spin up the server on port 3000, run:
-
-```bash
-npm run docker-serve
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --prompt titles summary longChapters takeaways questions
 ```
 
 ## Test Suite

@@ -1,56 +1,58 @@
 ---
-// web/src/pages/app.astro
-
 import PageLayout from "@/layouts/Base.astro"
 import Form from "@/components/app/Form"
 ---
 
 <PageLayout meta={{ title: "Show Notes" }}>
-  <section>
-    <h1>Generate Show Notes</h1>
-    <h2>Examples</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>Type</th>
-          <th>Link</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>Video</td>
-          <td>https://www.youtube.com/watch?v=MORMZXEaONk</td>
-        </tr>
-        <tr>
-          <td>Playlist</td>
-          <td>https://www.youtube.com/playlist?list=PLCVnrVv4KhXPz0SoAVu8Rc1emAdGPbSbr</td>
-        </tr>
-        <tr>
-          <td>Channel</td>
-          <td>https://www.youtube.com/@ajcwebdev</td>
-        </tr>
-        <tr>
-          <td>URLs</td>
-          <td>content/example-urls.md</td>
-        </tr>
-        <tr>
-          <td>File</td>
-          <td>content/audio.mp3</td>
-        </tr>
-        <tr>
-          <td>RSS</td>
-          <td>https://ajcwebdev.substack.com/feed</td>
-        </tr>
-      </tbody>
-    </table>
-    <!-- <ul>
-      <li>Video - https://www.youtube.com/watch?v=MORMZXEaONk</li>
-      <li>Playlist - https://www.youtube.com/playlist?list=PLCVnrVv4KhXPz0SoAVu8Rc1emAdGPbSbr</li>
-      <li>Channel - https://www.youtube.com/@ajcwebdev</li>
-      <li>URLs - content/example-urls.md</li>
-      <li>File - content/audio.mp3</li>
-      <li>RSS - https://ajcwebdev.substack.com/feed</li>
-    </ul> -->
+  <section class="p-6 max-w-6xl mx-auto">
+    <h1 class="text-4xl font-bold text-emerald-400 mb-8">Generate Show Notes</h1>
+    <h2 class="text-3xl font-bold mb-6">Examples</h2>
+    
+    <div class="overflow-x-auto mb-8">
+      <table class="w-full table-fixed border-collapse" style="table-layout: fixed;">
+        <thead>
+          <tr class="bg-gray-800">
+            <!-- Inline width styles to force fixed sizing -->
+            <th class="p-4 text-left border-b border-gray-700" style="width: 5rem; white-space: nowrap;">Type</th>
+            <th class="p-4 text-left border-b border-gray-700" style="width: 20rem;">Link</th>
+            <th class="p-4 text-left border-b border-gray-700">Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="border-b border-gray-700 hover:bg-gray-800">
+            <td class="p-4" style="width: 5rem; white-space: nowrap;">Video</td>
+            <td class="p-4 break-words">https://www.youtube.com/watch?v=MORMZXEaONk</td>
+            <td class="p-4">Single video content for show notes reference</td>
+          </tr>
+          <tr class="border-b border-gray-700 hover:bg-gray-800">
+            <td class="p-4" style="width: 5rem; white-space: nowrap;">Playlist</td>
+            <td class="p-4 break-words">https://www.youtube.com/playlist?list=PLCVnrVv4KhXPz0SoAVu8Rc1emAdGPbSbr</td>
+            <td class="p-4">Collection of related videos in a curated playlist</td>
+          </tr>
+          <tr class="border-b border-gray-700 hover:bg-gray-800">
+            <td class="p-4" style="width: 5rem; white-space: nowrap;">Channel</td>
+            <td class="p-4 break-words">https://www.youtube.com/@ajcwebdev</td>
+            <td class="p-4">YouTube channel homepage with all content</td>
+          </tr>
+          <tr class="border-b border-gray-700 hover:bg-gray-800">
+            <td class="p-4" style="width: 5rem; white-space: nowrap;">URLs</td>
+            <td class="p-4 break-words">content/example-urls.md</td>
+            <td class="p-4">Markdown file containing referenced URLs</td>
+          </tr>
+          <tr class="border-b border-gray-700 hover:bg-gray-800">
+            <td class="p-4" style="width: 5rem; white-space: nowrap;">File</td>
+            <td class="p-4 break-words">content/audio.mp3</td>
+            <td class="p-4">Audio file attachment for the show notes</td>
+          </tr>
+          <tr class="border-b border-gray-700 hover:bg-gray-800">
+            <td class="p-4" style="width: 5rem; white-space: nowrap;">RSS</td>
+            <td class="p-4 break-words">https://ajcwebdev.substack.com/feed</td>
+            <td class="p-4">RSS feed for automatic content updates</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
     <ul class="show-notes-list">
       <Form client:only="react" />
     </ul>

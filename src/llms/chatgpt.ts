@@ -4,7 +4,7 @@ import { writeFile } from 'node:fs/promises'
 import { env } from 'node:process'
 import { OpenAI } from 'openai'
 import { GPT_MODELS } from '../utils/globals'
-import { l, err } from '../utils/logging'
+import { err, logAPIResults } from '../utils/logging'
 import type { LLMFunction, ChatGPTModelType } from '../types/llms'
 
 /**
@@ -35,8 +35,8 @@ export const callChatGPT: LLMFunction = async (
     // Call the OpenAI chat completions API
     const response = await openai.chat.completions.create({
       model: actualModel,
-      max_tokens: 4000, // Maximum number of tokens in the response
-      messages: [{ role: 'user', content: promptAndTranscript }], // The input message (transcript content)
+      max_completion_tokens: 4000,
+      messages: [{ role: 'user', content: promptAndTranscript }],
     })
 
     // Check if we have a valid response
@@ -45,20 +45,21 @@ export const callChatGPT: LLMFunction = async (
       throw new Error('No valid response received from the API')
     }
 
-    // Get the content and other details safely
-    const content = firstChoice.message.content
-    const finish_reason = firstChoice.finish_reason ?? 'unknown'
-    const usedModel = response.model
-    const usage = response.usage
-    const { prompt_tokens, completion_tokens, total_tokens } = usage ?? {}
-    
     // Write the generated content to the output file
-    await writeFile(tempPath, content)
+    await writeFile(tempPath, firstChoice.message.content)
     
-    l.wait(`  - Finish Reason: ${finish_reason}\n  - ChatGPT Model: ${usedModel}`)
-    l.wait(`  - Token Usage:\n    - ${prompt_tokens} prompt tokens\n    - ${completion_tokens} completion tokens\n    - ${total_tokens} total tokens`)
+    // Log API results using the standardized logging function
+    logAPIResults({
+      modelName: actualModel,
+      stopReason: firstChoice.finish_reason ?? 'unknown',
+      tokenUsage: {
+        input: response.usage?.prompt_tokens,
+        output: response.usage?.completion_tokens,
+        total: response.usage?.total_tokens
+      }
+    })
   } catch (error) {
     err(`Error in callChatGPT: ${(error as Error).message}`)
-    throw error // Re-throw the error for handling in the calling function
+    throw error
   }
 }

@@ -6,6 +6,12 @@
  */
 export type TranscriptServices = 'whisper' | 'whisperDocker' | 'deepgram' | 'assembly'
 
+export type TranscriptServiceConfig = {
+  name: string
+  value: TranscriptServices
+  isWhisper?: boolean
+}
+
 /**
  * Available Whisper model types with varying sizes and capabilities.
  */

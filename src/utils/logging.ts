@@ -1,19 +1,165 @@
 // src/utils/logging.ts
 
 import type { ProcessingOptions } from '../types/process'
+import type { ModelConfigValue } from '../types/llms'
+import type { TokenUsage, CostCalculation, APILogInfo, ChainableLogger } from '../types/logging'
+import { 
+  GPT_MODELS, CLAUDE_MODELS, GEMINI_MODELS, COHERE_MODELS, MISTRAL_MODELS, OLLAMA_MODELS, FIREWORKS_MODELS, TOGETHER_MODELS, GROQ_MODELS
+} from './globals'
 import chalk from 'chalk'
 
 /**
- * Interface for chainable logger with style methods.
+ * All available model configurations combined
  */
-export interface ChainableLogger {
-  (...args: any[]): void
-  step: (...args: any[]) => void
-  dim: (...args: any[]) => void
-  success: (...args: any[]) => void
-  opts: (...args: any[]) => void
-  wait: (...args: any[]) => void
-  final: (...args: any[]) => void
+const ALL_MODELS: { [key: string]: ModelConfigValue } = {
+  ...GPT_MODELS,
+  ...CLAUDE_MODELS,
+  ...GEMINI_MODELS,
+  ...COHERE_MODELS,
+  ...MISTRAL_MODELS,
+  ...OLLAMA_MODELS,
+  ...FIREWORKS_MODELS,
+  ...TOGETHER_MODELS,
+  ...GROQ_MODELS
+}
+
+/**
+ * Finds the model configuration based on the model key
+ * @param modelKey - The key/name of the model (e.g., 'LLAMA_3_2_3B')
+ * @returns The model configuration if found, undefined otherwise
+ */
+function findModelConfig(modelKey: string) {
+  // First try to find the model directly in our combined models
+  const model = ALL_MODELS[modelKey]
+  if (model) return model
+
+  // If not found by key, try matching by model ID as a fallback
+  return Object.values(ALL_MODELS).find(model => 
+    model.modelId.toLowerCase() === modelKey.toLowerCase()
+  )
+}
+
+/**
+ * Determines if a cost is effectively zero
+ * @param cost - The cost to check
+ * @returns true if the cost is zero or very close to zero
+ */
+function isEffectivelyZero(cost: number): boolean {
+  return Math.abs(cost) < 0.00001
+}
+
+/**
+ * Calculates the cost for token usage based on the model's pricing
+ * @param modelKey - The key/name of the model
+ * @param tokenUsage - Object containing token usage information
+ * @returns Object containing calculated costs
+ */
+function calculateCosts(modelKey: string, tokenUsage: TokenUsage): CostCalculation {
+  const modelConfig = findModelConfig(modelKey)
+  
+  if (!modelConfig) {
+    console.warn(`Warning: Could not find cost configuration for model: ${modelKey}`)
+    return {
+      inputCost: undefined,
+      outputCost: undefined,
+      totalCost: undefined
+    }
+  }
+
+  // If both costs per million are zero, return all zeros
+  if (modelConfig.inputCostPer1M === 0 && modelConfig.outputCostPer1M === 0) {
+    return {
+      inputCost: 0,
+      outputCost: 0,
+      totalCost: 0
+    }
+  }
+
+  // Calculate costs if token usage is available
+  const inputCost = tokenUsage.input 
+    ? (tokenUsage.input / 1_000_000) * modelConfig.inputCostPer1M
+    : undefined
+
+  const outputCost = tokenUsage.output
+    ? (tokenUsage.output / 1_000_000) * modelConfig.outputCostPer1M
+    : undefined
+
+  // Calculate total cost only if both input and output costs are available
+  const totalCost = inputCost !== undefined && outputCost !== undefined
+    ? inputCost + outputCost
+    : undefined
+
+  // Check if costs are effectively zero
+  if (inputCost !== undefined && isEffectivelyZero(inputCost)) {
+    return {
+      inputCost: 0,
+      outputCost: 0,
+      totalCost: 0
+    }
+  }
+
+  return {
+    inputCost,
+    outputCost,
+    totalCost
+  }
+}
+
+/**
+ * Formats a cost value to a standardized string representation
+ * @param cost - The cost value to format
+ * @returns Formatted cost string
+ */
+function formatCost(cost: number | undefined): string {
+  if (cost === undefined) return 'N/A'
+  if (cost === 0) return '$0.0000'
+  return `$${cost.toFixed(4)}`
+}
+
+/**
+ * Logs API call results in a standardized format across different LLM providers.
+ * Includes token usage and cost calculations.
+ * @param info - Object containing model info, stop reason, and token usage
+ */
+export function logAPIResults(info: APILogInfo): void {
+  const { modelName, stopReason, tokenUsage } = info
+  
+  // Get model display name if available, otherwise use the provided name
+  const modelConfig = findModelConfig(modelName)
+  const displayName = modelConfig?.name ?? modelName
+  
+  // Log stop/finish reason and model
+  l.wait(`  - ${stopReason ? `${stopReason} Reason` : 'Status'}: ${stopReason}\n  - Model: ${displayName}`)
+  
+  // Format token usage string based on available data
+  const tokenLines = []
+  if (tokenUsage.input) tokenLines.push(`${tokenUsage.input} input tokens`)
+  if (tokenUsage.output) tokenLines.push(`${tokenUsage.output} output tokens`)
+  if (tokenUsage.total) tokenLines.push(`${tokenUsage.total} total tokens`)
+  
+  // Log token usage if any data is available
+  if (tokenLines.length > 0) {
+    l.wait(`  - Token Usage:\n    - ${tokenLines.join('\n    - ')}`)
+  }
+
+  // Calculate and log costs
+  const costs = calculateCosts(modelName, tokenUsage)
+  const costLines = []
+  
+  if (costs.inputCost !== undefined) {
+    costLines.push(`Input cost: ${formatCost(costs.inputCost)}`)
+  }
+  if (costs.outputCost !== undefined) {
+    costLines.push(`Output cost: ${formatCost(costs.outputCost)}`)
+  }
+  if (costs.totalCost !== undefined) {
+    costLines.push(`Total cost: ${chalk.bold(formatCost(costs.totalCost))}`)
+  }
+
+  // Log costs if any calculations were successful
+  if (costLines.length > 0) {
+    l.wait(`  - Cost Breakdown:\n    - ${costLines.join('\n    - ')}`)
+  }
 }
 
 /**

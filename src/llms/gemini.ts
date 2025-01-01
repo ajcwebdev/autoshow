@@ -4,7 +4,7 @@ import { writeFile } from 'node:fs/promises'
 import { env } from 'node:process'
 import { GoogleGenerativeAI } from "@google/generative-ai"
 import { GEMINI_MODELS } from '../utils/globals'
-import { l, err } from '../utils/logging'
+import { err, logAPIResults } from '../utils/logging'
 import type { LLMFunction, GeminiModelType } from '../types/llms'
 
 /**
@@ -57,7 +57,21 @@ export const callGemini: LLMFunction = async (
       
       // Write the generated text to the output file
       await writeFile(tempPath, text)
-      l.wait(`\nModel: ${actualModel}`)
+
+      // Get token usage from the response metadata
+      const { usageMetadata } = response
+      const { promptTokenCount, candidatesTokenCount, totalTokenCount } = usageMetadata ?? {}
+
+      // Log API results using the standardized logging function
+      logAPIResults({
+        modelName: actualModel,
+        stopReason: 'complete',
+        tokenUsage: {
+          input: promptTokenCount,
+          output: candidatesTokenCount,
+          total: totalTokenCount
+        }
+      })
       
       return
     } catch (error) {

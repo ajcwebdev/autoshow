@@ -4,7 +4,7 @@ import { writeFile } from 'node:fs/promises'
 import { env } from 'node:process'
 import { Anthropic } from '@anthropic-ai/sdk'
 import { CLAUDE_MODELS } from '../utils/globals'
-import { l, err } from '../utils/logging'
+import { err, logAPIResults } from '../utils/logging'
 import type { LLMFunction, ClaudeModelType } from '../types/llms'
 
 /**
@@ -39,18 +39,8 @@ export const callClaude: LLMFunction = async (
       messages: [{ role: 'user', content: promptAndTranscript }] // The input message (transcript content)
     })
     
-    // Destructure the response to get relevant information
-    const {
-      content,
-      model: usedModel, // The actual model used
-      usage, // Token usage information
-      stop_reason // Reason why the generation stopped
-    } = response
-
-    const { input_tokens, output_tokens } = usage
-
     // Extract text content from the response
-    const textContent = extractTextContent(content)
+    const textContent = extractTextContent(response.content)
     
     // Write the generated text to the output file
     if (textContent) {
@@ -59,8 +49,16 @@ export const callClaude: LLMFunction = async (
       throw new Error('No text content generated from the API')
     }
     
-    l.wait(`  - Stop Reason: ${stop_reason}\n  - Model: ${usedModel}`)
-    l.wait(`  - Token Usage:\n    - ${input_tokens} input tokens\n    - ${output_tokens} output tokens`)
+    // Log API results using the standardized logging function
+    logAPIResults({
+      modelName: actualModel,
+      stopReason: response.stop_reason ?? 'unknown',
+      tokenUsage: {
+        input: response.usage.input_tokens,
+        output: response.usage.output_tokens,
+        total: response.usage.input_tokens + response.usage.output_tokens
+      }
+    })
   } catch (error) {
     err(`Error in callClaude: ${(error as Error).message}`)
     throw error // Re-throw the error for handling in the calling function

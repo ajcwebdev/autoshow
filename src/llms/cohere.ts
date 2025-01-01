@@ -4,7 +4,7 @@ import { writeFile } from 'node:fs/promises'
 import { env } from 'node:process'
 import { CohereClient } from 'cohere-ai'
 import { COHERE_MODELS } from '../utils/globals'
-import { l, err } from '../utils/logging'
+import { err, logAPIResults } from '../utils/logging'
 import type { LLMFunction, CohereModelType } from '../types/llms'
 
 /**
@@ -35,7 +35,6 @@ export const callCohere: LLMFunction = async (
     // Call the Cohere chat API
     const response = await cohere.chat({
       model: actualModel,
-      // max_tokens: ?, // Cohere doesn't seem to have a max_tokens parameter for chat
       message: promptAndTranscript // The input message (prompt and transcript content)
     })
     
@@ -51,8 +50,16 @@ export const callCohere: LLMFunction = async (
     // Write the generated text to the output file
     await writeFile(tempPath, text)
     
-    l.wait(`\n  Finish Reason: ${finishReason}\n  Model: ${actualModel}`)
-    l.wait(`  Token Usage:\n    - ${inputTokens} input tokens\n    - ${outputTokens} output tokens`)
+    // Log API results using the standardized logging function
+    logAPIResults({
+      modelName: actualModel,
+      stopReason: finishReason ?? 'unknown',
+      tokenUsage: {
+        input: inputTokens,
+        output: outputTokens,
+        total: inputTokens && outputTokens ? inputTokens + outputTokens : undefined
+      }
+    })
   } catch (error) {
     err(`Error in callCohere: ${(error as Error).message}`)
     throw error // Re-throw the error for handling in the calling function

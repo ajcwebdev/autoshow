@@ -4,7 +4,7 @@ import { writeFile } from 'node:fs/promises'
 import { env } from 'node:process'
 import { spawn } from 'node:child_process'
 import { OLLAMA_MODELS } from '../utils/globals'
-import { l, err } from '../utils/logging'
+import { l, err, logAPIResults } from '../utils/logging'
 import type { LLMFunction, OllamaModelType, OllamaResponse, OllamaTagsResponse } from '../types/llms'
 
 /**
@@ -20,12 +20,15 @@ import type { LLMFunction, OllamaModelType, OllamaResponse, OllamaTagsResponse }
 export const callOllama: LLMFunction = async (
   promptAndTranscript: string,
   tempPath: string,
-  modelName: string = 'LLAMA_3_2_3B'
+  model: string | OllamaModelType = 'LLAMA_3_2_3B'
 ) => {
   try {
-    // Map the user-friendly name (e.g. 'LLAMA_3_2_3B') to the actual model ID
-    const ollamaModelName = OLLAMA_MODELS[modelName as OllamaModelType]?.modelId || 'llama3.2:3b'
-    l.wait(`    - modelName: ${modelName}\n    - ollamaModelName: ${ollamaModelName}`)
+    // Get the model configuration and ID
+    const modelKey = typeof model === 'string' ? model : 'LLAMA_3_2_3B'
+    const modelConfig = OLLAMA_MODELS[modelKey as OllamaModelType] || OLLAMA_MODELS.LLAMA_3_2_3B
+    const ollamaModelName = modelConfig.modelId
+
+    l.wait(`    - modelName: ${modelKey}\n    - ollamaModelName: ${ollamaModelName}`)
     
     // Host & port for Ollama
     const ollamaHost = env['OLLAMA_HOST'] || 'localhost'
@@ -44,9 +47,7 @@ export const callOllama: LLMFunction = async (
     if (await checkServer()) {
       l.wait('\n  Ollama server is already running...')
     } else {
-      // If not running, attempt to start locally (unless you're in Docker with a different approach)
       if (ollamaHost === 'ollama') {
-        // In older multi-container approach, the server might be on a different host.
         throw new Error('Ollama server is not running. Please ensure the Ollama server is running and accessible.')
       } else {
         l.wait('\n  Ollama server is not running. Attempting to start...')
@@ -56,7 +57,7 @@ export const callOllama: LLMFunction = async (
         })
         ollamaProcess.unref()
 
-        // Wait a few seconds for server to start
+        // Wait for server to start
         let attempts = 0
         while (attempts < 30) {
           if (await checkServer()) {
@@ -72,7 +73,7 @@ export const callOllama: LLMFunction = async (
       }
     }
 
-    // Check if the model is available, pull it if not
+    // Check and pull model if needed
     try {
       const tagsResponse = await fetch(`http://${ollamaHost}:${ollamaPort}/api/tags`)
       if (!tagsResponse.ok) {
@@ -96,6 +97,7 @@ export const callOllama: LLMFunction = async (
         if (!pullResponse.body) {
           throw new Error('Response body is null')
         }
+
         const reader = pullResponse.body.getReader()
         const decoder = new TextDecoder()
         while (true) {
@@ -150,6 +152,8 @@ export const callOllama: LLMFunction = async (
     const decoder = new TextDecoder()
     let fullContent = ''
     let isFirstChunk = true
+    let totalPromptTokens = 0
+    let totalCompletionTokens = 0
 
     while (true) {
       const { done, value } = await reader.read()
@@ -171,8 +175,25 @@ export const callOllama: LLMFunction = async (
             fullContent += parsedResponse.message.content
           }
 
+          // Accumulate token counts if available
+          if (parsedResponse.prompt_eval_count) {
+            totalPromptTokens = parsedResponse.prompt_eval_count
+          }
+          if (parsedResponse.eval_count) {
+            totalCompletionTokens = parsedResponse.eval_count
+          }
+
           if (parsedResponse.done) {
-            l.wait(`    - Completed receiving response from Ollama.`)
+            // Log final results using standardized logging function
+            logAPIResults({
+              modelName: modelKey,
+              stopReason: 'stop',
+              tokenUsage: {
+                input: totalPromptTokens || undefined,
+                output: totalCompletionTokens || undefined,
+                total: totalPromptTokens + totalCompletionTokens || undefined
+              }
+            })
           }
         } catch (parseError) {
           err(`Error parsing JSON: ${parseError}`)

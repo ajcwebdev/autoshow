@@ -3,7 +3,7 @@
 import { writeFile } from 'node:fs/promises'
 import { env } from 'node:process'
 import { TOGETHER_MODELS } from '../utils/globals'
-import { l, err } from '../utils/logging'
+import { err, logAPIResults } from '../utils/logging'
 import type { LLMFunction, TogetherModelType, TogetherResponse } from '../types/llms'
 
 /**
@@ -17,7 +17,7 @@ import type { LLMFunction, TogetherModelType, TogetherResponse } from '../types/
 export const callTogether: LLMFunction = async (
   promptAndTranscript: string,
   tempPath: string,
-  model: string = 'LLAMA_3_2_3B'
+  model: string | TogetherModelType = 'LLAMA_3_2_3B'
 ): Promise<void> => {
   // Check if the TOGETHER_API_KEY environment variable is set
   if (!env['TOGETHER_API_KEY']) {
@@ -25,11 +25,14 @@ export const callTogether: LLMFunction = async (
   }
 
   try {
-    const actualModel = (TOGETHER_MODELS[model as TogetherModelType] || TOGETHER_MODELS.LLAMA_3_2_3B).modelId
+    // Get the model configuration and ID, defaulting to LLAMA_3_2_3B if not found
+    const modelKey = typeof model === 'string' ? model : 'LLAMA_3_2_3B'
+    const modelConfig = TOGETHER_MODELS[modelKey as TogetherModelType] || TOGETHER_MODELS.LLAMA_3_2_3B
+    const modelId = modelConfig.modelId
 
     // Prepare the request body
     const requestBody = {
-      model: actualModel,
+      model: modelId,
       messages: [
         {
           role: 'user',
@@ -60,18 +63,24 @@ export const callTogether: LLMFunction = async (
     const data = await response.json() as TogetherResponse
 
     // Extract the generated content
-    const content = data.choices[0]?.message?.content ?? ''
-    const finishReason = data.choices[0]?.finish_reason
-    const usedModel = data.model
-    const usage = data.usage
-    const { prompt_tokens, completion_tokens, total_tokens } = usage
+    const content = data.choices[0]?.message?.content
+    if (!content) {
+      throw new Error('No content generated from the Together AI API')
+    }
 
     // Write the generated content to the specified output file
     await writeFile(tempPath, content)
 
-    // Log finish reason, used model, and token usage
-    l.wait(`\n  Finish Reason: ${finishReason}\n  Model Used: ${usedModel}`)
-    l.wait(`  Token Usage:\n    - ${prompt_tokens} prompt tokens\n    - ${completion_tokens} completion tokens\n    - ${total_tokens} total tokens`)
+    // Log API results using the standardized logging function
+    logAPIResults({
+      modelName: modelKey,
+      stopReason: data.choices[0]?.finish_reason ?? 'unknown',
+      tokenUsage: {
+        input: data.usage.prompt_tokens,
+        output: data.usage.completion_tokens,
+        total: data.usage.total_tokens
+      }
+    })
   } catch (error) {
     // Log any errors that occur during the process
     err(`Error in callTogether: ${(error as Error).message}`)

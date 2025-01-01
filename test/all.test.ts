@@ -55,13 +55,13 @@ const commands = [
   },
   {
     // Process a local audio file with multiple prompt sections, Whisper 'tiny' model, and Ollama.
-    cmd: 'npm run as -- --file "content/audio.mp3" --prompt titles summary shortChapters takeaways questions --whisper tiny --ollama',
+    cmd: 'npm run as -- --file "content/audio.mp3" --prompt titles summary shortChapters takeaways questions --whisper tiny --ollama LLAMA_3_2_1B',
     expectedFile: 'audio-ollama-shownotes.md',
     newName: '10-all-prompts-ollama-shownotes.md'
   },
   {
     // Process playlist videos with titles and longChapters prompts, tiny Whisper model, and Ollama for LLM processing.
-    cmd: 'npm run as -- --playlist "https://www.youtube.com/playlist?list=PLCVnrVv4KhXPz0SoAVu8Rc1emAdGPbSbr" --prompt titles longChapters --whisper tiny --ollama',
+    cmd: 'npm run as -- --playlist "https://www.youtube.com/playlist?list=PLCVnrVv4KhXPz0SoAVu8Rc1emAdGPbSbr" --prompt titles longChapters --whisper tiny --ollama LLAMA_3_2_1B',
     expectedFiles: [
       { file: '2024-09-24-ep1-fsjam-podcast-ollama-shownotes.md', newName: '11-prompt-whisper-ollama-shownotes.md' },
       { file: '2024-09-24-ep0-fsjam-podcast-ollama-shownotes.md', newName: '12-prompt-whisper-ollama-shownotes.md' }
@@ -69,7 +69,7 @@ const commands = [
   },
   {
     // Process multiple YouTube videos from URLs with title prompts, Whisper 'tiny' model, and Ollama.
-    cmd: 'npm run as -- --urls "content/example-urls.md" --prompt titles --whisper tiny --ollama',
+    cmd: 'npm run as -- --urls "content/example-urls.md" --prompt titles --whisper tiny --ollama LLAMA_3_2_1B',
     expectedFiles: [
       { file: '2024-09-24-ep1-fsjam-podcast-ollama-shownotes.md', newName: '13-prompt-whisper-ollama-shownotes.md' },
       { file: '2024-09-24-ep0-fsjam-podcast-ollama-shownotes.md', newName: '14-prompt-whisper-ollama-shownotes.md' }
@@ -88,26 +88,26 @@ const commands = [
     newName: '16-ajcwebdev-rss-info.json',
   },
   {
-    cmd: 'npm run docker-cli -- --video "https://www.youtube.com/watch?v=MORMZXEaONk"',
+    cmd: 'npm run docker-cli -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --whisper base',
     expectedFile: '2024-09-24-ep0-fsjam-podcast-prompt.md',
     newName: '17-docker-video-default.md'
   },
   {
-    cmd: 'npm run docker-cli -- --playlist "https://www.youtube.com/playlist?list=PLCVnrVv4KhXPz0SoAVu8Rc1emAdGPbSbr"',
+    cmd: 'npm run docker-cli -- --playlist "https://www.youtube.com/playlist?list=PLCVnrVv4KhXPz0SoAVu8Rc1emAdGPbSbr" --whisper base',
     expectedFiles: [
       { file: '2024-09-24-ep1-fsjam-podcast-prompt.md', newName: '18-docker-playlist-default.md' },
       { file: '2024-09-24-ep0-fsjam-podcast-prompt.md', newName: '19-docker-playlist-default.md' }
     ]
   },
   {
-    cmd: 'npm run docker-cli -- --urls "content/example-urls.md"',
+    cmd: 'npm run docker-cli -- --urls "content/example-urls.md" --whisper base',
     expectedFiles: [
       { file: '2024-09-24-ep1-fsjam-podcast-prompt.md', newName: '20-docker-urls-default.md' },
       { file: '2024-09-24-ep0-fsjam-podcast-prompt.md', newName: '21-docker-urls-default.md' }
     ]
   },
   {
-    cmd: 'npm run docker-cli -- --file "content/audio.mp3"',
+    cmd: 'npm run docker-cli -- --file "content/audio.mp3" --whisper base',
     expectedFile: 'audio-prompt.md',
     newName: '22-docker-file-default.md'
   },
@@ -122,31 +122,26 @@ const commands = [
     newName: '24-docker-whisper-tiny.md'
   },
   {
-    cmd: 'npm run docker-cli -- --file "content/audio.mp3" --prompt titles summary mediumChapters takeaways questions',
+    cmd: 'npm run docker-cli -- --file "content/audio.mp3" --whisper base --prompt titles summary mediumChapters takeaways questions',
     expectedFile: 'audio-prompt.md',
     newName: '25-docker-all-prompts.md'
   },
   {
-    cmd: 'npm run docker-cli -- --file "content/audio.mp3" --prompt titles summary shortChapters takeaways questions --whisper tiny --ollama LLAMA_3_2_1B',
-    expectedFile: 'audio-ollama-shownotes.md',
-    newName: '26-docker-all-prompts-ollama-shownotes.md'
-  },
-  {
-    cmd: 'npm run docker-cli -- --playlist "https://www.youtube.com/playlist?list=PLCVnrVv4KhXPz0SoAVu8Rc1emAdGPbSbr" --prompt titles --whisper tiny --ollama LLAMA_3_2_1B',
+    cmd: 'npm run docker-cli -- --playlist "https://www.youtube.com/playlist?list=PLCVnrVv4KhXPz0SoAVu8Rc1emAdGPbSbr" --prompt titles --whisper tiny --chatgpt',
     expectedFiles: [
-      { file: '2024-09-24-ep1-fsjam-podcast-ollama-shownotes.md', newName: '27-docker-prompt-whisper-ollama-shownotes.md' },
-      { file: '2024-09-24-ep0-fsjam-podcast-ollama-shownotes.md', newName: '28-docker-prompt-whisper-ollama-shownotes.md' }
+      { file: '2024-09-24-ep1-fsjam-podcast-chatgpt-shownotes.md', newName: '27-docker-prompt-whisper-chatgpt-shownotes.md' },
+      { file: '2024-09-24-ep0-fsjam-podcast-chatgpt-shownotes.md', newName: '28-docker-prompt-whisper-chatgpt-shownotes.md' }
     ]
   },
   {
-    cmd: 'npm run docker-cli -- --urls "content/example-urls.md" --prompt titles --whisper tiny --ollama LLAMA_3_2_1B',
+    cmd: 'npm run docker-cli -- --urls "content/example-urls.md" --prompt titles --whisper tiny --claude',
     expectedFiles: [
-      { file: '2024-09-24-ep1-fsjam-podcast-ollama-shownotes.md', newName: '29-docker-prompt-whisper-ollama-shownotes.md' },
-      { file: '2024-09-24-ep0-fsjam-podcast-ollama-shownotes.md', newName: '30-docker-prompt-whisper-ollama-shownotes.md' }
+      { file: '2024-09-24-ep1-fsjam-podcast-claude-shownotes.md', newName: '29-docker-prompt-whisper-claude-shownotes.md' },
+      { file: '2024-09-24-ep0-fsjam-podcast-claude-shownotes.md', newName: '30-docker-prompt-whisper-claude-shownotes.md' }
     ]
   },
   {
-    cmd: 'npm run docker-cli -- --rss "https://ajcwebdev.substack.com/feed"',
+    cmd: 'npm run docker-cli -- --rss "https://ajcwebdev.substack.com/feed" --whisper base',
     expectedFile: '2021-05-10-thoughts-on-lambda-school-layoffs-prompt.md',
     newName: '31-docker-rss-default.md'
   },
@@ -255,7 +250,7 @@ const commands = [
   },
   {
     // Process video using Deepgram and Llama.
-    cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --deepgram --ollama',
+    cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --deepgram --ollama LLAMA_3_2_1B',
     expectedFile: '2024-09-24-ep0-fsjam-podcast-ollama-shownotes.md',
     newName: '50-deepgram-ollama-shownotes.md'
   },
@@ -267,7 +262,7 @@ const commands = [
   },
   {
     // Process video using AssemblyAI and Llama.
-    cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --assembly --ollama',
+    cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --assembly --ollama LLAMA_3_2_1B',
     expectedFile: '2024-09-24-ep0-fsjam-podcast-ollama-shownotes.md',
     newName: '52-assembly-ollama-shownotes.md'
   },

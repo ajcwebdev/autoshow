@@ -20,6 +20,7 @@ import { processChannel } from '../process-commands/channel'
 import { processURLs } from '../process-commands/urls'
 import { processFile } from '../process-commands/file'
 import { processRSS } from '../process-commands/rss'
+import { generatePrompt } from '../process-steps/04-select-prompt'
 import { validateOption, isValidAction, validateRSSAction } from '../utils/validate-option'
 import { ACTION_OPTIONS, LLM_OPTIONS, TRANSCRIPT_OPTIONS } from '../utils/globals'
 import { l, err, logCompletionSeparator } from '../utils/logging'
@@ -82,6 +83,8 @@ program
   .option('--groq [model]', 'Use Groq for processing with optional model specification')
   // Utility options
   .option('--prompt <sections...>', 'Specify prompt sections to include')
+  .option('--printPrompt <sections...>', 'Print the prompt sections without processing')
+  .option('--customPrompt <filePath>', 'Use a custom prompt from a markdown file')
   .option('--noCleanUp', 'Do not delete intermediary files after processing')
   // Add examples and additional help text
   .addHelpText(
@@ -110,6 +113,12 @@ program.action(async (options: ProcessingOptions) => {
   l.opts(`Options received at beginning of command:\n`)
   l.opts(JSON.stringify(options, null, 2))
   l.opts(``)
+
+  if (options.printPrompt) {
+    const prompt = await generatePrompt(options.printPrompt)
+    console.log(prompt)
+    exit(0)
+  }
 
   // Ensure options.item is always an array if provided via command line
   if (options.item && !Array.isArray(options.item)) {

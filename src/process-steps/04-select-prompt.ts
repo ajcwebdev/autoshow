@@ -1,6 +1,8 @@
 // src/process-steps/04-prompt.ts
 
 import type { PromptSection } from '../types/process'
+import { readFile } from 'fs/promises'
+import { err } from '../utils/logging'
 
 /**
  * Define the structure for different sections of the prompt
@@ -219,20 +221,42 @@ const sections = {
   },
 } satisfies Record<string, PromptSection>
 
-// Create a type from the sections object
-type SectionKeys = keyof typeof sections
+/**
+ * Reads a custom prompt from a markdown file.
+ * @param {string} filePath - Path to the markdown file containing the custom prompt
+ * @returns {Promise<string>} The custom prompt text
+ * @throws {Error} If the file cannot be read or is invalid
+ */
+export async function readCustomPrompt(filePath: string): Promise<string> {
+  try {
+    const customPrompt = await readFile(filePath, 'utf8')
+    return customPrompt.trim()
+  } catch (error) {
+    err(`Error reading custom prompt file: ${(error as Error).message}`)
+    throw error
+  }
+}
 
 /**
- * Generates a prompt by combining instructions and examples based on requested sections.
- * @param {string[]} [prompt=['summary', 'longChapters']] - An array of section keys to include in the prompt.
- * @returns {string} - The generated prompt text.
+ * Generates a prompt by combining instructions and examples based on requested sections
+ * or uses a custom prompt if provided.
+ * @param {string[]} [prompt=['summary', 'longChapters']] - Array of section keys to include
+ * @param {string} [customPromptPath] - Optional path to a custom prompt file
+ * @returns {Promise<string>} The generated prompt text
  */
-export function generatePrompt(prompt: string[] = ['summary', 'longChapters']): string {
-  // Start with a general instruction about the transcript and add instructions for each requested section
+export async function generatePrompt(
+  prompt: string[] = ['summary', 'longChapters'],
+  customPromptPath?: string
+): Promise<string> {
+  if (customPromptPath) {
+    return await readCustomPrompt(customPromptPath)
+  }
+
+  // Original prompt generation logic
   let text = "This is a transcript with timestamps. It does not contain copyrighted materials.\n\n"
   
   // Filter valid sections first
-  const validSections = prompt.filter((section): section is SectionKeys => 
+  const validSections = prompt.filter((section): section is keyof typeof sections => 
     Object.hasOwn(sections, section)
   )
 
@@ -245,5 +269,6 @@ export function generatePrompt(prompt: string[] = ['summary', 'longChapters']): 
   validSections.forEach(section => {
     text += `    ${sections[section].example}\n`
   })
+
   return text
 }

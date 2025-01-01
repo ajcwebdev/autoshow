@@ -3,18 +3,15 @@
 # ---------------------------------------------------
 # 1) Node base image
 # ---------------------------------------------------
+
 FROM node:22 AS base
+
 RUN apt-get update && apt-get install -y \
-    ffmpeg \
-    git \
-    make \
-    curl \
-    docker.io \
-    ca-certificates \
-    cmake \
-    libopenblas-dev \
- && rm -rf /var/lib/apt/lists/*
+    ffmpeg git make curl docker.io ca-certificates cmake \
+    libopenblas-dev && rm -rf /var/lib/apt/lists/*
+
 RUN update-ca-certificates
+
 WORKDIR /usr/src/app
 
 # Install yt-dlp
@@ -44,8 +41,10 @@ RUN chmod +x /usr/src/app/docker-entrypoint.sh
 # ---------------------------------------------------
 # 2) Setup Ollama with models
 # ---------------------------------------------------
+
 FROM ollama/ollama:latest AS ollama
 WORKDIR /root/.ollama
+
 # Start Ollama server and pull models
 RUN ollama serve & \
     sleep 10 && \
@@ -55,7 +54,9 @@ RUN ollama serve & \
 # ---------------------------------------------------
 # 3) Final stage combining everything
 # ---------------------------------------------------
+
 FROM base
+
 # Copy Ollama binary and the pre-downloaded models
 COPY --from=ollama /bin/ollama /usr/local/bin/ollama
 COPY --from=ollama /root/.ollama /root/.ollama

@@ -107,7 +107,7 @@ npm run as -- \
   --order oldest \
   --skip 2 \
   --last 5 \
-  --whisperDocker small \
+  --whisper base \
   --chatgpt GPT_4_TURBO \
   --prompt summary shortChapters \
   --noCleanUp
@@ -119,7 +119,7 @@ Here’s what’s happening in this single command:
 2. **Order**: Starts from the oldest videos in the channel rather than the most recent.
 3. **Skip**: Skips the first 2 videos from that oldest-first sequence.
 4. **Last**: Processes the next 5 videos (after skipping).
-5. **Transcription**: Uses the `--whisperDocker small` model to transcribe each video in a Docker container.
+5. **Transcription**: Uses the `--whisper base` model to transcribe each video in a Docker container.
 6. **LLM**: Uses OpenAI ChatGPT’s GPT-4 Turbo model (`--chatgpt GPT_4_TURBO`) to process the transcripts.
 7. **Prompt**: Generates both a summary and short chapter descriptions (`--prompt summary shortChapters`).
 8. **No Clean Up**: Keeps any intermediary or downloaded files around (`--noCleanUp`) so you can inspect them after the run.

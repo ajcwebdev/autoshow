@@ -82,6 +82,12 @@ export type ProcessingOptions = {
   /** Array of prompt sections to include (e.g., ['titles', 'summary']). */
   prompt?: string[]
 
+  /** Print selected prompts to the terminal without running any process commands. */
+  printPrompt?: string[]
+
+  /** Use a custom prompt saved in a markdown file */
+  customPrompt?: string
+
   /** The selected LLM option. */
   llmServices?: LLMServices
 

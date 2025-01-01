@@ -569,6 +569,18 @@ Include all prompt options:
 npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --prompt titles summary longChapters takeaways questions
 ```
 
+### Print Select Prompts without Process Commands
+
+```bash
+npm run as -- --printPrompt summary longChapters
+```
+
+### Write a Custom Prompt
+
+```bash
+npm run as -- --file "content/audio.mp3" --customPrompt "content/custom-prompt.md" --chatgpt
+```
+
 ## Test Suite
 
 Integration test.

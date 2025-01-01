@@ -108,7 +108,7 @@ export async function runLLM(
     const transcript = `## Transcript\n\n${tempTranscript}`
 
     // Generate and combine prompt with transcript
-    const prompt = generatePrompt(options.prompt)
+    const prompt = await generatePrompt(options.prompt, options.customPrompt)
     const promptAndTranscript = `${prompt}${transcript}`
 
     if (llmServices) {

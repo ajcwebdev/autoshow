@@ -8,6 +8,7 @@
 		"check": "astro check"
 	},
 	"dependencies": {
+		"@astrojs/db": "^0.14.5",
 		"@astrojs/mdx": "^4.0.1",
 		"@astrojs/react": "^4.0.0",
 		"@astrojs/rss": "^4.0.10",

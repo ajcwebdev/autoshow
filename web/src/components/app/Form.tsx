@@ -25,7 +25,7 @@ export const ShowNote: React.FC = () => {
     const id = window.location.pathname.split('/').pop()
 
     // Fetch the show note from the backend
-    fetch(`http://localhost:3000/show-notes/${id}`)
+    fetch(`/api/show-notes/${id}`)
       .then((response) => response.json())
       .then((data) => {
         setShowNote(data.showNote)
@@ -111,7 +111,7 @@ const Inputs: React.FC<InputsProps> = ({ onNewShowNote }) => {
       }
 
       // Send POST request to the backend
-      const response = await fetch('http://localhost:3000/process', {
+      const response = await fetch('/api/process', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -311,7 +311,7 @@ const Form: React.FC = () => {
 
   // Fetch show notes function
   const fetchShowNotes = () => {
-    fetch('http://localhost:3000/show-notes')
+    fetch('/api/show-notes')
       .then((response) => response.json())
       .then((data) => {
         setShowNotes(data.showNotes)

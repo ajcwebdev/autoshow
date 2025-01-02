@@ -1,6 +1,7 @@
 {
   "extends": "astro/tsconfigs/strictest",
   "compilerOptions": {
+    "esModuleInterop": true,
     "baseUrl": ".",
     "lib": [
       "es2022",

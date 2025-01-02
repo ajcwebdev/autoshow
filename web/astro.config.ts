@@ -6,6 +6,8 @@ import icon from "astro-icon"
 import expressiveCode from "astro-expressive-code"
 import { expressiveCodeOptions } from "./src/site.config"
 
+import db from "@astrojs/db";
+
 // https://astro.build/config
 export default defineConfig({
     output: "server",
@@ -16,6 +18,7 @@ export default defineConfig({
       sitemap(),
       mdx(),
       react(),
+      db(),
     ],
     // https://docs.astro.build/en/guides/prefetch/
     prefetch: true,

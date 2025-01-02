@@ -9,10 +9,10 @@ export type ModelConfig<T extends string> = {
 }
 
 export type ModelConfigValue = {
-  name: string;
-  modelId: string;
-  inputCostPer1M: number;  // Cost per 1M input tokens
-  outputCostPer1M: number; // Cost per 1M output tokens
+  name: string
+  modelId: string
+  inputCostPer1M: number  // Cost per 1M input tokens
+  outputCostPer1M: number // Cost per 1M output tokens
 }
 
 /**

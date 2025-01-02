@@ -10,9 +10,43 @@ import { exec, execFile } from 'node:child_process'
 import { promisify } from 'node:util'
 import type { WhisperModelType, TranscriptServiceConfig } from '../types/transcription'
 import type { ModelConfig, ChatGPTModelType, ClaudeModelType, CohereModelType, GeminiModelType, MistralModelType, OllamaModelType, TogetherModelType, FireworksModelType, GroqModelType, LLMServiceConfig, LLMServices } from '../types/llms'
+import type { RequestBody } from '../types/process'
 
 export const execPromise = promisify(exec)
 export const execFilePromise = promisify(execFile)
+
+/**
+ * @description Override environment variables from CLI if the user has provided them.
+ * This ensures that if keys are not in the .env file, they can be specified
+ * via CLI arguments instead.
+ */
+export const envVarsMap: Record<string, string> = {
+  openaiApiKey: 'OPENAI_API_KEY',
+  anthropicApiKey: 'ANTHROPIC_API_KEY',
+  deepgramApiKey: 'DEEPGRAM_API_KEY',
+  assemblyApiKey: 'ASSEMBLY_API_KEY',
+  geminiApiKey: 'GEMINI_API_KEY',
+  cohereApiKey: 'COHERE_API_KEY',
+  mistralApiKey: 'MISTRAL_API_KEY',
+  grokApiKey: 'GROK_API_KEY',
+  togetherApiKey: 'TOGETHER_API_KEY',
+  fireworksApiKey: 'FIREWORKS_API_KEY',
+  groqApiKey: 'GROQ_API_KEY'
+}
+
+export const envVarsServerMap: Record<keyof RequestBody, string> = {
+  openaiApiKey: 'OPENAI_API_KEY',
+  anthropicApiKey: 'ANTHROPIC_API_KEY',
+  deepgramApiKey: 'DEEPGRAM_API_KEY',
+  assemblyApiKey: 'ASSEMBLY_API_KEY',
+  geminiApiKey: 'GEMINI_API_KEY',
+  cohereApiKey: 'COHERE_API_KEY',
+  mistralApiKey: 'MISTRAL_API_KEY',
+  grokApiKey: 'GROK_API_KEY',
+  togetherApiKey: 'TOGETHER_API_KEY',
+  fireworksApiKey: 'FIREWORKS_API_KEY',
+  groqApiKey: 'GROQ_API_KEY'
+}
 
 /**
  * Configure XML parser for RSS feed processing

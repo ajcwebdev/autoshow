@@ -3,6 +3,25 @@
 import type { TranscriptServices, WhisperModelType } from './transcription'
 import type { LLMServices } from './llms'
 
+/**
+ * @description Pre-handler to override environment variables from request body if provided.
+ * This ensures that API keys can be passed in the request and used for the session,
+ * even if they're not set in the .env file.
+ */
+export interface RequestBody {
+  openaiApiKey?: string
+  anthropicApiKey?: string
+  deepgramApiKey?: string
+  assemblyApiKey?: string
+  geminiApiKey?: string
+  cohereApiKey?: string
+  mistralApiKey?: string
+  grokApiKey?: string
+  togetherApiKey?: string
+  fireworksApiKey?: string
+  groqApiKey?: string
+}
+
 // Define types for the request body
 export interface ProcessRequestBody {
   type: 'video' | 'urls' | 'rss' | 'playlist' | 'file' | 'channel'

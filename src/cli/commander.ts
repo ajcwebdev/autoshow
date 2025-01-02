@@ -17,6 +17,7 @@ import { Command } from 'commander'
 import { generatePrompt } from '../process-steps/04-select-prompt'
 import { validateAction, validateLLM, validateTranscription, processAction } from '../utils/validate-option'
 import { l, err, logCompletionSeparator } from '../utils/logging'
+import { envVarsMap } from '../utils/globals'
 import type { ProcessingOptions } from '../types/process'
 
 // Initialize the command-line interface using Commander.js
@@ -107,22 +108,10 @@ program
  */
 program.action(async (options: ProcessingOptions) => {
   // Override environment variables from CLI if provided
-  /**
-   * @description Override environment variables from CLI if the user has provided them.
-   * This ensures that if keys are not in the .env file, they can be specified
-   * via CLI arguments instead.
-   */
-  if (options.openaiApiKey) process.env['OPENAI_API_KEY'] = options.openaiApiKey
-  if (options.anthropicApiKey) process.env['ANTHROPIC_API_KEY'] = options.anthropicApiKey
-  if (options.deepgramApiKey) process.env['DEEPGRAM_API_KEY'] = options.deepgramApiKey
-  if (options.assemblyApiKey) process.env['ASSEMBLY_API_KEY'] = options.assemblyApiKey
-  if (options.geminiApiKey) process.env['GEMINI_API_KEY'] = options.geminiApiKey
-  if (options.cohereApiKey) process.env['COHERE_API_KEY'] = options.cohereApiKey
-  if (options.mistralApiKey) process.env['MISTRAL_API_KEY'] = options.mistralApiKey
-  if (options.grokApiKey) process.env['GROK_API_KEY'] = options.grokApiKey
-  if (options.togetherApiKey) process.env['TOGETHER_API_KEY'] = options.togetherApiKey
-  if (options.fireworksApiKey) process.env['FIREWORKS_API_KEY'] = options.fireworksApiKey
-  if (options.groqApiKey) process.env['GROQ_API_KEY'] = options.groqApiKey
+  Object.entries(envVarsMap).forEach(([key, envKey]) => {
+    const value = (options as Record<string, string | undefined>)[key]
+    if (value) process.env[envKey] = value
+  })
 
   // Log options for debugging
   l.opts(`Options received at beginning of command:\n`)

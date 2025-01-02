@@ -12,7 +12,7 @@ import { runLLM } from '../process-steps/05-run-llm'
 import { cleanUpFiles } from '../process-steps/06-clean-up-files'
 import { l, err } from '../utils/logging'
 import { readFile } from 'fs/promises'
-import { db } from '../server/db'
+import { insertShowNote } from '../server/db'
 import type { ProcessingOptions } from '../types/process'
 import type { TranscriptServices } from '../types/transcription'
 import type { LLMServices } from '../types/llms'
@@ -40,51 +40,57 @@ export async function processVideo(
   llmServices?: LLMServices,
   transcriptServices?: TranscriptServices
 ): Promise<string> {
-  // Log the processing parameters for debugging purposes
   l.opts('Parameters passed to processVideo:\n')
   l.opts(`  - llmServices: ${llmServices}\n  - transcriptServices: ${transcriptServices}\n`)
 
   try {
-    // Generate markdown file with video metadata and get file paths
+    // Step 1 - Generate markdown
     const { frontMatter, finalPath, filename, metadata } = await generateMarkdown(options, url)
 
-    // Extract and download the audio from the video source
+    // Step 2 - Download audio and convert to WAV
     await downloadAudio(options, url, filename)
 
-    // Convert the audio to text using the specified transcription service
+    // Step 3 - Transcribe audio and read transcript
     await runTranscription(options, finalPath, transcriptServices)
+    const transcript = await readFile(`${finalPath}.txt`, 'utf-8')
 
-    // Process the transcript with a language model if one was specified
-    await runLLM(options, finalPath, frontMatter, llmServices)
+    // Step 4 - Select Prompt
+    const promptText = await readFile(options.customPrompt || '', 'utf-8').catch(() => '')
+    
+    // Step 5 - Run LLM (optional)
+    const llmOutput = await runLLM(options, finalPath, frontMatter, llmServices)
 
-    // Determine the correct output file path based on whether an LLM was used
-    let outputFilePath: string
-    if (llmServices) {
-      outputFilePath = `${finalPath}-${llmServices}-shownotes.md`
+    let generatedPrompt = ''
+    if (!promptText) {
+      const defaultPrompt = await import('../process-steps/04-select-prompt')
+      generatedPrompt = await defaultPrompt.generatePrompt(options.prompt, undefined)
     } else {
-      outputFilePath = `${finalPath}-prompt.md`
+      generatedPrompt = promptText
     }
 
-    // Read the content of the output file
-    const content = await readFile(outputFilePath, 'utf-8')
+    // Insert into DB
+    insertShowNote(
+      metadata.showLink ?? '',
+      metadata.channel ?? '',
+      metadata.channelURL ?? '',
+      metadata.title,
+      metadata.description ?? '',
+      metadata.publishDate,
+      metadata.coverImage ?? '',
+      frontMatter,
+      generatedPrompt,
+      transcript,
+      llmOutput
+    )
 
-    // Extract title and publishDate from the metadata object
-    const { title, publishDate } = metadata
-
-    // Save the show note into the database
-    db.prepare(
-      `INSERT INTO show_notes (title, date, content) VALUES (?, ?, ?)`
-    ).run(title, publishDate, content)
-
-    // Remove temporary files unless the noCleanUp option is set
+    // Optional cleanup
     if (!options.noCleanUp) {
       await cleanUpFiles(finalPath)
     }
 
-    // Return the content
-    return content
+    // Return transcript or some relevant string
+    return transcript
   } catch (error) {
-    // Log the error details and re-throw for upstream handling
     err('Error processing video:', (error as Error).message)
     throw error
   }

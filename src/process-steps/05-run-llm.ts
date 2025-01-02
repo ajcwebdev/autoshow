@@ -21,6 +21,19 @@ import { l, err } from '../utils/logging'
 import type { ProcessingOptions } from '../types/process'
 import type { LLMServices, LLMFunction, LLMFunctions } from '../types/llms'
 
+// Map of available LLM service handlers
+export const LLM_FUNCTIONS: LLMFunctions = {
+  ollama: callOllama,
+  chatgpt: callChatGPT,
+  claude: callClaude,
+  gemini: callGemini,
+  cohere: callCohere,
+  mistral: callMistral,
+  fireworks: callFireworks,
+  together: callTogether,
+  groq: callGroq,
+}
+
 /**
  * Processes a transcript using a specified Language Model service.
  * Handles the complete workflow from reading the transcript to generating
@@ -56,7 +69,7 @@ import type { LLMServices, LLMFunction, LLMFunctions } from '../types/llms'
  *   - together: Together AI
  *   - groq: Groq
  * 
- * @returns {Promise<void>} Resolves when processing is complete
+ * @returns {Promise<string>} Resolves with the LLM output, or an empty string if no LLM is selected
  * 
  * @throws {Error} If:
  *   - Transcript file is missing or unreadable
@@ -66,7 +79,7 @@ import type { LLMServices, LLMFunction, LLMFunctions } from '../types/llms'
  * 
  * @example
  * // Process with Ollama
- * await runLLM(
+ * const llmOutput = await runLLM(
  *   { prompt: ['summary', 'highlights'], ollama: 'LLAMA_3_2_1B' },
  *   'content/my-video',
  *   '---\ntitle: My Video\n---',
@@ -75,7 +88,7 @@ import type { LLMServices, LLMFunction, LLMFunctions } from '../types/llms'
  * 
  * @example
  * // Save prompt and transcript without LLM processing
- * await runLLM(
+ * const llmOutput = await runLLM(
  *   { prompt: ['summary'] },
  *   'content/my-video',
  *   '---\ntitle: My Video\n---'
@@ -86,21 +99,8 @@ export async function runLLM(
   finalPath: string,
   frontMatter: string,
   llmServices?: LLMServices
-): Promise<void> {
+): Promise<string> {
   l.step(`\nStep 4 - Running LLM processing on transcript...\n`)
-
-  // Map of available LLM service handlers
-  const LLM_FUNCTIONS: LLMFunctions = {
-    ollama: callOllama,         // Local inference with Ollama
-    chatgpt: callChatGPT,       // OpenAI's ChatGPT
-    claude: callClaude,         // Anthropic's Claude
-    gemini: callGemini,         // Google's Gemini
-    cohere: callCohere,         // Cohere
-    mistral: callMistral,       // Mistral AI
-    fireworks: callFireworks,   // Fireworks AI
-    together: callTogether,     // Together AI
-    groq: callGroq,             // Groq
-  }
 
   try {
     // Read and format the transcript
@@ -136,13 +136,11 @@ export async function runLLM(
           break
         } catch (error) {
           if (attempt >= maxRetries) {
-            // Max retries reached, rethrow the error
             err(`  Max retries reached. Unable to process with ${llmServices}.`)
             throw error
           }
           err(`  Attempt ${attempt} failed with error: ${(error as Error).message}`)
           l.wait(`  Retrying in ${delayBetweenRetries / 1000} seconds...`)
-          // Wait before retrying
           await new Promise(resolve => setTimeout(resolve, delayBetweenRetries))
         }
       }
@@ -159,11 +157,15 @@ export async function runLLM(
       // Clean up temporary file
       await unlink(tempPath)
       l.success(`\n  Generated show notes saved to markdown file:\n    - ${finalPath}-${llmServices}-shownotes.md`)
+
+      // Return only the LLM's output portion
+      return showNotes
     } else {
       // Handle case when no LLM is selected
       l.wait('  No LLM selected, skipping processing...')
       await writeFile(`${finalPath}-prompt.md`, `${frontMatter}\n${promptAndTranscript}`)
       l.success(`\n  Prompt and transcript saved to markdown file:\n    - ${finalPath}-prompt.md`)
+      return ''
     }
   } catch (error) {
     err(`Error running Language Model: ${(error as Error).message}`)

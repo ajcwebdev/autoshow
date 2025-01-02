@@ -14,7 +14,7 @@ import { cleanUpFiles } from '../process-steps/06-clean-up-files'
 import { validateRSSOptions } from '../utils/validate-option'
 import { l, err, logRSSProcessingAction, logRSSProcessingStatus, logRSSSeparator } from '../utils/logging'
 import { parser } from '../utils/globals'
-import { db } from '../server/db'
+import { insertShowNote } from '../server/db'
 import type { ProcessingOptions, RSSItem } from '../types/process'
 import type { TranscriptServices } from '../types/transcription'
 import type { LLMServices } from '../types/llms'
@@ -152,7 +152,7 @@ function selectItemsToProcess(items: RSSItem[], options: ProcessingOptions): RSS
     const selectedDates = new Set(options.date)
     const matchedItems = items.filter((item) => selectedDates.has(item.publishDate))
     return matchedItems
-  }  
+  }
 
   if (options.last) {
     return items.slice(0, options.last)
@@ -180,29 +180,43 @@ async function processItem(
   l.opts(`  - llmServices: ${llmServices}\n  - transcriptServices: ${transcriptServices}\n`)
 
   try {
+    // Step 1 - Generate markdown
     const { frontMatter, finalPath, filename, metadata } = await generateMarkdown(options, item)
-    await downloadAudio(options, item.showLink, filename)
-    await runTranscription(options, finalPath, transcriptServices)
-    await runLLM(options, finalPath, frontMatter, llmServices)
 
-    // Determine the correct output file path based on whether an LLM was used
-    let outputFilePath: string
-    if (llmServices) {
-      outputFilePath = `${finalPath}-${llmServices}-shownotes.md`
+    // Step 2 - Download audio and convert to WAV
+    await downloadAudio(options, item.showLink, filename)
+
+    // Step 3 - Transcribe audio and read transcript
+    await runTranscription(options, finalPath, transcriptServices)
+    const transcript = await readFile(`${finalPath}.txt`, 'utf-8')
+
+    // Step 4 - Select Prompt
+    const promptText = await readFile(options.customPrompt || '', 'utf-8').catch(() => '')
+
+    // Step 5 - Run LLM (optional)
+    const llmOutput = await runLLM(options, finalPath, frontMatter, llmServices)
+
+    let generatedPrompt = ''
+    if (!promptText) {
+      const defaultPrompt = await import('../process-steps/04-select-prompt')
+      generatedPrompt = await defaultPrompt.generatePrompt(options.prompt, undefined)
     } else {
-      outputFilePath = `${finalPath}-prompt.md`
+      generatedPrompt = promptText
     }
 
-    // Read the content of the output file
-    const content = await readFile(outputFilePath, 'utf-8')
-
-    // Extract title and publishDate from the metadata object
-    const { title, publishDate } = metadata
-
-    // Save the show note into the database
-    db.prepare(
-      `INSERT INTO show_notes (title, date, content) VALUES (?, ?, ?)`
-    ).run(title, publishDate, content)
+    insertShowNote(
+      metadata.showLink ?? '',
+      metadata.channel ?? '',
+      metadata.channelURL ?? '',
+      metadata.title,
+      metadata.description ?? '',
+      metadata.publishDate,
+      metadata.coverImage ?? '',
+      frontMatter,
+      generatedPrompt,
+      transcript,
+      llmOutput
+    )
 
     if (!options.noCleanUp) {
       await cleanUpFiles(finalPath)

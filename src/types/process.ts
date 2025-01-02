@@ -116,6 +116,39 @@ export type ProcessingOptions = {
 
   /** Number of previous days to check for RSS items to process. */
   lastDays?: number
+
+  /** Provide override for OpenAI API key. */
+  openaiApiKey?: string
+
+  /** Provide override for Anthropic API key. */
+  anthropicApiKey?: string
+
+  /** Provide override for Deepgram API key. */
+  deepgramApiKey?: string
+
+  /** Provide override for AssemblyAI API key. */
+  assemblyApiKey?: string
+
+  /** Provide override for Gemini API key. */
+  geminiApiKey?: string
+
+  /** Provide override for Cohere API key. */
+  cohereApiKey?: string
+
+  /** Provide override for Mistral API key. */
+  mistralApiKey?: string
+
+  /** Provide override for GROK API key. */
+  grokApiKey?: string
+
+  /** Provide override for Together API key. */
+  togetherApiKey?: string
+
+  /** Provide override for Fireworks API key. */
+  fireworksApiKey?: string
+
+  /** Provide override for Groq API key. */
+  groqApiKey?: string
 }
 
 // Handler and Processing Types

@@ -66,6 +66,23 @@ program
   .option('--printPrompt <sections...>', 'Print the prompt sections without processing')
   .option('--customPrompt <filePath>', 'Use a custom prompt from a markdown file')
   .option('--noCleanUp', 'Do not delete intermediary files after processing')
+  // Added options to override environment variables from CLI
+  /**
+   * Additional CLI options to allow passing API keys from the command line,
+   * overriding .env values if they exist. This way, if the .env is missing
+   * a key, the user can supply it via the CLI.
+   */
+  .option('--openaiApiKey <key>', 'Specify OpenAI API key (overrides .env variable)')
+  .option('--anthropicApiKey <key>', 'Specify Anthropic API key (overrides .env variable)')
+  .option('--deepgramApiKey <key>', 'Specify Deepgram API key (overrides .env variable)')
+  .option('--assemblyApiKey <key>', 'Specify AssemblyAI API key (overrides .env variable)')
+  .option('--geminiApiKey <key>', 'Specify Gemini API key (overrides .env variable)')
+  .option('--cohereApiKey <key>', 'Specify Cohere API key (overrides .env variable)')
+  .option('--mistralApiKey <key>', 'Specify Mistral API key (overrides .env variable)')
+  .option('--grokApiKey <key>', 'Specify GROK API key (overrides .env variable)')
+  .option('--togetherApiKey <key>', 'Specify Together API key (overrides .env variable)')
+  .option('--fireworksApiKey <key>', 'Specify Fireworks API key (overrides .env variable)')
+  .option('--groqApiKey <key>', 'Specify Groq API key (overrides .env variable)')
   // Add examples and additional help text
   .addHelpText(
     'after',
@@ -89,6 +106,24 @@ program
  * @param options - The command-line options provided by the user.
  */
 program.action(async (options: ProcessingOptions) => {
+  // Override environment variables from CLI if provided
+  /**
+   * @description Override environment variables from CLI if the user has provided them.
+   * This ensures that if keys are not in the .env file, they can be specified
+   * via CLI arguments instead.
+   */
+  if (options.openaiApiKey) process.env['OPENAI_API_KEY'] = options.openaiApiKey
+  if (options.anthropicApiKey) process.env['ANTHROPIC_API_KEY'] = options.anthropicApiKey
+  if (options.deepgramApiKey) process.env['DEEPGRAM_API_KEY'] = options.deepgramApiKey
+  if (options.assemblyApiKey) process.env['ASSEMBLY_API_KEY'] = options.assemblyApiKey
+  if (options.geminiApiKey) process.env['GEMINI_API_KEY'] = options.geminiApiKey
+  if (options.cohereApiKey) process.env['COHERE_API_KEY'] = options.cohereApiKey
+  if (options.mistralApiKey) process.env['MISTRAL_API_KEY'] = options.mistralApiKey
+  if (options.grokApiKey) process.env['GROK_API_KEY'] = options.grokApiKey
+  if (options.togetherApiKey) process.env['TOGETHER_API_KEY'] = options.togetherApiKey
+  if (options.fireworksApiKey) process.env['FIREWORKS_API_KEY'] = options.fireworksApiKey
+  if (options.groqApiKey) process.env['GROQ_API_KEY'] = options.groqApiKey
+
   // Log options for debugging
   l.opts(`Options received at beginning of command:\n`)
   l.opts(JSON.stringify(options, null, 2))

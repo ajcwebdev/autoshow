@@ -40,7 +40,7 @@ async function start() {
     // Start the server
     await fastify.listen({
       port,                // Use configured port
-      host: '0.0.0.0',    // Listen on all network interfaces
+      host: '::',    // Listen on all network interfaces
     })
 
     // Log successful server start

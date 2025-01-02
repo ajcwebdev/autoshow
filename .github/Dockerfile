@@ -25,17 +25,18 @@ RUN curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp \
 RUN npm install -g tsx
 
 # Install whisper.cpp and download models
-RUN git clone https://github.com/ggerganov/whisper.cpp.git && \
+RUN git clone --depth=1 https://github.com/ggerganov/whisper.cpp.git && \
     cd whisper.cpp && \
     cmake -B build && \
     cmake --build build -j --config Release && \
-    # ./models/download-ggml-model.sh large-v3-turbo && \
+    ./models/download-ggml-model.sh large-v3-turbo && \
     ./models/download-ggml-model.sh base && \
-    ./models/download-ggml-model.sh tiny
+    ./models/download-ggml-model.sh tiny && \
+    rm -rf .git
 
 # Copy package files and install deps
 COPY package*.json ./
-RUN npm ci
+RUN npm ci --production && npm cache clean --force
 
 # Copy source code
 COPY src ./src
@@ -53,7 +54,6 @@ WORKDIR /root/.ollama
 RUN ollama serve & \
     sleep 10 && \
     ollama pull llama3.2:1b && \
-    # ollama pull llama3.2:3b && \
     pkill ollama
 
 # ---------------------------------------------------
@@ -68,6 +68,12 @@ COPY --from=ollama /root/.ollama /root/.ollama
 
 # Create content directory
 RUN mkdir -p content
+
+# Set proper permissions
+# RUN chown -R node:node /usr/src/app
+
+# Use non-root user
+# USER node
 
 EXPOSE 3000
 ENTRYPOINT ["/usr/src/app/docker-entrypoint.sh"]

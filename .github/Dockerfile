@@ -1,14 +1,16 @@
 # .github/Dockerfile
 
 # ---------------------------------------------------
-# 1) Node base image
+# 1) Node base image - Using Debian slim for smaller footprint
 # ---------------------------------------------------
 
-FROM node:22 AS base
+FROM node:22-slim AS base
 
-RUN apt-get update && apt-get install -y \
-    ffmpeg git make curl docker.io ca-certificates cmake \
-    libopenblas-dev && rm -rf /var/lib/apt/lists/*
+# Install only required system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ffmpeg git make curl ca-certificates cmake python3 python3-pip \
+    libopenblas-dev g++ build-essential && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
 
 RUN update-ca-certificates
 
@@ -25,7 +27,9 @@ RUN npm install -g tsx
 # Install whisper.cpp and download models
 RUN git clone https://github.com/ggerganov/whisper.cpp.git && \
     cd whisper.cpp && \
-    make && \
+    cmake -B build && \
+    cmake --build build -j --config Release && \
+    # ./models/download-ggml-model.sh large-v3-turbo && \
     ./models/download-ggml-model.sh base && \
     ./models/download-ggml-model.sh tiny
 
@@ -48,7 +52,8 @@ WORKDIR /root/.ollama
 # Start Ollama server and pull models
 RUN ollama serve & \
     sleep 10 && \
-    ollama pull llama2 && \
+    ollama pull llama3.2:1b && \
+    # ollama pull llama3.2:3b && \
     pkill ollama
 
 # ---------------------------------------------------

@@ -2,10 +2,26 @@
 
 import { exit } from 'node:process'
 import { err } from '../utils/logging'
-import { PROCESS_HANDLERS } from '../cli/commander'
-import type { ProcessingOptions, ValidAction, HandlerFunction } from '../types/process'
+import { processVideo } from '../process-commands/video'
+import { processPlaylist } from '../process-commands/playlist'
+import { processChannel } from '../process-commands/channel'
+import { processURLs } from '../process-commands/urls'
+import { processFile } from '../process-commands/file'
+import { processRSS } from '../process-commands/rss'
+import { ACTION_OPTIONS, LLM_OPTIONS, TRANSCRIPT_OPTIONS, llmOptions, transcriptOptions, otherOptions } from '../utils/globals'
+import type { ProcessingOptions, ValidAction, HandlerFunction, ProcessRequestBody } from '../types/process'
 import type { TranscriptServices } from '../types/transcription'
 import type { LLMServices } from '../types/llms'
+
+// Map each action to its corresponding handler function
+export const PROCESS_HANDLERS: Record<ValidAction, HandlerFunction> = {
+  video: processVideo,
+  playlist: processPlaylist,
+  channel: processChannel,
+  urls: processURLs,
+  file: processFile,
+  rss: processRSS,
+}
 
 /**
  * Type guard to check if a string is a valid action.
@@ -15,6 +31,93 @@ import type { LLMServices } from '../types/llms'
  */
 export function isValidAction(action: string | undefined): action is ValidAction {
   return Boolean(action && action in PROCESS_HANDLERS)
+}
+
+// Type guard to check if a string is a valid process type
+export function isValidProcessType(type: string): type is ProcessRequestBody['type'] {
+  return ['video', 'urls', 'rss', 'playlist', 'file', 'channel'].includes(type)
+}
+
+/**
+ * Validates the action the user wants to run by checking their provided options.
+ * 
+ * @param options - The ProcessingOptions containing user inputs and flags
+ * @returns The valid action to perform
+ */
+export function validateAction(options: ProcessingOptions): ValidAction {
+  const actionValues = ACTION_OPTIONS.map((opt) => opt.name)
+  const selectedAction = validateOption(actionValues, options, 'input option')
+  if (!selectedAction || !isValidAction(selectedAction)) {
+    err(`Invalid or missing action`)
+    exit(1)
+  }
+  return selectedAction
+}
+
+/**
+ * Validates which LLM service was chosen by the user.
+ * 
+ * @param options - The ProcessingOptions containing user inputs
+ * @returns The chosen LLM service, or undefined if none was chosen
+ */
+export function validateLLM(options: ProcessingOptions): LLMServices | undefined {
+  const llmKey = validateOption(LLM_OPTIONS as string[], options, 'LLM option') as LLMServices | undefined
+  return llmKey
+}
+
+/**
+ * Validates which transcription service was chosen by the user.
+ * Also sets a default Whisper model if whisper is selected but no model specified.
+ * 
+ * @param options - The ProcessingOptions containing user inputs
+ * @returns The chosen transcription service
+ */
+export function validateTranscription(options: ProcessingOptions): TranscriptServices {
+  const transcriptKey = validateOption(TRANSCRIPT_OPTIONS, options, 'transcription option')
+  const transcriptServices: TranscriptServices = (transcriptKey as TranscriptServices) || 'whisper'
+
+  if (transcriptServices === 'whisper' && !options.whisper) {
+    options.whisper = 'large-v3-turbo'
+  }
+
+  return transcriptServices
+}
+
+/**
+ * Centralized function for processing any action. If the action is 'rss',
+ * then we perform RSS-specific validation & processing. Otherwise, we get
+ * the relevant handler and run it on the user input.
+ *
+ * @param action - The validated action user wants to run ('video', 'rss', etc.)
+ * @param options - The ProcessingOptions containing user inputs and flags
+ * @param llmServices - The optional LLM service for processing
+ * @param transcriptServices - The optional transcription service
+ */
+export async function processAction(
+  action: ValidAction,
+  options: ProcessingOptions,
+  llmServices?: LLMServices,
+  transcriptServices?: TranscriptServices
+): Promise<void> {
+  // Look up the correct handler function for our action
+  const handler = PROCESS_HANDLERS[action]
+
+  // If the user selected RSS, we do specialized validation and run the RSS logic.
+  if (action === 'rss') {
+    // This calls your existing function that normalizes/validates RSS options
+    // and then processes each RSS feed URL by calling `handler(...)`.
+    await validateRSSAction(options, handler, llmServices, transcriptServices)
+    return
+  }
+
+  // For non-RSS actions, just ensure we have a valid input string
+  const input = options[action]
+  if (!input || typeof input !== 'string') {
+    throw new Error(`No valid input provided for ${action} processing`)
+  }
+
+  // Run the handler with the provided input
+  await handler(options, input, llmServices, transcriptServices)
 }
 
 /**
@@ -50,6 +153,24 @@ export function validateOption(
     exit(1)
   }
   return selectedOptions[0] as string | undefined
+}
+
+/**
+ * Normalizes RSS-related options so that `options.rss` and `options.item` are always arrays.
+ * This ensures consistent types for further validation or processing.
+ * 
+ * @param options - The processing options object.
+ */
+function normalizeRSSOptions(options: ProcessingOptions): void {
+  // Ensure options.item is always an array if provided via command line
+  if (options.item && !Array.isArray(options.item)) {
+    options.item = [options.item]
+  }
+
+  // Ensure options.rss is always an array, in case it's a single string
+  if (typeof options.rss === 'string') {
+    options.rss = [options.rss]
+  }
 }
 
 /**
@@ -161,6 +282,12 @@ export async function validateRSSAction(
   llmServices?: LLMServices,
   transcriptServices?: TranscriptServices
 ): Promise<void> {
+  // Normalize RSS options so we always have arrays
+  normalizeRSSOptions(options)
+
+  // Validate the rest of the RSS-related flags
+  validateRSSOptions(options)
+
   // For RSS feeds, process multiple URLs
   const rssUrls = options.rss
   if (!rssUrls || rssUrls.length === 0) {
@@ -171,4 +298,54 @@ export async function validateRSSAction(
   for (const rssUrl of rssUrls) {
     await handler(options, rssUrl, llmServices, transcriptServices)
   }
+}
+
+// Function to map request data to processing options
+export function validateRequest(requestData: any): {
+  options: ProcessingOptions
+  llmServices?: LLMServices
+  transcriptServices?: TranscriptServices
+} {
+  // Initialize options object
+  const options: ProcessingOptions = {}
+
+  // Variables to hold selected services
+  let llmServices: LLMServices | undefined
+  let transcriptServices: TranscriptServices | undefined
+
+  // Check if a valid LLM service is provided
+  if (requestData.llm && llmOptions.includes(requestData.llm)) {
+    // Set the LLM service
+    llmServices = requestData.llm as LLMServices
+    // Set the LLM model or default to true
+    options[llmServices] = requestData.llmModel || true
+  }
+
+  // Determine transcript service or default to 'whisper' if not specified
+  transcriptServices = transcriptOptions.includes(requestData.transcriptServices)
+    ? (requestData.transcriptServices as TranscriptServices)
+    : 'whisper'
+
+  // Set transcript options based on the selected service
+  if (transcriptServices === 'whisper') {
+    // Set the Whisper model or default to 'large-v3-turbo'
+    options.whisper = requestData.whisperModel || 'large-v3-turbo'
+  } else if (transcriptServices === 'deepgram') {
+    options.deepgram = true
+  } else if (transcriptServices === 'assembly') {
+    options.assembly = true
+  }
+
+  // Map additional options from the request data
+  for (const opt of otherOptions) {
+    if (requestData[opt] !== undefined) {
+      // Set the option if it is provided
+      // @ts-ignore
+      options[opt] = requestData[opt]
+    }
+  }
+
+  // Return the mapped options along with selected services
+  // @ts-ignore
+  return { options, llmServices, transcriptServices }
 }

@@ -310,17 +310,22 @@ npm run as -- \
 
 ### Deepgram
 
-Create a `.env` file and set API key as demonstrated in `.env.example` for `DEEPGRAM_API_KEY`.
-
 ```bash
 npm run as -- \
   --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
   --deepgram
 ```
 
-### Assembly
+Include Deepgram API key directly in CLI command instead of in `.env` file:
 
-Create a `.env` file and set API key as demonstrated in `.env.example` for `ASSEMBLY_API_KEY`.
+```bash
+npm run as -- \
+  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
+  --deepgram \
+  --deepgramApiKey ""
+```
+
+### Assembly
 
 ```bash
 npm run as -- \
@@ -335,6 +340,15 @@ npm run as -- \
   --video "https://ajc.pics/audio/fsjam-short.mp3" \
   --assembly \
   --speakerLabels
+```
+
+Include Assembly API key directly in CLI command instead of in `.env` file:
+
+```bash
+npm run as -- \
+  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
+  --assembly \
+  --assemblyApiKey ""
 ```
 
 ## Language Model (LLM) Options
@@ -398,12 +412,14 @@ npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --chatgpt GP
 npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --chatgpt GPT_4
 ```
 
-| Model        | Context Window | Max Output | Input Tokens | Output Tokens | Batch Input | Batch Output |
-|--------------|----------------|------------|--------------|---------------|-------------|--------------|
-| GPT-4o mini  | 128,000        | 16,384     | $0.15        | $0.60         | $0.075      | $0.30        |
-| GPT-4o       | 128,000        | 4,096      | $5           | $15           | $2.50       | $7.50        |
-| GPT-4 Turbo  | 128,000        | 4,096      | $10          | $30           | $5          | $15          |
-| GPT-4        | 8,192          | 8,192      | $30          | $60           | $15         | $30          |
+Include OpenAI API key directly in CLI command instead of in `.env` file:
+
+```bash
+npm run as -- \
+  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
+  --chatgpt \
+  --openaiApiKey ""
+```
 
 ### Anthropic Claude Models
 
@@ -420,6 +436,15 @@ npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --claude CLA
 npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --claude CLAUDE_3_HAIKU
 ```
 
+Include Anthropic API key directly in CLI command instead of in `.env` file:
+
+```bash
+npm run as -- \
+  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
+  --claude \
+  --anthropicApiKey ""
+```
+
 ### Google Gemini Models
 
 ```bash
@@ -433,6 +458,15 @@ npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --gemini GEM
 npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --gemini GEMINI_1_5_PRO
 ```
 
+Include Gemini API key directly in CLI command instead of in `.env` file:
+
+```bash
+npm run as -- \
+  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
+  --gemini \
+  --geminiApiKey ""
+```
+
 ### Cohere Command Models
 
 ```bash
@@ -444,6 +478,15 @@ Select Cohere model:
 ```bash
 npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --cohere COMMAND_R
 npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --cohere COMMAND_R_PLUS
+```
+
+Include Cohere API key directly in CLI command instead of in `.env` file:
+
+```bash
+npm run as -- \
+  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
+  --cohere \
+  --cohereApiKey ""
 ```
 
 ### Mistral Models
@@ -461,6 +504,15 @@ npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --mistral MI
 npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --mistral MISTRAL_NEMO
 ```
 
+Include Mistral API key directly in CLI command instead of in `.env` file:
+
+```bash
+npm run as -- \
+  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
+  --mistral \
+  --mistralApiKey ""
+```
+
 ### Fireworks Open Source Models
 
 ```bash
@@ -476,6 +528,15 @@ npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --fireworks 
 npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --fireworks LLAMA_3_2_3B
 npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --fireworks LLAMA_3_2_1B
 npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --fireworks QWEN_2_5_72B
+```
+
+Include Fireworks API key directly in CLI command instead of in `.env` file:
+
+```bash
+npm run as -- \
+  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
+  --fireworks \
+  --fireworksApiKey ""
 ```
 
 ### Together Open Source Models
@@ -497,6 +558,15 @@ npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --together Q
 npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --together QWEN_2_5_7B
 ```
 
+Include Together API key directly in CLI command instead of in `.env` file:
+
+```bash
+npm run as -- \
+  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
+  --together \
+  --togetherApiKey ""
+```
+
 ### Groq Open Source Models
 
 ```bash
@@ -511,6 +581,15 @@ npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --groq LLAMA
 npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --groq LLAMA_3_2_1B_PREVIEW
 npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --groq LLAMA_3_2_3B_PREVIEW
 npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --groq MIXTRAL_8X7B_32768
+```
+
+Include Groq API key directly in CLI command instead of in `.env` file:
+
+```bash
+npm run as -- \
+  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
+  --groq \
+  --groqApiKey ""
 ```
 
 ## Prompt Options

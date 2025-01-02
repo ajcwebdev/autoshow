@@ -7,15 +7,11 @@
  * @packageDocumentation
  */
 
-import { exec, execFile } from 'node:child_process'
-import { promisify } from 'node:util'
 import { readFile, access } from 'node:fs/promises'
 import { fileTypeFromBuffer } from 'file-type'
 import { l, err } from '../utils/logging'
+import { execPromise, execFilePromise } from '../utils/globals'
 import type { SupportedFileType, ProcessingOptions } from '../types/process'
-
-const execFilePromise = promisify(execFile)
-const execPromise = promisify(exec)
 
 /**
  * Downloads or processes audio content from various sources and converts it to a standardized WAV format.

@@ -29,6 +29,7 @@
     "info": "npm run as -- --info",
     "serve": "npm run tsx:base -- --watch --experimental-sqlite src/server/index.ts",
     "test-server-local": "npm run tsx:base -- src/server/tests/fetch-local.ts",
+    "ts": "npm run tsx:base -- src/server/tests/fetch-local.ts",
     "test-server-all": "npm run tsx:base -- src/server/tests/fetch-all.ts",
     "t": "npm run test-local",
     "bench-tiny": "tsx --test test/bench/tiny.test.ts",

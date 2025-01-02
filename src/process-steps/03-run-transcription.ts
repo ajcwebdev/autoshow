@@ -12,7 +12,7 @@ import { callDeepgram } from '../transcription/deepgram'
 import { callAssembly } from '../transcription/assembly'
 import { l } from '../utils/logging'
 import type { ProcessingOptions } from '../types/process'
-import type { TranscriptServices, WhisperTranscriptServices } from '../types/transcription'
+import type { TranscriptServices } from '../types/transcription'
 
 /**
  * Orchestrates the transcription process using the specified service.
@@ -93,9 +93,8 @@ export async function runTranscription(
       break
 
     case 'whisper':
-    case 'whisperDocker':
-      // Use the unified callWhisper function for all Whisper options
-      await callWhisper(options, finalPath, transcriptServices as WhisperTranscriptServices)
+      // Local transcription with whisper.cpp
+      await callWhisper(options, finalPath)
       break
 
     default:

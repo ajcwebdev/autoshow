@@ -1,34 +1,42 @@
 // src/server/index.ts
 
+import { env } from 'node:process'
 import Fastify from 'fastify'
 import cors from '@fastify/cors'
 import { handleProcessRequest } from './routes/process'
 import { getShowNotes } from './routes/show-notes'
 import { getShowNote } from './routes/show-note'
 import { l } from '../../src/utils/logging'
-import { env } from 'node:process'
+import { envVarsServerMap } from '../../src/utils/globals'
+import type { RequestBody } from '../types/process'
 
 // Set server port from environment variable or default to 3000
 const port = Number(env['PORT']) || 3000
 
-// Main async function to initialize and start the server
+// Initialize Fastify instance with logging enabled and CORS middleware
 async function start() {
-  // Initialize Fastify instance with logging enabled
   const fastify = Fastify({ logger: true })
-
-  // Register CORS middleware with configuration
   await fastify.register(cors, {
-    origin: '*',                              // Allow requests from any origin
-    methods: ['GET', 'POST', 'OPTIONS'],      // Allow specified HTTP methods
-    allowedHeaders: ['Content-Type'],         // Allow Content-Type header
+    origin: '*',
+    methods: ['GET', 'POST', 'OPTIONS'],
+    allowedHeaders: ['Content-Type'],
   })
 
-  // Add global request hook that logs incoming requests
+  // Global request hook for logging timestamp, HTTP method, and requested URL for each incoming request
   fastify.addHook('onRequest', async (request) => {
-    l(
-      // Log timestamp, HTTP method and requested URL for each request
-      `\n[${new Date().toISOString()}] Received ${request.method} request for ${request.url}\n`
-    )
+    l(`\n[${new Date().toISOString()}] Received ${request.method} request for ${request.url}\n`)
+  })
+
+  fastify.addHook('preHandler', async (request) => {
+    const body = request.body as RequestBody
+    if (body) {
+      Object.entries(envVarsServerMap).forEach(([bodyKey, envKey]) => {
+        const value = (body as Record<string, string | undefined>)[bodyKey]
+        if (value) {
+          process.env[envKey] = value
+        }
+      })
+    }
   })
 
   // Register route handlers for different endpoints
@@ -36,19 +44,12 @@ async function start() {
   fastify.get('/show-notes', getShowNotes)         // GET endpoint for all show notes
   fastify.get('/show-notes/:id', getShowNote)      // GET endpoint for specific show note
 
+  // Start server, use configured port, listen on all network interfaces, and log successful start
   try {
-    // Start the server
-    await fastify.listen({
-      port,                // Use configured port
-      host: '0.0.0.0',     // Listen on all network interfaces
-    })
-
-    // Log successful server start
+    await fastify.listen({ port, host: '0.0.0.0' })
     l(`\nServer running at http://localhost:${port}\n`)
   } catch (err) {
-    // Log any startup errors
     fastify.log.error(err)
-    // Exit process with error code
     process.exit(1)
   }
 }

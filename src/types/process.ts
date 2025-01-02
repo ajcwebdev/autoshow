@@ -3,6 +3,33 @@
 import type { TranscriptServices, WhisperModelType } from './transcription'
 import type { LLMServices } from './llms'
 
+/**
+ * @description Pre-handler to override environment variables from request body if provided.
+ * This ensures that API keys can be passed in the request and used for the session,
+ * even if they're not set in the .env file.
+ */
+export interface RequestBody {
+  openaiApiKey?: string
+  anthropicApiKey?: string
+  deepgramApiKey?: string
+  assemblyApiKey?: string
+  geminiApiKey?: string
+  cohereApiKey?: string
+  mistralApiKey?: string
+  grokApiKey?: string
+  togetherApiKey?: string
+  fireworksApiKey?: string
+  groqApiKey?: string
+}
+
+// Define types for the request body
+export interface ProcessRequestBody {
+  type: 'video' | 'urls' | 'rss' | 'playlist' | 'file' | 'channel'
+  url?: string
+  filePath?: string
+  [key: string]: any // Allow for additional properties from validateRequest
+}
+
 // Define valid action types for processing
 export type ValidAction = 'video' | 'playlist' | 'channel' | 'urls' | 'file' | 'rss'
 
@@ -108,6 +135,39 @@ export type ProcessingOptions = {
 
   /** Number of previous days to check for RSS items to process. */
   lastDays?: number
+
+  /** Provide override for OpenAI API key. */
+  openaiApiKey?: string
+
+  /** Provide override for Anthropic API key. */
+  anthropicApiKey?: string
+
+  /** Provide override for Deepgram API key. */
+  deepgramApiKey?: string
+
+  /** Provide override for AssemblyAI API key. */
+  assemblyApiKey?: string
+
+  /** Provide override for Gemini API key. */
+  geminiApiKey?: string
+
+  /** Provide override for Cohere API key. */
+  cohereApiKey?: string
+
+  /** Provide override for Mistral API key. */
+  mistralApiKey?: string
+
+  /** Provide override for GROK API key. */
+  grokApiKey?: string
+
+  /** Provide override for Together API key. */
+  togetherApiKey?: string
+
+  /** Provide override for Fireworks API key. */
+  fireworksApiKey?: string
+
+  /** Provide override for Groq API key. */
+  groqApiKey?: string
 }
 
 // Handler and Processing Types

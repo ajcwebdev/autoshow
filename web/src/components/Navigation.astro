@@ -13,7 +13,7 @@ const url = new URL(Astro.request.url)
       </a>
       <nav aria-label="Main menu" id="navigation-menu">
         <ul>
-          {
+          <!-- {
             menuLinks.map((link) => (
               <li>
                 <a aria-current={url.pathname === link.path ? "page" : false} data-astro-prefetch href={link.path}>
@@ -21,7 +21,9 @@ const url = new URL(Astro.request.url)
                 </a>
               </li>
             ))
-          }
+          } -->
+          <a href="/">Home</a>
+            <a href="/app">App</a>
         </ul>
       </nav>
     </div>

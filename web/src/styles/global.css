@@ -42,7 +42,7 @@
    and apply our dark theme background and text color.
 */
 html, body {
-  margin: 0;               /* Remove default browser margin */
+  margin: 24;               /* Remove default browser margin */
   padding: 0;              /* Remove default browser padding */
   font-family: var(--font-family); /* Apply chosen font family */
   font-size: var(--font-size-base);/* Base font size for scaling text */
@@ -335,4 +335,15 @@ input[type="checkbox"]:focus {
   .form-group .checkbox-group div {
     width: 100%; /* Single column layout for checkboxes on narrow screens */
   }
+}
+.checkbox-group {
+  display: flex; 
+  flex-wrap: wrap; 
+  gap: 10px; 
+  align-items: center; 
+}
+.checkbox-group div {
+  display: flex; 
+  align-items: center; 
+  gap: 5px; 
 }

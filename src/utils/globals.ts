@@ -96,7 +96,6 @@ export const PROCESS_CHOICES = [
 
 export const TRANSCRIPT_SERVICES: Record<string, TranscriptServiceConfig> = {
   WHISPER: { name: 'Whisper.cpp', value: 'whisper', isWhisper: true },
-  WHISPER_DOCKER: { name: 'Whisper.cpp (Docker)', value: 'whisperDocker', isWhisper: true },
   DEEPGRAM: { name: 'Deepgram', value: 'deepgram' },
   ASSEMBLY: { name: 'AssemblyAI', value: 'assembly' },
 } as const
@@ -128,6 +127,28 @@ export const WHISPER_MODELS: Record<WhisperModelType, string> = {
   'large-v3-turbo': 'ggml-large-v3-turbo.bin',
   'turbo': 'ggml-large-v3-turbo.bin'
 }
+
+// Define lists of supported options
+export const llmOptions = [
+  'chatgpt',
+  'claude',
+  'cohere',
+  'mistral',
+  'ollama',
+  'gemini',
+  'fireworks',
+  'together',
+  'groq',
+] as const
+
+export const transcriptOptions = [
+  'whisper',
+  'whisperDocker',
+  'deepgram',
+  'assembly',
+] as const
+
+export const otherOptions = ['speakerLabels', 'prompt', 'noCleanUp', 'order', 'skip', 'info', 'item']
 
 export const LLM_SERVICES: Record<string, LLMServiceConfig> = {
   SKIP: { name: 'Skip LLM Processing', value: null },

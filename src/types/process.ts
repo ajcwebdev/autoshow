@@ -3,6 +3,14 @@
 import type { TranscriptServices, WhisperModelType } from './transcription'
 import type { LLMServices } from './llms'
 
+// Define types for the request body
+export interface ProcessRequestBody {
+  type: 'video' | 'urls' | 'rss' | 'playlist' | 'file' | 'channel'
+  url?: string
+  filePath?: string
+  [key: string]: any // Allow for additional properties from validateRequest
+}
+
 // Define valid action types for processing
 export type ValidAction = 'video' | 'playlist' | 'channel' | 'urls' | 'file' | 'rss'
 

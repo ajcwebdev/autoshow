@@ -4,7 +4,7 @@
 /**
  * Transcription services that can be used in the application.
  */
-export type TranscriptServices = 'whisper' | 'whisperDocker' | 'deepgram' | 'assembly'
+export type TranscriptServices = 'whisper' | 'deepgram' | 'assembly'
 
 export type TranscriptServiceConfig = {
   name: string
@@ -16,11 +16,6 @@ export type TranscriptServiceConfig = {
  * Available Whisper model types with varying sizes and capabilities.
  */
 export type WhisperModelType = 'tiny' | 'tiny.en' | 'base' | 'base.en' | 'small' | 'small.en' | 'medium' | 'medium.en' | 'large-v1' | 'large-v2' | 'large-v3-turbo' | 'turbo'
-
-/**
- * Whisper-specific transcription services.
- */
-export type WhisperTranscriptServices = 'whisper' | 'whisperDocker'
 
 /**
  * Function signature for the runner functions

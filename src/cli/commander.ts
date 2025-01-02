@@ -14,32 +14,13 @@
 import { argv, exit } from 'node:process'
 import { fileURLToPath } from 'node:url'
 import { Command } from 'commander'
-import { processVideo } from '../process-commands/video'
-import { processPlaylist } from '../process-commands/playlist'
-import { processChannel } from '../process-commands/channel'
-import { processURLs } from '../process-commands/urls'
-import { processFile } from '../process-commands/file'
-import { processRSS } from '../process-commands/rss'
 import { generatePrompt } from '../process-steps/04-select-prompt'
-import { validateOption, isValidAction, validateRSSAction } from '../utils/validate-option'
-import { ACTION_OPTIONS, LLM_OPTIONS, TRANSCRIPT_OPTIONS } from '../utils/globals'
+import { validateAction, validateLLM, validateTranscription, processAction } from '../utils/validate-option'
 import { l, err, logCompletionSeparator } from '../utils/logging'
-import type { ProcessingOptions, HandlerFunction, ValidAction } from '../types/process'
-import type { TranscriptServices } from '../types/transcription'
-import type { LLMServices } from '../types/llms'
+import type { ProcessingOptions } from '../types/process'
 
 // Initialize the command-line interface using Commander.js
 const program = new Command()
-
-// Map each action to its corresponding handler function
-export const PROCESS_HANDLERS: Record<ValidAction, HandlerFunction> = {
-  video: processVideo,
-  playlist: processPlaylist,
-  channel: processChannel,
-  urls: processURLs,
-  file: processFile,
-  rss: processRSS,
-}
 
 /**
  * Defines the command-line interface options and descriptions.
@@ -108,71 +89,33 @@ program
  * @param options - The command-line options provided by the user.
  */
 program.action(async (options: ProcessingOptions) => {
-  // Log received options for debugging purposes
+  // Log options for debugging
   l.opts(`Options received at beginning of command:\n`)
   l.opts(JSON.stringify(options, null, 2))
   l.opts(``)
 
+  // If the user just wants to print prompts, do that and exit
   if (options.printPrompt) {
     const prompt = await generatePrompt(options.printPrompt)
     console.log(prompt)
     exit(0)
   }
 
-  // Ensure options.item is always an array if provided via command line
-  if (options.item && !Array.isArray(options.item)) {
-    options.item = [options.item]
-  }
+  // 1) Validate which action was chosen
+  const action = validateAction(options)
 
-  // Ensure options.rss is always an array, in case it's a single string
-  if (typeof options.rss === 'string') {
-    options.rss = [options.rss]
-  }
+  // 2) Validate LLM
+  const llmServices = validateLLM(options)
 
-  // Extract the action values from ACTION_OPTIONS for validation
-  const actionValues = ACTION_OPTIONS.map((opt) => opt.name)
-  // Validate and get single options for action, LLM, and transcription
-  const action = validateOption(actionValues, options, 'input option')
-  const llmKey = validateOption(LLM_OPTIONS as string[], options, 'LLM option') as LLMServices | undefined
-  const llmServices = llmKey as LLMServices | undefined
-  const transcriptKey = validateOption(TRANSCRIPT_OPTIONS, options, 'transcription option')
-  const transcriptServices: TranscriptServices = (transcriptKey as TranscriptServices) || 'whisper'
-
-  // Set default Whisper model to 'large-v3-turbo' if whisper is selected but no model specified
-  if (transcriptServices === 'whisper' && !options.whisper) {
-    options.whisper = 'large-v3-turbo'
-  }
-
-  // Validate that the action is one of the valid actions
-  if (!isValidAction(action)) {
-    err(`Invalid or missing action`)
-    exit(1)
-  }
+  // 3) Validate transcription
+  const transcriptServices = validateTranscription(options)
 
   try {
-    // Get the handler function for the selected action
-    const handler = PROCESS_HANDLERS[action]
-
-    if (action === 'rss') {
-      await validateRSSAction(options, handler, llmServices, transcriptServices)
-    } else {
-      // Get input value with proper typing
-      const input = options[action]
-
-      // Ensure we have a valid input value
-      if (!input || typeof input !== 'string') {
-        throw new Error(`No valid input provided for ${action} processing`)
-      }
-
-      // Process the content using the selected handler
-      await handler(options, input, llmServices, transcriptServices)
-    }
-
-    // Log completion message and exit
+    // Helper to handle all action processing logic. If successful, log and exit.
+    await processAction(action, options, llmServices, transcriptServices)
     logCompletionSeparator(action)
     exit(0)
   } catch (error) {
-    // Handle errors during processing
     err(`Error processing ${action}:`, (error as Error).message)
     exit(1)
   }

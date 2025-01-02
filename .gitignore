@@ -14,3 +14,4 @@ show_notes.db
 ollama.log
 embeddings.db
 embeddings.json
+llm-txt

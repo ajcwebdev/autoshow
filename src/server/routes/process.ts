@@ -1,27 +1,15 @@
 // src/server/routes/process.ts
 
-import type { FastifyRequest, FastifyReply } from 'fastify'
 import { processVideo } from '../../process-commands/video'
 import { processURLs } from '../../process-commands/urls'
 import { processRSS } from '../../process-commands/rss'
 import { processPlaylist } from '../../process-commands/playlist'
 import { processChannel } from '../../process-commands/channel'
 import { processFile } from '../../process-commands/file'
-import { reqToOpts } from '../utils/req-to-opts'
+import { validateRequest, isValidProcessType } from '../../utils/validate-option'
 import { l, err } from '../../../src/utils/logging'
-
-// Define types for the request body
-interface ProcessRequestBody {
-  type: 'video' | 'urls' | 'rss' | 'playlist' | 'file' | 'channel'
-  url?: string
-  filePath?: string
-  [key: string]: any // Allow for additional properties from reqToOpts
-}
-
-// Type guard to check if a string is a valid process type
-function isValidProcessType(type: string): type is ProcessRequestBody['type'] {
-  return ['video', 'urls', 'rss', 'playlist', 'file', 'channel'].includes(type)
-}
+import type { FastifyRequest, FastifyReply } from 'fastify'
+import type { ProcessRequestBody } from '../../types/process'
 
 // Handler for the /process route
 export const handleProcessRequest = async (
@@ -44,7 +32,7 @@ export const handleProcessRequest = async (
     }
 
     // Map request data to processing options
-    const { options, llmServices, transcriptServices } = reqToOpts(requestData)
+    const { options, llmServices, transcriptServices } = validateRequest(requestData)
 
     // Process based on type
     switch (type) {

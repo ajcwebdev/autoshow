@@ -20,12 +20,12 @@ import type { LLMFunction, OllamaModelType, OllamaResponse, OllamaTagsResponse }
 export const callOllama: LLMFunction = async (
   promptAndTranscript: string,
   tempPath: string,
-  model: string | OllamaModelType = 'LLAMA_3_2_3B'
+  model: string | OllamaModelType = 'LLAMA_3_2_1B'
 ) => {
   try {
     // Get the model configuration and ID
-    const modelKey = typeof model === 'string' ? model : 'LLAMA_3_2_3B'
-    const modelConfig = OLLAMA_MODELS[modelKey as OllamaModelType] || OLLAMA_MODELS.LLAMA_3_2_3B
+    const modelKey = typeof model === 'string' ? model : 'LLAMA_3_2_1B'
+    const modelConfig = OLLAMA_MODELS[modelKey as OllamaModelType] || OLLAMA_MODELS.LLAMA_3_2_1B
     const ollamaModelName = modelConfig.modelId
 
     l.wait(`    - modelName: ${modelKey}\n    - ollamaModelName: ${ollamaModelName}`)

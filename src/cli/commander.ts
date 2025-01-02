@@ -67,7 +67,6 @@ program
   .option('--info', 'Skip processing and write metadata to JSON objects (supports --urls, --rss, --playlist, --channel)')
   // Transcription service options
   .option('--whisper [model]', 'Use Whisper.cpp for transcription with optional model specification')
-  .option('--whisperDocker [model]', 'Use Whisper.cpp in Docker for transcription with optional model specification')
   .option('--deepgram', 'Use Deepgram for transcription')
   .option('--assembly', 'Use AssemblyAI for transcription')
   .option('--speakerLabels', 'Use speaker labels for AssemblyAI transcription')

@@ -19,7 +19,7 @@ const commands: Command[] = [
     newName: '01_BASE_WHISPERCPP.md'
   },
   {
-    cmd: 'npm run as -- --file "content/audio.mp3" --whisperDocker base',
+    cmd: 'npm run docker-cli -- --file "content/audio.mp3" --whisper base',
     expectedFile: 'audio-prompt.md',
     newName: '02_BASE_WHISPERCPP_DOCKER.md'
   },

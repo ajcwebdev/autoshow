@@ -66,14 +66,19 @@ FROM base
 COPY --from=ollama /bin/ollama /usr/local/bin/ollama
 COPY --from=ollama /root/.ollama /root/.ollama
 
-# Create content directory
-RUN mkdir -p content
+ENV WHISPER_FORCE_CPU=1
+ENV WHISPER_NO_GPU=1
 
-# Set proper permissions
-# RUN chown -R node:node /usr/src/app
+# Create content directory first
+RUN mkdir -p /usr/src/app/content
 
-# Use non-root user
-# USER node
+# Set proper permissions for the entire app directory including content
+RUN chown -R node:node /usr/src/app && \
+    chmod -R 755 /usr/src/app && \
+    chmod 777 /usr/src/app/content  # Ensure content dir is fully writable
+
+# Switch to non-root user
+USER node
 
 EXPOSE 3000
 ENTRYPOINT ["/usr/src/app/docker-entrypoint.sh"]

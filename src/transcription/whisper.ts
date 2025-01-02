@@ -82,11 +82,11 @@ const runWhisperCpp: WhisperRunner = async (finalPath, whisperModel) => {
 
   // Run whisper.cpp on the WAV file
   await execPromise(
-    `./whisper.cpp/build/bin/whisper-cli ` +
+    `./whisper.cpp/build/bin/whisper-cli --no-gpu ` +
     `-m "whisper.cpp/models/${modelGGMLName}" ` +
     `-f "${finalPath}.wav" ` +
-    `-of "${finalPath}" ` +
-    `--output-lrc`
+    `-of "${finalPath}" ` +  // Output file base name
+    `--output-lrc`        // Make sure there is a space before the next flag
   )
   l.success(`\n  Transcript LRC file successfully created:\n    - ${finalPath}.lrc`)
 

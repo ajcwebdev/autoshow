@@ -8,7 +8,7 @@ import { processChannel } from '../process-commands/channel'
 import { processURLs } from '../process-commands/urls'
 import { processFile } from '../process-commands/file'
 import { processRSS } from '../process-commands/rss'
-import { ACTION_OPTIONS, LLM_OPTIONS, TRANSCRIPT_OPTIONS, llmOptions, transcriptOptions, otherOptions } from '../utils/globals'
+import { ACTION_OPTIONS, LLM_OPTIONS, TRANSCRIPT_OPTIONS, otherOptions } from '../utils/globals'
 import type { ProcessingOptions, ValidAction, HandlerFunction, ProcessRequestBody } from '../types/process'
 import type { TranscriptServices } from '../types/transcription'
 import type { LLMServices } from '../types/llms'
@@ -314,7 +314,7 @@ export function validateRequest(requestData: any): {
   let transcriptServices: TranscriptServices | undefined
 
   // Check if a valid LLM service is provided
-  if (requestData.llm && llmOptions.includes(requestData.llm)) {
+  if (requestData.llm && LLM_OPTIONS.includes(requestData.llm)) {
     // Set the LLM service
     llmServices = requestData.llm as LLMServices
     // Set the LLM model or default to true
@@ -322,7 +322,7 @@ export function validateRequest(requestData: any): {
   }
 
   // Determine transcript service or default to 'whisper' if not specified
-  transcriptServices = transcriptOptions.includes(requestData.transcriptServices)
+  transcriptServices = TRANSCRIPT_OPTIONS.includes(requestData.transcriptServices)
     ? (requestData.transcriptServices as TranscriptServices)
     : 'whisper'
 

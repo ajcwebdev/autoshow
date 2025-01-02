@@ -3,7 +3,7 @@
 import { writeFile } from 'node:fs/promises'
 import { env } from 'node:process'
 import { CohereClient } from 'cohere-ai'
-import { COHERE_MODELS } from '../utils/globals'
+import { COHERE_MODELS } from '../utils/llm-models'
 import { err, logAPIResults } from '../utils/logging'
 import type { LLMFunction, CohereModelType } from '../types/llms'
 

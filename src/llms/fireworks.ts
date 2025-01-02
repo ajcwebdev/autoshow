@@ -2,7 +2,7 @@
 
 import { writeFile } from 'node:fs/promises'
 import { env } from 'node:process'
-import { FIREWORKS_MODELS } from '../utils/globals'
+import { FIREWORKS_MODELS } from '../utils/llm-models'
 import { err, logAPIResults } from '../utils/logging'
 import type { LLMFunction, FireworksModelType, FireworksResponse } from '../types/llms'
 

@@ -69,6 +69,9 @@ COPY --from=ollama /root/.ollama /root/.ollama
 # Create content directory
 RUN mkdir -p content
 
+ENV WHISPER_FORCE_CPU=1
+ENV WHISPER_NO_GPU=1
+
 # Set proper permissions
 # RUN chown -R node:node /usr/src/app
 

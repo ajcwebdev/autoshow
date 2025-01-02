@@ -77,4 +77,4 @@ RUN mkdir -p content
 
 EXPOSE 3000
 ENTRYPOINT ["/usr/src/app/docker-entrypoint.sh"]
-CMD ["--help"]
+CMD ["serve"]

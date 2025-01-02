@@ -1,12 +1,6 @@
 #!/bin/sh
 # .github/docker-entrypoint.sh
 
-# Check if running from correct directory structure
-if [ ! -d "/usr/src/app/content" ]; then
-    echo "Error: content directory not mounted. Did you run from autoshow root with proper volume mount?"
-    exit 1
-fi
-
 # If first argument is "serve", then start the server.
 if [ "$1" = "serve" ]; then
     echo "Starting Autoshow server..."

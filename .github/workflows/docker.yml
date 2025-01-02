@@ -38,8 +38,8 @@ jobs:
           file: .github/Dockerfile
           push: true
           tags: |
-            yourDockerHubUser/autoshow:latest
-            yourDockerHubUser/autoshow:${{ github.sha }}
+            ajcwebdev/autoshow:latest
+            ajcwebdev/autoshow:${{ github.sha }}
 
       - name: Build and push to GHCR
         uses: docker/build-push-action@v3
@@ -48,5 +48,5 @@ jobs:
           file: .github/Dockerfile
           push: true
           tags: |
-            ghcr.io/yourGitHubUser/autoshow:latest
-            ghcr.io/yourGitHubUser/autoshow:${{ github.sha }}
+            ghcr.io/ajcwebdev/autoshow:latest
+            ghcr.io/ajcwebdev/autoshow:${{ github.sha }}

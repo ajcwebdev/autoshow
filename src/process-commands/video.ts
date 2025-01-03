@@ -11,7 +11,7 @@ import { runTranscription } from '../process-steps/03-run-transcription'
 import { runLLM } from '../process-steps/05-run-llm'
 import { cleanUpFiles } from '../process-steps/06-clean-up-files'
 import { l, err } from '../utils/logging'
-import { readFile } from 'fs/promises'
+import { readFile, writeFile } from 'fs/promises'
 import { insertShowNote } from '../server/db'
 import type { ProcessingOptions } from '../types/process'
 import type { TranscriptServices } from '../types/transcription'
@@ -82,6 +82,11 @@ export async function processVideo(
       transcript,
       llmOutput
     )
+
+    // Write final front matter to a file
+    await writeFile(`${finalPath}.md`, frontMatter)
+    l.dim(frontMatter)
+    l.success(`  Front matter successfully created and saved:\n    - ${finalPath}.md`)
 
     // Optional cleanup
     if (!options.noCleanUp) {

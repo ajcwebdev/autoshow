@@ -23,7 +23,7 @@ export type WhisperModelType = 'tiny' | 'tiny.en' | 'base' | 'base.en' | 'small'
 export type WhisperRunner = (
   finalPath: string,
   whisperModel: string
-) => Promise<void>
+) => Promise<string>
 
 /**
  * Response structure from Deepgram API.

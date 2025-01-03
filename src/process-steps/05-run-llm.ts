@@ -58,41 +58,9 @@ export const LLM_FUNCTIONS: LLMFunctions = {
  * 
  * @param {string} frontMatter - YAML front matter content to include in the output
  * 
- * @param {LLMServices} [llmServices] - The LLM service to use:
- *   - ollama: Ollama for local inference
- *   - chatgpt: OpenAI's ChatGPT
- *   - claude: Anthropic's Claude
- *   - gemini: Google's Gemini
- *   - cohere: Cohere
- *   - mistral: Mistral AI
- *   - fireworks: Fireworks AI
- *   - together: Together AI
- *   - groq: Groq
+ * @param {LLMServices} [llmServices] - The LLM service to use
  * 
  * @returns {Promise<string>} Resolves with the LLM output, or an empty string if no LLM is selected
- * 
- * @throws {Error} If:
- *   - Transcript file is missing or unreadable
- *   - Invalid LLM service is specified
- *   - LLM processing fails after retries
- *   - File operations fail
- * 
- * @example
- * // Process with Ollama
- * const llmOutput = await runLLM(
- *   { prompt: ['summary', 'highlights'], ollama: 'LLAMA_3_2_1B' },
- *   'content/my-video',
- *   '---\ntitle: My Video\n---',
- *   'chatgpt'
- * )
- * 
- * @example
- * // Save prompt and transcript without LLM processing
- * const llmOutput = await runLLM(
- *   { prompt: ['summary'] },
- *   'content/my-video',
- *   '---\ntitle: My Video\n---'
- * )
  */
 export async function runLLM(
   options: ProcessingOptions,
@@ -100,19 +68,21 @@ export async function runLLM(
   frontMatter: string,
   llmServices?: LLMServices
 ): Promise<string> {
-  l.step(`\nStep 4 - Running LLM processing on transcript...\n`)
+  l.wait('\n  runLLM called with arguments:\n')
+  l.wait(`    - finalPath: ${finalPath}`)
+  l.wait(`    - llmServices: ${llmServices}`)
 
   try {
-    // Read and format the transcript
+    l.wait(`\n  Reading transcript from file:\n    - ${finalPath}.txt`)
     const tempTranscript = await readFile(`${finalPath}.txt`, 'utf8')
     const transcript = `## Transcript\n\n${tempTranscript}`
 
-    // Generate and combine prompt with transcript
+    l.wait('\n  Generating prompt text using generatePrompt...')
     const prompt = await generatePrompt(options.prompt, options.customPrompt)
     const promptAndTranscript = `${prompt}${transcript}`
 
     if (llmServices) {
-      l.wait(`  Preparing to process with ${llmServices} Language Model...\n`)
+      l.wait(`\n  Preparing to process with '${llmServices}' Language Model...\n`)
 
       // Get the appropriate LLM handler function
       const llmFunction: LLMFunction = LLM_FUNCTIONS[llmServices]
@@ -120,51 +90,53 @@ export async function runLLM(
         throw new Error(`Invalid LLM option: ${llmServices}`)
       }
 
-      // Set up retry logic
       const maxRetries = 5
-      const delayBetweenRetries = 10000 // 10 seconds in milliseconds
+      const delayBetweenRetries = 10000 // 10 seconds
       let attempt = 0
       const tempPath = `${finalPath}-${llmServices}-temp.md`
 
       while (attempt < maxRetries) {
         try {
           attempt++
-          l.wait(`  Attempt ${attempt} - Processing with ${llmServices} Language Model...\n`)
-          // Process content with selected LLM
+          l.wait(`  Attempt ${attempt} - Processing with ${llmServices}...\n`)
           await llmFunction(promptAndTranscript, tempPath, options[llmServices])
-          // If successful, break out of the loop
+          l.wait(`\n  LLM call to '${llmServices}' completed successfully on attempt ${attempt}.`)
           break
         } catch (error) {
+          err(`  Attempt ${attempt} failed: ${(error as Error).message}`)
           if (attempt >= maxRetries) {
-            err(`  Max retries reached. Unable to process with ${llmServices}.`)
+            err(`  Max retries (${maxRetries}) reached. Aborting LLM processing.`)
             throw error
           }
-          err(`  Attempt ${attempt} failed with error: ${(error as Error).message}`)
           l.wait(`  Retrying in ${delayBetweenRetries / 1000} seconds...`)
-          await new Promise(resolve => setTimeout(resolve, delayBetweenRetries))
+          await new Promise((resolve) => setTimeout(resolve, delayBetweenRetries))
         }
       }
 
-      l.success(`\n  LLM processing completed successfully after ${attempt} attempt(s).\n`)
+      l.wait(`\n  LLM processing completed successfully after ${attempt} attempt(s).\n`)
 
-      // Combine results with front matter and original transcript
+      l.wait(`\n  Reading LLM output from file:\n    - ${tempPath}`)
       const showNotes = await readFile(tempPath, 'utf8')
-      await writeFile(
-        `${finalPath}-${llmServices}-shownotes.md`,
-        `${frontMatter}\n${showNotes}\n\n${transcript}`
-      )
+      const outputFilename = `${finalPath}-${llmServices}-shownotes.md`
+      l.wait(`\n  Writing combined front matter + LLM output + transcript to file:\n    - ${outputFilename}`)
+      await writeFile(outputFilename, `${frontMatter}\n${showNotes}\n\n${transcript}`)
+      l.wait(`\n  Generated show notes saved to:\n    - ${outputFilename}`)
 
-      // Clean up temporary file
+      l.wait(`\n  Cleaning up temporary file:\n    - ${tempPath}`)
       await unlink(tempPath)
-      l.success(`\n  Generated show notes saved to markdown file:\n    - ${finalPath}-${llmServices}-shownotes.md`)
+      l.wait('\n  Temporary file removed successfully.\n')
 
       // Return only the LLM's output portion
       return showNotes
     } else {
       // Handle case when no LLM is selected
-      l.wait('  No LLM selected, skipping processing...')
-      await writeFile(`${finalPath}-prompt.md`, `${frontMatter}\n${promptAndTranscript}`)
-      l.success(`\n  Prompt and transcript saved to markdown file:\n    - ${finalPath}-prompt.md`)
+      l.wait('\n  No LLM selected, skipping processing...')
+
+      const noLLMFile = `${finalPath}-prompt.md`
+      l.wait(`\n  Writing front matter + prompt + transcript to file:\n\n    - ${noLLMFile}`)
+      await writeFile(noLLMFile, `${frontMatter}\n${promptAndTranscript}`)
+      l.wait(`\n  Prompt and transcript saved to:\n    - ${noLLMFile}`)
+
       return ''
     }
   } catch (error) {

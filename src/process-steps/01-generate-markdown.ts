@@ -81,28 +81,9 @@ export async function generateMarkdown(
   options: ProcessingOptions,
   input: string | RSSItem
 ): Promise<MarkdownData> {
-  /**
-   * Sanitizes a title string for use in filenames by:
-   * - Removing special characters except spaces and hyphens
-   * - Converting spaces and underscores to hyphens
-   * - Converting to lowercase
-   * - Limiting length to 200 characters
-   * 
-   * @param {string} title - The title to sanitize.
-   * @returns {string} The sanitized title safe for use in filenames.
-   * 
-   * @example
-   * sanitizeTitle('My Video Title! (2024)') // returns 'my-video-title-2024'
-   */
-  function sanitizeTitle(title: string): string {
-    return title
-      .replace(/[^\w\s-]/g, '')      // Remove all non-word characters except spaces and hyphens
-      .trim()                        // Remove leading and trailing whitespace
-      .replace(/[\s_]+/g, '-')       // Replace spaces and underscores with hyphens
-      .replace(/-+/g, '-')           // Replace multiple hyphens with a single hyphen
-      .toLowerCase()                 // Convert to lowercase
-      .slice(0, 200)                 // Limit the length to 200 characters
-  }
+  // Log function inputs
+  l.wait('\n  generateMarkdown called with the following arguments:\n')
+  l.wait(`    - input: ${typeof input === 'string' ? input : JSON.stringify(input, null, 2)}`)
 
   let frontMatter: string[]
   let finalPath: string
@@ -134,6 +115,7 @@ export async function generateMarkdown(
           input as string,
         ])
 
+        l.wait('\n  Metadata extraction with yt-dlp completed. Parsing output...\n')
         const [
           showLink,
           videoChannel,
@@ -185,6 +167,7 @@ export async function generateMarkdown(
       break
 
     case !!options.file:
+      l.wait('\n  Generating markdown for a local file...')
       const originalFilename = basename(input as string)
       const filenameWithoutExt = originalFilename.replace(extname(originalFilename), '')
       filename = sanitizeTitle(filenameWithoutExt)
@@ -214,6 +197,7 @@ export async function generateMarkdown(
       break
 
     case !!options.rss:
+      l.wait('Generating markdown for an RSS item...')
       const item = input as RSSItem
       const {
         publishDate,
@@ -258,7 +242,8 @@ export async function generateMarkdown(
 
   // Only log front matter; do not write to file here
   l.dim(frontMatterContent)
-  l.step('\nStep 1 - Generating markdown...\n')
 
+  // Log return values
+  l.wait(`  generateMarkdown returning:\n\n    - finalPath: ${finalPath}\n    - filename: ${filename}\n`)
   return { frontMatter: frontMatterContent, finalPath, filename, metadata }
 }

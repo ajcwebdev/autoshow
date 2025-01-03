@@ -187,8 +187,7 @@ async function processItem(
     await downloadAudio(options, item.showLink, filename)
 
     // Step 3 - Transcribe audio and read transcript
-    await runTranscription(options, finalPath, transcriptServices)
-    const transcript = await readFile(`${finalPath}.txt`, 'utf-8')
+    const transcript = await runTranscription(options, finalPath, transcriptServices)
 
     // Step 4 - Select Prompt
     const promptText = await readFile(options.customPrompt || '', 'utf-8').catch(() => '')

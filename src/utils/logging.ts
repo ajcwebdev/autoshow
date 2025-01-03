@@ -176,7 +176,9 @@ function createChainableLogger(): ChainableLogger {
     step: (...args: any[]) => console.log(chalk.bold.underline(...args)),
     dim: (...args: any[]) => console.log(chalk.dim(...args)),
     success: (...args: any[]) => console.log(chalk.bold.blue(...args)),
+    warn: (...args: any[]) => console.log(chalk.bold.yellow(...args)),
     opts: (...args: any[]) => console.log(chalk.magentaBright.bold(...args)),
+    info: (...args: any[]) => console.log(chalk.magentaBright.bold(...args)),
     wait: (...args: any[]) => console.log(chalk.bold.cyan(...args)),
     final: (...args: any[]) => console.log(chalk.bold.italic(...args)),
   })
@@ -198,7 +200,9 @@ function createChainableErrorLogger(): ChainableLogger {
     step: (...args: any[]) => console.error(chalk.bold.underline(...args)),
     dim: (...args: any[]) => console.error(chalk.dim(...args)),
     success: (...args: any[]) => console.error(chalk.bold.blue(...args)),
+    warn: (...args: any[]) => console.error(chalk.bold.yellow(...args)),
     opts: (...args: any[]) => console.error(chalk.magentaBright.bold(...args)),
+    info: (...args: any[]) => console.error(chalk.magentaBright.bold(...args)),
     wait: (...args: any[]) => console.error(chalk.bold.cyan(...args)),
     final: (...args: any[]) => console.error(chalk.bold.italic(...args)),
   })

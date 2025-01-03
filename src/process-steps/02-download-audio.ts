@@ -74,13 +74,17 @@ export async function downloadAudio(
   input: string,
   filename: string
 ): Promise<string> {
+  // Log function inputs
+  l.wait('\n  downloadAudio called with the following arguments:\n')
+  l.wait(`    - input: ${input}`)
+  l.wait(`    - filename: ${filename}`)
+
   // Define output paths using the provided filename
   const finalPath = `content/${filename}`
   const outputPath = `${finalPath}.wav`
 
   // Handle online content (YouTube, RSS feeds, etc.)
   if (options.video || options.playlist || options.urls || options.rss || options.channel) {
-    l.step('\nStep 2 - Downloading URL audio...\n')
     try {
       // Download and convert audio using yt-dlp
       const { stderr } = await execFilePromise('yt-dlp', [
@@ -97,7 +101,7 @@ export async function downloadAudio(
       if (stderr) {
         err(`yt-dlp warnings: ${stderr}`)
       }
-      l.success(`  Audio downloaded successfully:\n    - ${outputPath}`)
+      l.wait(`\n  Audio downloaded successfully, output path for WAV file:\n    - ${outputPath}`)
     } catch (error) {
       err(
         `Error downloading audio: ${
@@ -109,7 +113,7 @@ export async function downloadAudio(
   }
   // Handle local file processing
   else if (options.file) {
-    l.step('\nStep 2 - Processing file audio...\n')
+    l.step('\nStep 2 - Processing local file audio via ffmpeg...\n')
     // Define supported media formats
     const supportedFormats: Set<SupportedFileType> = new Set([
       // Audio formats
@@ -119,22 +123,29 @@ export async function downloadAudio(
     ])
     try {
       // Verify file exists and is accessible
+      l.wait(`\n  Checking file access:\n    - ${input}`)
       await access(input)
+      l.wait(`\n  File ${input} is accessible. Attempting to read file data for type detection...`)
+
       // Read file and determine its type
       const buffer = await readFile(input)
+      l.wait(`\n  Successfully read file: ${buffer.length} bytes`)
+
       const fileType = await fileTypeFromBuffer(buffer)
+      l.wait(`\n  File type detection result: ${fileType?.ext ?? 'unknown'}`)
+
       // Validate file type is supported
       if (!fileType || !supportedFormats.has(fileType.ext as SupportedFileType)) {
         throw new Error(
           fileType ? `Unsupported file type: ${fileType.ext}` : 'Unable to determine file type'
         )
       }
-      l.wait(`  File type detected as ${fileType.ext}, converting to WAV...\n`)
       // Convert to standardized WAV format using ffmpeg
+      l.wait(`  Running ffmpeg command for ${input} -> ${outputPath}\n`)
       await execPromise(
         `ffmpeg -i "${input}" -ar 16000 -ac 1 -c:a pcm_s16le "${outputPath}"`
       )
-      l.success(`  File converted to WAV format successfully:\n    - ${outputPath}`)
+      l.wait(`  File converted to WAV format successfully:\n    - ${outputPath}`)
     } catch (error) {
       err(`Error processing local file: ${error instanceof Error ? (error as Error).message : String(error)}`)
       throw error
@@ -144,5 +155,8 @@ export async function downloadAudio(
   else {
     throw new Error('Invalid option provided for audio download/processing.')
   }
+
+  // Log return value
+  l.wait(`\n  downloadAudio returning:\n\n    - outputPath: ${outputPath}\n`)
   return outputPath
 }

@@ -61,9 +61,15 @@ const commands = [
   },
   {
     // Download JSON file with metadata for each item in the RSS feed.
+    cmd: 'npm run as -- --rss "https://ajcwebdev.substack.com/feed" --whisper tiny',
+    expectedFile: '2021-05-10-thoughts-on-lambda-school-layoffs-prompt.md',
+    newName: '11-rss-default.md',
+  },
+  {
+    // Download JSON file with metadata for each item in the RSS feed.
     cmd: 'npm run as -- --rss "https://ajcwebdev.substack.com/feed" --info',
     expectedFile: 'ajcwebdev_info.json',
-    newName: '11-ajcwebdev-rss-info.json',
+    newName: '12-ajcwebdev-rss-info.json',
   },
 ]
 

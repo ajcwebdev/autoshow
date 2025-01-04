@@ -8,31 +8,9 @@
 
 import { basename, extname } from 'node:path'
 import { execFilePromise } from '../utils/globals'
+import { sanitizeTitle, buildFrontMatter } from '../utils/save-info'
 import { l, err } from '../utils/logging'
 import type { MarkdownData, ProcessingOptions, RSSItem } from '../types/process'
-
-/**
- * Sanitizes a title string for use in filenames by:
- * - Removing special characters except spaces and hyphens
- * - Converting spaces and underscores to hyphens
- * - Converting to lowercase
- * - Limiting length to 200 characters
- * 
- * @param {string} title - The title to sanitize.
- * @returns {string} The sanitized title safe for use in filenames.
- * 
- * @example
- * sanitizeTitle('My Video Title! (2024)') // returns 'my-video-title-2024'
- */
-export function sanitizeTitle(title: string): string {
-  return title
-    .replace(/[^\w\s-]/g, '')      // Remove all non-word characters except spaces and hyphens
-    .trim()                        // Remove leading and trailing whitespace
-    .replace(/[\s_]+/g, '-')       // Replace spaces and underscores with hyphens
-    .replace(/-+/g, '-')           // Replace multiple hyphens with a single hyphen
-    .toLowerCase()                 // Convert to lowercase
-    .slice(0, 200)                 // Limit the length to 200 characters
-}
 
 /**
  * Generates markdown content with front matter based on the provided options and input.
@@ -86,159 +64,106 @@ export async function generateMarkdown(
   l.wait(`\n  generateMarkdown called with the following input argument:\n`)
   l.dim(`${JSON.stringify(input, null, 2)}`)
 
-  let frontMatter: string[]
-  let finalPath: string
-  let filename: string
-  let metadata: {
-    showLink: string
-    channel: string
-    channelURL: string
-    title: string
-    description: string
-    publishDate: string
-    coverImage: string
-  }
+  const { filename, metadata } = await (async () => {
+    switch (true) {
+      case !!options.video:
+      case !!options.playlist:
+      case !!options.urls:
+      case !!options.channel:
+        try {
+          l.wait('\n  Extracting metadata with yt-dlp. Parsing output...\n')
+          const { stdout } = await execFilePromise('yt-dlp', [
+            '--restrict-filenames',
+            '--print', '%(webpage_url)s',
+            '--print', '%(channel)s',
+            '--print', '%(uploader_url)s',
+            '--print', '%(title)s',
+            '--print', '%(upload_date>%Y-%m-%d)s',
+            '--print', '%(thumbnail)s',
+            input as string,
+          ])
 
-  switch (true) {
-    case !!options.video:
-    case !!options.playlist:
-    case !!options.urls:
-    case !!options.channel:
-      try {
-        l.wait('\n  Extracting metadata with yt-dlp. Parsing output...\n')
-        const { stdout } = await execFilePromise('yt-dlp', [
-          '--restrict-filenames',
-          '--print', '%(webpage_url)s',
-          '--print', '%(channel)s',
-          '--print', '%(uploader_url)s',
-          '--print', '%(title)s',
-          '--print', '%(upload_date>%Y-%m-%d)s',
-          '--print', '%(thumbnail)s',
-          input as string,
-        ])
+          const [
+            showLink = '',
+            videoChannel = '',
+            uploader_url = '',
+            videoTitle = '',
+            formattedDate = '',
+            thumbnail = '',
+          ] = stdout.trim().split('\n')
 
-        const [
+          const filenameResult = `${formattedDate}-${sanitizeTitle(videoTitle)}`
+
+          return {
+            filename: filenameResult,
+            metadata: {
+              showLink: showLink,
+              channel: videoChannel,
+              channelURL: uploader_url,
+              title: videoTitle,
+              description: '',
+              publishDate: formattedDate,
+              coverImage: thumbnail,
+            }
+          }
+        } catch (error) {
+          err(`Error extracting metadata for ${input}: ${error instanceof Error ? error.message : String(error)}`)
+          throw error
+        }
+
+      case !!options.file:
+        l.wait('\n  Generating markdown for a local file...')
+        const originalFilename = basename(input as string)
+        const filenameWithoutExt = originalFilename.replace(extname(originalFilename), '')
+        const localFilename = sanitizeTitle(filenameWithoutExt)
+
+        return {
+          filename: localFilename,
+          metadata: {
+            showLink: originalFilename,
+            channel: '',
+            channelURL: '',
+            title: originalFilename,
+            description: '',
+            publishDate: '',
+            coverImage: '',
+          }
+        }
+
+      case !!options.rss:
+        l.wait('\n  Generating markdown for an RSS item...\n')
+        const item = input as RSSItem
+        const {
+          publishDate,
+          title: rssTitle,
+          coverImage,
           showLink,
-          videoChannel,
-          uploader_url,
-          videoTitle,
-          formattedDate,
-          thumbnail,
-        ] = stdout.trim().split('\n')
+          channel: rssChannel,
+          channelURL,
+        } = item
 
-        if (
-          !showLink ||
-          !videoChannel ||
-          !uploader_url ||
-          !videoTitle ||
-          !formattedDate ||
-          !thumbnail
-        ) {
-          throw new Error('Incomplete metadata received from yt-dlp.')
+        const rssFilename = `${publishDate}-${sanitizeTitle(rssTitle)}`
+
+        return {
+          filename: rssFilename,
+          metadata: {
+            showLink: showLink,
+            channel: rssChannel,
+            channelURL: channelURL,
+            title: rssTitle,
+            description: '',
+            publishDate: publishDate,
+            coverImage: coverImage,
+          }
         }
 
-        filename = `${formattedDate}-${sanitizeTitle(videoTitle)}`
-        finalPath = `content/${filename}`
+      default:
+        throw new Error('Invalid option provided for markdown generation.')
+    }
+  })()
 
-        metadata = {
-          showLink: showLink,
-          channel: videoChannel,
-          channelURL: uploader_url,
-          title: videoTitle,
-          description: '',
-          publishDate: formattedDate,
-          coverImage: thumbnail,
-        }
-
-        frontMatter = [
-          '---',
-          `showLink: "${metadata.showLink}"`,
-          `channel: "${metadata.channel}"`,
-          `channelURL: "${metadata.channelURL}"`,
-          `title: "${metadata.title}"`,
-          `description: "${metadata.description}"`,
-          `publishDate: "${metadata.publishDate}"`,
-          `coverImage: "${metadata.coverImage}"`,
-          '---\n',
-        ]
-      } catch (error) {
-        err(`Error extracting metadata for ${input}: ${error instanceof Error ? error.message : String(error)}`)
-        throw error
-      }
-      break
-
-    case !!options.file:
-      l.wait('\n  Generating markdown for a local file...')
-      const originalFilename = basename(input as string)
-      const filenameWithoutExt = originalFilename.replace(extname(originalFilename), '')
-      filename = sanitizeTitle(filenameWithoutExt)
-      finalPath = `content/${filename}`
-
-      metadata = {
-        showLink: originalFilename,
-        channel: '',
-        channelURL: '',
-        title: originalFilename,
-        description: '',
-        publishDate: '',
-        coverImage: '',
-      }
-
-      frontMatter = [
-        '---',
-        `showLink: "${metadata.showLink}"`,
-        `channel: "${metadata.channel}"`,
-        `channelURL: "${metadata.channelURL}"`,
-        `title: "${metadata.title}"`,
-        `description: "${metadata.description}"`,
-        `publishDate: "${metadata.publishDate}"`,
-        `coverImage: "${metadata.coverImage}"`,
-        '---\n',
-      ]
-      break
-
-    case !!options.rss:
-      l.wait('\n  Generating markdown for an RSS item...\n')
-      const item = input as RSSItem
-      const {
-        publishDate,
-        title: rssTitle,
-        coverImage,
-        showLink,
-        channel: rssChannel,
-        channelURL,
-      } = item
-
-      filename = `${publishDate}-${sanitizeTitle(rssTitle)}`
-      finalPath = `content/${filename}`
-
-      metadata = {
-        showLink: showLink,
-        channel: rssChannel,
-        channelURL: channelURL,
-        title: rssTitle,
-        description: '',
-        publishDate: publishDate,
-        coverImage: coverImage,
-      }
-
-      frontMatter = [
-        '---',
-        `showLink: "${metadata.showLink}"`,
-        `channel: "${metadata.channel}"`,
-        `channelURL: "${metadata.channelURL}"`,
-        `title: "${metadata.title}"`,
-        `description: "${metadata.description}"`,
-        `publishDate: "${metadata.publishDate}"`,
-        `coverImage: "${metadata.coverImage}"`,
-        '---\n',
-      ]
-      break
-
-    default:
-      throw new Error('Invalid option provided for markdown generation.')
-  }
-
+  const finalPath = `content/${filename}`
+  const frontMatter = buildFrontMatter(metadata)
   const frontMatterContent = frontMatter.join('\n')
 
   // Log return values

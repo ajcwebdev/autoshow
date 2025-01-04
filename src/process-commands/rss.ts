@@ -5,32 +5,18 @@
  * @packageDocumentation
  */
 
-import { writeFile } from 'node:fs/promises'
-import { generateMarkdown, sanitizeTitle } from '../process-steps/01-generate-markdown'
+import { generateMarkdown } from '../process-steps/01-generate-markdown'
 import { downloadAudio } from '../process-steps/02-download-audio'
 import { runTranscription } from '../process-steps/03-run-transcription'
 import { selectPrompts } from '../process-steps/04-select-prompt'
 import { runLLM } from '../process-steps/05-run-llm'
 import { cleanUpFiles } from '../process-steps/06-clean-up-files'
+import { saveRSSFeedInfo } from '../utils/save-info'
 import { validateRSSOptions, selectItems } from '../utils/validate-option'
 import { l, err, logRSSProcessingAction, logRSSProcessingStatus, logRSSSeparator } from '../utils/logging'
 import type { ProcessingOptions, RSSItem } from '../types/process'
 import type { TranscriptServices } from '../types/transcription'
 import type { LLMServices } from '../types/llms'
-
-/**
- * Saves feed information to a JSON file.
- * 
- * @param items - Array of RSS items to save
- * @param channelTitle - The title of the RSS channel
- */
-async function saveFeedInfo(items: RSSItem[], channelTitle: string): Promise<void> {
-  const jsonContent = JSON.stringify(items, null, 2)
-  const sanitizedTitle = sanitizeTitle(channelTitle)
-  const jsonFilePath = `content/${sanitizedTitle}_info.json`
-  await writeFile(jsonFilePath, jsonContent)
-  l.wait(`RSS feed information saved to: ${jsonFilePath}`)
-}
 
 /**
  * Processes a single RSS item by generating markdown, downloading audio, transcribing,
@@ -127,7 +113,7 @@ export async function processRSS(
 
     // If --info, just save and exit
     if (options.info) {
-      await saveFeedInfo(items, channelTitle)
+      await saveRSSFeedInfo(items, channelTitle)
       return
     }
 

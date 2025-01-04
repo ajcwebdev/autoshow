@@ -168,34 +168,32 @@ export const PROCESS_HANDLERS: Record<ValidAction, HandlerFunction> = {
 }
 
 /**
- * Type guard to check if a string is a valid action.
+ * Validates either the action the user wants to run by checking their provided options,
+ * or the process type string.
  *
- * @param action - The action name to check.
- * @returns True if the given action is one of the valid actions, false otherwise.
+ * @param input - A string (when validating a process type), or a `ProcessingOptions` object (when validating an action).
+ * @param mode - A string specifying which validation logic to apply: `'action'` or `'type'`.
+ * @returns A `ValidAction` when validating an action, or a valid `ProcessRequestBody['type']` when validating a process type.
+ * @throws An error if the action or type is invalid or missing.
  */
-export function isValidAction(action: string | undefined): action is ValidAction {
-  return Boolean(action && action in PROCESS_HANDLERS)
-}
-
-// Type guard to check if a string is a valid process type
-export function isValidProcessType(type: string): type is ProcessRequestBody['type'] {
-  return ['video', 'urls', 'rss', 'playlist', 'file', 'channel'].includes(type)
-}
-
-/**
- * Validates the action the user wants to run by checking their provided options.
- * 
- * @param options - The ProcessingOptions containing user inputs and flags
- * @returns The valid action to perform
- */
-export function validateAction(options: ProcessingOptions): ValidAction {
-  const actionValues = ACTION_OPTIONS.map((opt) => opt.name)
-  const selectedAction = validateOption(actionValues, options, 'input option')
-  if (!selectedAction || !isValidAction(selectedAction)) {
-    err(`Invalid or missing action`)
-    exit(1)
+export function validateProcessAction(input: ProcessingOptions | string, mode: 'action' | 'type'): ValidAction | ProcessRequestBody['type'] {
+  if (mode === 'action') {
+    const options = input as ProcessingOptions
+    const actionValues = ACTION_OPTIONS.map((opt) => opt.name)
+    const selectedAction = validateOption(actionValues, options, 'input option')
+    if (!selectedAction || !(selectedAction in PROCESS_HANDLERS)) {
+      err(`Invalid or missing action`)
+      exit(1)
+    }
+    return selectedAction as ValidAction
+  } else {
+    const type = input as string
+    if (!['video', 'urls', 'rss', 'playlist', 'file', 'channel'].includes(type)) {
+      err(`Invalid or missing process type`)
+      exit(1)
+    }
+    return type as ValidAction
   }
-  return selectedAction
 }
 
 /**

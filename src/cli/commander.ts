@@ -15,7 +15,7 @@ import { argv, exit } from 'node:process'
 import { fileURLToPath } from 'node:url'
 import { Command } from 'commander'
 import { selectPrompts } from '../process-steps/04-select-prompt'
-import { validateAction, validateLLM, validateTranscription, processAction } from '../utils/validate-option'
+import { validateProcessAction, validateLLM, validateTranscription, processAction } from '../utils/validate-option'
 import { l, err, logCompletionSeparator } from '../utils/logging'
 import { envVarsMap } from '../utils/globals'
 import type { ProcessingOptions } from '../types/process'
@@ -120,13 +120,13 @@ program.action(async (options: ProcessingOptions) => {
 
   // If the user just wants to print prompts, do that and exit
   if (options.printPrompt) {
-    const prompt = await selectPrompts(options.printPrompt)
+    const prompt = await selectPrompts({ printPrompt: options.printPrompt })
     console.log(prompt)
     exit(0)
   }
 
   // 1) Validate which action was chosen
-  const action = validateAction(options)
+  const action = validateProcessAction(options, "action")
 
   // 2) Validate LLM
   const llmServices = validateLLM(options)

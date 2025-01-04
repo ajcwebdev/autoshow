@@ -30,8 +30,12 @@ const BASE_URL = 'https://api.assemblyai.com/v2'
  * @returns Promise<string> - The formatted transcript content
  * @throws Error if any step of the process fails (upload, transcription request, polling, formatting)
  */
-export async function callAssembly(options: ProcessingOptions, finalPath: string): Promise<string> {
-  l.wait('\n  Using AssemblyAI for transcription...')
+export async function callAssembly(
+  options: ProcessingOptions,
+  finalPath: string
+): Promise<string> {
+  l.wait('\n  Using AssemblyAI for transcription...\n')
+  l.wait(`\n  Options:\n\n${JSON.stringify(options)}`)
 
   if (!env['ASSEMBLY_API_KEY']) {
     throw new Error('ASSEMBLY_API_KEY environment variable is not set. Please set it to your AssemblyAI API key.')
@@ -69,7 +73,7 @@ export async function callAssembly(options: ProcessingOptions, finalPath: string
     if (!upload_url) {
       throw new Error('Upload URL not returned by AssemblyAI.')
     }
-    l.success('  Audio file uploaded successfully.')
+    l.wait('    - Audio file uploaded successfully.')
 
     // Step 2: Requesting the transcription
     const transcriptionOptions: AssemblyAITranscriptionOptions = {

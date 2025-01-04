@@ -254,7 +254,7 @@ export async function generatePrompt(
   customPromptPath?: string
 ): Promise<string> {
   l.step('\nStep 4 - Select Prompts\n')
-  l.wait('\n  generatePrompt called with arguments:\n')
+  l.wait('  generatePrompt called with arguments:\n')
   l.wait(`    - prompt: ${JSON.stringify(prompt)}`)
   l.wait(`    - customPromptPath: ${customPromptPath || 'none'}`)
 

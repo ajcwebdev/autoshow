@@ -6,7 +6,7 @@
  * @packageDocumentation
  */
 
-import { readFile, writeFile, unlink } from 'node:fs/promises'
+import { writeFile } from 'node:fs/promises'
 import { callOllama } from '../llms/ollama'
 import { callChatGPT } from '../llms/chatgpt'
 import { callClaude } from '../llms/claude'
@@ -17,6 +17,7 @@ import { callFireworks } from '../llms/fireworks'
 import { callTogether } from '../llms/together'
 import { callGroq } from '../llms/groq'
 import { l, err } from '../utils/logging'
+import { retryLLMCall } from '../utils/retry'
 import type { ProcessingOptions } from '../types/process'
 import type { LLMServices, LLMFunction, LLMFunctions } from '../types/llms'
 
@@ -35,27 +36,27 @@ export const LLM_FUNCTIONS: LLMFunctions = {
 
 /**
  * Processes a transcript using a specified Language Model service.
- * Handles the complete workflow from reading the transcript to generating
- * and saving the final markdown output.
+ * Handles the complete workflow from combining the transcript to generating
+ * and saving the final markdown output for multiple LLM services.
  * 
  * The function performs these steps:
- * 1. Reads the transcript file
- * 2. Uses a provided prompt (if any) combined with the transcript
- * 3. Processes the content with the selected LLM
- * 4. Saves the results with front matter and original transcript
+ * 1. Combines the transcript with a provided prompt (if any)
+ * 2. Processes the content with the selected LLM
+ * 3. Saves the results with front matter and transcript or prompt+transcript
  * 
- * If no LLM is selected, it saves the prompt/transcript without processing.
+ * If no LLM is selected, it writes the front matter, prompt, and transcript to a file.
+ * If an LLM is selected, it writes the front matter, showNotes, and transcript to a file.
  * 
  * @param {ProcessingOptions} options - Configuration options including:
  *   - prompt: Array of prompt sections to include
  *   - LLM-specific options (e.g., chatgpt, claude, etc.)
  * @param {string} finalPath - Base path for input/output files:
- *   - Input transcript: `${finalPath}.txt`
- *   - Temporary file: `${finalPath}-${llmServices}-temp.md`
- *   - Final output: `${finalPath}-${llmServices}-shownotes.md`
+ *   - Final output: `${finalPath}-${llmServices}-shownotes.md` (if LLM is used)
+ *   - Otherwise: `${finalPath}-prompt.md`
  * @param {string} frontMatter - YAML front matter content to include in the output
  * @param {LLMServices} [llmServices] - The LLM service to use
- * @param {string} [promptAndTranscript] - Optional combined prompt (instructions + transcript)
+ * @param {string} [prompt] - Optional prompt or instructions to process
+ * @param {string} [transcript] - The transcript content
  * @returns {Promise<string>} Resolves with the LLM output, or an empty string if no LLM is selected
  */
 export async function runLLM(
@@ -63,73 +64,51 @@ export async function runLLM(
   finalPath: string,
   frontMatter: string,
   llmServices?: LLMServices,
-  promptAndTranscript?: string
+  prompt?: string,
+  transcript?: string
 ): Promise<string> {
   l.step('\nStep 5 - Run LLM on Transcript with Selected Prompt\n')
-  l.wait('\n  runLLM called with arguments:\n')
+  l.wait('  runLLM called with arguments:\n')
   l.wait(`    - finalPath: ${finalPath}`)
-  l.wait(`    - llmServices: ${llmServices}`)
+  l.wait(`    - llmServices: ${llmServices}\n`)
+  l.wait(`  frontMatter:\n\n${frontMatter}`)
+  l.wait(`  prompt:\n\n${prompt}`)
+  l.wait(`  transcript:\n\n${transcript}`)
 
   try {
-    l.wait(`\n  Reading transcript from file:\n    - ${finalPath}.txt`)
-    const tempTranscript = await readFile(`${finalPath}.txt`, 'utf8')
-    const transcript = `## Transcript\n\n${tempTranscript}`
-
-    // If an external prompt was passed in, combine it here
-    const combinedPrompt = promptAndTranscript || transcript
+    const combinedPrompt = `${prompt || ''}\n${transcript || ''}`
 
     if (llmServices) {
       l.wait(`\n  Preparing to process with '${llmServices}' Language Model...\n`)
 
-      // Get the appropriate LLM handler function
       const llmFunction: LLMFunction = LLM_FUNCTIONS[llmServices]
       if (!llmFunction) {
         throw new Error(`Invalid LLM option: ${llmServices}`)
       }
 
-      const maxRetries = 5
-      const delayBetweenRetries = 10000 // 10 seconds
-      let attempt = 0
-      const tempPath = `${finalPath}-${llmServices}-temp.md`
+      let showNotes = ''
 
-      while (attempt < maxRetries) {
-        try {
-          attempt++
-          l.wait(`  Attempt ${attempt} - Processing with ${llmServices}...\n`)
-          await llmFunction(combinedPrompt, tempPath, options[llmServices])
-          l.wait(`\n  LLM call to '${llmServices}' completed successfully on attempt ${attempt}.`)
-          break
-        } catch (error) {
-          err(`  Attempt ${attempt} failed: ${(error as Error).message}`)
-          if (attempt >= maxRetries) {
-            err(`  Max retries (${maxRetries}) reached. Aborting LLM processing.`)
-            throw error
-          }
-          l.wait(`  Retrying in ${delayBetweenRetries / 1000} seconds...`)
-          await new Promise((resolve) => setTimeout(resolve, delayBetweenRetries))
-        }
-      }
+      await retryLLMCall(
+        async () => {
+          showNotes = await llmFunction(prompt || '', transcript || '', options[llmServices])
+        },
+        5,
+        5000
+      )
 
-      l.wait(`\n  LLM processing completed successfully after ${attempt} attempt(s).\n`)
+      l.wait(`\n  LLM processing completed successfully.\n`)
 
-      l.wait(`\n  Reading LLM output from file:\n    - ${tempPath}`)
-      const showNotes = await readFile(tempPath, 'utf8')
       const outputFilename = `${finalPath}-${llmServices}-shownotes.md`
       l.wait(`\n  Writing combined front matter + LLM output + transcript to file:\n    - ${outputFilename}`)
-      await writeFile(outputFilename, `${frontMatter}\n${showNotes}\n\n${transcript}`)
+      await writeFile(outputFilename, `${frontMatter}\n${showNotes}\n\n## Transcript\n\n${transcript}`)
       l.wait(`\n  Generated show notes saved to:\n    - ${outputFilename}`)
-      l.wait(`\n  Cleaning up temporary file:\n    - ${tempPath}`)
-      await unlink(tempPath)
-      l.wait('\n  Temporary file removed successfully.\n')
 
-      // Return only the LLM's output portion
       return showNotes
     } else {
-      // Handle case when no LLM is selected
       l.wait('\n  No LLM selected, skipping processing...')
 
       const noLLMFile = `${finalPath}-prompt.md`
-      l.wait(`\n  Writing front matter + prompt + transcript to file:\n\n    - ${noLLMFile}`)
+      l.wait(`\n  Writing front matter + prompt + transcript to file:\n    - ${noLLMFile}`)
       await writeFile(noLLMFile, `${frontMatter}\n${combinedPrompt}`)
       l.wait(`\n  Prompt and transcript saved to:\n    - ${noLLMFile}`)
 

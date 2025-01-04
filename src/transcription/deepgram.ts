@@ -12,16 +12,22 @@ import { writeFile, readFile } from 'node:fs/promises'
 import { env } from 'node:process'
 import { l, err } from '../utils/logging'
 import { formatDeepgramTranscript } from '../utils/format-transcript'
+import type { ProcessingOptions } from '../types/process'
 import type { DeepgramResponse } from '../types/transcription'
 
 /**
  * Main function to handle transcription using Deepgram API.
+ * @param options - Additional processing options (e.g., speaker labels)
  * @param finalPath - The base filename (without extension) for input/output files
  * @returns Promise<string> - The formatted transcript content
  * @throws Error if any step of the process fails (upload, transcription request, formatting)
  */
-export async function callDeepgram(finalPath: string): Promise<string> {
+export async function callDeepgram(
+  options: ProcessingOptions,
+  finalPath: string
+): Promise<string> {
   l.wait('\n  Using Deepgram for transcription...\n')
+  l.wait(`\n  Options:\n\n${JSON.stringify(options)}`)
 
   if (!env['DEEPGRAM_API_KEY']) {
     throw new Error('DEEPGRAM_API_KEY environment variable is not set. Please set it to your Deepgram API key.')

@@ -50,10 +50,10 @@ export type LLMOptions = {
  * @param llmModel - The specific LLM model to use (optional)
  */
 export type LLMFunction = (
-  promptAndTranscript: string,
-  tempPath: string,
+  prompt: string,
+  transcript: string,
   llmModel?: string
-) => Promise<void>
+) => Promise<string>
 
 /**
  * Mapping of LLM option keys to their corresponding functions.

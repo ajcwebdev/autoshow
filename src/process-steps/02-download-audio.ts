@@ -76,7 +76,7 @@ export async function downloadAudio(
 ): Promise<string> {
   // Log function inputs
   l.step('\nStep 2 - Download and Convert Audio\n')
-  l.wait('\n  downloadAudio called with the following arguments:\n')
+  l.wait('  downloadAudio called with the following arguments:\n')
   l.wait(`    - input: ${input}`)
   l.wait(`    - filename: ${filename}`)
 

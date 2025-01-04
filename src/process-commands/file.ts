@@ -88,11 +88,11 @@ export async function processFile(
       finalPath,
       frontMatter,
       llmServices,
-      `${generatedPrompt}\n## Transcript\n\n${transcript}`
+      generatedPrompt,
+      transcript
     )
 
     // Insert into DB
-    l.wait('\n  Inserting show note into the database...')
     insertShowNote(
       metadata.showLink ?? '',
       metadata.channel ?? '',
@@ -106,7 +106,6 @@ export async function processFile(
       transcript,
       llmOutput
     )
-    l.wait('\n  Show note inserted successfully.\n')
 
     // Step 6 - Cleanup
     if (!options.noCleanUp) {

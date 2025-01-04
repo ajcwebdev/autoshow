@@ -203,7 +203,8 @@ async function processItem(
       finalPath,
       frontMatter,
       llmServices,
-      `${generatedPrompt}\n## Transcript\n\n${transcript}`
+      generatedPrompt,
+      transcript
     )
 
     insertShowNote(

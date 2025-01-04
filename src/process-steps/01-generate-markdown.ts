@@ -83,8 +83,8 @@ export async function generateMarkdown(
 ): Promise<MarkdownData> {
   // Log function inputs
   l.step('\nStep 1 - Generate Markdown\n')
-  l.wait('\n  generateMarkdown input:\n')
-  l.wait(`\n${typeof input === 'string' ? input : JSON.stringify(input, null, 2)}\n`)
+  l.wait(`\n  generateMarkdown called with the following arguments\n`)
+  l.wait(`    - input: ${input}`)
 
   let frontMatter: string[]
   let finalPath: string
@@ -105,6 +105,7 @@ export async function generateMarkdown(
     case !!options.urls:
     case !!options.channel:
       try {
+        l.wait('\n  Extracting metadata with yt-dlp. Parsing output...\n')
         const { stdout } = await execFilePromise('yt-dlp', [
           '--restrict-filenames',
           '--print', '%(webpage_url)s',
@@ -116,7 +117,6 @@ export async function generateMarkdown(
           input as string,
         ])
 
-        l.wait('\n  Metadata extraction with yt-dlp completed. Parsing output...\n')
         const [
           showLink,
           videoChannel,
@@ -240,9 +240,6 @@ export async function generateMarkdown(
   }
 
   const frontMatterContent = frontMatter.join('\n')
-
-  // Only log front matter; do not write to file here
-  l.dim(frontMatterContent)
 
   // Log return values
   l.wait(`  generateMarkdown returning:\n\n    - finalPath: ${finalPath}\n    - filename: ${filename}\n`)

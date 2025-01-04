@@ -11,7 +11,7 @@ import { runTranscription } from '../process-steps/03-run-transcription'
 import { runLLM } from '../process-steps/05-run-llm'
 import { cleanUpFiles } from '../process-steps/06-clean-up-files'
 import { l, err } from '../utils/logging'
-import { readFile, writeFile } from 'fs/promises'
+import { readFile } from 'fs/promises'
 import { insertShowNote } from '../server/db'
 import type { ProcessingOptions } from '../types/process'
 import type { TranscriptServices } from '../types/transcription'
@@ -70,15 +70,12 @@ export async function processVideo(
         return ''
       })
     }
-    l.wait(`\n  Prompt text length: ${promptText.length}`)
 
     // Step 5 - Running LLM processing on transcript (if applicable)...
     let generatedPrompt = ''
     if (!promptText) {
-      l.wait('\n  No custom prompt text found, importing default prompt generator...')
       const defaultPrompt = await import('../process-steps/04-select-prompt')
       generatedPrompt = await defaultPrompt.generatePrompt(options.prompt, undefined)
-      l.wait(`\n  Default prompt generated (length: ${generatedPrompt.length})`)
     } else {
       generatedPrompt = promptText
     }
@@ -88,11 +85,11 @@ export async function processVideo(
       finalPath,
       frontMatter,
       llmServices,
-      `${generatedPrompt}\n## Transcript\n\n${transcript}`
+      generatedPrompt,
+      transcript
     )
 
     // Insert into DB
-    l.wait('\n  Inserting show note into the database...')
     insertShowNote(
       metadata.showLink ?? '',
       metadata.channel ?? '',
@@ -106,19 +103,13 @@ export async function processVideo(
       transcript,
       llmOutput
     )
-    l.wait('\n  Show note inserted successfully.\n')
-
-    // Write final front matter to a file
-    l.wait(`\n  Writing front matter to file:\n    - ${finalPath}.md`)
-    await writeFile(`${finalPath}.md`, frontMatter)
-    l.wait(`\n  Successfully wrote front matter to file:\n    - ${finalPath}.md\n`)
 
     // Step 6 - Cleanup
     if (!options.noCleanUp) {
       await cleanUpFiles(finalPath)
     }
 
-    l.wait('  processVideo command completed successfully.')
+    l.wait('\n  processVideo command completed successfully.')
 
     return {
       frontMatter,

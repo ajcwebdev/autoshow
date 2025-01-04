@@ -82,8 +82,9 @@ export async function generateMarkdown(
   input: string | RSSItem
 ): Promise<MarkdownData> {
   // Log function inputs
-  l.wait('\n  generateMarkdown called with the following arguments:\n')
-  l.wait(`    - input: ${typeof input === 'string' ? input : JSON.stringify(input, null, 2)}`)
+  l.step('\nStep 1 - Generate Markdown\n')
+  l.wait('\n  generateMarkdown input:\n')
+  l.wait(`\n${typeof input === 'string' ? input : JSON.stringify(input, null, 2)}\n`)
 
   let frontMatter: string[]
   let finalPath: string

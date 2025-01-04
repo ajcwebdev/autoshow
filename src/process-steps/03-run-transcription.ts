@@ -24,6 +24,7 @@ export async function runTranscription(
   transcriptServices?: TranscriptServices
 ): Promise<string> {
   // Log function call
+  l.step('\nStep 3 - Run Transcription\n')
   l.wait('\n  runTranscription called with arguments:\n')
   l.wait(`    - finalPath: ${finalPath}`)
   l.wait(`    - transcriptServices: ${transcriptServices}`)
@@ -31,26 +32,23 @@ export async function runTranscription(
   try {
     switch (transcriptServices) {
       case 'deepgram':
-        l.wait('Using Deepgram transcription service...')
         // Deepgram might write the .txt file to disk. Then read it.
         await callDeepgram(finalPath)
-        l.success('Deepgram transcription completed successfully.')
+        l.success('\nDeepgram transcription completed successfully.\n')
         // Read the transcript from file (if that's how Deepgram is implemented)
         return readFile(`${finalPath}.txt`, 'utf8')
 
       case 'assembly':
-        l.wait('Using AssemblyAI transcription service...')
         // Assembly might write the .txt file to disk. Then read it.
         await callAssembly(options, finalPath)
-        l.success('AssemblyAI transcription completed successfully.')
+        l.success('\nAssemblyAI transcription completed successfully.\n')
         // Read the transcript from file
         return readFile(`${finalPath}.txt`, 'utf8')
 
       case 'whisper':
-        l.wait('Using local Whisper transcription service...')
         // Call whisper and return the final text content in memory
         const whisperTranscript = await callWhisper(options, finalPath)
-        l.wait('\n  Whisper transcription completed successfully.')
+        l.wait('\n  Whisper transcription completed successfully.\n')
         return whisperTranscript
 
       default:

@@ -75,14 +75,11 @@ function extractFeedItems(feed: any): { items: RSSItem[], channelTitle: string }
       return audioVideoTypes.some((type) => item.enclosure.type.startsWith(type))
     })
     .map((item) => {
-      // Ensure publishDate is always a valid string
       let publishDate: string
       try {
-        // Try to parse the date, fall back to current date if invalid
         const date = item.pubDate ? new Date(item.pubDate) : new Date()
         publishDate = date.toISOString().substring(0, 10)
       } catch {
-        // If date parsing fails, use current date
         publishDate = defaultDate
       }
 
@@ -193,8 +190,6 @@ async function processItem(
     const promptText = await readFile(options.customPrompt || '', 'utf-8').catch(() => '')
 
     // Step 5 - Run LLM (optional)
-    const llmOutput = await runLLM(options, finalPath, frontMatter, llmServices)
-
     let generatedPrompt = ''
     if (!promptText) {
       const defaultPrompt = await import('../process-steps/04-select-prompt')
@@ -202,6 +197,14 @@ async function processItem(
     } else {
       generatedPrompt = promptText
     }
+
+    const llmOutput = await runLLM(
+      options,
+      finalPath,
+      frontMatter,
+      llmServices,
+      `${generatedPrompt}\n## Transcript\n\n${transcript}`
+    )
 
     insertShowNote(
       metadata.showLink ?? '',

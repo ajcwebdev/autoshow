@@ -16,7 +16,6 @@ import { callMistral } from '../llms/mistral'
 import { callFireworks } from '../llms/fireworks'
 import { callTogether } from '../llms/together'
 import { callGroq } from '../llms/groq'
-import { generatePrompt } from './04-select-prompt'
 import { l, err } from '../utils/logging'
 import type { ProcessingOptions } from '../types/process'
 import type { LLMServices, LLMFunction, LLMFunctions } from '../types/llms'
@@ -41,33 +40,32 @@ export const LLM_FUNCTIONS: LLMFunctions = {
  * 
  * The function performs these steps:
  * 1. Reads the transcript file
- * 2. Generates a prompt based on provided options
+ * 2. Uses a provided prompt (if any) combined with the transcript
  * 3. Processes the content with the selected LLM
  * 4. Saves the results with front matter and original transcript
  * 
- * If no LLM is selected, it saves the prompt and transcript without processing.
+ * If no LLM is selected, it saves the prompt/transcript without processing.
  * 
  * @param {ProcessingOptions} options - Configuration options including:
  *   - prompt: Array of prompt sections to include
  *   - LLM-specific options (e.g., chatgpt, claude, etc.)
- * 
  * @param {string} finalPath - Base path for input/output files:
  *   - Input transcript: `${finalPath}.txt`
  *   - Temporary file: `${finalPath}-${llmServices}-temp.md`
  *   - Final output: `${finalPath}-${llmServices}-shownotes.md`
- * 
  * @param {string} frontMatter - YAML front matter content to include in the output
- * 
  * @param {LLMServices} [llmServices] - The LLM service to use
- * 
+ * @param {string} [promptAndTranscript] - Optional combined prompt (instructions + transcript)
  * @returns {Promise<string>} Resolves with the LLM output, or an empty string if no LLM is selected
  */
 export async function runLLM(
   options: ProcessingOptions,
   finalPath: string,
   frontMatter: string,
-  llmServices?: LLMServices
+  llmServices?: LLMServices,
+  promptAndTranscript?: string
 ): Promise<string> {
+  l.step('\nStep 5 - Run LLM on Transcript with Selected Prompt\n')
   l.wait('\n  runLLM called with arguments:\n')
   l.wait(`    - finalPath: ${finalPath}`)
   l.wait(`    - llmServices: ${llmServices}`)
@@ -77,9 +75,8 @@ export async function runLLM(
     const tempTranscript = await readFile(`${finalPath}.txt`, 'utf8')
     const transcript = `## Transcript\n\n${tempTranscript}`
 
-    l.wait('\n  Generating prompt text using generatePrompt...')
-    const prompt = await generatePrompt(options.prompt, options.customPrompt)
-    const promptAndTranscript = `${prompt}${transcript}`
+    // If an external prompt was passed in, combine it here
+    const combinedPrompt = promptAndTranscript || transcript
 
     if (llmServices) {
       l.wait(`\n  Preparing to process with '${llmServices}' Language Model...\n`)
@@ -99,7 +96,7 @@ export async function runLLM(
         try {
           attempt++
           l.wait(`  Attempt ${attempt} - Processing with ${llmServices}...\n`)
-          await llmFunction(promptAndTranscript, tempPath, options[llmServices])
+          await llmFunction(combinedPrompt, tempPath, options[llmServices])
           l.wait(`\n  LLM call to '${llmServices}' completed successfully on attempt ${attempt}.`)
           break
         } catch (error) {
@@ -121,7 +118,6 @@ export async function runLLM(
       l.wait(`\n  Writing combined front matter + LLM output + transcript to file:\n    - ${outputFilename}`)
       await writeFile(outputFilename, `${frontMatter}\n${showNotes}\n\n${transcript}`)
       l.wait(`\n  Generated show notes saved to:\n    - ${outputFilename}`)
-
       l.wait(`\n  Cleaning up temporary file:\n    - ${tempPath}`)
       await unlink(tempPath)
       l.wait('\n  Temporary file removed successfully.\n')
@@ -134,7 +130,7 @@ export async function runLLM(
 
       const noLLMFile = `${finalPath}-prompt.md`
       l.wait(`\n  Writing front matter + prompt + transcript to file:\n\n    - ${noLLMFile}`)
-      await writeFile(noLLMFile, `${frontMatter}\n${promptAndTranscript}`)
+      await writeFile(noLLMFile, `${frontMatter}\n${combinedPrompt}`)
       l.wait(`\n  Prompt and transcript saved to:\n    - ${noLLMFile}`)
 
       return ''

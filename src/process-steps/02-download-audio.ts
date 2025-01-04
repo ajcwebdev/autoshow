@@ -75,6 +75,7 @@ export async function downloadAudio(
   filename: string
 ): Promise<string> {
   // Log function inputs
+  l.step('\nStep 2 - Download and Convert Audio\n')
   l.wait('\n  downloadAudio called with the following arguments:\n')
   l.wait(`    - input: ${input}`)
   l.wait(`    - filename: ${filename}`)
@@ -113,7 +114,6 @@ export async function downloadAudio(
   }
   // Handle local file processing
   else if (options.file) {
-    l.step('\nStep 2 - Processing local file audio via ffmpeg...\n')
     // Define supported media formats
     const supportedFormats: Set<SupportedFileType> = new Set([
       // Audio formats
@@ -141,7 +141,7 @@ export async function downloadAudio(
         )
       }
       // Convert to standardized WAV format using ffmpeg
-      l.wait(`  Running ffmpeg command for ${input} -> ${outputPath}\n`)
+      l.wait(`    - Running ffmpeg command for ${input} -> ${outputPath}\n`)
       await execPromise(
         `ffmpeg -i "${input}" -ar 16000 -ac 1 -c:a pcm_s16le "${outputPath}"`
       )
@@ -157,6 +157,6 @@ export async function downloadAudio(
   }
 
   // Log return value
-  l.wait(`\n  downloadAudio returning:\n\n    - outputPath: ${outputPath}\n`)
+  l.wait(`\n  downloadAudio returning:\n    - outputPath: ${outputPath}\n`)
   return outputPath
 }

@@ -3,11 +3,11 @@
 ## Outline
 
 - [Content and Feed Inputs](#content-and-feed-inputs)
+  - [Process Single Audio or Video File](#process-single-audio-or-video-file)
   - [Process Single Video URLs](#process-single-video-urls)
+  - [Process Multiple Videos Specified in a URLs File](#process-multiple-videos-specified-in-a-urls-file)
   - [Process Multiple Videos in YouTube Playlist](#process-multiple-videos-in-youtube-playlist)
   - [Process All Videos from a YouTube Channel](#process-all-videos-from-a-youtube-channel)
-  - [Process Multiple Videos Specified in a URLs File](#process-multiple-videos-specified-in-a-urls-file)
-  - [Process Single Audio or Video File](#process-single-audio-or-video-file)
   - [Process Podcast RSS Feed](#process-podcast-rss-feed)
 - [Transcription Options](#transcription-options)
   - [Whisper](#whisper)
@@ -30,13 +30,34 @@
 
 ## Content and Feed Inputs
 
+### Process Single Audio or Video File
+
+Run on `audio.mp3` on the `content` directory:
+
+```bash
+npm run as -- --file "content/audio.mp3"
+```
+
 ### Process Single Video URLs
 
 Run on a single YouTube video.
 
 ```bash
-npm run as -- \
-  --video "https://www.youtube.com/watch?v=MORMZXEaONk"
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk"
+```
+
+### Process Multiple Videos Specified in a URLs File
+
+Run on an arbitrary list of URLs in `example-urls.md`.
+
+```bash
+npm run as -- --urls "content/example-urls.md"
+```
+
+Run on URLs file and generate JSON info file with markdown metadata of each video:
+
+```bash
+npm run as -- --info --urls "content/example-urls.md"
 ```
 
 ### Process Multiple Videos in YouTube Playlist
@@ -44,16 +65,13 @@ npm run as -- \
 Run on multiple YouTube videos in a playlist.
 
 ```bash
-npm run as -- \
-  --playlist "https://www.youtube.com/playlist?list=PLCVnrVv4KhXPz0SoAVu8Rc1emAdGPbSbr"
+npm run as -- --playlist "https://www.youtube.com/playlist?list=PLCVnrVv4KhXPz0SoAVu8Rc1emAdGPbSbr"
 ```
 
 Run on playlist URL and generate JSON info file with markdown metadata of each video in the playlist:
 
 ```bash
-npm run as -- \
-  --playlist "https://www.youtube.com/playlist?list=PLCVnrVv4KhXPz0SoAVu8Rc1emAdGPbSbr" \
-  --info
+npm run as -- --info --playlist "https://www.youtube.com/playlist?list=PLCVnrVv4KhXPz0SoAVu8Rc1emAdGPbSbr"
 ```
 
 ### Process All Videos from a YouTube Channel
@@ -61,8 +79,7 @@ npm run as -- \
 Process all videos from a YouTube channel (both live and non-live):
 
 ```bash
-npm run as -- \
-  --channel "https://www.youtube.com/@ajcwebdev"
+npm run as -- --channel "https://www.youtube.com/@ajcwebdev"
 ```
 
 Process videos starting from the oldest instead of newest:
@@ -92,9 +109,7 @@ npm run as -- \
 Run on a YouTube channel and generate JSON info file with markdown metadata of each video:
 
 ```bash
-npm run as -- \
-  --channel "https://www.youtube.com/@ajcwebdev" \
-  --info
+npm run as -- --info --channel "https://www.youtube.com/@ajcwebdev"
 ```
 
 #### Advanced Channel Example
@@ -124,39 +139,12 @@ Here’s what’s happening in this single command:
 7. **Prompt**: Generates both a summary and short chapter descriptions (`--prompt summary shortChapters`).
 8. **No Clean Up**: Keeps any intermediary or downloaded files around (`--noCleanUp`) so you can inspect them after the run.
 
-### Process Multiple Videos Specified in a URLs File
-
-Run on an arbitrary list of URLs in `example-urls.md`.
-
-```bash
-npm run as -- \
-  --urls "content/example-urls.md"
-```
-
-Run on URLs file and generate JSON info file with markdown metadata of each video:
-
-```bash
-npm run as -- \
-  --urls "content/example-urls.md" \
-  --info
-```
-
-### Process Single Audio or Video File
-
-Run on `audio.mp3` on the `content` directory:
-
-```bash
-npm run as -- \
-  --file "content/audio.mp3"
-```
-
 ### Process Podcast RSS Feed
 
 Process RSS feed from newest to oldest (default behavior):
 
 ```bash
-npm run as -- \
-  --rss "https://ajcwebdev.substack.com/feed"
+npm run as -- --rss "https://ajcwebdev.substack.com/feed"
 ```
 
 Process RSS feed from oldest to newest:

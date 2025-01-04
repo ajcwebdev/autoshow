@@ -18,6 +18,7 @@
   "scripts": {
     "tsx:base": "tsx --env-file=.env --no-warnings --experimental-sqlite",
     "setup": "bash ./scripts/setup.sh",
+    "setup-docker": "docker build -t autoshow -f .github/Dockerfile .",
     "docker-setup": "docker build -t autoshow -f .github/Dockerfile .",
     "setup-all": "npm run setup && npm run docker-setup",
     "as": "npm run tsx:base -- src/cli/commander.ts",

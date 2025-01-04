@@ -43,8 +43,17 @@ export const handleProcessRequest = async (
           return
         }
         options.video = url
-        const content = await processVideo(options, url, llmServices, transcriptServices)
-        reply.send({ content })
+
+        // Grab the object that includes frontMatter, prompt, llmOutput, and transcript
+        const result = await processVideo(options, url, llmServices, transcriptServices)
+
+        // Return the object, if there is no LLM output, it will be ''
+        reply.send({
+          frontMatter: result.frontMatter,
+          prompt: result.prompt,
+          llmOutput: result.llmOutput,
+          transcript: result.transcript,
+        })
         break
       }
 

@@ -41,7 +41,12 @@ export async function processFile(
   filePath: string,
   llmServices?: LLMServices,
   transcriptServices?: TranscriptServices
-): Promise<void> {
+): Promise<{
+  frontMatter: string
+  prompt: string
+  llmOutput: string
+  transcript: string
+}> {
   // Log function inputs
   l.info('processFile called with the following arguments:')
   l.opts(`  - filePath: ${filePath}`)
@@ -50,33 +55,23 @@ export async function processFile(
 
   try {
     // Step 1 - Generate markdown
-    l.step('Step 1 - Generating markdown...')
     const { frontMatter, finalPath, filename, metadata } = await generateMarkdown(options, filePath)
 
     // Step 2 - Convert to WAV
-    l.step('Step 2 - Converting file to WAV...')
     await downloadAudio(options, filePath, filename)
 
     // Step 3 - Transcribe audio and read transcript
-    l.step('Step 3 - Transcribing audio...')
     const transcript = await runTranscription(options, finalPath, transcriptServices)
-    l.wait(`\n  Successfully read transcript file: ${finalPath}.txt (length: ${transcript.length} characters)`)
 
-    // Step 4 - Select Prompt
-    l.step('\nStep 4 - Selecting prompt...\n')
+    // Step 4 - Selecting prompt
     if (options.customPrompt) {
       l.wait(`\n  Reading custom prompt file:\n    - ${options.customPrompt}`)
     }
-    const promptText = await readFile(options.customPrompt || '', 'utf-8').catch((err) => {
-      l.warn(`  Could not read custom prompt file: ${options.customPrompt}. Using empty prompt. Error: ${err}`)
+    const promptText = await readFile(options.customPrompt || '', 'utf-8').catch(() => {
       return ''
     })
-    l.wait(`\n  Prompt text length: ${promptText.length}`)
 
-    // Step 5 - Run LLM (optional)
-    l.step('\nStep 5 - Running LLM (if applicable)...')
-    const llmOutput = await runLLM(options, finalPath, frontMatter, llmServices)
-
+    // Prepare the final prompt
     let generatedPrompt = ''
     if (!promptText) {
       l.wait('\n  No custom prompt text found, importing default prompt generator...')
@@ -86,6 +81,15 @@ export async function processFile(
     } else {
       generatedPrompt = promptText
     }
+
+    // Step 5 - Run LLM (if applicable)
+    const llmOutput = await runLLM(
+      options,
+      finalPath,
+      frontMatter,
+      llmServices,
+      `${generatedPrompt}\n## Transcript\n\n${transcript}`
+    )
 
     // Insert into DB
     l.wait('\n  Inserting show note into the database...')
@@ -106,12 +110,18 @@ export async function processFile(
 
     // Step 6 - Cleanup
     if (!options.noCleanUp) {
-      l.step('\nStep 6 - Cleaning up temporary files...')
       await cleanUpFiles(finalPath)
       l.wait('\n  Cleanup completed.\n')
     }
 
-    l.wait('  processFile completed successfully.')
+    l.wait('  processFile command completed successfully.')
+
+    return {
+      frontMatter,
+      prompt: generatedPrompt,
+      llmOutput: llmOutput || '',
+      transcript,
+    }
   } catch (error) {
     err(`Error processing file: ${(error as Error).message}`)
     process.exit(1)

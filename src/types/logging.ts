@@ -26,7 +26,9 @@ export interface ChainableLogger {
     step: (...args: any[]) => void
     dim: (...args: any[]) => void
     success: (...args: any[]) => void
+    warn: (...args: any[]) => void
     opts: (...args: any[]) => void
+    info: (...args: any[]) => void
     wait: (...args: any[]) => void
     final: (...args: any[]) => void
   }

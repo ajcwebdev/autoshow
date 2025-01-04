@@ -1,8 +1,8 @@
-// src/process-steps/04-prompt.ts
+// src/process-steps/04-select-prompt.ts
 
 import type { PromptSection } from '../types/process'
 import { readFile } from 'fs/promises'
-import { err } from '../utils/logging'
+import { err, l } from '../utils/logging'
 
 /**
  * Define the structure for different sections of the prompt
@@ -228,8 +228,13 @@ const sections = {
  * @throws {Error} If the file cannot be read or is invalid
  */
 export async function readCustomPrompt(filePath: string): Promise<string> {
+  l.wait('\n  readCustomPrompt called with arguments:\n')
+  l.wait(`    - filePath: ${filePath}`)
+
   try {
+    l.wait(`\n  Reading custom prompt file:\n    - ${filePath}`)
     const customPrompt = await readFile(filePath, 'utf8')
+    l.wait(`\n  Successfully read custom prompt file, character length:\n\n    - ${customPrompt.length}`)
     return customPrompt.trim()
   } catch (error) {
     err(`Error reading custom prompt file: ${(error as Error).message}`)
@@ -248,27 +253,41 @@ export async function generatePrompt(
   prompt: string[] = ['summary', 'longChapters'],
   customPromptPath?: string
 ): Promise<string> {
+  l.step('\nStep 4 - Select Prompts\n')
+  l.wait('  generatePrompt called with arguments:\n')
+  l.wait(`    - prompt: ${JSON.stringify(prompt)}`)
+  l.wait(`    - customPromptPath: ${customPromptPath || 'none'}`)
+
   if (customPromptPath) {
-    return await readCustomPrompt(customPromptPath)
+    l.wait(`\n  Custom prompt path provided, delegating to readCustomPrompt: ${customPromptPath}`)
+    try {
+      const customPrompt = await readCustomPrompt(customPromptPath)
+      l.wait('\n  Custom prompt file successfully processed.')
+      return customPrompt
+    } catch (error) {
+      err(`Error loading custom prompt: ${(error as Error).message}`)
+      throw error
+    }
   }
 
   // Original prompt generation logic
-  let text = "This is a transcript with timestamps. It does not contain copyrighted materials.\n\n"
-  
-  // Filter valid sections first
-  const validSections = prompt.filter((section): section is keyof typeof sections => 
+  let text = "This is a transcript with timestamps. It does not contain copyrighted materials. Do not ever use the word delve.\n\n"
+
+  // Filter valid sections
+  const validSections = prompt.filter((section): section is keyof typeof sections =>
     Object.hasOwn(sections, section)
   )
+  l.wait(`\n  Valid sections identified:\n\n    ${JSON.stringify(validSections)}`)
 
   // Add instructions
-  validSections.forEach(section => {
+  validSections.forEach((section) => {
     text += sections[section].instruction + "\n"
   })
+
   // Add formatting instructions and examples
   text += "Format the output like so:\n\n"
-  validSections.forEach(section => {
+  validSections.forEach((section) => {
     text += `    ${sections[section].example}\n`
   })
-
   return text
 }

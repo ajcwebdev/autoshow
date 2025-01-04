@@ -1,4 +1,14 @@
-// src/utils/llm-models.ts
+// src/utils/llm-globals.ts
+
+import { callOllama } from '../llms/ollama'
+import { callChatGPT } from '../llms/chatgpt'
+import { callClaude } from '../llms/claude'
+import { callGemini } from '../llms/gemini'
+import { callCohere } from '../llms/cohere'
+import { callMistral } from '../llms/mistral'
+import { callFireworks } from '../llms/fireworks'
+import { callTogether } from '../llms/together'
+import { callGroq } from '../llms/groq'
 
 import type {
   ModelConfig,
@@ -11,7 +21,21 @@ import type {
   TogetherModelType,
   FireworksModelType,
   GroqModelType,
+  LLMFunctions
 } from '../types/llms'
+
+// Map of available LLM service handlers
+export const LLM_FUNCTIONS: LLMFunctions = {
+  ollama: callOllama,
+  chatgpt: callChatGPT,
+  claude: callClaude,
+  gemini: callGemini,
+  cohere: callCohere,
+  mistral: callMistral,
+  fireworks: callFireworks,
+  together: callTogether,
+  groq: callGroq,
+}
 
 /**
  * Configuration for Ollama models, mapping model types to their display names and identifiers.

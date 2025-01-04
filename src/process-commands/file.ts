@@ -12,7 +12,6 @@ import { runLLM } from '../process-steps/05-run-llm'
 import { cleanUpFiles } from '../process-steps/06-clean-up-files'
 import { l, err } from '../utils/logging'
 import { readFile } from 'fs/promises'
-import { insertShowNote } from '../server/db'
 import type { ProcessingOptions } from '../types/process'
 import type { TranscriptServices } from '../types/transcription'
 import type { LLMServices } from '../types/llms'
@@ -23,8 +22,7 @@ import type { LLMServices } from '../types/llms'
  * 2. Converts the file to the required audio format
  * 3. Transcribes the audio content
  * 4. Processes the transcript with a language model (if specified)
- * 5. Saves the show notes into the database
- * 6. Cleans up temporary files (unless disabled)
+ * 5. Cleans up temporary files (unless disabled)
  * 
  * Unlike processVideo, this function handles local files and doesn't need
  * to check for external dependencies like yt-dlp.
@@ -41,9 +39,17 @@ export async function processFile(
   filePath: string,
   llmServices?: LLMServices,
   transcriptServices?: TranscriptServices
-): Promise<void> {
-  l.opts('Parameters passed to processFile:\n')
-  l.opts(`  - llmServices: ${llmServices}\n  - transcriptServices: ${transcriptServices}\n`)
+): Promise<{
+  frontMatter: string
+  prompt: string
+  llmOutput: string
+  transcript: string
+}> {
+  // Log function inputs
+  l.info('processFile called with the following arguments:')
+  l.opts(`  - filePath: ${filePath}`)
+  l.opts(`  - llmServices: ${llmServices}`)
+  l.opts(`  - transcriptServices: ${transcriptServices}\n`)
 
   try {
     // Step 1 - Generate markdown
@@ -53,40 +59,51 @@ export async function processFile(
     await downloadAudio(options, filePath, filename)
 
     // Step 3 - Transcribe audio and read transcript
-    await runTranscription(options, finalPath, transcriptServices)
-    const transcript = await readFile(`${finalPath}.txt`, 'utf-8')
+    const transcript = await runTranscription(options, finalPath, transcriptServices)
 
-    // Step 4 - Select Prompt
-    const promptText = await readFile(options.customPrompt || '', 'utf-8').catch(() => '')
+    // Step 4 - Selecting prompt
+    if (options.customPrompt) {
+      l.wait(`\n  Reading custom prompt file:\n    - ${options.customPrompt}`)
+    }
+    const promptText = await readFile(options.customPrompt || '', 'utf-8').catch(() => {
+      return ''
+    })
 
-    // Step 5 - Run LLM (optional)
-    const llmOutput = await runLLM(options, finalPath, frontMatter, llmServices)
-
+    // Prepare the final prompt
     let generatedPrompt = ''
     if (!promptText) {
+      l.wait('\n  No custom prompt text found, importing default prompt generator...')
       const defaultPrompt = await import('../process-steps/04-select-prompt')
       generatedPrompt = await defaultPrompt.generatePrompt(options.prompt, undefined)
+      l.wait(`\n  Default prompt generated (length: ${generatedPrompt.length})`)
     } else {
       generatedPrompt = promptText
     }
 
-    // Insert into DB
-    insertShowNote(
-      metadata.showLink ?? '',
-      metadata.channel ?? '',
-      metadata.channelURL ?? '',
-      metadata.title,
-      metadata.description ?? '',
-      metadata.publishDate,
-      metadata.coverImage ?? '',
+    // Step 5 - Run LLM (if applicable)
+    const llmOutput = await runLLM(
+      options,
+      finalPath,
       frontMatter,
       generatedPrompt,
       transcript,
-      llmOutput
+      metadata,
+      llmServices
     )
 
+    // Step 6 - Cleanup
     if (!options.noCleanUp) {
       await cleanUpFiles(finalPath)
+      l.wait('\n  Cleanup completed.\n')
+    }
+
+    l.wait('  processFile command completed successfully.')
+
+    return {
+      frontMatter,
+      prompt: generatedPrompt,
+      llmOutput: llmOutput || '',
+      transcript,
     }
   } catch (error) {
     err(`Error processing file: ${(error as Error).message}`)

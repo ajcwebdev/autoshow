@@ -6,9 +6,9 @@
 // 2. Request transcription of the uploaded file.
 // 3. Poll for completion until the transcript is ready or fails.
 // 4. Once completed, format the transcript using a helper function from transcription-utils.ts.
-// 5. Save the final formatted transcript to a .txt file and also create an empty .lrc file as required by the pipeline.
+// 5. Return the formatted transcript.
 
-import { writeFile, readFile } from 'node:fs/promises'
+import { readFile } from 'node:fs/promises'
 import { env } from 'node:process'
 import { l, err } from '../utils/logging'
 import { formatAssemblyTranscript } from '../utils/format-transcript'
@@ -30,8 +30,12 @@ const BASE_URL = 'https://api.assemblyai.com/v2'
  * @returns Promise<string> - The formatted transcript content
  * @throws Error if any step of the process fails (upload, transcription request, polling, formatting)
  */
-export async function callAssembly(options: ProcessingOptions, finalPath: string): Promise<string> {
-  l.wait('\n  Using AssemblyAI for transcription...')
+export async function callAssembly(
+  options: ProcessingOptions,
+  finalPath: string
+): Promise<string> {
+  l.wait('\n  Using AssemblyAI for transcription...\n')
+  l.wait(`\n  Options:\n\n${JSON.stringify(options)}`)
 
   if (!env['ASSEMBLY_API_KEY']) {
     throw new Error('ASSEMBLY_API_KEY environment variable is not set. Please set it to your AssemblyAI API key.')
@@ -69,7 +73,7 @@ export async function callAssembly(options: ProcessingOptions, finalPath: string
     if (!upload_url) {
       throw new Error('Upload URL not returned by AssemblyAI.')
     }
-    l.success('  Audio file uploaded successfully.')
+    l.wait('    - Audio file uploaded successfully.')
 
     // Step 2: Requesting the transcription
     const transcriptionOptions: AssemblyAITranscriptionOptions = {
@@ -111,15 +115,6 @@ export async function callAssembly(options: ProcessingOptions, finalPath: string
     // Step 4: Formatting the transcript
     // The formatAssemblyTranscript function handles all formatting logic including speaker labels and timestamps.
     const txtContent = formatAssemblyTranscript(transcript, speakerLabels || false)
-
-    // Step 5: Write the formatted transcript to a .txt file
-    await writeFile(`${finalPath}.txt`, txtContent)
-    l.wait(`\n  Transcript saved...\n  - ${finalPath}.txt\n`)
-
-    // Create an empty LRC file to satisfy pipeline expectations (even if we don't use it for this service)
-    await writeFile(`${finalPath}.lrc`, '')
-    l.wait(`\n  Empty LRC file created:\n    - ${finalPath}.lrc\n`)
-
     return txtContent
   } catch (error) {
     // If any error occurred at any step, log it and rethrow

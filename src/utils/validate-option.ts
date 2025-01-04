@@ -1,17 +1,124 @@
 // src/utils/validate-option.ts
 
 import { exit } from 'node:process'
-import { err } from '../utils/logging'
+import { spawn } from 'node:child_process'
 import { processVideo } from '../process-commands/video'
 import { processPlaylist } from '../process-commands/playlist'
 import { processChannel } from '../process-commands/channel'
 import { processURLs } from '../process-commands/urls'
 import { processFile } from '../process-commands/file'
 import { processRSS } from '../process-commands/rss'
+import { l, err } from '../utils/logging'
 import { ACTION_OPTIONS, LLM_OPTIONS, TRANSCRIPT_OPTIONS, otherOptions } from '../utils/globals'
 import type { ProcessingOptions, ValidAction, HandlerFunction, ProcessRequestBody } from '../types/process'
 import type { TranscriptServices } from '../types/transcription'
-import type { LLMServices } from '../types/llms'
+import type { LLMServices, OllamaTagsResponse } from '../types/llms'
+
+/**
+ * checkServerAndModel()
+ * ---------------------
+ * Checks if the Ollama server is running, attempts to start it if not running,
+ * and ensures that the specified model is available. If not, it will pull the model.
+ *
+ * @param {string} ollamaHost - The Ollama host
+ * @param {string} ollamaPort - The Ollama port
+ * @param {string} ollamaModelName - The Ollama model name
+ * @returns {Promise<void>}
+ */
+export async function checkServerAndModel(
+  ollamaHost: string,
+  ollamaPort: string,
+  ollamaModelName: string
+): Promise<void> {
+  async function checkServer(): Promise<boolean> {
+    try {
+      const serverResponse = await fetch(`http://${ollamaHost}:${ollamaPort}`)
+      return serverResponse.ok
+    } catch (error) {
+      return false
+    }
+  }
+
+  if (await checkServer()) {
+    l.wait('\n  Ollama server is already running...')
+  } else {
+    if (ollamaHost === 'ollama') {
+      throw new Error('Ollama server is not running. Please ensure the Ollama server is running and accessible.')
+    } else {
+      l.wait('\n  Ollama server is not running. Attempting to start...')
+      const ollamaProcess = spawn('ollama', ['serve'], {
+        detached: true,
+        stdio: 'ignore',
+      })
+      ollamaProcess.unref()
+
+      let attempts = 0
+      while (attempts < 30) {
+        if (await checkServer()) {
+          l.wait('    - Ollama server is now ready.')
+          break
+        }
+        await new Promise((resolve) => setTimeout(resolve, 1000))
+        attempts++
+      }
+      if (attempts === 30) {
+        throw new Error('Ollama server failed to become ready in time.')
+      }
+    }
+  }
+
+  l.wait(`\n  Checking if model is available: ${ollamaModelName}`)
+  try {
+    const tagsResponse = await fetch(`http://${ollamaHost}:${ollamaPort}/api/tags`)
+    if (!tagsResponse.ok) {
+      throw new Error(`HTTP error! status: ${tagsResponse.status}`)
+    }
+    const tagsData = (await tagsResponse.json()) as OllamaTagsResponse
+    const isModelAvailable = tagsData.models.some((m) => m.name === ollamaModelName)
+
+    if (!isModelAvailable) {
+      l.wait(`\n  Model ${ollamaModelName} is not available, pulling...`)
+      const pullResponse = await fetch(`http://${ollamaHost}:${ollamaPort}/api/pull`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: ollamaModelName }),
+      })
+      if (!pullResponse.ok) {
+        throw new Error(`Failed to initiate pull for model ${ollamaModelName}`)
+      }
+      if (!pullResponse.body) {
+        throw new Error('Response body is null')
+      }
+
+      const reader = pullResponse.body.getReader()
+      const decoder = new TextDecoder()
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+
+        const chunk = decoder.decode(value)
+        const lines = chunk.split('\n')
+        for (const line of lines) {
+          if (line.trim() === '') continue
+          try {
+            const parsedLine = JSON.parse(line)
+            if (parsedLine.status === 'success') {
+              l.wait(`    - Model ${ollamaModelName} pulled successfully.\n`)
+              break
+            }
+          } catch (parseError) {
+            err(`Error parsing JSON while pulling model: ${parseError}`)
+          }
+        }
+      }
+    } else {
+      l.wait(`\n  Model ${ollamaModelName} is already available.\n`)
+    }
+  } catch (error) {
+    err(`Error checking/pulling model: ${(error as Error).message}`)
+    throw error
+  }
+}
 
 // Map each action to its corresponding handler function
 export const PROCESS_HANDLERS: Record<ValidAction, HandlerFunction> = {

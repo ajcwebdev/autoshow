@@ -43,8 +43,7 @@ import { l, err } from '../utils/logging'
  * }
  */
 export async function cleanUpFiles(id: string): Promise<void> {
-  l.step('\nStep 5 - Cleaning up temporary files...\n')
-
+  l.step('\nStep 6 - Cleaning Up Extra Files\n')
   // Define extensions of temporary files to be cleaned up
   const extensions = [
     '.wav',  // Audio files
@@ -53,14 +52,14 @@ export async function cleanUpFiles(id: string): Promise<void> {
     '.lrc'   // Lyrics/subtitles
   ]
 
-  l.success(`  Temporary files deleted:`)
+  l.wait(`\n  Temporary files deleted:`)
 
   // Attempt to delete each file type
   for (const ext of extensions) {
     try {
       // Delete file and log success
       await unlink(`${id}${ext}`)
-      l.success(`    - ${id}${ext}`)
+      l.wait(`    - ${id}${ext}`)
     } catch (error) {
       // Only log errors that aren't "file not found" (ENOENT)
       if (error instanceof Error && (error as Error).message !== 'ENOENT') {

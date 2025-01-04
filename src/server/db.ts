@@ -1,6 +1,7 @@
 // src/server/db.ts
 
 import { DatabaseSync } from 'node:sqlite'
+import { l } from '../utils/logging'
 
 // Initialize the database connection
 export const db = new DatabaseSync('show_notes.db', { open: true })
@@ -51,6 +52,7 @@ export function insertShowNote(
   transcript: string,
   llmOutput: string
 ): void {
+  l.wait('\n  Inserting show note into the database...')
   db.prepare(`
     INSERT INTO show_notes (
       showLink,
@@ -79,4 +81,5 @@ export function insertShowNote(
     transcript,
     llmOutput
   )
+  l.wait('\n    - Show note inserted successfully.\n')
 }

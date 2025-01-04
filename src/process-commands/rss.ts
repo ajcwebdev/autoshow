@@ -14,7 +14,6 @@ import { cleanUpFiles } from '../process-steps/06-clean-up-files'
 import { validateRSSOptions } from '../utils/validate-option'
 import { l, err, logRSSProcessingAction, logRSSProcessingStatus, logRSSSeparator } from '../utils/logging'
 import { parser } from '../utils/globals'
-import { insertShowNote } from '../server/db'
 import type { ProcessingOptions, RSSItem } from '../types/process'
 import type { TranscriptServices } from '../types/transcription'
 import type { LLMServices } from '../types/llms'
@@ -75,14 +74,11 @@ function extractFeedItems(feed: any): { items: RSSItem[], channelTitle: string }
       return audioVideoTypes.some((type) => item.enclosure.type.startsWith(type))
     })
     .map((item) => {
-      // Ensure publishDate is always a valid string
       let publishDate: string
       try {
-        // Try to parse the date, fall back to current date if invalid
         const date = item.pubDate ? new Date(item.pubDate) : new Date()
         publishDate = date.toISOString().substring(0, 10)
       } catch {
-        // If date parsing fails, use current date
         publishDate = defaultDate
       }
 
@@ -187,15 +183,12 @@ async function processItem(
     await downloadAudio(options, item.showLink, filename)
 
     // Step 3 - Transcribe audio and read transcript
-    await runTranscription(options, finalPath, transcriptServices)
-    const transcript = await readFile(`${finalPath}.txt`, 'utf-8')
+    const transcript = await runTranscription(options, finalPath, transcriptServices)
 
     // Step 4 - Select Prompt
     const promptText = await readFile(options.customPrompt || '', 'utf-8').catch(() => '')
 
     // Step 5 - Run LLM (optional)
-    const llmOutput = await runLLM(options, finalPath, frontMatter, llmServices)
-
     let generatedPrompt = ''
     if (!promptText) {
       const defaultPrompt = await import('../process-steps/04-select-prompt')
@@ -204,18 +197,14 @@ async function processItem(
       generatedPrompt = promptText
     }
 
-    insertShowNote(
-      metadata.showLink ?? '',
-      metadata.channel ?? '',
-      metadata.channelURL ?? '',
-      metadata.title,
-      metadata.description ?? '',
-      metadata.publishDate,
-      metadata.coverImage ?? '',
+    await runLLM(
+      options,
+      finalPath,
       frontMatter,
       generatedPrompt,
       transcript,
-      llmOutput
+      metadata,
+      llmServices
     )
 
     if (!options.noCleanUp) {

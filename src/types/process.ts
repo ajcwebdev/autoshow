@@ -4,6 +4,26 @@ import type { TranscriptServices, WhisperModelType } from './transcription'
 import type { LLMServices } from './llms'
 
 /**
+ * @interface EpisodeMetadata
+ * @property {string} [showLink]
+ * @property {string} [channel]
+ * @property {string} [channelURL]
+ * @property {string} [title]
+ * @property {string} [description]
+ * @property {string} [publishDate]
+ * @property {string} [coverImage]
+ */
+export interface EpisodeMetadata {
+  showLink?: string
+  channel?: string
+  channelURL?: string
+  title?: string
+  description?: string
+  publishDate?: string
+  coverImage?: string
+}
+
+/**
  * @description Pre-handler to override environment variables from request body if provided.
  * This ensures that API keys can be passed in the request and used for the session,
  * even if they're not set in the .env file.
@@ -184,7 +204,7 @@ export type HandlerFunction = (
   input: string,
   llmServices?: LLMServices,
   transcriptServices?: TranscriptServices
-) => Promise<void> | Promise<string>
+) => Promise<void> | Promise<Object> | Promise<string>
 
 // Content Types
 /**

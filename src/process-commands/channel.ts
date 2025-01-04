@@ -5,67 +5,14 @@
  * @packageDocumentation
  */
 
-import { writeFile } from 'node:fs/promises'
 import { processVideo } from './video'
+import { saveChannelInfo } from '../utils/save-info'
 import { execFilePromise } from '../utils/globals'
 import { l, err, logChannelProcessingAction, logChannelProcessingStatus, logChannelSeparator } from '../utils/logging'
-import { validateChannelOptions } from '../utils/validate-option'
-import type { ProcessingOptions, VideoMetadata, VideoInfo } from '../types/process'
+import { validateChannelOptions, selectVideos } from '../utils/validate-option'
+import type { ProcessingOptions } from '../types/process'
 import type { TranscriptServices } from '../types/transcription'
 import type { LLMServices } from '../types/llms'
-
-/**
- * Gets detailed video information using yt-dlp.
- * 
- * @param url - Video URL to get information for
- * @returns Promise resolving to video information
- */
-async function getVideoDetails(url: string): Promise<VideoInfo | null> {
-  try {
-    const { stdout } = await execFilePromise('yt-dlp', [
-      '--print', '%(upload_date)s|%(timestamp)s|%(is_live)s|%(webpage_url)s',
-      '--no-warnings',
-      url,
-    ])
-
-    const [uploadDate, timestamp, isLive, videoUrl] = stdout.trim().split('|')
-    
-    if (!uploadDate || !timestamp || !videoUrl) {
-      throw new Error('Incomplete video information received from yt-dlp')
-    }
-
-    // Convert upload date to Date object
-    const year = uploadDate.substring(0, 4)
-    const month = uploadDate.substring(4, 6)
-    const day = uploadDate.substring(6, 8)
-    const date = new Date(`${year}-${month}-${day}`)
-
-    return {
-      uploadDate,
-      url: videoUrl,
-      date,
-      timestamp: parseInt(timestamp, 10) || date.getTime() / 1000,
-      isLive: isLive === 'True'
-    }
-  } catch (error) {
-    err(`Error getting details for video ${url}: ${error instanceof Error ? error.message : String(error)}`)
-    return null
-  }
-}
-
-/**
- * Selects which videos to process based on provided options.
- * 
- * @param videos - All available videos with their dates and URLs
- * @param options - Configuration options for filtering
- * @returns Array of video info to process
- */
-function selectVideosToProcess(videos: VideoInfo[], options: ProcessingOptions): VideoInfo[] {
-  if (options.last) {
-    return videos.slice(0, options.last)
-  }
-  return videos.slice(options.skip || 0)
-}
 
 /**
  * Processes an entire YouTube channel by:
@@ -110,89 +57,12 @@ export async function processChannel(
       err(`yt-dlp warnings: ${stderr}`)
     }
 
-    // Get detailed information for each video
-    const videoUrls = stdout.trim().split('\n').filter(Boolean)
-    l.opts(`\nFetching detailed information for ${videoUrls.length} videos...`)
+    const { allVideos, videosToProcess } = await selectVideos(stdout, options)
+    logChannelProcessingStatus(allVideos.length, videosToProcess.length, options)
 
-    const videoDetailsPromises = videoUrls.map(url => getVideoDetails(url))
-    const videoDetailsResults = await Promise.all(videoDetailsPromises)
-    const videos = videoDetailsResults.filter((video): video is VideoInfo => video !== null)
-
-    // Exit if no videos were found in the channel
-    if (videos.length === 0) {
-      err('Error: No videos found in the channel.')
-      process.exit(1)
-    }
-
-    // Sort videos based on timestamp
-    videos.sort((a, b) => a.timestamp - b.timestamp)
-
-    // If order is 'newest' (default), reverse the sorted array
-    if (options.order !== 'oldest') {
-      videos.reverse()
-    }
-
-    l.opts(`\nFound ${videos.length} videos in the channel...`)
-
-    // Select videos to process based on options
-    const videosToProcess = selectVideosToProcess(videos, options)
-    logChannelProcessingStatus(videos.length, videosToProcess.length, options)
-
-    // If the --info option is provided, extract metadata for selected videos
+    // If the --info option is provided, save channel info and return
     if (options.info) {
-      // Collect metadata for selected videos in parallel
-      const metadataList = await Promise.all(
-        videosToProcess.map(async (video) => {
-          const url = video.url
-          try {
-            // Execute yt-dlp command to extract metadata
-            const { stdout } = await execFilePromise('yt-dlp', [
-              '--restrict-filenames',
-              '--print', '%(webpage_url)s',
-              '--print', '%(channel)s',
-              '--print', '%(uploader_url)s',
-              '--print', '%(title)s',
-              '--print', '%(upload_date>%Y-%m-%d)s',
-              '--print', '%(thumbnail)s',
-              url,
-            ])
-
-            // Split the output into individual metadata fields
-            const [
-              showLink, channel, channelURL, title, publishDate, coverImage
-            ] = stdout.trim().split('\n')
-
-            // Validate that all required metadata fields are present
-            if (!showLink || !channel || !channelURL || !title || !publishDate || !coverImage) {
-              throw new Error('Incomplete metadata received from yt-dlp.')
-            }
-
-            // Return the metadata object
-            return {
-              showLink, channel, channelURL, title, description: '', publishDate, coverImage
-            } as VideoMetadata
-          } catch (error) {
-            // Log error but return null to filter out failed extractions
-            err(
-              `Error extracting metadata for ${url}: ${
-                error instanceof Error ? error.message : String(error)
-              }`
-            )
-            return null
-          }
-        })
-      )
-
-      // Filter out any null results due to errors
-      const validMetadata = metadataList.filter(
-        (metadata): metadata is VideoMetadata => metadata !== null
-      )
-
-      // Save metadata to a JSON file
-      const jsonContent = JSON.stringify(validMetadata, null, 2)
-      const jsonFilePath = 'content/channel_info.json'
-      await writeFile(jsonFilePath, jsonContent)
-      l.success(`Channel information saved to: ${jsonFilePath}`)
+      await saveChannelInfo(videosToProcess)
       return
     }
 

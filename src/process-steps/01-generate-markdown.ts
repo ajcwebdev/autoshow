@@ -83,8 +83,8 @@ export async function generateMarkdown(
 ): Promise<MarkdownData> {
   // Log function inputs
   l.step('\nStep 1 - Generate Markdown\n')
-  l.wait(`\n  generateMarkdown called with the following arguments\n`)
-  l.wait(`    - input: ${input}`)
+  l.wait(`\n  generateMarkdown called with the following input argument:\n`)
+  l.dim(`${JSON.stringify(input, null, 2)}`)
 
   let frontMatter: string[]
   let finalPath: string
@@ -198,7 +198,7 @@ export async function generateMarkdown(
       break
 
     case !!options.rss:
-      l.wait('Generating markdown for an RSS item...')
+      l.wait('\n  Generating markdown for an RSS item...\n')
       const item = input as RSSItem
       const {
         publishDate,

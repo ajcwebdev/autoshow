@@ -3,7 +3,7 @@
 import { env } from 'node:process'
 import { OLLAMA_MODELS } from '../utils/llm-globals'
 import { l, err, logAPIResults } from '../utils/logging'
-import { checkServerAndModel } from '../utils/validate-option'
+import { checkOllamaServerAndModel } from '../utils/validate-option'
 import type { LLMFunction, OllamaModelType, OllamaResponse } from '../types/llms'
 
 /**
@@ -38,7 +38,7 @@ export const callOllama: LLMFunction = async (
 
     const combinedPrompt = `${prompt}\n${transcript}`
 
-    await checkServerAndModel(ollamaHost, ollamaPort, ollamaModelName)
+    await checkOllamaServerAndModel(ollamaHost, ollamaPort, ollamaModelName)
 
     l.wait(`    - Sending chat request to http://${ollamaHost}:${ollamaPort} using model '${ollamaModelName}'`)
 

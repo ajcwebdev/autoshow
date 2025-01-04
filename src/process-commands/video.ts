@@ -8,10 +8,10 @@
 import { generateMarkdown } from '../process-steps/01-generate-markdown'
 import { downloadAudio } from '../process-steps/02-download-audio'
 import { runTranscription } from '../process-steps/03-run-transcription'
+import { selectPrompts } from '../process-steps/04-select-prompt'
 import { runLLM } from '../process-steps/05-run-llm'
 import { cleanUpFiles } from '../process-steps/06-clean-up-files'
 import { l, err } from '../utils/logging'
-import { readFile } from 'fs/promises'
 import type { ProcessingOptions } from '../types/process'
 import type { TranscriptServices } from '../types/transcription'
 import type { LLMServices } from '../types/llms'
@@ -60,36 +60,21 @@ export async function processVideo(
     const transcript = await runTranscription(options, finalPath, transcriptServices)
 
     // Step 4 - Selecting prompt
-    let promptText = ''
-    if (options.customPrompt) {
-      l.info(`\n  Reading custom prompt file: ${options.customPrompt}`)
-      promptText = await readFile(options.customPrompt, 'utf-8').catch((err) => {
-        l.warn(`\n  Could not read custom prompt file: ${options.customPrompt}. Using empty prompt. Error: ${err}`)
-        return ''
-      })
-    }
+    const selectedPrompts = await selectPrompts(options)
 
     // Step 5 - Running LLM processing on transcript (if applicable)...
-    let generatedPrompt = ''
-    if (!promptText) {
-      const defaultPrompt = await import('../process-steps/04-select-prompt')
-      generatedPrompt = await defaultPrompt.generatePrompt(options.prompt, undefined)
-    } else {
-      generatedPrompt = promptText
-    }
-
     const llmOutput = await runLLM(
       options,
       finalPath,
       frontMatter,
-      generatedPrompt,
+      selectedPrompts,
       transcript,
       metadata,
       llmServices
     )
 
     // Step 6 - Cleanup
-    if (!options.noCleanUp) {
+    if (!options.saveAudio) {
       await cleanUpFiles(finalPath)
     }
 
@@ -97,7 +82,7 @@ export async function processVideo(
 
     return {
       frontMatter,
-      prompt: generatedPrompt,
+      prompt: selectedPrompts,
       llmOutput: llmOutput || '',
       transcript,
     }

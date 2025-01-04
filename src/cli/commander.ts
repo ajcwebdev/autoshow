@@ -14,7 +14,7 @@
 import { argv, exit } from 'node:process'
 import { fileURLToPath } from 'node:url'
 import { Command } from 'commander'
-import { generatePrompt } from '../process-steps/04-select-prompt'
+import { selectPrompts } from '../process-steps/04-select-prompt'
 import { validateAction, validateLLM, validateTranscription, processAction } from '../utils/validate-option'
 import { l, err, logCompletionSeparator } from '../utils/logging'
 import { envVarsMap } from '../utils/globals'
@@ -66,7 +66,7 @@ program
   .option('--prompt <sections...>', 'Specify prompt sections to include')
   .option('--printPrompt <sections...>', 'Print the prompt sections without processing')
   .option('--customPrompt <filePath>', 'Use a custom prompt from a markdown file')
-  .option('--noCleanUp', 'Do not delete intermediary files after processing')
+  .option('--saveAudio', 'Do not delete intermediary files after processing')
   // Added options to override environment variables from CLI
   /**
    * Additional CLI options to allow passing API keys from the command line,
@@ -120,7 +120,7 @@ program.action(async (options: ProcessingOptions) => {
 
   // If the user just wants to print prompts, do that and exit
   if (options.printPrompt) {
-    const prompt = await generatePrompt(options.printPrompt)
+    const prompt = await selectPrompts(options.printPrompt)
     console.log(prompt)
     exit(0)
   }

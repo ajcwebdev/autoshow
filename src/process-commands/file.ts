@@ -8,10 +8,10 @@
 import { generateMarkdown } from '../process-steps/01-generate-markdown'
 import { downloadAudio } from '../process-steps/02-download-audio'
 import { runTranscription } from '../process-steps/03-run-transcription'
+import { selectPrompts } from '../process-steps/04-select-prompt'
 import { runLLM } from '../process-steps/05-run-llm'
 import { cleanUpFiles } from '../process-steps/06-clean-up-files'
 import { l, err } from '../utils/logging'
-import { readFile } from 'fs/promises'
 import type { ProcessingOptions } from '../types/process'
 import type { TranscriptServices } from '../types/transcription'
 import type { LLMServices } from '../types/llms'
@@ -62,46 +62,29 @@ export async function processFile(
     const transcript = await runTranscription(options, finalPath, transcriptServices)
 
     // Step 4 - Selecting prompt
-    if (options.customPrompt) {
-      l.wait(`\n  Reading custom prompt file:\n    - ${options.customPrompt}`)
-    }
-    const promptText = await readFile(options.customPrompt || '', 'utf-8').catch(() => {
-      return ''
-    })
-
-    // Prepare the final prompt
-    let generatedPrompt = ''
-    if (!promptText) {
-      l.wait('\n  No custom prompt text found, importing default prompt generator...')
-      const defaultPrompt = await import('../process-steps/04-select-prompt')
-      generatedPrompt = await defaultPrompt.generatePrompt(options.prompt, undefined)
-      l.wait(`\n  Default prompt generated (length: ${generatedPrompt.length})`)
-    } else {
-      generatedPrompt = promptText
-    }
+    const selectedPrompts = await selectPrompts(options)
 
     // Step 5 - Run LLM (if applicable)
     const llmOutput = await runLLM(
       options,
       finalPath,
       frontMatter,
-      generatedPrompt,
+      selectedPrompts,
       transcript,
       metadata,
       llmServices
     )
 
     // Step 6 - Cleanup
-    if (!options.noCleanUp) {
+    if (!options.saveAudio) {
       await cleanUpFiles(finalPath)
-      l.wait('\n  Cleanup completed.\n')
     }
 
     l.wait('  processFile command completed successfully.')
 
     return {
       frontMatter,
-      prompt: generatedPrompt,
+      prompt: selectedPrompts,
       llmOutput: llmOutput || '',
       transcript,
     }

@@ -12,7 +12,6 @@ import { runLLM } from '../process-steps/05-run-llm'
 import { cleanUpFiles } from '../process-steps/06-clean-up-files'
 import { l, err } from '../utils/logging'
 import { readFile } from 'fs/promises'
-import { insertShowNote } from '../server/db'
 import type { ProcessingOptions } from '../types/process'
 import type { TranscriptServices } from '../types/transcription'
 import type { LLMServices } from '../types/llms'
@@ -23,8 +22,7 @@ import type { LLMServices } from '../types/llms'
  * 2. Converts the file to the required audio format
  * 3. Transcribes the audio content
  * 4. Processes the transcript with a language model (if specified)
- * 5. Saves the show notes into the database
- * 6. Cleans up temporary files (unless disabled)
+ * 5. Cleans up temporary files (unless disabled)
  * 
  * Unlike processVideo, this function handles local files and doesn't need
  * to check for external dependencies like yt-dlp.
@@ -87,24 +85,10 @@ export async function processFile(
       options,
       finalPath,
       frontMatter,
-      llmServices,
-      generatedPrompt,
-      transcript
-    )
-
-    // Insert into DB
-    insertShowNote(
-      metadata.showLink ?? '',
-      metadata.channel ?? '',
-      metadata.channelURL ?? '',
-      metadata.title,
-      metadata.description ?? '',
-      metadata.publishDate,
-      metadata.coverImage ?? '',
-      frontMatter,
       generatedPrompt,
       transcript,
-      llmOutput
+      metadata,
+      llmServices
     )
 
     // Step 6 - Cleanup

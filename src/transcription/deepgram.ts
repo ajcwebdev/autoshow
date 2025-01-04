@@ -6,9 +6,9 @@
 // 2. Send it to Deepgram for transcription with chosen parameters (model, formatting, punctuation, etc.).
 // 3. Check for successful response and extract the transcription results.
 // 4. Format the returned words array using formatDeepgramTranscript to add timestamps and newlines.
-// 5. Write the formatted transcript to a .txt file and create an empty .lrc file.
+// 5. Return the formatted transcript.
 
-import { writeFile, readFile } from 'node:fs/promises'
+import { readFile } from 'node:fs/promises'
 import { env } from 'node:process'
 import { l, err } from '../utils/logging'
 import { formatDeepgramTranscript } from '../utils/format-transcript'
@@ -73,15 +73,6 @@ export async function callDeepgram(
 
     // Format the returned words array
     const txtContent = formatDeepgramTranscript(alternative.words)
-
-    // Write the formatted transcript to a .txt file
-    await writeFile(`${finalPath}.txt`, txtContent)
-    l.wait(`\n  Transcript saved:\n    - ${finalPath}.txt\n`)
-
-    // Create an empty LRC file to meet pipeline expectations
-    await writeFile(`${finalPath}.lrc`, '')
-    l.wait(`\n  Empty LRC file created:\n    - ${finalPath}.lrc\n`)
-
     return txtContent
   } catch (error) {
     // If any error occurred at any step, log it and rethrow

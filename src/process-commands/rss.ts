@@ -14,7 +14,6 @@ import { cleanUpFiles } from '../process-steps/06-clean-up-files'
 import { validateRSSOptions } from '../utils/validate-option'
 import { l, err, logRSSProcessingAction, logRSSProcessingStatus, logRSSSeparator } from '../utils/logging'
 import { parser } from '../utils/globals'
-import { insertShowNote } from '../server/db'
 import type { ProcessingOptions, RSSItem } from '../types/process'
 import type { TranscriptServices } from '../types/transcription'
 import type { LLMServices } from '../types/llms'
@@ -198,27 +197,14 @@ async function processItem(
       generatedPrompt = promptText
     }
 
-    const llmOutput = await runLLM(
+    await runLLM(
       options,
       finalPath,
       frontMatter,
-      llmServices,
-      generatedPrompt,
-      transcript
-    )
-
-    insertShowNote(
-      metadata.showLink ?? '',
-      metadata.channel ?? '',
-      metadata.channelURL ?? '',
-      metadata.title,
-      metadata.description ?? '',
-      metadata.publishDate,
-      metadata.coverImage ?? '',
-      frontMatter,
       generatedPrompt,
       transcript,
-      llmOutput
+      metadata,
+      llmServices
     )
 
     if (!options.noCleanUp) {

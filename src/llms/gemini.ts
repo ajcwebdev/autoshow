@@ -2,7 +2,7 @@
 
 import { env } from 'node:process'
 import { GoogleGenerativeAI } from "@google/generative-ai"
-import { GEMINI_MODELS } from '../utils/llm-models'
+import { GEMINI_MODELS } from '../utils/llm-globals'
 import { err, logAPIResults } from '../utils/logging'
 import type { LLMFunction, GeminiModelType } from '../types/llms'
 

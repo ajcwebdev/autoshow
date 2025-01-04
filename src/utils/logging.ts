@@ -5,7 +5,7 @@ import type { ModelConfigValue } from '../types/llms'
 import type { TokenUsage, CostCalculation, APILogInfo, ChainableLogger } from '../types/logging'
 import { 
   GPT_MODELS, CLAUDE_MODELS, GEMINI_MODELS, COHERE_MODELS, MISTRAL_MODELS, OLLAMA_MODELS, FIREWORKS_MODELS, TOGETHER_MODELS, GROQ_MODELS
-} from './llm-models'
+} from './llm-globals'
 import chalk from 'chalk'
 
 /**

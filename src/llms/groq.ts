@@ -1,7 +1,7 @@
 // src/llms/groq.ts
 
 import { env } from 'node:process'
-import { GROQ_MODELS } from '../utils/llm-models'
+import { GROQ_MODELS } from '../utils/llm-globals'
 import { err, logAPIResults } from '../utils/logging'
 import type { LLMFunction, GroqModelType, GroqChatCompletionResponse } from '../types/llms'
 

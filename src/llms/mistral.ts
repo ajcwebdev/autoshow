@@ -2,7 +2,7 @@
 
 import { env } from 'node:process'
 import { Mistral } from '@mistralai/mistralai'
-import { MISTRAL_MODELS } from '../utils/llm-models'
+import { MISTRAL_MODELS } from '../utils/llm-globals'
 import { err, logAPIResults } from '../utils/logging'
 import type { LLMFunction, MistralModelType } from '../types/llms'
 

@@ -12,7 +12,6 @@ import { runLLM } from '../process-steps/05-run-llm'
 import { cleanUpFiles } from '../process-steps/06-clean-up-files'
 import { l, err } from '../utils/logging'
 import { readFile } from 'fs/promises'
-import { insertShowNote } from '../server/db'
 import type { ProcessingOptions } from '../types/process'
 import type { TranscriptServices } from '../types/transcription'
 import type { LLMServices } from '../types/llms'
@@ -24,8 +23,7 @@ import type { LLMServices } from '../types/llms'
  * 3. Downloads and extracts audio
  * 4. Transcribes the audio content
  * 5. Processes the transcript with a language model (if specified)
- * 6. Saves the show notes into the database
- * 7. Cleans up temporary files (unless disabled)
+ * 6. Cleans up temporary files (unless disabled)
  * 
  * @param options - Configuration options for processing
  * @param url - The URL of the video to process
@@ -84,24 +82,10 @@ export async function processVideo(
       options,
       finalPath,
       frontMatter,
-      llmServices,
-      generatedPrompt,
-      transcript
-    )
-
-    // Insert into DB
-    insertShowNote(
-      metadata.showLink ?? '',
-      metadata.channel ?? '',
-      metadata.channelURL ?? '',
-      metadata.title,
-      metadata.description ?? '',
-      metadata.publishDate,
-      metadata.coverImage ?? '',
-      frontMatter,
       generatedPrompt,
       transcript,
-      llmOutput
+      metadata,
+      llmServices
     )
 
     // Step 6 - Cleanup

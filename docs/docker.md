@@ -14,7 +14,7 @@ You can run any of the `as` CLI commands by passing arguments to the container v
 npm run docker-cli -- \
   --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
   --whisper base \
-  --ollama "LLAMA_3_2_3B"
+  --ollama "LLAMA_3_2_1B"
 ```
 
 ### Run the Server with Docker

@@ -674,12 +674,25 @@ npm run test-docker
 Benchmark tests, each compare different size models for `whisper.cpp` and a Dockerized version.
 
 ```bash
-npm run bench-tiny
-npm run bench-base
-npm run bench-small
-npm run bench-medium
-npm run bench-large
-npm run bench-turbo
+npx tsx --test test/bench/tiny.test.ts
+npx tsx --test test/bench/base.test.ts
+npx tsx --test test/bench/small.test.ts
+npx tsx --test test/bench/medium.test.ts
+npx tsx --test test/bench/large.test.ts
+npx tsx --test test/bench/turbo.test.ts
+```
+
+Test all available models for a certain LLM service.
+
+```bash
+npx tsx --test test/models/chatgpt.test.ts
+npx tsx --test test/models/claude.test.ts
+npx tsx --test test/models/cohere.test.ts
+npx tsx --test test/models/gemini.test.ts
+npx tsx --test test/models/mistral.test.ts
+npx tsx --test test/models/fireworks.test.ts
+npx tsx --test test/models/together.test.ts
+npx tsx --test test/models/groq.test.ts
 ```
 
 ## Skip Cleanup of Intermediate Files

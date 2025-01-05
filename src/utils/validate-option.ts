@@ -30,12 +30,14 @@ export async function checkWhisperDirAndModel(
   if (!existsSync('./whisper.cpp')) {
     l.wait(`\n  No whisper.cpp repo found, cloning and compiling...\n`)
     try {
-      await execPromise('git clone https://github.com/ggerganov/whisper.cpp.git && make -C whisper.cpp')
+      await execPromise('git clone https://github.com/ggerganov/whisper.cpp.git && cmake -B whisper.cpp/build -S whisper.cpp && cmake --build whisper.cpp/build --config Release')
       l.wait(`\n    - whisper.cpp clone and compilation complete.\n`)
     } catch (cloneError) {
       err(`Error cloning/building whisper.cpp: ${(cloneError as Error).message}`)
       throw cloneError
     }
+  } else {
+    l.wait(`\n  Whisper.cpp repo is already available at ./whisper.cpp\n`)
   }
 
   // Check if the chosen model file is present
@@ -48,6 +50,8 @@ export async function checkWhisperDirAndModel(
       err(`Error downloading model: ${(modelError as Error).message}`)
       throw modelError
     }
+  } else {
+    l.wait(`\n  Model ${whisperModel} is already available at ./whisper.cpp/models/${modelGGMLName}\n`)
   }
 }
 

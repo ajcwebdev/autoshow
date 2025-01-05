@@ -107,7 +107,7 @@ export type GroqModelType = 'LLAMA_3_2_1B_PREVIEW' | 'LLAMA_3_2_3B_PREVIEW' | 'L
 /**
  * Local model with Ollama.
  */
-export type OllamaModelType = 'LLAMA_3_2_1B' | 'LLAMA_3_2_3B' | 'GEMMA_2_2B' | 'PHI_3_5' | 'QWEN_2_5_1B' | 'QWEN_2_5_3B'
+export type OllamaModelType = 'LLAMA_3_2_1B' | 'LLAMA_3_2_3B' | 'GEMMA_2_2B' | 'PHI_3_5' | 'QWEN_2_5_0B' | 'QWEN_2_5_1B' | 'QWEN_2_5_3B'
 
 // API Response Types
 /**

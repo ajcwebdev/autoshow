@@ -14,20 +14,20 @@ import type { LLMFunction, OllamaModelType, OllamaResponse } from '../types/llms
  * @param {string} prompt - The prompt or instructions to process.
  * @param {string} transcript - The transcript text.
  * @param {string} tempPath - (unused) The temporary file path (no longer used).
- * @param {string | OllamaModelType} [model='LLAMA_3_2_1B'] - The Ollama model to use.
+ * @param {string | OllamaModelType} [model='QWEN_2_5_0B'] - The Ollama model to use.
  * @returns {Promise<string>} A Promise resolving with the generated text.
  */
 export const callOllama: LLMFunction = async (
   prompt: string,
   transcript: string,
-  model: string | OllamaModelType = 'LLAMA_3_2_1B'
+  model: string | OllamaModelType = 'QWEN_2_5_0B'
 ): Promise<string> => {
   l.wait('\n  callOllama called with arguments:')
   l.wait(`    - model: ${model}`)
 
   try {
-    const modelKey = typeof model === 'string' ? model : 'LLAMA_3_2_1B'
-    const modelConfig = OLLAMA_MODELS[modelKey as OllamaModelType] || OLLAMA_MODELS.LLAMA_3_2_1B
+    const modelKey = typeof model === 'string' ? model : 'QWEN_2_5_0B'
+    const modelConfig = OLLAMA_MODELS[modelKey as OllamaModelType] || OLLAMA_MODELS.QWEN_2_5_0B
     const ollamaModelName = modelConfig.modelId
 
     l.wait(`    - modelName: ${modelKey}\n    - ollamaModelName: ${ollamaModelName}`)

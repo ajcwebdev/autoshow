@@ -55,7 +55,7 @@ const commands = [
   },
   {
     // Process a local audio file with multiple prompt sections, Whisper 'tiny' model, and Ollama.
-    cmd: 'npm run as -- --file "content/audio.mp3" --prompt titles summary shortChapters takeaways questions --whisper tiny --ollama LLAMA_3_2_1B',
+    cmd: 'npm run as -- --file "content/audio.mp3" --prompt titles summary --whisper tiny --ollama',
     expectedFile: 'audio-ollama-shownotes.md',
     newName: '10-all-prompts-ollama-shownotes.md'
   },

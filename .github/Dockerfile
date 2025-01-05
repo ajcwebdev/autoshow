@@ -87,8 +87,12 @@ WORKDIR /root/.ollama
 # 3. Start Ollama server and pull models
 RUN ollama serve & \
     sleep 10 && \
-    ollama pull llama3.2:1b && \
+    ollama pull qwen2.5:0.5b && \
     ollama ls && \
+    echo "Listing /root/.ollama after qwen2.5:0.5b pull:" && \
+    ls -lh /root/.ollama || true && \
+    echo "Listing /root/.ollama/models after qwen2.5:0.5b pull:" && \
+    ls -lh /root/.ollama/models || true && \
     pkill ollama
 
 # ---------------------------------------------------
@@ -102,6 +106,11 @@ COPY --from=ollama /bin/ollama /usr/local/bin/ollama
 
 # 2. Copy pre-downloaded models
 COPY --from=ollama /root/.ollama /root/.ollama
+
+RUN echo "Listing /root/.ollama in final stage:" && \
+    ls -lh /root/.ollama || true && \
+    echo "Listing /root/.ollama/models in final stage:" && \
+    ls -lh /root/.ollama/models || true
 
 # Set environment variables for Whisper
 ENV WHISPER_FORCE_CPU=1

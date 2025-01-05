@@ -17,6 +17,13 @@ log_error() {
     exit 1
 }
 
+# Start Ollama server in the background
+echo "Starting Ollama server..."
+ollama serve &
+
+# Wait for Ollama server to start
+sleep 5
+
 # If first argument is "serve", then start the server.
 if [ "$1" = "serve" ]; then
     echo "Starting Autoshow server..."

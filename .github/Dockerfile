@@ -91,9 +91,6 @@ RUN ollama serve & \
     ollama ls && \
     pkill ollama
 
-# 4. Confirm that the models are downloaded
-RUN ollama ls
-
 # ---------------------------------------------------
 # 3) Final stage combining everything
 # ---------------------------------------------------
@@ -116,7 +113,9 @@ RUN mkdir -p /usr/src/app/content
 # 4. Set proper permissions for the entire app directory including content
 RUN chown -R node:node /usr/src/app \
  && chmod -R 755 /usr/src/app \
- && chmod 777 /usr/src/app/content
+ && chmod 777 /usr/src/app/content \
+ && chown -R node:node /root/.ollama \
+ && chmod -R 755 /root/.ollama
 
 # Switch to non-root user
 USER node

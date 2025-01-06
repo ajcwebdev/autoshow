@@ -42,7 +42,7 @@ const commands = [
     newName: '08-docker-file-default.md'
   },
   {
-    cmd: 'npm run docker-cli -- --file "content/audio.mp3" --prompt titles --whisper base --ollama LLAMA_3_2_1B',
+    cmd: 'npm run docker-cli -- --file "content/audio.mp3" --prompt titles --whisper base --ollama',
     expectedFile: 'audio-ollama-shownotes.md',
     newName: '09-docker-titles-prompt-whisper-tiny-ollama-shownotes.md'
   },

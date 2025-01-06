@@ -1,9 +1,9 @@
 // src/llms/groq.ts
 
 import { env } from 'node:process'
-import { GROQ_MODELS } from '../utils/llm-globals'
+import { GROQ_MODELS } from '../utils/globals/llms'
 import { err, logAPIResults } from '../utils/logging'
-import type { LLMFunction, GroqModelType, GroqChatCompletionResponse } from '../types/llms'
+import type { LLMFunction, GroqModelType, GroqChatCompletionResponse } from '../utils/types/llms'
 
 /**
  * Function to call the Groq chat completion API.

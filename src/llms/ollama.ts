@@ -1,10 +1,10 @@
 // src/llms/ollama.ts
 
 import { env } from 'node:process'
-import { OLLAMA_MODELS } from '../utils/llm-globals'
+import { OLLAMA_MODELS } from '../utils/globals/llms'
 import { l, err, logAPIResults } from '../utils/logging'
 import { checkOllamaServerAndModel } from '../utils/validate-option'
-import type { LLMFunction, OllamaModelType, OllamaResponse } from '../types/llms'
+import type { LLMFunction, OllamaModelType, OllamaResponse } from '../utils/types/llms'
 
 /**
  * callOllama()

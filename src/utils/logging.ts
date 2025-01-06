@@ -1,27 +1,12 @@
 // src/utils/logging.ts
 
-import type { ProcessingOptions } from '../types/process'
-import type { ModelConfigValue } from '../types/llms'
-import type { TokenUsage, CostCalculation, APILogInfo, ChainableLogger } from '../types/logging'
-import { 
-  GPT_MODELS, CLAUDE_MODELS, GEMINI_MODELS, COHERE_MODELS, MISTRAL_MODELS, OLLAMA_MODELS, FIREWORKS_MODELS, TOGETHER_MODELS, GROQ_MODELS
-} from './llm-globals'
+import { execPromise } from './globals/process'
+import { ALL_MODELS } from './globals/llms'
 import chalk from 'chalk'
 
-/**
- * All available model configurations combined
- */
-const ALL_MODELS: { [key: string]: ModelConfigValue } = {
-  ...GPT_MODELS,
-  ...CLAUDE_MODELS,
-  ...GEMINI_MODELS,
-  ...COHERE_MODELS,
-  ...MISTRAL_MODELS,
-  ...OLLAMA_MODELS,
-  ...FIREWORKS_MODELS,
-  ...TOGETHER_MODELS,
-  ...GROQ_MODELS
-}
+import type { ProcessingOptions } from './types/process'
+import type { TranscriptionCostInfo } from './types/transcription'
+import type { TokenUsage, CostCalculation, APILogInfo, ChainableLogger } from './types/logging'
 
 /**
  * Finds the model configuration based on the model key
@@ -160,6 +145,34 @@ export function logAPIResults(info: APILogInfo): void {
   if (costLines.length > 0) {
     l.wait(`  - Cost Breakdown:\n    - ${costLines.join('\n    - ')}`)
   }
+}
+
+/**
+ * Asynchronously retrieves the duration (in seconds) of an audio file using ffprobe.
+ * @param filePath - The path to the audio file.
+ * @returns {Promise<number>} - The duration of the audio in seconds.
+ * @throws {Error} If ffprobe fails or returns invalid data.
+ */
+export async function getAudioDurationInSeconds(filePath: string): Promise<number> {
+  const cmd = `ffprobe -v error -show_entries format=duration -of csv=p=0 "${filePath}"`
+  const { stdout } = await execPromise(cmd)
+  const seconds = parseFloat(stdout.trim())
+  if (isNaN(seconds)) {
+    throw new Error(`Could not parse audio duration for file: ${filePath}`)
+  }
+  return seconds
+}
+
+/**
+ * Logs the estimated transcription cost based on audio duration and per-minute cost.
+ * @param info - Object containing the model name, total cost, and audio length in minutes.
+ */
+export function logTranscriptionCost(info: TranscriptionCostInfo): void {
+  l.wait(
+    `  - Estimated Transcription Cost for ${info.modelName}:\n` +
+    `    - Audio Length: ${info.minutes.toFixed(2)} minutes\n` +
+    `    - Cost: $${info.cost.toFixed(4)}`
+  )
 }
 
 /**

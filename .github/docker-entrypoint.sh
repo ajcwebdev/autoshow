@@ -34,4 +34,4 @@ fi
 
 # Otherwise, run the CLI by default.
 echo "Running Autoshow CLI..."
-tsx --no-warnings --experimental-sqlite src/cli/commander.ts "$@" || log_error "CLI failed to start"
+tsx --no-warnings --experimental-sqlite src/commander.ts "$@" || log_error "CLI failed to start"

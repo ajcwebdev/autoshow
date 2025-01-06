@@ -10,16 +10,18 @@
 
 import { readFile } from 'node:fs/promises'
 import { env } from 'node:process'
-import { l, err } from '../utils/logging'
-import { formatAssemblyTranscript } from '../utils/format-transcript'
-import type { ProcessingOptions } from '../types/process'
+import { l, err, getAudioDurationInSeconds, logTranscriptionCost } from '../utils/logging'
+import { formatAssemblyTranscript } from './format-transcript'
+import { ASSEMBLY_MODELS } from '../utils/globals/transcription'
+import type { ProcessingOptions } from '../utils/types/process'
 import type {
   AssemblyAITranscriptionOptions,
   AssemblyAIErrorResponse,
   AssemblyAIUploadResponse,
   AssemblyAITranscript,
-  AssemblyAIPollingResponse
-} from '../types/transcription'
+  AssemblyAIPollingResponse,
+  AssemblyModelType
+} from '../utils/types/transcription'
 
 const BASE_URL = 'https://api.assemblyai.com/v2'
 
@@ -27,15 +29,18 @@ const BASE_URL = 'https://api.assemblyai.com/v2'
  * Main function to handle transcription using AssemblyAI.
  * @param options - Additional processing options (e.g., speaker labels)
  * @param finalPath - The base filename (without extension) for input/output files
+ * @param model - The AssemblyAI model to use (default is 'NANO')
  * @returns Promise<string> - The formatted transcript content
  * @throws Error if any step of the process fails (upload, transcription request, polling, formatting)
  */
 export async function callAssembly(
   options: ProcessingOptions,
-  finalPath: string
+  finalPath: string,
+  model: string = 'NANO'
 ): Promise<string> {
-  l.wait('\n  Using AssemblyAI for transcription...\n')
-  l.wait(`\n  Options:\n\n${JSON.stringify(options)}`)
+  l.wait('\n  callAssembly called with arguments:\n')
+  l.wait(`    - finalPath: ${finalPath}`)
+  l.wait(`    - model: ${model}`)
 
   if (!env['ASSEMBLY_API_KEY']) {
     throw new Error('ASSEMBLY_API_KEY environment variable is not set. Please set it to your AssemblyAI API key.')
@@ -49,6 +54,13 @@ export async function callAssembly(
   try {
     const { speakerLabels } = options
     const audioFilePath = `${finalPath}.wav`
+
+    const modelInfo = ASSEMBLY_MODELS[model as AssemblyModelType] || ASSEMBLY_MODELS.NANO
+
+    const seconds = await getAudioDurationInSeconds(audioFilePath)
+    const minutes = seconds / 60
+    const estimatedCost = modelInfo.costPerMinute * minutes
+    logTranscriptionCost({ modelName: modelInfo.name, cost: estimatedCost, minutes })
 
     // Step 1: Uploading the audio file to AssemblyAI
     l.wait('\n  Uploading audio file to AssemblyAI...')
@@ -78,7 +90,7 @@ export async function callAssembly(
     // Step 2: Requesting the transcription
     const transcriptionOptions: AssemblyAITranscriptionOptions = {
       audio_url: upload_url,
-      speech_model: 'nano',
+      speech_model: modelInfo.modelId as 'default' | 'nano',
       speaker_labels: speakerLabels || false
     }
 
@@ -104,7 +116,6 @@ export async function callAssembly(
         break
       }
 
-      // Wait 3 seconds before polling again
       await new Promise(resolve => setTimeout(resolve, 3000))
     }
 
@@ -113,11 +124,9 @@ export async function callAssembly(
     }
 
     // Step 4: Formatting the transcript
-    // The formatAssemblyTranscript function handles all formatting logic including speaker labels and timestamps.
     const txtContent = formatAssemblyTranscript(transcript, speakerLabels || false)
     return txtContent
   } catch (error) {
-    // If any error occurred at any step, log it and rethrow
     err(`Error processing the transcription: ${(error as Error).message}`)
     throw error
   }

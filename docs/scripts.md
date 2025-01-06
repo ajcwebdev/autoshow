@@ -72,10 +72,10 @@ Sets up a base command for running TypeScript files using `tsx`, a TypeScript ex
 
 ### `as`
 
-Executes the main command-line interface (CLI) application. Runs `src/cli/commander.ts` using `tsx` with the base options defined in `tsx:base`.
+Executes the main command-line interface (CLI) application. Runs `src/commander.ts` using `tsx` with the base options defined in `tsx:base`.
 
 ```json
-"as": "npm run tsx:base -- src/cli/commander.ts"
+"as": "npm run tsx:base -- src/commander.ts"
 ```
 
 ### `serve`
@@ -248,7 +248,7 @@ Runs the CLI application using `Bun`, an alternative JavaScript runtime.
 - `--no-warnings`: Suppresses warnings during execution.
 
 ```json
-"bun": "bun --env-file=.env --no-warnings src/cli/commander.ts"
+"bun": "bun --env-file=.env --no-warnings src/commander.ts"
 ```
 
 ## `deno`
@@ -263,5 +263,5 @@ Runs the CLI application using `Deno`, another JavaScript and TypeScript runtime
 - `--unstable-sloppy-imports`: Enables experimental import features.
 
 ```json
-"deno": "deno run --allow-sys --allow-read --allow-run --allow-write --allow-env --unstable-sloppy-imports src/cli/commander.ts"
+"deno": "deno run --allow-sys --allow-read --allow-run --allow-write --allow-env --unstable-sloppy-imports src/commander.ts"
 ```

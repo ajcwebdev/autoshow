@@ -12,9 +12,9 @@ import { selectPrompts } from '../process-steps/04-select-prompt'
 import { runLLM } from '../process-steps/05-run-llm'
 import { cleanUpFiles } from '../process-steps/06-clean-up-files'
 import { l, err } from '../utils/logging'
-import type { ProcessingOptions } from '../types/process'
-import type { TranscriptServices } from '../types/transcription'
-import type { LLMServices } from '../types/llms'
+import type { ProcessingOptions } from '../utils/types/process'
+import type { TranscriptServices } from '../utils/types/transcription'
+import type { LLMServices } from '../utils/types/llms'
 
 /**
  * Processes a local audio or video file through a series of operations:

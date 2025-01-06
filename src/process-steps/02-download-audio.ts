@@ -10,8 +10,8 @@
 import { readFile, access } from 'node:fs/promises'
 import { fileTypeFromBuffer } from 'file-type'
 import { l, err } from '../utils/logging'
-import { execPromise, execFilePromise } from '../utils/globals'
-import type { SupportedFileType, ProcessingOptions } from '../types/process'
+import { execPromise, execFilePromise } from '../utils/globals/process'
+import type { SupportedFileType, ProcessingOptions } from '../utils/types/process'
 
 /**
  * Downloads or processes audio content from various sources and converts it to a standardized WAV format.

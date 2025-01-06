@@ -14,9 +14,9 @@ import { cleanUpFiles } from '../process-steps/06-clean-up-files'
 import { saveRSSFeedInfo } from '../utils/save-info'
 import { validateRSSOptions, selectItems } from '../utils/validate-option'
 import { l, err, logRSSProcessingAction, logRSSProcessingStatus, logRSSSeparator } from '../utils/logging'
-import type { ProcessingOptions, RSSItem } from '../types/process'
-import type { TranscriptServices } from '../types/transcription'
-import type { LLMServices } from '../types/llms'
+import type { ProcessingOptions, RSSItem } from '../utils/types/process'
+import type { TranscriptServices } from '../utils/types/transcription'
+import type { LLMServices } from '../utils/types/llms'
 
 /**
  * Processes a single RSS item by generating markdown, downloading audio, transcribing,

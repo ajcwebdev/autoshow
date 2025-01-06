@@ -1,9 +1,9 @@
 // src/llms/together.ts
 
 import { env } from 'node:process'
-import { TOGETHER_MODELS } from '../utils/llm-globals'
+import { TOGETHER_MODELS } from '../utils/globals/llms'
 import { err, logAPIResults } from '../utils/logging'
-import type { LLMFunction, TogetherModelType, TogetherResponse } from '../types/llms'
+import type { LLMFunction, TogetherModelType, TogetherResponse } from '../utils/types/llms'
 
 /**
  * Main function to call Together AI API.

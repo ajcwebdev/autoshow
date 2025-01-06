@@ -2,9 +2,9 @@
 
 import { env } from 'node:process'
 import { GoogleGenerativeAI } from "@google/generative-ai"
-import { GEMINI_MODELS } from '../utils/llm-globals'
+import { GEMINI_MODELS } from '../utils/globals/llms'
 import { err, logAPIResults } from '../utils/logging'
-import type { LLMFunction, GeminiModelType } from '../types/llms'
+import type { LLMFunction, GeminiModelType } from '../utils/types/llms'
 
 /**
  * Utility function to introduce a delay

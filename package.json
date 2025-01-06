@@ -21,7 +21,7 @@
     "setup-docker": "docker build --progress=plain -t autoshow -f .github/Dockerfile .",
     "docker-setup": "docker build --progress=plain -t autoshow -f .github/Dockerfile .",
     "setup-all": "npm run setup && npm run docker-setup",
-    "as": "npm run tsx:base -- src/cli/commander.ts",
+    "as": "npm run tsx:base -- src/commander.ts",
     "video": "npm run as -- --video",
     "urls": "npm run as -- --urls",
     "playlist": "npm run as -- --playlist",
@@ -44,8 +44,8 @@
     "docker-debug": "docker run --rm -it --entrypoint sh autoshow -c 'ls -lh /usr/src/app && ls -lh /usr/src/app/whisper.cpp/models && ls -lh /usr/src/app/whisper.cpp/build/bin'",
     "ollama-debug": "docker run --rm -it --entrypoint sh autoshow -c 'ls -l /usr/local/bin/ollama && ls -lh /root/.ollama'",
     "prune": "docker system prune -af --volumes && docker image prune -af && docker container prune -f && docker volume prune -af",
-    "bun": "bun --env-file=.env --no-warnings src/cli/commander.ts",
-    "deno": "deno run --allow-sys --allow-read --allow-run --allow-write --allow-env --unstable-sloppy-imports src/cli/commander.ts"
+    "bun": "bun --env-file=.env --no-warnings src/commander.ts",
+    "deno": "deno run --allow-sys --allow-read --allow-run --allow-write --allow-env --unstable-sloppy-imports src/commander.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "0.33.1",

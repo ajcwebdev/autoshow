@@ -3,7 +3,7 @@
 import { readFile } from 'fs/promises'
 import { sections } from '../utils/prompts'
 import { err, l } from '../utils/logging'
-import type { ProcessingOptions } from '../types/process'
+import type { ProcessingOptions } from '../utils/types/process'
 
 /**
  * Reads a custom prompt from a markdown file.

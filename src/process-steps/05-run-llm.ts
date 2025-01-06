@@ -10,9 +10,9 @@ import { writeFile } from 'node:fs/promises'
 import { insertShowNote } from '../server/db'
 import { l, err } from '../utils/logging'
 import { retryLLMCall } from '../utils/retry'
-import { LLM_FUNCTIONS } from '../utils/llm-globals'
-import type { ProcessingOptions, EpisodeMetadata } from '../types/process'
-import type { LLMServices, LLMFunction } from '../types/llms'
+import { LLM_FUNCTIONS } from '../utils/globals/llms'
+import type { ProcessingOptions, EpisodeMetadata } from '../utils/types/process'
+import type { LLMServices, LLMFunction } from '../utils/types/llms'
 
 /**
  * Processes a transcript using a specified Language Model service.

@@ -2,9 +2,9 @@
 
 import { env } from 'node:process'
 import { CohereClient } from 'cohere-ai'
-import { COHERE_MODELS } from '../utils/llm-globals'
+import { COHERE_MODELS } from '../utils/globals/llms'
 import { err, logAPIResults } from '../utils/logging'
-import type { LLMFunction, CohereModelType } from '../types/llms'
+import type { LLMFunction, CohereModelType } from '../utils/types/llms'
 
 /**
  * Main function to call Cohere API.

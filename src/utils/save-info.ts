@@ -1,9 +1,9 @@
 // src/utils/save-info.ts
 
 import { writeFile } from 'node:fs/promises'
-import { execFilePromise } from '../utils/globals'
+import { execFilePromise } from './globals/process'
 import { l, err } from '../utils/logging'
-import type { VideoMetadata, VideoInfo, RSSItem } from '../types/process'
+import type { VideoMetadata, VideoInfo, RSSItem } from './types/process'
 
 /**
  * Sanitizes a title string for use in filenames by:

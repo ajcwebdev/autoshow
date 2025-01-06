@@ -10,34 +10,45 @@
 
 import { readFile } from 'node:fs/promises'
 import { env } from 'node:process'
-import { l, err } from '../utils/logging'
-import { formatDeepgramTranscript } from '../utils/format-transcript'
-import type { ProcessingOptions } from '../types/process'
-import type { DeepgramResponse } from '../types/transcription'
+import { l, err, getAudioDurationInSeconds, logTranscriptionCost } from '../utils/logging'
+import { formatDeepgramTranscript } from './format-transcript'
+import { DEEPGRAM_MODELS } from '../utils/globals/transcription'
+import type { ProcessingOptions } from '../utils/types/process'
+import type { DeepgramResponse, DeepgramModelType } from '../utils/types/transcription'
 
 /**
  * Main function to handle transcription using Deepgram API.
- * @param options - Additional processing options (e.g., speaker labels)
- * @param finalPath - The base filename (without extension) for input/output files
- * @returns Promise<string> - The formatted transcript content
- * @throws Error if any step of the process fails (upload, transcription request, formatting)
+ * @param {ProcessingOptions} options - Additional processing options (e.g., speaker labels)
+ * @param {string} finalPath - The base filename (without extension) for input/output files
+ * @param {string} [model] - The Deepgram model to use (default is 'NOVA_2')
+ * @returns {Promise<string>} - The formatted transcript content
+ * @throws {Error} If any step of the process fails (upload, transcription request, formatting)
  */
 export async function callDeepgram(
-  options: ProcessingOptions,
-  finalPath: string
+  _options: ProcessingOptions,
+  finalPath: string,
+  model: string = 'NOVA_2'
 ): Promise<string> {
-  l.wait('\n  Using Deepgram for transcription...\n')
-  l.wait(`\n  Options:\n\n${JSON.stringify(options)}`)
+  l.wait('\n  callDeepgram called with arguments:\n')
+  l.wait(`    - finalPath: ${finalPath}`)
+  l.wait(`    - model: ${model}`)
 
   if (!env['DEEPGRAM_API_KEY']) {
     throw new Error('DEEPGRAM_API_KEY environment variable is not set. Please set it to your Deepgram API key.')
   }
 
   try {
+    const modelInfo = DEEPGRAM_MODELS[model as DeepgramModelType] || DEEPGRAM_MODELS.NOVA_2
+
+    const seconds = await getAudioDurationInSeconds(`${finalPath}.wav`)
+    const minutes = seconds / 60
+    const estimatedCost = modelInfo.costPerMinute * minutes
+    logTranscriptionCost({ modelName: modelInfo.name, cost: estimatedCost, minutes })
+
     const apiUrl = new URL('https://api.deepgram.com/v1/listen')
 
     // Set query parameters for the chosen model and formatting
-    apiUrl.searchParams.append('model', 'nova-2')
+    apiUrl.searchParams.append('model', modelInfo.modelId)
     apiUrl.searchParams.append('smart_format', 'true')
     apiUrl.searchParams.append('punctuate', 'true')
     apiUrl.searchParams.append('diarize', 'false')
@@ -62,8 +73,7 @@ export async function callDeepgram(
 
     const result = await response.json() as DeepgramResponse
 
-    // Extract the transcription results
-    // Deepgram returns results in channels->alternatives->words
+    // Extract the transcription results, Deepgram returns results in channels->alternatives->words
     const channel = result.results?.channels?.[0]
     const alternative = channel?.alternatives?.[0]
 
@@ -75,7 +85,6 @@ export async function callDeepgram(
     const txtContent = formatDeepgramTranscript(alternative.words)
     return txtContent
   } catch (error) {
-    // If any error occurred at any step, log it and rethrow
     err(`Error processing the transcription: ${(error as Error).message}`)
     throw error
   }

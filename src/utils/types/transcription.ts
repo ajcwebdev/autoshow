@@ -13,17 +13,21 @@ export type TranscriptServiceConfig = {
 }
 
 /**
+ * Interface for transcription cost info.
+ */
+export interface TranscriptionCostInfo {
+  modelName: string
+  cost: number
+  minutes: number
+}
+
+/**
  * Available Whisper model types with varying sizes and capabilities.
  */
 export type WhisperModelType = 'tiny' | 'tiny.en' | 'base' | 'base.en' | 'small' | 'small.en' | 'medium' | 'medium.en' | 'large-v1' | 'large-v2' | 'large-v3-turbo' | 'turbo'
 
-/**
- * Function signature for the runner functions
- */
-export type WhisperRunner = (
-  finalPath: string,
-  whisperModel: string
-) => Promise<string>
+export type DeepgramModelType = 'NOVA_2' | 'NOVA' | 'ENHANCED' | 'BASE'
+export type AssemblyModelType = 'BEST' | 'NANO'
 
 /**
  * Response structure from Deepgram API.

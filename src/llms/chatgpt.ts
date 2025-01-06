@@ -2,9 +2,9 @@
 
 import { env } from 'node:process'
 import { OpenAI } from 'openai'
-import { GPT_MODELS } from '../utils/llm-globals'
+import { GPT_MODELS } from '../utils/globals/llms'
 import { err, logAPIResults } from '../utils/logging'
-import type { LLMFunction, ChatGPTModelType } from '../types/llms'
+import type { LLMFunction, ChatGPTModelType } from '../utils/types/llms'
 
 /**
  * Main function to call ChatGPT API.

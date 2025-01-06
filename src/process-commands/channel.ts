@@ -7,12 +7,12 @@
 
 import { processVideo } from './video'
 import { saveChannelInfo } from '../utils/save-info'
-import { execFilePromise } from '../utils/globals'
+import { execFilePromise } from '../utils/globals/process'
 import { l, err, logChannelProcessingAction, logChannelProcessingStatus, logChannelSeparator } from '../utils/logging'
 import { validateChannelOptions, selectVideos } from '../utils/validate-option'
-import type { ProcessingOptions } from '../types/process'
-import type { TranscriptServices } from '../types/transcription'
-import type { LLMServices } from '../types/llms'
+import type { ProcessingOptions } from '../utils/types/process'
+import type { TranscriptServices } from '../utils/types/transcription'
+import type { LLMServices } from '../utils/types/llms'
 
 /**
  * Processes an entire YouTube channel by:

@@ -5,173 +5,42 @@
  * @packageDocumentation
  */
 
-import { writeFile, readFile } from 'node:fs/promises'
-import { generateMarkdown, sanitizeTitle } from '../process-steps/01-generate-markdown'
+import { generateMarkdown } from '../process-steps/01-generate-markdown'
 import { downloadAudio } from '../process-steps/02-download-audio'
 import { runTranscription } from '../process-steps/03-run-transcription'
+import { selectPrompts } from '../process-steps/04-select-prompt'
 import { runLLM } from '../process-steps/05-run-llm'
 import { cleanUpFiles } from '../process-steps/06-clean-up-files'
-import { validateRSSOptions } from '../utils/validate-option'
+import { saveRSSFeedInfo } from '../utils/save-info'
+import { validateRSSOptions, selectItems } from '../utils/validate-option'
 import { l, err, logRSSProcessingAction, logRSSProcessingStatus, logRSSSeparator } from '../utils/logging'
-import { parser } from '../utils/globals'
 import type { ProcessingOptions, RSSItem } from '../types/process'
 import type { TranscriptServices } from '../types/transcription'
 import type { LLMServices } from '../types/llms'
 
 /**
- * Fetches and parses an RSS feed with timeout handling.
+ * Processes a single RSS item by generating markdown, downloading audio, transcribing,
+ * selecting a prompt, and possibly running an LLM. 
  * 
- * @param rssUrl - URL of the RSS feed to fetch
- * @returns The parsed RSS feed object
- * @throws Will exit process on network or parsing errors
- */
-async function fetchRSSFeed(rssUrl: string) {
-  const controller = new AbortController()
-  const timeout = setTimeout(() => controller.abort(), 10000) // 10 seconds timeout
-
-  try {
-    const response = await fetch(rssUrl, {
-      method: 'GET',
-      headers: { 'Accept': 'application/rss+xml' },
-      signal: controller.signal,
-    })
-    clearTimeout(timeout)
-
-    if (!response.ok) {
-      err(`HTTP error! status: ${response.status}`)
-      process.exit(1)
-    }
-
-    const text = await response.text()
-    return parser.parse(text)
-  } catch (error) {
-    if ((error as Error).name === 'AbortError') {
-      err('Error: Fetch request timed out.')
-    } else {
-      err(`Error fetching RSS feed: ${(error as Error).message}`)
-    }
-    process.exit(1)
-  }
-}
-
-/**
- * Extracts and normalizes items from a parsed RSS feed.
+ * Now returns an object containing frontMatter, the prompt, the LLM output, and transcript.
  * 
- * @param feed - Parsed RSS feed object
- * @returns The items and channel title from the feed
- * @throws Will exit process if no valid items are found
+ * @param item - A single RSS item to process
+ * @param options - Global processing options
+ * @param llmServices - Optional LLM services
+ * @param transcriptServices - Optional transcription services
+ * @returns An object containing frontMatter, prompt, llmOutput, and transcript
  */
-function extractFeedItems(feed: any): { items: RSSItem[], channelTitle: string } {
-  const { title: channelTitle, link: channelLink, image: channelImageObject, item: feedItems } = feed.rss.channel
-  const channelImage = channelImageObject?.url || ''
-  const feedItemsArray = Array.isArray(feedItems) ? feedItems : [feedItems]
-  const defaultDate = new Date().toISOString().substring(0, 10)
-
-  const items: RSSItem[] = feedItemsArray
-    .filter((item) => {
-      if (!item.enclosure || !item.enclosure.type) return false
-      const audioVideoTypes = ['audio/', 'video/']
-      return audioVideoTypes.some((type) => item.enclosure.type.startsWith(type))
-    })
-    .map((item) => {
-      let publishDate: string
-      try {
-        const date = item.pubDate ? new Date(item.pubDate) : new Date()
-        publishDate = date.toISOString().substring(0, 10)
-      } catch {
-        publishDate = defaultDate
-      }
-
-      return {
-        showLink: item.enclosure?.url || '',
-        channel: channelTitle || '',
-        channelURL: channelLink || '',
-        title: item.title || '',
-        description: '',
-        publishDate,
-        coverImage: item['itunes:image']?.href || channelImage || ''
-      }
-    })
-
-  if (items.length === 0) {
-    err('Error: No audio/video items found in the RSS feed.')
-    process.exit(1)
-  }
-
-  return { items, channelTitle }
-}
-
-/**
- * Saves feed information to a JSON file.
- * 
- * @param items - Array of RSS items to save
- * @param channelTitle - The title of the RSS channel
- */
-async function saveFeedInfo(items: RSSItem[], channelTitle: string): Promise<void> {
-  const jsonContent = JSON.stringify(items, null, 2)
-  const sanitizedTitle = sanitizeTitle(channelTitle)
-  const jsonFilePath = `content/${sanitizedTitle}_info.json`
-  await writeFile(jsonFilePath, jsonContent)
-  l.wait(`RSS feed information saved to: ${jsonFilePath}`)
-}
-
-/**
- * Selects which items to process based on provided options.
- * 
- * @param items - All available RSS items
- * @param options - Configuration options for filtering
- * @returns Array of items to process
- * @throws Will exit process if no matching items are found
- */
-function selectItemsToProcess(items: RSSItem[], options: ProcessingOptions): RSSItem[] {
-  if (options.item && options.item.length > 0) {
-    const matchedItems = items.filter((item) => options.item!.includes(item.showLink))
-    if (matchedItems.length === 0) {
-      err('Error: No matching items found for the provided URLs.')
-      process.exit(1)
-    }
-    return matchedItems
-  }
-
-  if (options.lastDays !== undefined) {
-    const now = new Date()
-    const cutoff = new Date(now.getTime() - (options.lastDays * 24 * 60 * 60 * 1000))
-  
-    const matchedItems = items.filter((item) => {
-      const itemDate = new Date(item.publishDate)
-      return itemDate >= cutoff
-    })
-    return matchedItems
-  }
-  
-  if (options.date && options.date.length > 0) {
-    const selectedDates = new Set(options.date)
-    const matchedItems = items.filter((item) => selectedDates.has(item.publishDate))
-    return matchedItems
-  }
-
-  if (options.last) {
-    return items.slice(0, options.last)
-  }
-
-  const sortedItems = options.order === 'oldest' ? items.slice().reverse() : items
-  return sortedItems.slice(options.skip || 0)
-}
-
-/**
- * Processes a single RSS feed item.
- * 
- * @param options - Configuration options for processing
- * @param item - RSS item to process
- * @param llmServices - Optional language model service
- * @param transcriptServices - Optional transcription service
- */
-async function processItem(
-  options: ProcessingOptions,
+export async function processItems(
   item: RSSItem,
+  options: ProcessingOptions,
   llmServices?: LLMServices,
   transcriptServices?: TranscriptServices
-): Promise<void> {
+): Promise<{
+  frontMatter: string
+  prompt: string
+  llmOutput: string
+  transcript: string
+}> {
   l.opts('Parameters passed to processItem:\n')
   l.opts(`  - llmServices: ${llmServices}\n  - transcriptServices: ${transcriptServices}\n`)
 
@@ -186,47 +55,39 @@ async function processItem(
     const transcript = await runTranscription(options, finalPath, transcriptServices)
 
     // Step 4 - Select Prompt
-    const promptText = await readFile(options.customPrompt || '', 'utf-8').catch(() => '')
+    const selectedPrompts = await selectPrompts(options)
 
     // Step 5 - Run LLM (optional)
-    let generatedPrompt = ''
-    if (!promptText) {
-      const defaultPrompt = await import('../process-steps/04-select-prompt')
-      generatedPrompt = await defaultPrompt.generatePrompt(options.prompt, undefined)
-    } else {
-      generatedPrompt = promptText
-    }
-
-    await runLLM(
+    // (Adjust return value from runLLM if needed to capture desired data)
+    const llmOutput = await runLLM(
       options,
       finalPath,
       frontMatter,
-      generatedPrompt,
+      selectedPrompts,
       transcript,
       metadata,
       llmServices
     )
 
-    if (!options.noCleanUp) {
+    // Clean up downloaded audio if not saving
+    if (!options.saveAudio) {
       await cleanUpFiles(finalPath)
+    }
+
+    return {
+      frontMatter,
+      prompt: selectedPrompts,
+      llmOutput: llmOutput || '',
+      transcript,
     }
   } catch (error) {
     err(`Error processing item ${item.title}: ${(error as Error).message}`)
-  }
-}
-
-/**
- * Processes a batch of RSS items.
- */
-async function processItems(
-  items: RSSItem[],
-  options: ProcessingOptions,
-  llmServices?: LLMServices,
-  transcriptServices?: TranscriptServices
-): Promise<void> {
-  for (const [index, item] of items.entries()) {
-    logRSSSeparator(index, items.length, item.title)
-    await processItem(options, item, llmServices, transcriptServices)
+    return {
+      frontMatter: '',
+      prompt: '',
+      llmOutput: '',
+      transcript: '',
+    }
   }
 }
 
@@ -247,21 +108,32 @@ export async function processRSS(
     validateRSSOptions(options)
     logRSSProcessingAction(options)
 
-    const feed = await fetchRSSFeed(rssUrl)
-    const { items, channelTitle } = extractFeedItems(feed)
+    // Combined fetch + filtering now happens in selectItems:
+    const { items, channelTitle } = await selectItems(rssUrl, options)
 
+    // If --info, just save and exit
     if (options.info) {
-      await saveFeedInfo(items, channelTitle)
+      await saveRSSFeedInfo(items, channelTitle)
       return
     }
 
-    const itemsToProcess = selectItemsToProcess(items, options)
-    if (itemsToProcess.length === 0) {
-      l.wait(`\nNo items found matching the provided criteria for this feed. Skipping...`)
+    // If no filtered items remain, skip
+    if (items.length === 0) {
+      l.wait('\nNo items found matching the provided criteria for this feed. Skipping...')
       return
     }
-    logRSSProcessingStatus(items.length, itemsToProcess.length, options)
-    await processItems(itemsToProcess, options, llmServices, transcriptServices)
+
+    // Log info about the filter results and process
+    logRSSProcessingStatus(items.length, items.length, options)
+
+    const results = []
+
+    for (const [index, item] of items.entries()) {
+      logRSSSeparator(index, items.length, item.title)
+      const result = await processItems(item, options, llmServices, transcriptServices)
+      results.push(result)
+    }
+
   } catch (error) {
     err(`Error processing RSS feed: ${(error as Error).message}`)
     process.exit(1)

@@ -47,9 +47,6 @@ export async function cleanUpFiles(id: string): Promise<void> {
   // Define extensions of temporary files to be cleaned up
   const extensions = [
     '.wav',  // Audio files
-    '.txt',  // Transcription text
-    '.md',   // Markdown content
-    '.lrc'   // Lyrics/subtitles
   ]
 
   l.wait(`\n  Temporary files deleted:`)

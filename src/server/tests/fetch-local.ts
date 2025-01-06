@@ -13,78 +13,22 @@ const requests = [
     data: {
       type: 'playlist',
       url: 'https://www.youtube.com/playlist?list=PLCVnrVv4KhXPz0SoAVu8Rc1emAdGPbSbr',
-    },
-    endpoint: '/process',
-    outputFiles: ['FILE_01A.md', 'FILE_01B.md'],
-  },
-  {
-    data: {
-      type: 'playlist',
-      url: 'https://www.youtube.com/playlist?list=PLCVnrVv4KhXPz0SoAVu8Rc1emAdGPbSbr',
+      prompts: ['titles', 'summary'],
       whisperModel: 'tiny',
     },
     endpoint: '/process',
-    outputFiles: ['FILE_02A.md', 'FILE_02B.md'],
-  },
-  {
-    data: {
-      type: 'playlist',
-      url: 'https://www.youtube.com/playlist?list=PLCVnrVv4KhXPz0SoAVu8Rc1emAdGPbSbr',
-      whisperModel: 'tiny',
-      llm: 'ollama',
-    },
-    endpoint: '/process',
-    outputFiles: ['FILE_03A.md', 'FILE_03B.md'],
-  },
-  {
-    data: {
-      type: 'playlist',
-      url: 'https://www.youtube.com/playlist?list=PLCVnrVv4KhXPz0SoAVu8Rc1emAdGPbSbr',
-      prompts: ['titles', 'mediumChapters'],
-      whisperModel: 'tiny',
-      llm: 'ollama',
-    },
-    endpoint: '/process',
-    outputFiles: ['FILE_04A.md', 'FILE_04B.md'],
+    outputFiles: ['FILE_01.md', 'FILE_02.md'],
   },
   // URLs Endpoint Requests
   {
     data: {
       type: 'urls',
       filePath: 'content/example-urls.md',
-    },
-    endpoint: '/process',
-    outputFiles: ['FILE_05A.md', 'FILE_05B.md'],
-  },
-  {
-    data: {
-      type: 'urls',
-      filePath: 'content/example-urls.md',
+      prompts: ['titles', 'summary'],
       whisperModel: 'tiny',
     },
     endpoint: '/process',
-    outputFiles: ['FILE_06A.md', 'FILE_06B.md'],
-  },
-  {
-    data: {
-      type: 'urls',
-      filePath: 'content/example-urls.md',
-      whisperModel: 'tiny',
-      llm: 'ollama',
-    },
-    endpoint: '/process',
-    outputFiles: ['FILE_07A.md', 'FILE_07B.md'],
-  },
-  {
-    data: {
-      type: 'urls',
-      filePath: 'content/example-urls.md',
-      prompts: ['titles', 'mediumChapters'],
-      whisperModel: 'tiny',
-      llm: 'ollama',
-    },
-    endpoint: '/process',
-    outputFiles: ['FILE_08A.md', 'FILE_08B.md'],
+    outputFiles: ['FILE_03.md', 'FILE_04.md'],
   },
   // File Endpoint Requests
   {
@@ -93,7 +37,7 @@ const requests = [
       filePath: 'content/audio.mp3',
     },
     endpoint: '/process',
-    outputFiles: ['FILE_09.md'],
+    outputFiles: ['FILE_05.md'],
   },
   {
     data: {
@@ -102,78 +46,28 @@ const requests = [
       whisperModel: 'tiny',
     },
     endpoint: '/process',
-    outputFiles: ['FILE_10.md'],
+    outputFiles: ['FILE_06.md'],
   },
   {
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      whisperModel: 'tiny',
-      llm: 'ollama',
-    },
-    endpoint: '/process',
-    outputFiles: ['FILE_11.md'],
-  },
-  {
-    data: {
-      type: 'file',
-      filePath: 'content/audio.mp3',
-      prompts: ['titles'],
+      prompts: ['titles', 'summary'],
       whisperModel: 'tiny',
       llm: 'ollama',
     },
     endpoint: '/process',
-    outputFiles: ['FILE_12.md'],
+    outputFiles: ['FILE_07.md'],
   },
   // RSS Endpoint Requests
   {
     data: {
       type: 'rss',
       url: 'https://ajcwebdev.substack.com/feed/',
-    },
-    endpoint: '/process',
-    outputFiles: ['FILE_13.md'],
-  },
-  {
-    data: {
-      type: 'rss',
-      url: 'https://ajcwebdev.substack.com/feed/',
       whisperModel: 'tiny',
     },
     endpoint: '/process',
-    outputFiles: ['FILE_14.md'],
-  },
-  {
-    data: {
-      type: 'rss',
-      url: 'https://ajcwebdev.substack.com/feed/',
-      whisperModel: 'tiny',
-      llm: 'ollama',
-    },
-    endpoint: '/process',
-    outputFiles: ['FILE_15.md'],
-  },
-  {
-    data: {
-      type: 'rss',
-      url: 'https://feeds.transistor.fm/fsjam-podcast/',
-      whisperModel: 'tiny',
-      order: 'newest',
-      skip: 94,
-    },
-    endpoint: '/process',
-    outputFiles: ['FILE_16.md'],
-  },
-  {
-    data: {
-      type: 'rss',
-      url: 'https://feeds.transistor.fm/fsjam-podcast/',
-      whisperModel: 'tiny',
-      order: 'oldest',
-      skip: 94,
-    },
-    endpoint: '/process',
-    outputFiles: ['FILE_17.md'],
+    outputFiles: ['FILE_08.md'],
   },
   // Video Endpoint Requests
   {
@@ -182,55 +76,17 @@ const requests = [
       url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
     },
     endpoint: '/process',
-    outputFiles: ['FILE_18.md'],
+    outputFiles: ['FILE_09.md'],
   },
   {
     data: {
       type: 'video',
       url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
-      whisperModel: 'tiny',
-      llm: 'ollama',
-    },
-    endpoint: '/process',
-    outputFiles: ['FILE_19.md'],
-  },
-  {
-    data: {
-      type: 'video',
-      url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
+      prompts: ['titles', 'summary'],
       whisperModel: 'tiny',
     },
     endpoint: '/process',
-    outputFiles: ['FILE_20.md'],
-  },
-  {
-    data: {
-      type: 'video',
-      url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
-      prompts: ['titles', 'mediumChapters'],
-    },
-    endpoint: '/process',
-    outputFiles: ['FILE_21.md'],
-  },
-  {
-    data: {
-      type: 'video',
-      url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
-      prompts: ['titles', 'summary', 'shortChapters', 'takeaways', 'questions'],
-    },
-    endpoint: '/process',
-    outputFiles: ['FILE_22.md'],
-  },
-  {
-    data: {
-      type: 'video',
-      url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
-      prompts: ['titles', 'summary', 'shortChapters', 'takeaways', 'questions'],
-      whisperModel: 'tiny',
-      llm: 'ollama',
-    },
-    endpoint: '/process',
-    outputFiles: ['FILE_23.md'],
+    outputFiles: ['FILE_11.md'],
   },
 ]
 

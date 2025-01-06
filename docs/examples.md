@@ -125,7 +125,7 @@ npm run as -- \
   --whisper base \
   --chatgpt GPT_4_TURBO \
   --prompt summary shortChapters \
-  --noCleanUp
+  --saveAudio
 ```
 
 Here’s what’s happening in this single command:
@@ -137,7 +137,7 @@ Here’s what’s happening in this single command:
 5. **Transcription**: Uses the `--whisper base` model to transcribe each video in a Docker container.
 6. **LLM**: Uses OpenAI ChatGPT’s GPT-4 Turbo model (`--chatgpt GPT_4_TURBO`) to process the transcripts.
 7. **Prompt**: Generates both a summary and short chapter descriptions (`--prompt summary shortChapters`).
-8. **No Clean Up**: Keeps any intermediary or downloaded files around (`--noCleanUp`) so you can inspect them after the run.
+8. **No Clean Up**: Keeps any intermediary or downloaded files around (`--saveAudio`) so you can inspect them after the run.
 
 ### Process Podcast RSS Feed
 
@@ -248,7 +248,7 @@ npm run as -- \
   --speakerLabels \
   --chatgpt GPT_4 \
   --prompt summary longChapters \
-  --noCleanUp
+  --saveAudio
 ```
 
 - **Input**: Process an RSS feed
@@ -256,7 +256,7 @@ npm run as -- \
 - **Transcription**: Use AssemblyAI (`--assembly`) with speaker labels (`--speakerLabels`)
 - **LLM**: Use ChatGPT’s GPT-4 model (`--chatgpt GPT_4`)
 - **Prompt**: Request both a summary and long chapters
-- **Utility**: Keep all intermediate files (`--noCleanUp`)
+- **Utility**: Keep all intermediate files (`--saveAudio`)
 
 ## Transcription Options
 
@@ -674,22 +674,35 @@ npm run test-docker
 Benchmark tests, each compare different size models for `whisper.cpp` and a Dockerized version.
 
 ```bash
-npm run bench-tiny
-npm run bench-base
-npm run bench-small
-npm run bench-medium
-npm run bench-large
-npm run bench-turbo
+npx tsx --test test/bench/tiny.test.ts
+npx tsx --test test/bench/base.test.ts
+npx tsx --test test/bench/small.test.ts
+npx tsx --test test/bench/medium.test.ts
+npx tsx --test test/bench/large.test.ts
+npx tsx --test test/bench/turbo.test.ts
+```
+
+Test all available models for a certain LLM service.
+
+```bash
+npx tsx --test test/models/chatgpt.test.ts
+npx tsx --test test/models/claude.test.ts
+npx tsx --test test/models/cohere.test.ts
+npx tsx --test test/models/gemini.test.ts
+npx tsx --test test/models/mistral.test.ts
+npx tsx --test test/models/fireworks.test.ts
+npx tsx --test test/models/together.test.ts
+npx tsx --test test/models/groq.test.ts
 ```
 
 ## Skip Cleanup of Intermediate Files
 
-If you want to keep downloaded or temporary files for debugging or reprocessing purposes, use `--noCleanUp`. This prevents the CLI from deleting intermediary or cached files after finishing its run.
+If you want to keep the downloaded audio file for debugging or reprocessing purposes, use `--saveAudio`. This prevents the CLI from deleting WAV files after finishing its run.
 
 ```bash
 npm run as -- \
   --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
-  --noCleanUp
+  --saveAudio
 ```
 
 ## Chat with Show Notes

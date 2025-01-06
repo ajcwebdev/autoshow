@@ -57,7 +57,7 @@ else
     check_ollama_server
     
     # Check and pull required models
-    check_and_pull_model "llama3.2:1b" && check_and_pull_model "llama3.2:3b"
+    check_and_pull_model "llama3.2:1b" && check_and_pull_model "qwen2.5:0.5b"
 fi
 
 # Install npm dependencies

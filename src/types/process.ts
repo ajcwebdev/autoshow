@@ -81,8 +81,8 @@ export type ProcessingOptions = {
   /** Flag to generate JSON file with RSS feed information instead of processing items. */
   info?: boolean
 
-  /** Flag to indicate whether to keep temporary files after processing. */
-  noCleanUp?: boolean
+  /** Flag to indicate whether to keep temporary audio WAV file after processing. */
+  saveAudio?: boolean
 
   /** The Whisper model to use (e.g., 'tiny', 'base'). */
   whisper?: WhisperModelType

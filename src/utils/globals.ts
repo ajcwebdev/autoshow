@@ -150,7 +150,7 @@ export const ACTION_OPTIONS: Array<{
 export const otherOptions: string[] = [
   'speakerLabels',
   'prompt',
-  'noCleanUp',
+  'saveAudio',
   'order',
   'skip',
   'info',

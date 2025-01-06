@@ -67,6 +67,12 @@ export const OLLAMA_MODELS: ModelConfig<OllamaModelType> = {
     inputCostPer1M: 0.00,
     outputCostPer1M: 0.00
   },
+  QWEN_2_5_0B: {
+    name: 'QWEN 2 5 0B',
+    modelId: 'qwen2.5:0.5b',
+    inputCostPer1M: 0.00,
+    outputCostPer1M: 0.00
+  },
   QWEN_2_5_1B: {
     name: 'QWEN 2 5 1B',
     modelId: 'qwen2.5:1.5b',

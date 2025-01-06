@@ -5,12 +5,11 @@
  * @packageDocumentation
  */
 
-import { writeFile } from 'node:fs/promises'
 import { processVideo } from './video'
+import { savePlaylistInfo } from '../utils/save-info'
 import { execFilePromise } from '../utils/globals'
 import { l, err, logPlaylistSeparator } from '../utils/logging'
-import { sanitizeTitle } from '../process-steps/01-generate-markdown'
-import type { ProcessingOptions, VideoMetadata } from '../types/process'
+import type { ProcessingOptions } from '../types/process'
 import type { TranscriptServices } from '../types/transcription'
 import type { LLMServices } from '../types/llms'
 
@@ -69,67 +68,9 @@ export async function processPlaylist(
 
     l.opts(`\nFound ${urls.length} videos in the playlist: ${playlistTitle}...`)
 
-    // If the --info option is provided, extract metadata for all videos
+    // If the --info option is provided, save playlist info and return
     if (options.info) {
-      // Collect metadata for all videos in parallel
-      const metadataList = await Promise.all(
-        urls.map(async (url: string) => {
-          try {
-            // Execute yt-dlp command to extract metadata
-            const { stdout } = await execFilePromise('yt-dlp', [
-              '--restrict-filenames',
-              '--print', '%(webpage_url)s',
-              '--print', '%(channel)s',
-              '--print', '%(uploader_url)s',
-              '--print', '%(title)s',
-              '--print', '%(upload_date>%Y-%m-%d)s',
-              '--print', '%(thumbnail)s',
-              url,
-            ])
-
-            // Split the output into individual metadata fields
-            const [showLink, channel, channelURL, title, publishDate, coverImage] = stdout
-              .trim()
-              .split('\n')
-
-            // Validate that all required metadata fields are present
-            if (!showLink || !channel || !channelURL || !title || !publishDate || !coverImage) {
-              throw new Error('Incomplete metadata received from yt-dlp.')
-            }
-
-            // Return the metadata object
-            return {
-              showLink,
-              channel,
-              channelURL,
-              title,
-              description: '',
-              publishDate,
-              coverImage,
-            } as VideoMetadata
-          } catch (error) {
-            // Log error but return null to filter out failed extractions
-            err(
-              `Error extracting metadata for ${url}: ${
-                error instanceof Error ? error.message : String(error)
-              }`
-            )
-            return null
-          }
-        })
-      )
-
-      // Filter out any null results due to errors
-      const validMetadata = metadataList.filter(
-        (metadata): metadata is VideoMetadata => metadata !== null
-      )
-
-      // Save metadata to a JSON file
-      const jsonContent = JSON.stringify(validMetadata, null, 2)
-      const sanitizedTitle = sanitizeTitle(playlistTitle)
-      const jsonFilePath = `content/${sanitizedTitle}_info.json`
-      await writeFile(jsonFilePath, jsonContent)
-      l.success(`Playlist information saved to: ${jsonFilePath}`)
+      await savePlaylistInfo(urls, playlistTitle)
       return
     }
 

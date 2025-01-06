@@ -4,8 +4,7 @@
 // a uniform plain text format with timestamps. It includes:
 // - formatDeepgramTranscript: Formats transcripts returned by Deepgram
 // - formatAssemblyTranscript: Formats transcripts returned by AssemblyAI
-// - lrcToTxt: Converts LRC (lyrics) files to plain text with timestamps
-// - srtToTxt: Converts SRT subtitle files to plain text with timestamps
+// - formatWhisperTranscript: Converts LRC files to plain text with timestamps
 
 import type {
   AssemblyAIPollingResponse,
@@ -108,43 +107,9 @@ export function formatAssemblyTranscript(transcript: AssemblyAIPollingResponse, 
  * @param lrcContent - The content of the LRC file as a string
  * @returns The converted text content with simple timestamps
  */
-export function lrcToTxt(lrcContent: string): string {
+export function formatWhisperTranscript(lrcContent: string): string {
   return lrcContent.split('\n')
     .filter(line => !line.startsWith('[by:whisper.cpp]'))
     .map(line => line.replace(/\[(\d{2,3}):(\d{2})\.(\d{2})\]/g, (_, p1, p2) => `[${p1}:${p2}]`))
-    .join('\n')
-}
-
-/**
- * Converts SRT subtitle content to plain text with timestamps.
- * - Extracts timestamp lines (HH:MM:SS,ms) and converts them into [MM:SS] format.
- * - Joins subtitle text lines into a single line per block.
- *
- * @param srtContent - The content of the SRT file as a string
- * @returns The converted text content with simplified timestamps
- */
-export function srtToTxt(srtContent: string): string {
-  const blocks = srtContent.split('\n\n')
-  return blocks
-    .map(block => {
-      const lines = block.split('\n').filter(line => line.trim() !== '')
-      if (lines.length < 2) return null
-
-      const timestampLine = lines[1]
-      const textLines = lines.slice(2)
-
-      const match = timestampLine?.match(/(\d{2}):(\d{2}):(\d{2}),\d{3}/)
-      if (!match?.[1] || !match?.[2] || !match?.[3]) return null
-
-      const hours = parseInt(match[1], 10)
-      const minutes = parseInt(match[2], 10)
-      const seconds = match[3]
-      const totalMinutes = hours * 60 + minutes
-      const timestamp = `[${String(totalMinutes).padStart(2, '0')}:${seconds}]`
-      const text = textLines.join(' ')
-
-      return `${timestamp} ${text}`
-    })
-    .filter((line): line is string => line !== null)
     .join('\n')
 }

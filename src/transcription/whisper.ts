@@ -6,8 +6,8 @@
  */
 
 import { readFile, unlink } from 'node:fs/promises'
-import { existsSync } from 'node:fs'
-import { lrcToTxt } from '../utils/format-transcript'
+import { formatWhisperTranscript } from '../utils/format-transcript'
+import { checkWhisperDirAndModel } from '../utils/validate-option'
 import { WHISPER_MODELS, execPromise } from '../utils/globals'
 import { l, err } from '../utils/logging'
 import type { ProcessingOptions } from '../types/process'
@@ -44,29 +44,7 @@ export async function callWhisper(
     const modelGGMLName = WHISPER_MODELS[whisperModel as WhisperModelType]
     l.wait(`    - modelGGMLName: ${modelGGMLName}`)
 
-    // Check if whisper.cpp directory is present
-    if (!existsSync('./whisper.cpp')) {
-      l.wait(`\n  No whisper.cpp repo found, cloning and compiling...\n`)
-      try {
-        await execPromise('git clone https://github.com/ggerganov/whisper.cpp.git && make -C whisper.cpp')
-        l.wait(`\n    - whisper.cpp clone and compilation complete.\n`)
-      } catch (cloneError) {
-        err(`Error cloning/building whisper.cpp: ${(cloneError as Error).message}`)
-        throw cloneError
-      }
-    }
-
-    // Check if the chosen model file is present
-    if (!existsSync(`./whisper.cpp/models/${modelGGMLName}`)) {
-      l.wait(`\n  Model not found, downloading...\n    - ${whisperModel}\n`)
-      try {
-        await execPromise(`bash ./whisper.cpp/models/download-ggml-model.sh ${whisperModel}`)
-        l.wait('    - Model download completed, running transcription...\n')
-      } catch (modelError) {
-        err(`Error downloading model: ${(modelError as Error).message}`)
-        throw modelError
-      }
-    }
+    await checkWhisperDirAndModel(whisperModel, modelGGMLName)
 
     // Run whisper.cpp on the WAV file
     l.wait(`\n  Invoking whisper.cpp on file:\n    - ${finalPath}.wav`)
@@ -75,8 +53,8 @@ export async function callWhisper(
         `./whisper.cpp/build/bin/whisper-cli --no-gpu ` +
         `-m "whisper.cpp/models/${modelGGMLName}" ` +
         `-f "${finalPath}.wav" ` +
-        `-of "${finalPath}" ` +  // Output file base name
-        `--output-lrc`           // Output LRC file
+        `-of "${finalPath}" ` +
+        `--output-lrc`
       )
     } catch (whisperError) {
       err(`Error running whisper.cpp: ${(whisperError as Error).message}`)
@@ -86,11 +64,11 @@ export async function callWhisper(
     // Convert .lrc -> .txt
     l.wait(`\n  Transcript LRC file successfully created, reading file for txt conversion:\n    - ${finalPath}.lrc`)
     const lrcContent = await readFile(`${finalPath}.lrc`, 'utf8')
-    const txtContent = lrcToTxt(lrcContent)
+    const txtContent = formatWhisperTranscript(lrcContent)
     await unlink(`${finalPath}.lrc`)
 
     // Return the transcript text
-    l.wait('  Returning transcript text from callWhisper...')
+    l.wait('\n  Returning transcript text from callWhisper...')
     return txtContent
   } catch (error) {
     err('Error in callWhisper:', (error as Error).message)

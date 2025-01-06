@@ -55,15 +55,21 @@ const commands = [
   },
   {
     // Process a local audio file with multiple prompt sections, Whisper 'tiny' model, and Ollama.
-    cmd: 'npm run as -- --file "content/audio.mp3" --prompt titles summary shortChapters takeaways questions --whisper tiny --ollama LLAMA_3_2_1B',
+    cmd: 'npm run as -- --file "content/audio.mp3" --prompt titles summary --whisper tiny --ollama',
     expectedFile: 'audio-ollama-shownotes.md',
     newName: '10-all-prompts-ollama-shownotes.md'
   },
   {
     // Download JSON file with metadata for each item in the RSS feed.
+    cmd: 'npm run as -- --rss "https://ajcwebdev.substack.com/feed" --whisper tiny',
+    expectedFile: '2021-05-10-thoughts-on-lambda-school-layoffs-prompt.md',
+    newName: '11-rss-default.md',
+  },
+  {
+    // Download JSON file with metadata for each item in the RSS feed.
     cmd: 'npm run as -- --rss "https://ajcwebdev.substack.com/feed" --info',
     expectedFile: 'ajcwebdev_info.json',
-    newName: '11-ajcwebdev-rss-info.json',
+    newName: '12-ajcwebdev-rss-info.json',
   },
 ]
 

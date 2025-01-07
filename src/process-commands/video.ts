@@ -37,12 +37,7 @@ export async function processVideo(
   url: string,
   llmServices?: LLMServices,
   transcriptServices?: TranscriptServices
-): Promise<{
-  frontMatter: string
-  prompt: string
-  llmOutput: string
-  transcript: string
-}> {
+) {
   // Log function inputs
   l.opts('processVideo called with the following arguments:\n')
   l.opts(`  - url: ${url}`)

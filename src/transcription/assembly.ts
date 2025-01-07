@@ -37,7 +37,7 @@ export async function callAssembly(
   options: ProcessingOptions,
   finalPath: string,
   model: string = 'NANO'
-): Promise<string> {
+) {
   l.wait('\n  callAssembly called with arguments:\n')
   l.wait(`    - finalPath: ${finalPath}`)
   l.wait(`    - model: ${model}`)

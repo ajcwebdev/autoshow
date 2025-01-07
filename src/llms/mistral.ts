@@ -4,7 +4,7 @@ import { env } from 'node:process'
 import { Mistral } from '@mistralai/mistralai'
 import { MISTRAL_MODELS } from '../utils/globals/llms'
 import { err, logAPIResults } from '../utils/logging'
-import type { LLMFunction, MistralModelType } from '../utils/types/llms'
+import type { MistralModelType } from '../utils/types/llms'
 
 /**
  * Main function to call Mistral AI API.
@@ -14,11 +14,11 @@ import type { LLMFunction, MistralModelType } from '../utils/types/llms'
  * @returns {Promise<string>} A Promise that resolves when the API call is complete.
  * @throws {Error} If an error occurs during the API call.
  */
-export const callMistral: LLMFunction = async (
+export const callMistral = async (
   prompt: string,
   transcript: string,
   model: string = 'MISTRAL_NEMO'
-): Promise<string> => {
+) => {
   if (!env['MISTRAL_API_KEY']) {
     throw new Error('MISTRAL_API_KEY environment variable is not set. Please set it to your Mistral API key.')
   }

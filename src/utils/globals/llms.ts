@@ -21,7 +21,6 @@ import type {
   TogetherModelType,
   FireworksModelType,
   GroqModelType,
-  LLMFunctions,
 } from '../types/llms'
 import type { RequestBody } from '../types/process'
 import type { LLMServiceConfig, LLMServices } from '../types/llms'
@@ -99,7 +98,7 @@ export const envVarsServerMap: Record<keyof RequestBody, string> = {
 }
 
 // Map of available LLM service handlers
-export const LLM_FUNCTIONS: LLMFunctions = {
+export const LLM_FUNCTIONS = {
   ollama: callOllama,
   chatgpt: callChatGPT,
   claude: callClaude,

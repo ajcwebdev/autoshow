@@ -12,7 +12,7 @@ import { l, err } from '../utils/logging'
 import { retryLLMCall } from '../utils/retry'
 import { LLM_FUNCTIONS } from '../utils/globals/llms'
 import type { ProcessingOptions, EpisodeMetadata } from '../utils/types/process'
-import type { LLMServices, LLMFunction } from '../utils/types/llms'
+import type { LLMServices } from '../utils/types/llms'
 
 /**
  * Processes a transcript using a specified Language Model service.
@@ -49,7 +49,7 @@ export async function runLLM(
   transcript: string,
   metadata: EpisodeMetadata,
   llmServices?: LLMServices,
-): Promise<string> {
+) {
   l.step('\nStep 5 - Run LLM on Transcript with Selected Prompt\n')
   l.wait('  runLLM called with arguments:\n')
   l.wait(`    - finalPath: ${finalPath}`)
@@ -62,7 +62,7 @@ export async function runLLM(
     let showNotesResult = ''
     if (llmServices) {
       l.wait(`\n  Preparing to process with '${llmServices}' Language Model...\n`)
-      const llmFunction: LLMFunction = LLM_FUNCTIONS[llmServices]
+      const llmFunction = LLM_FUNCTIONS[llmServices]
 
       if (!llmFunction) {
         throw new Error(`Invalid LLM option: ${llmServices}`)

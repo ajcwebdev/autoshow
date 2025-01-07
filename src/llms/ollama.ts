@@ -4,7 +4,7 @@ import { env } from 'node:process'
 import { OLLAMA_MODELS } from '../utils/globals/llms'
 import { l, err, logAPIResults } from '../utils/logging'
 import { checkOllamaServerAndModel } from '../utils/validate-option'
-import type { LLMFunction, OllamaModelType, OllamaResponse } from '../utils/types/llms'
+import type { OllamaModelType, OllamaResponse } from '../utils/types/llms'
 
 /**
  * callOllama()
@@ -17,11 +17,11 @@ import type { LLMFunction, OllamaModelType, OllamaResponse } from '../utils/type
  * @param {string | OllamaModelType} [model='QWEN_2_5_0B'] - The Ollama model to use.
  * @returns {Promise<string>} A Promise resolving with the generated text.
  */
-export const callOllama: LLMFunction = async (
+export const callOllama = async (
   prompt: string,
   transcript: string,
   model: string | OllamaModelType = 'QWEN_2_5_0B'
-): Promise<string> => {
+) => {
   l.wait('\n  callOllama called with arguments:')
   l.wait(`    - model: ${model}`)
 

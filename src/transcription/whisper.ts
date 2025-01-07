@@ -23,7 +23,7 @@ import type { WhisperModelType } from '../utils/types/transcription'
 export async function callWhisper(
   options: ProcessingOptions,
   finalPath: string
-): Promise<string> {
+) {
   l.wait('\n  callWhisper called with arguments:\n')
   l.wait(`    - finalPath: ${finalPath}`)
 

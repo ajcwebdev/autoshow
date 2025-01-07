@@ -4,7 +4,7 @@ import { env } from 'node:process'
 import { Anthropic } from '@anthropic-ai/sdk'
 import { CLAUDE_MODELS } from '../utils/globals/llms'
 import { err, logAPIResults } from '../utils/logging'
-import type { LLMFunction, ClaudeModelType } from '../utils/types/llms'
+import type { ClaudeModelType } from '../utils/types/llms'
 
 /**
  * Main function to call Claude API.
@@ -15,11 +15,11 @@ import type { LLMFunction, ClaudeModelType } from '../utils/types/llms'
  * @returns {Promise<string>} A Promise that resolves with the generated text.
  * @throws {Error} If an error occurs during the API call.
  */
-export const callClaude: LLMFunction = async (
+export const callClaude = async (
   prompt: string,
   transcript: string,
   model: string = 'CLAUDE_3_HAIKU'
-): Promise<string> => {
+) => {
   if (!env['ANTHROPIC_API_KEY']) {
     throw new Error('ANTHROPIC_API_KEY environment variable is not set. Please set it to your Anthropic API key.')
   }

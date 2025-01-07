@@ -32,7 +32,7 @@ async function readCustomPrompt(filePath: string): Promise<string> {
  * @param {ProcessingOptions} options - The processing options containing customPrompt and prompt
  * @returns {Promise<string>} The generated prompt text
  */
-export async function selectPrompts(options: ProcessingOptions): Promise<string> {
+export async function selectPrompts(options: ProcessingOptions) {
   l.step('\nStep 4 - Select Prompts\n')
   l.wait('  selectPrompts called with arguments:\n')
   l.wait(`    - prompt: ${JSON.stringify(options.prompt)}`)

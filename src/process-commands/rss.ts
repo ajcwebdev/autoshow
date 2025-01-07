@@ -35,12 +35,7 @@ export async function processItems(
   options: ProcessingOptions,
   llmServices?: LLMServices,
   transcriptServices?: TranscriptServices
-): Promise<{
-  frontMatter: string
-  prompt: string
-  llmOutput: string
-  transcript: string
-}> {
+) {
   l.opts('Parameters passed to processItem:\n')
   l.opts(`  - llmServices: ${llmServices}\n  - transcriptServices: ${transcriptServices}\n`)
 

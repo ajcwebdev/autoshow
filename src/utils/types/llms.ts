@@ -42,26 +42,6 @@ export type LLMOptions = {
   maxTokens?: number
 }
 
-/**
- * Function that calls an LLM for processing.
- * 
- * @param promptAndTranscript - The combined prompt and transcript
- * @param tempPath - The temporary file path
- * @param llmModel - The specific LLM model to use (optional)
- */
-export type LLMFunction = (
-  prompt: string,
-  transcript: string,
-  llmModel?: string
-) => Promise<string>
-
-/**
- * Mapping of LLM option keys to their corresponding functions.
- */
-export type LLMFunctions = {
-  [K in LLMServices]: LLMFunction
-}
-
 // LLM Model Types
 /**
  * Available GPT models.

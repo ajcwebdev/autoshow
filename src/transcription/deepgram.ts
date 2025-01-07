@@ -28,7 +28,7 @@ export async function callDeepgram(
   _options: ProcessingOptions,
   finalPath: string,
   model: string = 'NOVA_2'
-): Promise<string> {
+) {
   l.wait('\n  callDeepgram called with arguments:\n')
   l.wait(`    - finalPath: ${finalPath}`)
   l.wait(`    - model: ${model}`)

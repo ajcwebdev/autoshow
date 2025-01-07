@@ -4,7 +4,7 @@ import { env } from 'node:process'
 import { CohereClient } from 'cohere-ai'
 import { COHERE_MODELS } from '../utils/globals/llms'
 import { err, logAPIResults } from '../utils/logging'
-import type { LLMFunction, CohereModelType } from '../utils/types/llms'
+import type { CohereModelType } from '../utils/types/llms'
 
 /**
  * Main function to call Cohere API.
@@ -15,11 +15,11 @@ import type { LLMFunction, CohereModelType } from '../utils/types/llms'
  * @returns {Promise<string>} A Promise that resolves when the API call is complete.
  * @throws {Error} If an error occurs during the API call.
  */
-export const callCohere: LLMFunction = async (
+export const callCohere = async (
   prompt: string,
   transcript: string,
   model: string = 'COMMAND_R'
-): Promise<string> => {
+) => {
   if (!env['COHERE_API_KEY']) {
     throw new Error('COHERE_API_KEY environment variable is not set. Please set it to your Cohere API key.')
   }

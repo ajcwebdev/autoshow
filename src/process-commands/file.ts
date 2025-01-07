@@ -39,12 +39,7 @@ export async function processFile(
   filePath: string,
   llmServices?: LLMServices,
   transcriptServices?: TranscriptServices
-): Promise<{
-  frontMatter: string
-  prompt: string
-  llmOutput: string
-  transcript: string
-}> {
+) {
   // Log function inputs
   l.info('processFile called with the following arguments:')
   l.opts(`  - filePath: ${filePath}`)

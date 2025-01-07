@@ -21,7 +21,7 @@ export async function runTranscription(
   options: ProcessingOptions,
   finalPath: string,
   transcriptServices?: TranscriptServices
-): Promise<string> {
+) {
   // Log function call
   l.step('\nStep 3 - Run Transcription\n')
   l.wait('  runTranscription called with arguments:\n')

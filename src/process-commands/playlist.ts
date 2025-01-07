@@ -33,7 +33,7 @@ export async function processPlaylist(
   playlistUrl: string,
   llmServices?: LLMServices,
   transcriptServices?: TranscriptServices
-): Promise<void> {
+) {
   // Log the processing parameters for debugging purposes
   l.opts('Parameters passed to processPlaylist:\n')
   l.opts(`  - llmServices: ${llmServices}\n  - transcriptServices: ${transcriptServices}`)

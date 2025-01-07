@@ -87,9 +87,6 @@ export type ProcessingOptions = {
   /** The Whisper model to use (e.g., 'tiny', 'base'). */
   whisper?: WhisperModelType
 
-  /** The Whisper model to use with Docker (e.g., 'tiny', 'base'). */
-  whisperDocker?: WhisperModelType
-
   /** Flag to use Deepgram for transcription. */
   deepgram?: boolean
 

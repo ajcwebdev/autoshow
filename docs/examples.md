@@ -266,42 +266,37 @@ If neither the `--deepgram` or `--assembly` option is included for transcription
 
 ```bash
 # tiny model
-npm run as -- \
-  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
-  --whisper tiny
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --whisper tiny
 
 # base model
-npm run as -- \
-  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
-  --whisper base
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --whisper base
 
 # small model
-npm run as -- \
-  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
-  --whisper small
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --whisper small
 
 # medium model
-npm run as -- \
-  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
-  --whisper medium
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --whisper medium
 
 # large-v2 model
-npm run as -- \
-  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
-  --whisper large-v2
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --whisper large-v2
 
 # large-v3-turbo model
-npm run as -- \
-  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
-  --whisper large-v3-turbo
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --whisper large-v3-turbo
 ```
 
 ### Deepgram
 
 ```bash
-npm run as -- \
-  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
-  --deepgram
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --deepgram
+```
+
+Select model:
+
+```bash
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --deepgram BASE
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --deepgram ENHANCED
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --deepgram NOVA
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --deepgram NOVA_2
 ```
 
 Include Deepgram API key directly in CLI command instead of in `.env` file:
@@ -316,9 +311,14 @@ npm run as -- \
 ### Assembly
 
 ```bash
-npm run as -- \
-  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
-  --assembly
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --assembly
+```
+
+Select model:
+
+```bash
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --assembly NANO
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --assembly BEST
 ```
 
 Include speaker labels and number of speakers:
@@ -693,6 +693,13 @@ npx tsx --test test/models/mistral.test.ts
 npx tsx --test test/models/fireworks.test.ts
 npx tsx --test test/models/together.test.ts
 npx tsx --test test/models/groq.test.ts
+```
+
+Test all available models for a certain transcription service.
+
+```bash
+npx tsx --test test/models/deepgram.test.ts
+npx tsx --test test/models/assembly.test.ts
 ```
 
 ## Skip Cleanup of Intermediate Files

@@ -1,9 +1,9 @@
 // src/llms/fireworks.ts
 
 import { env } from 'node:process'
-import { FIREWORKS_MODELS } from '../utils/llm-globals'
+import { FIREWORKS_MODELS } from '../utils/globals/llms'
 import { err, logAPIResults } from '../utils/logging'
-import type { LLMFunction, FireworksModelType, FireworksResponse } from '../types/llms'
+import type { FireworksModelType, FireworksResponse } from '../utils/types/llms'
 
 /**
  * Main function to call Fireworks AI API.
@@ -13,11 +13,11 @@ import type { LLMFunction, FireworksModelType, FireworksResponse } from '../type
  * @returns {Promise<string>} A Promise that resolves with the generated text.
  * @throws {Error} If an error occurs during the API call.
  */
-export const callFireworks: LLMFunction = async (
+export const callFireworks = async (
   prompt: string,
   transcript: string,
   model: string | FireworksModelType = 'LLAMA_3_2_3B'
-): Promise<string> => {
+) => {
   if (!env['FIREWORKS_API_KEY']) {
     throw new Error('FIREWORKS_API_KEY environment variable is not set. Please set it to your Fireworks API key.')
   }

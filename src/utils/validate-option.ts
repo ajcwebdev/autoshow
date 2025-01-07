@@ -10,10 +10,12 @@ import { processURLs } from '../process-commands/urls'
 import { processFile } from '../process-commands/file'
 import { processRSS } from '../process-commands/rss'
 import { l, err } from '../utils/logging'
-import { ACTION_OPTIONS, LLM_OPTIONS, TRANSCRIPT_OPTIONS, otherOptions, parser, execPromise, execFilePromise } from '../utils/globals'
-import type { ProcessingOptions, ValidAction, HandlerFunction, ProcessRequestBody, RSSItem, VideoInfo } from '../types/process'
-import type { TranscriptServices } from '../types/transcription'
-import type { LLMServices, OllamaTagsResponse } from '../types/llms'
+import { ACTION_OPTIONS, otherOptions, parser, execPromise, execFilePromise } from './globals/process'
+import { LLM_OPTIONS } from './globals/llms'
+import { TRANSCRIPT_OPTIONS } from './globals/transcription'
+import type { ProcessingOptions, ValidAction, HandlerFunction, ProcessRequestBody, RSSItem, VideoInfo } from './types/process'
+import type { TranscriptServices } from './types/transcription'
+import type { LLMServices, OllamaTagsResponse } from './types/llms'
 
 /**
  * Checks if whisper.cpp directory exists and, if missing, clones and compiles it.

@@ -6,12 +6,13 @@
  */
 
 import { readFile, unlink } from 'node:fs/promises'
-import { formatWhisperTranscript } from '../utils/format-transcript'
+import { formatWhisperTranscript } from './format-transcript'
 import { checkWhisperDirAndModel } from '../utils/validate-option'
-import { WHISPER_MODELS, execPromise } from '../utils/globals'
+import { WHISPER_MODELS } from '../utils/globals/transcription'
+import { execPromise } from '../utils/globals/process'
 import { l, err } from '../utils/logging'
-import type { ProcessingOptions } from '../types/process'
-import type { WhisperModelType } from '../types/transcription'
+import type { ProcessingOptions } from '../utils/types/process'
+import type { WhisperModelType } from '../utils/types/transcription'
 
 /**
  * Main function to handle transcription using local Whisper.cpp.
@@ -22,7 +23,7 @@ import type { WhisperModelType } from '../types/transcription'
 export async function callWhisper(
   options: ProcessingOptions,
   finalPath: string
-): Promise<string> {
+) {
   l.wait('\n  callWhisper called with arguments:\n')
   l.wait(`    - finalPath: ${finalPath}`)
 

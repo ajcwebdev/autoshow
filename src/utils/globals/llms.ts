@@ -1,14 +1,14 @@
 // src/utils/llm-globals.ts
 
-import { callOllama } from '../llms/ollama'
-import { callChatGPT } from '../llms/chatgpt'
-import { callClaude } from '../llms/claude'
-import { callGemini } from '../llms/gemini'
-import { callCohere } from '../llms/cohere'
-import { callMistral } from '../llms/mistral'
-import { callFireworks } from '../llms/fireworks'
-import { callTogether } from '../llms/together'
-import { callGroq } from '../llms/groq'
+import { callOllama } from '../../llms/ollama'
+import { callChatGPT } from '../../llms/chatgpt'
+import { callClaude } from '../../llms/claude'
+import { callGemini } from '../../llms/gemini'
+import { callCohere } from '../../llms/cohere'
+import { callMistral } from '../../llms/mistral'
+import { callFireworks } from '../../llms/fireworks'
+import { callTogether } from '../../llms/together'
+import { callGroq } from '../../llms/groq'
 
 import type {
   ModelConfig,
@@ -21,11 +21,84 @@ import type {
   TogetherModelType,
   FireworksModelType,
   GroqModelType,
-  LLMFunctions
 } from '../types/llms'
+import type { RequestBody } from '../types/process'
+import type { LLMServiceConfig, LLMServices } from '../types/llms'
+import type { ModelConfigValue } from '../types/llms'
+
+/* ------------------------------------------------------------------
+ * LLM Services & Model Configurations
+ * ------------------------------------------------------------------ */
+
+/**
+ * Mapping of available LLM providers and their configuration.
+ * A value of `null` indicates an option to skip LLM processing.
+ * 
+ */
+export const LLM_SERVICES: Record<string, LLMServiceConfig> = {
+  SKIP: { name: 'Skip LLM Processing', value: null },
+  OLLAMA: { name: 'Ollama (local inference)', value: 'ollama' },
+  CHATGPT: { name: 'OpenAI ChatGPT', value: 'chatgpt' },
+  CLAUDE: { name: 'Anthropic Claude', value: 'claude' },
+  GEMINI: { name: 'Google Gemini', value: 'gemini' },
+  COHERE: { name: 'Cohere', value: 'cohere' },
+  MISTRAL: { name: 'Mistral', value: 'mistral' },
+  FIREWORKS: { name: 'Fireworks AI', value: 'fireworks' },
+  TOGETHER: { name: 'Together AI', value: 'together' },
+  GROQ: { name: 'Groq', value: 'groq' },
+} as const
+
+/**
+ * Array of valid LLM service values (excluding the "SKIP" option).
+ * 
+ */
+export const LLM_OPTIONS: LLMServices[] = Object.values(LLM_SERVICES)
+  .map((service) => service.value)
+  .filter((value): value is LLMServices => value !== null)
+
+/* ------------------------------------------------------------------
+ * Environment Variable Maps
+ * ------------------------------------------------------------------ */
+
+/**
+ * @description Override environment variables from CLI if the user has provided them.
+ * This ensures that if keys are not in the .env file, they can be specified
+ * via CLI arguments instead.
+ */
+export const envVarsMap: Record<string, string> = {
+  openaiApiKey: 'OPENAI_API_KEY',
+  anthropicApiKey: 'ANTHROPIC_API_KEY',
+  deepgramApiKey: 'DEEPGRAM_API_KEY',
+  assemblyApiKey: 'ASSEMBLY_API_KEY',
+  geminiApiKey: 'GEMINI_API_KEY',
+  cohereApiKey: 'COHERE_API_KEY',
+  mistralApiKey: 'MISTRAL_API_KEY',
+  grokApiKey: 'GROK_API_KEY',
+  togetherApiKey: 'TOGETHER_API_KEY',
+  fireworksApiKey: 'FIREWORKS_API_KEY',
+  groqApiKey: 'GROQ_API_KEY',
+}
+
+/**
+ * Maps server-side request body keys to corresponding environment variables.
+ * 
+ */
+export const envVarsServerMap: Record<keyof RequestBody, string> = {
+  openaiApiKey: 'OPENAI_API_KEY',
+  anthropicApiKey: 'ANTHROPIC_API_KEY',
+  deepgramApiKey: 'DEEPGRAM_API_KEY',
+  assemblyApiKey: 'ASSEMBLY_API_KEY',
+  geminiApiKey: 'GEMINI_API_KEY',
+  cohereApiKey: 'COHERE_API_KEY',
+  mistralApiKey: 'MISTRAL_API_KEY',
+  grokApiKey: 'GROK_API_KEY',
+  togetherApiKey: 'TOGETHER_API_KEY',
+  fireworksApiKey: 'FIREWORKS_API_KEY',
+  groqApiKey: 'GROQ_API_KEY',
+}
 
 // Map of available LLM service handlers
-export const LLM_FUNCTIONS: LLMFunctions = {
+export const LLM_FUNCTIONS = {
   ollama: callOllama,
   chatgpt: callChatGPT,
   claude: callClaude,
@@ -383,4 +456,19 @@ export const GROQ_MODELS: ModelConfig<GroqModelType> = {
     inputCostPer1M: 0.24,
     outputCostPer1M: 0.24
   },
+}
+
+/**
+ * All available model configurations combined
+ */
+export const ALL_MODELS: { [key: string]: ModelConfigValue } = {
+  ...GPT_MODELS,
+  ...CLAUDE_MODELS,
+  ...GEMINI_MODELS,
+  ...COHERE_MODELS,
+  ...MISTRAL_MODELS,
+  ...OLLAMA_MODELS,
+  ...FIREWORKS_MODELS,
+  ...TOGETHER_MODELS,
+  ...GROQ_MODELS
 }

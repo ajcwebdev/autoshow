@@ -1,9 +1,9 @@
 // src/llms/groq.ts
 
 import { env } from 'node:process'
-import { GROQ_MODELS } from '../utils/llm-globals'
+import { GROQ_MODELS } from '../utils/globals/llms'
 import { err, logAPIResults } from '../utils/logging'
-import type { LLMFunction, GroqModelType, GroqChatCompletionResponse } from '../types/llms'
+import type { GroqModelType, GroqChatCompletionResponse } from '../utils/types/llms'
 
 /**
  * Function to call the Groq chat completion API.
@@ -13,11 +13,11 @@ import type { LLMFunction, GroqModelType, GroqChatCompletionResponse } from '../
  * @returns {Promise<string>} A Promise that resolves when the API call is complete.
  * @throws {Error} If an error occurs during the API call.
  */
-export const callGroq: LLMFunction = async (
+export const callGroq = async (
   prompt: string,
   transcript: string,
   model: string | GroqModelType = 'LLAMA_3_2_1B_PREVIEW'
-): Promise<string> => {
+) => {
   if (!env['GROQ_API_KEY']) {
     throw new Error('GROQ_API_KEY environment variable is not set. Please set it to your Groq API key.')
   }

@@ -2,9 +2,9 @@
 
 import { env } from 'node:process'
 import { GoogleGenerativeAI } from "@google/generative-ai"
-import { GEMINI_MODELS } from '../utils/llm-globals'
+import { GEMINI_MODELS } from '../utils/globals/llms'
 import { err, logAPIResults } from '../utils/logging'
-import type { LLMFunction, GeminiModelType } from '../types/llms'
+import type { GeminiModelType } from '../utils/types/llms'
 
 /**
  * Utility function to introduce a delay
@@ -21,11 +21,11 @@ const delay = (ms: number): Promise<void> => new Promise(resolve => setTimeout(r
  * @returns {Promise<string>} A Promise that resolves when the API call is complete.
  * @throws {Error} If an error occurs during the API call.
  */
-export const callGemini: LLMFunction = async (
+export const callGemini = async (
   prompt: string,
   transcript: string,
   model: string = 'GEMINI_1_5_FLASH'
-): Promise<string> => {
+) => {
   if (!env['GEMINI_API_KEY']) {
     throw new Error('GEMINI_API_KEY environment variable is not set. Please set it to your Gemini API key.')
   }

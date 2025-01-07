@@ -1,9 +1,9 @@
 // src/llms/together.ts
 
 import { env } from 'node:process'
-import { TOGETHER_MODELS } from '../utils/llm-globals'
+import { TOGETHER_MODELS } from '../utils/globals/llms'
 import { err, logAPIResults } from '../utils/logging'
-import type { LLMFunction, TogetherModelType, TogetherResponse } from '../types/llms'
+import type { TogetherModelType, TogetherResponse } from '../utils/types/llms'
 
 /**
  * Main function to call Together AI API.
@@ -13,11 +13,11 @@ import type { LLMFunction, TogetherModelType, TogetherResponse } from '../types/
  * @returns {Promise<string>} A Promise that resolves with the generated text.
  * @throws {Error} If an error occurs during the API call.
  */
-export const callTogether: LLMFunction = async (
+export const callTogether = async (
   prompt: string,
   transcript: string,
   model: string | TogetherModelType = 'LLAMA_3_2_3B'
-): Promise<string> => {
+) => {
   if (!env['TOGETHER_API_KEY']) {
     throw new Error('TOGETHER_API_KEY environment variable is not set. Please set it to your Together AI API key.')
   }

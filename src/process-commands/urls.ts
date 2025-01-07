@@ -9,9 +9,9 @@ import { readFile } from 'node:fs/promises'
 import { processVideo } from './video'
 import { saveURLsInfo } from '../utils/save-info'
 import { l, err, logURLsSeparator } from '../utils/logging'
-import type { ProcessingOptions } from '../types/process'
-import type { TranscriptServices } from '../types/transcription'
-import type { LLMServices } from '../types/llms'
+import type { ProcessingOptions } from '../utils/types/process'
+import type { TranscriptServices } from '../utils/types/transcription'
+import type { LLMServices } from '../utils/types/llms'
 
 /**
  * Processes multiple YouTube videos from a file containing URLs by:
@@ -33,7 +33,7 @@ export async function processURLs(
   filePath: string,
   llmServices?: LLMServices,
   transcriptServices?: TranscriptServices
-): Promise<void> {
+) {
   // Log the processing parameters for debugging purposes
   l.opts('Parameters passed to processURLs:\n')
   l.opts(`  - llmServices: ${llmServices}\n  - transcriptServices: ${transcriptServices}\n`)

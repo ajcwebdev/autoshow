@@ -2,9 +2,9 @@
 
 import { env } from 'node:process'
 import { OpenAI } from 'openai'
-import { GPT_MODELS } from '../utils/llm-globals'
+import { GPT_MODELS } from '../utils/globals/llms'
 import { err, logAPIResults } from '../utils/logging'
-import type { LLMFunction, ChatGPTModelType } from '../types/llms'
+import type { ChatGPTModelType } from '../utils/types/llms'
 
 /**
  * Main function to call ChatGPT API.
@@ -15,11 +15,11 @@ import type { LLMFunction, ChatGPTModelType } from '../types/llms'
  * @returns {Promise<string>} A Promise that resolves with the generated text.
  * @throws {Error} If an error occurs during API call.
  */
-export const callChatGPT: LLMFunction = async (
+export const callChatGPT = async (
   prompt: string,
   transcript: string,
   model: string = 'GPT_4o_MINI'
-): Promise<string> => {
+) => {
   if (!env['OPENAI_API_KEY']) {
     throw new Error('OPENAI_API_KEY environment variable is not set. Please set it to your OpenAI API key.')
   }

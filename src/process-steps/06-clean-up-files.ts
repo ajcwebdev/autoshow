@@ -42,7 +42,7 @@ import { l, err } from '../utils/logging'
  *   err('Cleanup failed:', error)
  * }
  */
-export async function cleanUpFiles(id: string): Promise<void> {
+export async function cleanUpFiles(id: string) {
   l.step('\nStep 6 - Cleaning Up Extra Files\n')
   // Define extensions of temporary files to be cleaned up
   const extensions = [

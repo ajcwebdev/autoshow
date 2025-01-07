@@ -7,10 +7,10 @@
  */
 
 import { basename, extname } from 'node:path'
-import { execFilePromise } from '../utils/globals'
+import { execFilePromise } from '../utils/globals/process'
 import { sanitizeTitle, buildFrontMatter } from '../utils/save-info'
 import { l, err } from '../utils/logging'
-import type { MarkdownData, ProcessingOptions, RSSItem } from '../types/process'
+import type { MarkdownData, ProcessingOptions, RSSItem } from '../utils/types/process'
 
 /**
  * Generates markdown content with front matter based on the provided options and input.

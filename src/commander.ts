@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-// src/cli/commander.ts
+// src/commander.ts
 
 /**
  * Autoshow CLI Application
@@ -14,11 +14,11 @@
 import { argv, exit } from 'node:process'
 import { fileURLToPath } from 'node:url'
 import { Command } from 'commander'
-import { selectPrompts } from '../process-steps/04-select-prompt'
-import { validateProcessAction, validateLLM, validateTranscription, processAction } from '../utils/validate-option'
-import { l, err, logCompletionSeparator } from '../utils/logging'
-import { envVarsMap } from '../utils/globals'
-import type { ProcessingOptions } from '../types/process'
+import { selectPrompts } from './process-steps/04-select-prompt'
+import { validateProcessAction, validateLLM, validateTranscription, processAction } from './utils/validate-option'
+import { l, err, logCompletionSeparator } from './utils/logging'
+import { envVarsMap } from './utils/globals/llms'
+import type { ProcessingOptions } from './utils/types/process'
 
 // Initialize the command-line interface using Commander.js
 const program = new Command()
@@ -49,8 +49,8 @@ program
   .option('--info', 'Skip processing and write metadata to JSON objects (supports --urls, --rss, --playlist, --channel)')
   // Transcription service options
   .option('--whisper [model]', 'Use Whisper.cpp for transcription with optional model specification')
-  .option('--deepgram', 'Use Deepgram for transcription')
-  .option('--assembly', 'Use AssemblyAI for transcription')
+  .option('--deepgram [model]', 'Use Deepgram for transcription with optional model specification')
+  .option('--assembly [model]', 'Use AssemblyAI for transcription with optional model specification')
   .option('--speakerLabels', 'Use speaker labels for AssemblyAI transcription')
   // LLM service options
   .option('--ollama [model]', 'Use Ollama for processing with optional model specification')

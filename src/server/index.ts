@@ -7,8 +7,8 @@ import { handleProcessRequest } from './routes/process'
 import { getShowNotes } from './routes/show-notes'
 import { getShowNote } from './routes/show-note'
 import { l } from '../../src/utils/logging'
-import { envVarsServerMap } from '../../src/utils/globals'
-import type { RequestBody } from '../types/process'
+import { envVarsServerMap } from '../utils/globals/llms'
+import type { RequestBody } from '../utils/types/process'
 
 // Set server port from environment variable or default to 3000
 const port = Number(env['PORT']) || 3000
@@ -33,7 +33,7 @@ async function start() {
       Object.entries(envVarsServerMap).forEach(([bodyKey, envKey]) => {
         const value = (body as Record<string, string | undefined>)[bodyKey]
         if (value) {
-          process.env[envKey] = value
+          process.env[envKey as string] = value
         }
       })
     }

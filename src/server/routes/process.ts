@@ -9,7 +9,7 @@ import { processFile } from '../../process-commands/file'
 import { validateRequest, validateProcessAction } from '../../utils/validate-option'
 import { l, err } from '../../../src/utils/logging'
 import type { FastifyRequest, FastifyReply } from 'fastify'
-import type { ProcessRequestBody } from '../../types/process'
+import type { ProcessRequestBody } from '../../utils/types/process'
 
 // Handler for the /process route
 export const handleProcessRequest = async (

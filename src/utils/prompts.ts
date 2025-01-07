@@ -1,6 +1,6 @@
 // src/utils/prompts.ts
 
-import type { PromptSection } from '../types/process'
+import type { PromptSection } from './types/process'
 
 /**
  * Define the structure for different sections of the prompt

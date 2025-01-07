@@ -11,21 +11,21 @@ const commands = [
     // Process multiple YouTube videos from URLs with title prompts, Deepgram default model, and ChatGPT default model.
     cmd: 'npm run as -- --urls "content/example-urls.md" --prompt titles --deepgram --chatgpt',
     expectedFiles: [
-      { file: '2024-09-24-ep1-fsjam-podcast-chatgpt-shownotes.md', newName: '01-chatgpt-default.md' },
-      { file: '2024-09-24-ep0-fsjam-podcast-chatgpt-shownotes.md', newName: '02-chatgpt-default.md' }
+      { file: '2024-09-24-ep1-fsjam-podcast-chatgpt-shownotes.md', newName: '01-deepgram-default-chatgpt-default.md' },
+      { file: '2024-09-24-ep0-fsjam-podcast-chatgpt-shownotes.md', newName: '02-deepgram-default-chatgpt-default.md' }
     ]
   },
   {
     // Process audio with Deepgram using BASE model.
     cmd: 'npm run as -- --file "content/audio.mp3" --deepgram BASE',
     expectedFile: 'audio-prompt.md',
-    newName: '03-chatgpt-gpt-4o-mini.md'
+    newName: '03-deepgram-base.md'
   },
   {
     // Process audio with Deepgram using ENHANCED model.
     cmd: 'npm run as -- --file "content/audio.mp3" --deepgram ENHANCED',
     expectedFile: 'audio-prompt.md',
-    newName: '04-chatgpt-gpt-4o.md'
+    newName: '04-deepgram-enhanced.md'
   },
   {
     // Process audio with Deepgram using NOVA model.

@@ -4,6 +4,7 @@
  * @file Utility for downloading and processing audio from various sources.
  * Handles both online content (via yt-dlp) and local files (via ffmpeg),
  * converting them to a standardized WAV format suitable for transcription.
+ * Includes retry logic for `yt-dlp` to handle transient errors.
  * @packageDocumentation
  */
 
@@ -25,6 +26,9 @@ import type { SupportedFileType, ProcessingOptions } from '../utils/types/proces
  * - 16kHz sample rate
  * - Mono channel
  * - 16-bit PCM encoding
+ * 
+ * Additionally, yt-dlp command execution includes retry logic to recover
+ * from transient errors like HTTP 500 responses.
  * 
  * @param {ProcessingOptions} options - Processing configuration containing:
  *   - video: Flag for YouTube video processing
@@ -73,7 +77,7 @@ export async function downloadAudio(
   options: ProcessingOptions,
   input: string,
   filename: string
-) {
+): Promise<string> {
   // Log function inputs
   l.step('\nStep 2 - Download and Convert Audio\n')
   l.wait('  downloadAudio called with the following arguments:\n')
@@ -84,11 +88,46 @@ export async function downloadAudio(
   const finalPath = `content/${filename}`
   const outputPath = `${finalPath}.wav`
 
+  /**
+   * Executes a command with retry logic to recover from transient failures.
+   * 
+   * @param {string} command - The command to execute.
+   * @param {string[]} args - Arguments for the command.
+   * @param {number} retries - Number of retry attempts.
+   * @returns {Promise<void>} Resolves if the command succeeds.
+   * @throws {Error} If the command fails after all retry attempts.
+   */
+  async function executeWithRetry(
+    command: string,
+    args: string[],
+    retries: number
+  ): Promise<void> {
+    for (let attempt = 1; attempt <= retries; attempt++) {
+      try {
+        // Attempt to execute the command
+        const { stderr } = await execFilePromise(command, args)
+        // Log any warnings from yt-dlp
+        if (stderr) {
+          err(`yt-dlp warnings: ${stderr}`)
+        }
+        return // Exit the loop if successful
+      } catch (error) {
+        // If the last attempt also fails, throw the error
+        if (attempt === retries) {
+          err(`Failed after ${retries} attempts`)
+          throw error
+        }
+        // Log and retry
+        l.wait(`Retry ${attempt} of ${retries}: Retrying yt-dlp command...`)
+      }
+    }
+  }
+
   // Handle online content (YouTube, RSS feeds, etc.)
   if (options.video || options.playlist || options.urls || options.rss || options.channel) {
     try {
-      // Download and convert audio using yt-dlp
-      const { stderr } = await execFilePromise('yt-dlp', [
+      // Execute yt-dlp with retry logic
+      await executeWithRetry('yt-dlp', [
         '--no-warnings',           // Suppress warning messages
         '--restrict-filenames',    // Use safe filenames
         '--extract-audio',         // Extract audio stream
@@ -97,18 +136,12 @@ export async function downloadAudio(
         '--no-playlist',           // Don't expand playlists
         '-o', outputPath,          // Output path
         input,
-      ])
-      // Log any non-fatal warnings from yt-dlp
-      if (stderr) {
-        err(`yt-dlp warnings: ${stderr}`)
-      }
-      l.wait(`\n  Audio downloaded successfully, output path for WAV file:\n    - ${outputPath}`)
+      ], 5)
+      // Retry up to 5 times
+      l.wait(`\n  Audio downloaded successfully:\n    - ${outputPath}`)
     } catch (error) {
-      err(
-        `Error downloading audio: ${
-          error instanceof Error ? (error as Error).message : String(error)
-        }`
-      )
+      // Log the error and rethrow
+      err(`Error downloading audio: ${error instanceof Error ? error.message : String(error)}`)
       throw error
     }
   }
@@ -147,7 +180,7 @@ export async function downloadAudio(
       )
       l.wait(`  File converted to WAV format successfully:\n    - ${outputPath}`)
     } catch (error) {
-      err(`Error processing local file: ${error instanceof Error ? (error as Error).message : String(error)}`)
+      err(`Error processing local file: ${error instanceof Error ? error.message : String(error)}`)
       throw error
     }
   }

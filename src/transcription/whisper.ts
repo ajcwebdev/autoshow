@@ -48,7 +48,7 @@ export async function callWhisper(
     await checkWhisperDirAndModel(whisperModel, modelGGMLName)
 
     // Run whisper.cpp on the WAV file
-    l.wait(`\n  Invoking whisper.cpp on file:\n    - ${finalPath}.wav`)
+    l.wait(`  Invoking whisper.cpp on file:\n    - ${finalPath}.wav`)
     try {
       await execPromise(
         `./whisper.cpp/build/bin/whisper-cli --no-gpu ` +

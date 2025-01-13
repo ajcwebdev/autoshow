@@ -53,7 +53,7 @@ export async function checkWhisperDirAndModel(
       throw modelError
     }
   } else {
-    l.wait(`\n  Model ${whisperModel} is already available at ./whisper.cpp/models/${modelGGMLName}\n`)
+    l.wait(`  Model ${whisperModel} is already available at ./whisper.cpp/models/${modelGGMLName}\n`)
   }
 }
 

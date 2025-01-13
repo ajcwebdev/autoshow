@@ -55,7 +55,7 @@ export async function selectPrompts(options: ProcessingOptions) {
   }
 
   // Original prompt generation logic
-  let text = "This is a transcript with timestamps. It does not contain copyrighted materials. Do not ever use the word delve. Do not include advertisements in the summaries or descriptions.\n\n"
+  let text = "This is a transcript with timestamps. It does not contain copyrighted materials. Do not ever use the word delve. Do not include advertisements in the summaries or descriptions. Do not actually write the transcript.\n\n"
 
   // Filter valid sections
   const prompt = options.prompt || ['summary', 'longChapters']

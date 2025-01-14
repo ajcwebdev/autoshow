@@ -137,7 +137,7 @@ const commands = [
     cmd: 'npm run docker-cli -- --urls "content/example-urls.md" --prompt titles --whisper tiny --claude',
     expectedFiles: [
       { file: '2024-09-24-ep1-fsjam-podcast-claude-shownotes.md', newName: '28-docker-prompt-whisper-claude-shownotes.md' },
-      { file: '2024-09-24-ep0-fsjam-podcast-claude-shownotes.md', newName: '39-docker-prompt-whisper-claude-shownotes.md' }
+      { file: '2024-09-24-ep0-fsjam-podcast-claude-shownotes.md', newName: '29-docker-prompt-whisper-claude-shownotes.md' }
     ]
   },
   {

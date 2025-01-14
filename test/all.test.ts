@@ -159,103 +159,103 @@ const commands = [
   {
     // process file using ChatGPT for LLM operations.
     cmd: 'npm run as -- --file "content/audio.mp3" --chatgpt',
-    expectedFile: '2024-09-24-ep0-fsjam-podcast-chatgpt-shownotes.md',
+    expectedFile: 'audio-chatgpt-shownotes.md',
     newName: '33-chatgpt-default.md'
   },
   {
     // Process file with ChatGPT using GPT_4o_MINI model.
     cmd: 'npm run as -- --file "content/audio.mp3" --chatgpt GPT_4o_MINI',
-    expectedFile: '2024-09-24-ep0-fsjam-podcast-chatgpt-shownotes.md',
+    expectedFile: 'audio-chatgpt-shownotes.md',
     newName: '34-chatgpt-gpt-4o-mini.md'
   },
   {
     // process file using Claude for LLM operations.
     cmd: 'npm run as -- --file "content/audio.mp3" --claude',
-    expectedFile: '2024-09-24-ep0-fsjam-podcast-claude-shownotes.md',
+    expectedFile: 'audio-claude-shownotes.md',
     newName: '35-claude-default.md'
   },
   {
     // Process file with Claude using CLAUDE_3_SONNET model.
     cmd: 'npm run as -- --file "content/audio.mp3" --claude CLAUDE_3_SONNET',
-    expectedFile: '2024-09-24-ep0-fsjam-podcast-claude-shownotes.md',
+    expectedFile: 'audio-claude-shownotes.md',
     newName: '36-claude-shownotes.md'
   },
   {
     // process file using Gemini for LLM operations.
     cmd: 'npm run as -- --file "content/audio.mp3" --gemini',
-    expectedFile: '2024-09-24-ep0-fsjam-podcast-gemini-shownotes.md',
+    expectedFile: 'audio-gemini-shownotes.md',
     newName: '37-gemini-shownotes.md'
   },
   {
     // Process file with Gemini using GEMINI_1_5_FLASH model.
     cmd: 'npm run as -- --file "content/audio.mp3" --gemini GEMINI_1_5_FLASH',
-    expectedFile: '2024-09-24-ep0-fsjam-podcast-gemini-shownotes.md',
+    expectedFile: 'audio-gemini-shownotes.md',
     newName: '38-gemini-shownotes.md'
   },
   {
     // process file using Cohere for LLM operations
     cmd: 'npm run as -- --file "content/audio.mp3" --cohere',
-    expectedFile: '2024-09-24-ep0-fsjam-podcast-cohere-shownotes.md',
+    expectedFile: 'audio-cohere-shownotes.md',
     newName: '39-cohere-shownotes.md'
   },
   {
     // Process file with Cohere using COMMAND_R model.
     cmd: 'npm run as -- --file "content/audio.mp3" --cohere COMMAND_R',
-    expectedFile: '2024-09-24-ep0-fsjam-podcast-cohere-shownotes.md',
+    expectedFile: 'audio-cohere-shownotes.md',
     newName: '40-cohere-shownotes.md'
   },
   {
     // process file using Mistral for LLM operations
     cmd: 'npm run as -- --file "content/audio.mp3" --mistral',
-    expectedFile: '2024-09-24-ep0-fsjam-podcast-mistral-shownotes.md',
+    expectedFile: 'audio-mistral-shownotes.md',
     newName: '41-mistral-shownotes.md'
   },
   {
     // Process file with Mistral using MINISTRAL_3B model.
     cmd: 'npm run as -- --file "content/audio.mp3" --mistral MINISTRAL_3B',
-    expectedFile: '2024-09-24-ep0-fsjam-podcast-mistral-shownotes.md',
+    expectedFile: 'audio-mistral-shownotes.md',
     newName: '42-mistral-shownotes.md'
   },
   {
     // process file using Fireworks for LLM operations
     cmd: 'npm run as -- --file "content/audio.mp3" --fireworks',
-    expectedFile: '2024-09-24-ep0-fsjam-podcast-fireworks-shownotes.md',
+    expectedFile: 'audio-fireworks-shownotes.md',
     newName: '43-fireworks-shownotes.md'
   },
   {
     // process file using Together for LLM operations
     cmd: 'npm run as -- --file "content/audio.mp3" --together',
-    expectedFile: '2024-09-24-ep0-fsjam-podcast-together-shownotes.md',
+    expectedFile: 'audio-together-shownotes.md',
     newName: '44-together-shownotes.md'
   },
   {
     // process file using Groq for LLM operations
     cmd: 'npm run as -- --file "content/audio.mp3" --groq',
-    expectedFile: '2024-09-24-ep0-fsjam-podcast-groq-shownotes.md',
+    expectedFile: 'audio-groq-shownotes.md',
     newName: '45-groq-shownotes.md'
   },
   {
     // process file using Deepgram for transcription
     cmd: 'npm run as -- --file "content/audio.mp3" --deepgram',
-    expectedFile: '2024-09-24-ep0-fsjam-podcast-prompt.md',
+    expectedFile: 'audio-prompt.md',
     newName: '46-deepgram-prompt.md'
   },
   {
     // Process file using Deepgram and Mistral's Ministral 3B model.
     cmd: 'npm run as -- --file "content/audio.mp3" --deepgram --mistral MINISTRAL_3B',
-    expectedFile: '2024-09-24-ep0-fsjam-podcast-mistral-shownotes.md',
+    expectedFile: 'audio-mistral-shownotes.md',
     newName: '47-deepgram-mistral-shownotes.md'
   },
   {
     // process file using AssemblyAI for transcription
     cmd: 'npm run as -- --file "content/audio.mp3" --assembly',
-    expectedFile: '2024-09-24-ep0-fsjam-podcast-prompt.md',
+    expectedFile: 'audio-prompt.md',
     newName: '48-assembly-prompt.md'
   },
   {
     // Process file using AssemblyAI and Mistral's Ministral 3B model.
     cmd: 'npm run as -- --file "content/audio.mp3" --assembly --mistral MINISTRAL_3B',
-    expectedFile: '2024-09-24-ep0-fsjam-podcast-mistral-shownotes.md',
+    expectedFile: 'audio-mistral-shownotes.md',
     newName: '49-assembly-mistral-shownotes.md'
   },
   {

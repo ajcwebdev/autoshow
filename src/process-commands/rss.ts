@@ -12,7 +12,7 @@ import { selectPrompts } from '../process-steps/04-select-prompt'
 import { runLLM } from '../process-steps/05-run-llm'
 import { saveRSSFeedInfo } from '../utils/save-info'
 import { validateRSSOptions, selectItems, saveAudio } from '../utils/validate-option'
-import { l, err, logRSSProcessingAction, logRSSProcessingStatus, logRSSSeparator } from '../utils/logging'
+import { l, err, logRSSProcessingAction, logRSSProcessingStatus, logRSSSeparator, logInitialFunctionCall } from '../utils/logging'
 import type { ProcessingOptions, RSSItem } from '../utils/types/process'
 import type { TranscriptServices } from '../utils/types/transcription'
 import type { LLMServices } from '../utils/types/llms'
@@ -95,8 +95,8 @@ export async function processRSS(
   llmServices?: LLMServices,
   transcriptServices?: TranscriptServices
 ): Promise<void> {
-  l.opts('Parameters passed to processRSS:\n')
-  l.wait(`  - llmServices: ${llmServices}\n  - transcriptServices: ${transcriptServices}`)
+  // Log the processing parameters for debugging purposes
+  logInitialFunctionCall('processRSS', { llmServices, transcriptServices })
 
   try {
     validateRSSOptions(options)

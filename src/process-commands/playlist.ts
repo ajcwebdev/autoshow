@@ -8,7 +8,7 @@
 import { processVideo } from './video'
 import { savePlaylistInfo } from '../utils/save-info'
 import { execFilePromise } from '../utils/globals/process'
-import { l, err, logPlaylistSeparator } from '../utils/logging'
+import { l, err, logPlaylistSeparator, logInitialFunctionCall } from '../utils/logging'
 import type { ProcessingOptions } from '../utils/types/process'
 import type { TranscriptServices } from '../utils/types/transcription'
 import type { LLMServices } from '../utils/types/llms'
@@ -35,8 +35,7 @@ export async function processPlaylist(
   transcriptServices?: TranscriptServices
 ) {
   // Log the processing parameters for debugging purposes
-  l.opts('Parameters passed to processPlaylist:\n')
-  l.opts(`  - llmServices: ${llmServices}\n  - transcriptServices: ${transcriptServices}`)
+  logInitialFunctionCall('processPlaylist', { llmServices, transcriptServices })
 
   try {
     // Fetch playlist metadata

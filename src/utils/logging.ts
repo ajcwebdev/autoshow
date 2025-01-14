@@ -366,3 +366,17 @@ export function logCompletionSeparator(action: string): void {
   l.final(`  ${action} Processing Completed Successfully.`)
   l.final(`================================================================================================\n`)
 }
+
+/**
+ * Logs the first step of a top-level function call with its relevant options or parameters.
+ *
+ * @param functionName - The name of the top-level function being invoked.
+ * @param details - An object containing relevant parameters to log
+ */
+export function logInitialFunctionCall(functionName: string, details: Record<string, unknown>): void {
+  l.info(`${functionName} called with the following arguments:`)
+  for (const [key, value] of Object.entries(details)) {
+    l.opts(`  - ${key}: ${value}`)
+  }
+  l.opts('')
+}

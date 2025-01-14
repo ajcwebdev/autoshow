@@ -11,7 +11,7 @@ import { runTranscription } from '../process-steps/03-run-transcription'
 import { selectPrompts } from '../process-steps/04-select-prompt'
 import { runLLM } from '../process-steps/05-run-llm'
 import { saveAudio } from '../utils/validate-option'
-import { l, err } from '../utils/logging'
+import { l, err, logInitialFunctionCall } from '../utils/logging'
 import type { ProcessingOptions } from '../utils/types/process'
 import type { TranscriptServices } from '../utils/types/transcription'
 import type { LLMServices } from '../utils/types/llms'
@@ -38,11 +38,8 @@ export async function processVideo(
   llmServices?: LLMServices,
   transcriptServices?: TranscriptServices
 ) {
-  // Log function inputs
-  l.opts('processVideo called with the following arguments:\n')
-  l.opts(`  - url: ${url}`)
-  l.opts(`  - llmServices: ${llmServices}`)
-  l.opts(`  - transcriptServices: ${transcriptServices}\n`)
+  // Log the processing parameters for debugging purposes
+  logInitialFunctionCall('processVideo', { url, llmServices, transcriptServices })
 
   try {
     // Step 1 - Generate markdown

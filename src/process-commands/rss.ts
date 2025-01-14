@@ -10,9 +10,8 @@ import { downloadAudio } from '../process-steps/02-download-audio'
 import { runTranscription } from '../process-steps/03-run-transcription'
 import { selectPrompts } from '../process-steps/04-select-prompt'
 import { runLLM } from '../process-steps/05-run-llm'
-import { cleanUpFiles } from '../process-steps/06-clean-up-files'
 import { saveRSSFeedInfo } from '../utils/save-info'
-import { validateRSSOptions, selectItems } from '../utils/validate-option'
+import { validateRSSOptions, selectItems, saveAudio } from '../utils/validate-option'
 import { l, err, logRSSProcessingAction, logRSSProcessingStatus, logRSSSeparator } from '../utils/logging'
 import type { ProcessingOptions, RSSItem } from '../utils/types/process'
 import type { TranscriptServices } from '../utils/types/transcription'
@@ -66,7 +65,7 @@ export async function processItems(
 
     // Clean up downloaded audio if not saving
     if (!options.saveAudio) {
-      await cleanUpFiles(finalPath)
+      await saveAudio(finalPath)
     }
 
     return {

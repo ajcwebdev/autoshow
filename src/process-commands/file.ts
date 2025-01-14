@@ -10,7 +10,7 @@ import { downloadAudio } from '../process-steps/02-download-audio'
 import { runTranscription } from '../process-steps/03-run-transcription'
 import { selectPrompts } from '../process-steps/04-select-prompt'
 import { runLLM } from '../process-steps/05-run-llm'
-import { cleanUpFiles } from '../process-steps/06-clean-up-files'
+import { saveAudio } from '../utils/validate-option'
 import { l, err } from '../utils/logging'
 import type { ProcessingOptions } from '../utils/types/process'
 import type { TranscriptServices } from '../utils/types/transcription'
@@ -72,7 +72,7 @@ export async function processFile(
 
     // Step 6 - Cleanup
     if (!options.saveAudio) {
-      await cleanUpFiles(finalPath)
+      await saveAudio(finalPath)
     }
 
     l.wait('  processFile command completed successfully.')

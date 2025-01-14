@@ -11,7 +11,8 @@
 import { readFile, access } from 'node:fs/promises'
 import { fileTypeFromBuffer } from 'file-type'
 import { l, err } from '../utils/logging'
-import { execPromise, execFilePromise } from '../utils/globals/process'
+import { executeWithRetry } from '../utils/retry'
+import { execPromise } from '../utils/globals/process'
 import type { SupportedFileType, ProcessingOptions } from '../utils/types/process'
 
 /**
@@ -88,56 +89,24 @@ export async function downloadAudio(
   const finalPath = `content/${filename}`
   const outputPath = `${finalPath}.wav`
 
-  /**
-   * Executes a command with retry logic to recover from transient failures.
-   * 
-   * @param {string} command - The command to execute.
-   * @param {string[]} args - Arguments for the command.
-   * @param {number} retries - Number of retry attempts.
-   * @returns {Promise<void>} Resolves if the command succeeds.
-   * @throws {Error} If the command fails after all retry attempts.
-   */
-  async function executeWithRetry(
-    command: string,
-    args: string[],
-    retries: number
-  ): Promise<void> {
-    for (let attempt = 1; attempt <= retries; attempt++) {
-      try {
-        // Attempt to execute the command
-        const { stderr } = await execFilePromise(command, args)
-        // Log any warnings from yt-dlp
-        if (stderr) {
-          err(`yt-dlp warnings: ${stderr}`)
-        }
-        return // Exit the loop if successful
-      } catch (error) {
-        // If the last attempt also fails, throw the error
-        if (attempt === retries) {
-          err(`Failed after ${retries} attempts`)
-          throw error
-        }
-        // Log and retry
-        l.wait(`Retry ${attempt} of ${retries}: Retrying yt-dlp command...`)
-      }
-    }
-  }
-
   // Handle online content (YouTube, RSS feeds, etc.)
   if (options.video || options.playlist || options.urls || options.rss || options.channel) {
     try {
       // Execute yt-dlp with retry logic
-      await executeWithRetry('yt-dlp', [
-        '--no-warnings',           // Suppress warning messages
-        '--restrict-filenames',    // Use safe filenames
-        '--extract-audio',         // Extract audio stream
-        '--audio-format', 'wav',   // Convert to WAV
-        '--postprocessor-args', 'ffmpeg:-ar 16000 -ac 1', // 16kHz mono
-        '--no-playlist',           // Don't expand playlists
-        '-o', outputPath,          // Output path
-        input,
-      ], 5)
-      // Retry up to 5 times
+      await executeWithRetry(
+        'yt-dlp',
+        [
+          '--no-warnings',           // Suppress warning messages
+          '--restrict-filenames',    // Use safe filenames
+          '--extract-audio',         // Extract audio stream
+          '--audio-format', 'wav',   // Convert to WAV
+          '--postprocessor-args', 'ffmpeg:-ar 16000 -ac 1', // 16kHz mono
+          '--no-playlist',           // Don't expand playlists
+          '-o', outputPath,          // Output path
+          input,
+        ],
+        5 // Retry up to 5 times
+      )
       l.wait(`\n  Audio downloaded successfully:\n    - ${outputPath}`)
     } catch (error) {
       // Log the error and rethrow

@@ -8,7 +8,7 @@ import { join } from 'node:path'
 
 const commands = [
   {
-    // Process a single YouTube video using Autoshow's default settings.
+    // Process single YouTube video using Autoshow's default settings.
     cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk"',
     expectedFile: '2024-09-24-ep0-fsjam-podcast-prompt.md',
     newName: '01-video-default.md'
@@ -30,7 +30,7 @@ const commands = [
     ]
   },
   {
-    // Process a single local audio file.
+    // Process single local audio file.
     cmd: 'npm run as -- --file "content/audio.mp3"',
     expectedFile: 'audio-prompt.md',
     newName: '06-file-default.md'
@@ -48,13 +48,13 @@ const commands = [
     newName: '08-whisper-tiny.md'
   },
   {
-    // Process a local audio file with all available prompt options (except smallChapters and longChapters)
+    // Process local audio file with all available prompt options (except smallChapters and longChapters)
     cmd: 'npm run as -- --file "content/audio.mp3" --prompt titles summary mediumChapters takeaways questions',
     expectedFile: 'audio-prompt.md',
     newName: '09-all-prompts.md'
   },
   {
-    // Process a local audio file with multiple prompt sections, Whisper 'tiny' model, and Ollama.
+    // Process local audio file with multiple prompt sections, Whisper 'tiny' model, and Ollama.
     cmd: 'npm run as -- --file "content/audio.mp3" --prompt titles summary shortChapters takeaways questions --whisper tiny --ollama LLAMA_3_2_1B',
     expectedFile: 'audio-ollama-shownotes.md',
     newName: '10-all-prompts-ollama-shownotes.md'
@@ -157,104 +157,104 @@ const commands = [
     newName: '32-docker-whisper-docker-base.md'
   },
   {
-    // Process a video using ChatGPT for LLM operations.
-    cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --chatgpt',
+    // process file using ChatGPT for LLM operations.
+    cmd: 'npm run as -- --file "content/audio.mp3" --chatgpt',
     expectedFile: '2024-09-24-ep0-fsjam-podcast-chatgpt-shownotes.md',
     newName: '33-chatgpt-default.md'
   },
   {
-    // Process video with ChatGPT using GPT_4o_MINI model.
-    cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --chatgpt GPT_4o_MINI',
+    // Process file with ChatGPT using GPT_4o_MINI model.
+    cmd: 'npm run as -- --file "content/audio.mp3" --chatgpt GPT_4o_MINI',
     expectedFile: '2024-09-24-ep0-fsjam-podcast-chatgpt-shownotes.md',
     newName: '34-chatgpt-gpt-4o-mini.md'
   },
   {
-    // Process a video using Claude for LLM operations.
-    cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --claude',
+    // process file using Claude for LLM operations.
+    cmd: 'npm run as -- --file "content/audio.mp3" --claude',
     expectedFile: '2024-09-24-ep0-fsjam-podcast-claude-shownotes.md',
     newName: '35-claude-default.md'
   },
   {
-    // Process video with Claude using CLAUDE_3_SONNET model.
-    cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --claude CLAUDE_3_SONNET',
+    // Process file with Claude using CLAUDE_3_SONNET model.
+    cmd: 'npm run as -- --file "content/audio.mp3" --claude CLAUDE_3_SONNET',
     expectedFile: '2024-09-24-ep0-fsjam-podcast-claude-shownotes.md',
     newName: '36-claude-shownotes.md'
   },
   {
-    // Process a video using Gemini for LLM operations.
-    cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --gemini',
+    // process file using Gemini for LLM operations.
+    cmd: 'npm run as -- --file "content/audio.mp3" --gemini',
     expectedFile: '2024-09-24-ep0-fsjam-podcast-gemini-shownotes.md',
     newName: '37-gemini-shownotes.md'
   },
   {
-    // Process video with Gemini using GEMINI_1_5_FLASH model.
-    cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --gemini GEMINI_1_5_FLASH',
+    // Process file with Gemini using GEMINI_1_5_FLASH model.
+    cmd: 'npm run as -- --file "content/audio.mp3" --gemini GEMINI_1_5_FLASH',
     expectedFile: '2024-09-24-ep0-fsjam-podcast-gemini-shownotes.md',
     newName: '38-gemini-shownotes.md'
   },
   {
-    // Process a video using Cohere for LLM operations
-    cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --cohere',
+    // process file using Cohere for LLM operations
+    cmd: 'npm run as -- --file "content/audio.mp3" --cohere',
     expectedFile: '2024-09-24-ep0-fsjam-podcast-cohere-shownotes.md',
     newName: '39-cohere-shownotes.md'
   },
   {
-    // Process video with Cohere using COMMAND_R model.
-    cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --cohere COMMAND_R',
+    // Process file with Cohere using COMMAND_R model.
+    cmd: 'npm run as -- --file "content/audio.mp3" --cohere COMMAND_R',
     expectedFile: '2024-09-24-ep0-fsjam-podcast-cohere-shownotes.md',
     newName: '40-cohere-shownotes.md'
   },
   {
-    // Process a video using Mistral for LLM operations
-    cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --mistral',
+    // process file using Mistral for LLM operations
+    cmd: 'npm run as -- --file "content/audio.mp3" --mistral',
     expectedFile: '2024-09-24-ep0-fsjam-podcast-mistral-shownotes.md',
     newName: '41-mistral-shownotes.md'
   },
   {
-    // Process video with Mistral using MINISTRAL_3B model.
-    cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --mistral MINISTRAL_3B',
+    // Process file with Mistral using MINISTRAL_3B model.
+    cmd: 'npm run as -- --file "content/audio.mp3" --mistral MINISTRAL_3B',
     expectedFile: '2024-09-24-ep0-fsjam-podcast-mistral-shownotes.md',
     newName: '42-mistral-shownotes.md'
   },
   {
-    // Process a video using Fireworks for LLM operations
-    cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --fireworks',
+    // process file using Fireworks for LLM operations
+    cmd: 'npm run as -- --file "content/audio.mp3" --fireworks',
     expectedFile: '2024-09-24-ep0-fsjam-podcast-fireworks-shownotes.md',
     newName: '43-fireworks-shownotes.md'
   },
   {
-    // Process a video using Together for LLM operations
-    cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --together',
+    // process file using Together for LLM operations
+    cmd: 'npm run as -- --file "content/audio.mp3" --together',
     expectedFile: '2024-09-24-ep0-fsjam-podcast-together-shownotes.md',
     newName: '44-together-shownotes.md'
   },
   {
-    // Process a video using Groq for LLM operations
-    cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --groq',
+    // process file using Groq for LLM operations
+    cmd: 'npm run as -- --file "content/audio.mp3" --groq',
     expectedFile: '2024-09-24-ep0-fsjam-podcast-groq-shownotes.md',
     newName: '45-groq-shownotes.md'
   },
   {
-    // Process a video using Deepgram for transcription
-    cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --deepgram',
+    // process file using Deepgram for transcription
+    cmd: 'npm run as -- --file "content/audio.mp3" --deepgram',
     expectedFile: '2024-09-24-ep0-fsjam-podcast-prompt.md',
     newName: '46-deepgram-prompt.md'
   },
   {
-    // Process video using Deepgram and Mistral's Ministral 3B model.
-    cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --deepgram --mistral MINISTRAL_3B',
+    // Process file using Deepgram and Mistral's Ministral 3B model.
+    cmd: 'npm run as -- --file "content/audio.mp3" --deepgram --mistral MINISTRAL_3B',
     expectedFile: '2024-09-24-ep0-fsjam-podcast-mistral-shownotes.md',
     newName: '47-deepgram-mistral-shownotes.md'
   },
   {
-    // Process a video using AssemblyAI for transcription
-    cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --assembly',
+    // process file using AssemblyAI for transcription
+    cmd: 'npm run as -- --file "content/audio.mp3" --assembly',
     expectedFile: '2024-09-24-ep0-fsjam-podcast-prompt.md',
     newName: '48-assembly-prompt.md'
   },
   {
-    // Process video using AssemblyAI and Mistral's Ministral 3B model.
-    cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --assembly --mistral MINISTRAL_3B',
+    // Process file using AssemblyAI and Mistral's Ministral 3B model.
+    cmd: 'npm run as -- --file "content/audio.mp3" --assembly --mistral MINISTRAL_3B',
     expectedFile: '2024-09-24-ep0-fsjam-podcast-mistral-shownotes.md',
     newName: '49-assembly-mistral-shownotes.md'
   },

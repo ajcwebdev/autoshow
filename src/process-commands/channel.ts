@@ -8,7 +8,7 @@
 import { processVideo } from './video'
 import { saveChannelInfo } from '../utils/save-info'
 import { execFilePromise } from '../utils/globals/process'
-import { l, err, logChannelProcessingAction, logChannelProcessingStatus, logChannelSeparator } from '../utils/logging'
+import { err, logChannelProcessingAction, logChannelProcessingStatus, logChannelSeparator, logInitialFunctionCall } from '../utils/logging'
 import { validateChannelOptions, selectVideos } from '../utils/validate-option'
 import type { ProcessingOptions } from '../utils/types/process'
 import type { TranscriptServices } from '../utils/types/transcription'
@@ -36,8 +36,7 @@ export async function processChannel(
   transcriptServices?: TranscriptServices
 ) {
   // Log the processing parameters for debugging purposes
-  l.opts('Parameters passed to processChannel:\n')
-  l.opts(`  - llmServices: ${llmServices}\n  - transcriptServices: ${transcriptServices}`)
+  logInitialFunctionCall('processChannel', { llmServices, transcriptServices })
 
   try {
     // Validate options

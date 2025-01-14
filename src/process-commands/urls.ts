@@ -8,7 +8,7 @@
 import { readFile } from 'node:fs/promises'
 import { processVideo } from './video'
 import { saveURLsInfo } from '../utils/save-info'
-import { l, err, logURLsSeparator } from '../utils/logging'
+import { l, err, logURLsSeparator, logInitialFunctionCall } from '../utils/logging'
 import type { ProcessingOptions } from '../utils/types/process'
 import type { TranscriptServices } from '../utils/types/transcription'
 import type { LLMServices } from '../utils/types/llms'
@@ -35,8 +35,7 @@ export async function processURLs(
   transcriptServices?: TranscriptServices
 ) {
   // Log the processing parameters for debugging purposes
-  l.opts('Parameters passed to processURLs:\n')
-  l.opts(`  - llmServices: ${llmServices}\n  - transcriptServices: ${transcriptServices}\n`)
+  logInitialFunctionCall('processURLs', { llmServices, transcriptServices })
 
   try {
     // Read the file and extract valid URLs

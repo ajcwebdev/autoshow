@@ -16,7 +16,7 @@ const commands = [
     ]
   },
   {
-    // Process a video using ChatGPT for LLM operations.
+    // process video using ChatGPT for LLM operations.
     cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --chatgpt',
     expectedFile: '2024-09-24-ep0-fsjam-podcast-chatgpt-shownotes.md',
     newName: '03-chatgpt-default.md'
@@ -28,7 +28,7 @@ const commands = [
     newName: '04-chatgpt-gpt-4o-mini.md'
   },
   {
-    // Process a video using Claude for LLM operations.
+    // process video using Claude for LLM operations.
     cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --claude',
     expectedFile: '2024-09-24-ep0-fsjam-podcast-claude-shownotes.md',
     newName: '05-claude-default.md'
@@ -40,7 +40,7 @@ const commands = [
     newName: '06-claude-shownotes.md'
   },
   {
-    // Process a video using Gemini for LLM operations.
+    // process video using Gemini for LLM operations.
     cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --gemini',
     expectedFile: '2024-09-24-ep0-fsjam-podcast-gemini-shownotes.md',
     newName: '07-gemini-shownotes.md'
@@ -52,7 +52,7 @@ const commands = [
     newName: '08-gemini-shownotes.md'
   },
   {
-    // Process a video using Cohere for LLM operations
+    // process video using Cohere for LLM operations
     cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --cohere',
     expectedFile: '2024-09-24-ep0-fsjam-podcast-cohere-shownotes.md',
     newName: '09-cohere-shownotes.md'
@@ -64,7 +64,7 @@ const commands = [
     newName: '10-cohere-shownotes.md'
   },
   {
-    // Process a video using Mistral for LLM operations
+    // process video using Mistral for LLM operations
     cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --mistral',
     expectedFile: '2024-09-24-ep0-fsjam-podcast-mistral-shownotes.md',
     newName: '11-mistral-shownotes.md'
@@ -76,25 +76,25 @@ const commands = [
     newName: '12-mistral-shownotes.md'
   },
   {
-    // Process a video using Fireworks for LLM operations
+    // process video using Fireworks for LLM operations
     cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --fireworks',
     expectedFile: '2024-09-24-ep0-fsjam-podcast-fireworks-shownotes.md',
     newName: '13-fireworks-shownotes.md'
   },
   {
-    // Process a video using Together for LLM operations
+    // process video using Together for LLM operations
     cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --together',
     expectedFile: '2024-09-24-ep0-fsjam-podcast-together-shownotes.md',
     newName: '14-together-shownotes.md'
   },
   {
-    // Process a video using BLANK for LLM operations
+    // process video using BLANK for LLM operations
     cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --groq',
     expectedFile: '2024-09-24-ep0-fsjam-podcast-groq-shownotes.md',
     newName: '15-groq-shownotes.md'
   },
   {
-    // Process a video using Deepgram for transcription
+    // process video using Deepgram for transcription
     cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --deepgram',
     expectedFile: '2024-09-24-ep0-fsjam-podcast-prompt.md',
     newName: '16-deepgram-prompt.md'
@@ -106,7 +106,7 @@ const commands = [
     newName: '17-deepgram-ollama-shownotes.md'
   },
   {
-    // Process a video using AssemblyAI for transcription
+    // process video using AssemblyAI for transcription
     cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --assembly',
     expectedFile: '2024-09-24-ep0-fsjam-podcast-prompt.md',
     newName: '18-assembly-prompt.md'

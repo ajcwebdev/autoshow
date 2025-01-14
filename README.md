@@ -117,7 +117,6 @@ Example commands for all available CLI options can be found in [`docs/examples.m
   - Step 3 - `run-transcription.ts` manages the transcription process
   - Step 4 - `select-prompt.ts` defines the prompt structure for summarization and chapter generation
   - Step 5 - `run-llm.ts` handles LLM processing for selected prompts
-  - Step 6 - `clean-up-files.ts` removes temporary files after processing
 
 - Transcription Services (`src/transcription`)
   - `whisper.ts`: Uses Whisper.cpp for transcription

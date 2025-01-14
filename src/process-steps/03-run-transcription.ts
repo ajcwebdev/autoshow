@@ -4,6 +4,7 @@ import { callWhisper } from '../transcription/whisper'
 import { callDeepgram } from '../transcription/deepgram'
 import { callAssembly } from '../transcription/assembly'
 import { l, err } from '../utils/logging'
+import { retryTranscriptionCall } from '../utils/retry'
 import type { ProcessingOptions } from '../utils/types/process'
 import type { TranscriptServices } from '../utils/types/transcription'
 
@@ -34,7 +35,11 @@ export async function runTranscription(
         // If user typed `--deepgram BASE`, then `options.deepgram` will be "BASE"
         // If user typed just `--deepgram`, then `options.deepgram` will be true
         const deepgramModel = typeof options.deepgram === 'string' ? options.deepgram : 'NOVA_2'
-        const deepgramTranscript = await callDeepgram(options, finalPath, deepgramModel)
+        const deepgramTranscript = await retryTranscriptionCall(
+          () => callDeepgram(options, finalPath, deepgramModel),
+          5,
+          5000
+        )
         l.wait('\n  Deepgram transcription completed successfully.\n')
         l.wait(`\n    - deepgramModel: ${deepgramModel}`)
         return deepgramTranscript
@@ -43,13 +48,21 @@ export async function runTranscription(
         // If user typed `--assembly NANO`, then `options.assembly` will be "NANO"
         // If user typed just `--assembly`, then `options.assembly` will be true
         const assemblyModel = typeof options.assembly === 'string' ? options.assembly : 'NANO'
-        const assemblyTranscript = await callAssembly(options, finalPath, assemblyModel)
+        const assemblyTranscript = await retryTranscriptionCall(
+          () => callAssembly(options, finalPath, assemblyModel),
+          5,
+          5000
+        )
         l.wait('\n  AssemblyAI transcription completed successfully.\n')
         l.wait(`\n    - assemblyModel: ${assemblyModel}`)
         return assemblyTranscript
 
       case 'whisper':
-        const whisperTranscript = await callWhisper(options, finalPath)
+        const whisperTranscript = await retryTranscriptionCall(
+          () => callWhisper(options, finalPath),
+          5,
+          5000
+        )
         l.wait('\n  Whisper transcription completed successfully.\n')
         return whisperTranscript
 

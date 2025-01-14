@@ -8,7 +8,7 @@ import { join } from 'node:path'
 
 const commands = [
   {
-    // Process a single YouTube video using Autoshow's default settings.
+    // Process single YouTube video using Autoshow's default settings.
     cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --whisper tiny',
     expectedFile: '2024-09-24-ep0-fsjam-podcast-prompt.md',
     newName: '01-video-default.md'
@@ -30,7 +30,7 @@ const commands = [
     ]
   },
   {
-    // Process a single local audio file.
+    // Process single local audio file.
     cmd: 'npm run as -- --file "content/audio.mp3" --whisper tiny',
     expectedFile: 'audio-prompt.md',
     newName: '06-file-default.md'
@@ -48,13 +48,13 @@ const commands = [
     newName: '08-whisper-tiny.md'
   },
   {
-    // Process a local audio file with all available prompt options (except smallChapters and longChapters)
+    // Process local audio file with all available prompt options (except smallChapters and longChapters)
     cmd: 'npm run as -- --file "content/audio.mp3" --prompt titles summary mediumChapters takeaways questions --whisper tiny',
     expectedFile: 'audio-prompt.md',
     newName: '09-all-prompts.md'
   },
   {
-    // Process a local audio file with multiple prompt sections, Whisper 'tiny' model, and Ollama.
+    // Process local audio file with multiple prompt sections, Whisper 'tiny' model, and Ollama.
     cmd: 'npm run as -- --file "content/audio.mp3" --prompt titles summary --whisper tiny --ollama',
     expectedFile: 'audio-ollama-shownotes.md',
     newName: '10-all-prompts-ollama-shownotes.md'

@@ -103,13 +103,54 @@ export function formatAssemblyTranscript(transcript: AssemblyAIPollingResponse, 
  * Converts LRC content (common lyrics file format) to plain text with timestamps.
  * - Strips out lines that contain certain metadata (like [by:whisper.cpp]).
  * - Converts original timestamps [MM:SS.xx] to a simplified [MM:SS] format.
+ * - Collapses lines with single or few words into lines of up to 15 words, retaining only the first timestamp
+ *   among collapsed lines and removing subsequent timestamps.
  *
  * @param lrcContent - The content of the LRC file as a string
  * @returns The converted text content with simple timestamps
  */
 export function formatWhisperTranscript(lrcContent: string): string {
-  return lrcContent.split('\n')
+  const lines = lrcContent.split('\n')
     .filter(line => !line.startsWith('[by:whisper.cpp]'))
     .map(line => line.replace(/\[(\d{2,3}):(\d{2})\.(\d{2})\]/g, (_, p1, p2) => `[${p1}:${p2}]`))
-    .join('\n')
+
+  const finalLines: string[] = []
+  let currentTimestamp = ''
+  let currentWords: string[] = []
+
+  lines.forEach(line => {
+    const match = line.match(/^\[(\d{2,3}:\d{2})\]\s*(.*)$/)
+    if (match) {
+      const timestamp = match[1] || ''
+      const text = match[2]
+      if (currentWords.length > 0) {
+        finalLines.push(`[${currentTimestamp}] ${currentWords.join(' ')}`)
+        currentWords = []
+      }
+      currentTimestamp = timestamp
+      const splitted = (text || '').split(/\s+/).filter(Boolean)
+      splitted.forEach(word => {
+        if (currentWords.length >= 15) {
+          finalLines.push(`[${currentTimestamp}] ${currentWords.join(' ')}`)
+          currentWords = []
+        }
+        currentWords.push(word)
+      })
+    } else {
+      const splitted = line.trim().split(/\s+/).filter(Boolean)
+      splitted.forEach(word => {
+        if (currentWords.length >= 15) {
+          finalLines.push(`[${currentTimestamp}] ${currentWords.join(' ')}`)
+          currentWords = []
+        }
+        currentWords.push(word)
+      })
+    }
+  })
+
+  if (currentWords.length > 0) {
+    finalLines.push(`[${currentTimestamp}] ${currentWords.join(' ')}`)
+  }
+
+  return finalLines.join('\n')
 }

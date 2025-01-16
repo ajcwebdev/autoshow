@@ -9,7 +9,7 @@
 import { basename, extname } from 'node:path'
 import { execFilePromise } from '../utils/globals/process'
 import { sanitizeTitle, buildFrontMatter } from '../utils/save-info'
-import { l, err } from '../utils/logging'
+import { l, err, logInitialFunctionCall } from '../utils/logging'
 import type { MarkdownData, ProcessingOptions, RSSItem } from '../utils/types/process'
 
 /**
@@ -59,10 +59,7 @@ export async function generateMarkdown(
   options: ProcessingOptions,
   input: string | RSSItem
 ): Promise<MarkdownData> {
-  // Log function inputs
-  l.step('\nStep 1 - Generate Markdown\n')
-  l.wait(`\n  generateMarkdown called with the following input argument:\n`)
-  l.dim(`${JSON.stringify(input, null, 2)}`)
+  logInitialFunctionCall('generateMarkdown', { options, input })
 
   const { filename, metadata } = await (async () => {
     switch (true) {
@@ -166,7 +163,6 @@ export async function generateMarkdown(
   const frontMatter = buildFrontMatter(metadata)
   const frontMatterContent = frontMatter.join('\n')
 
-  // Log return values
   l.wait(`  generateMarkdown returning:\n\n    - finalPath: ${finalPath}\n    - filename: ${filename}\n`)
   return { frontMatter: frontMatterContent, finalPath, filename, metadata }
 }

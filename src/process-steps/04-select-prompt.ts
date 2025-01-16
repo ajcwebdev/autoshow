@@ -2,7 +2,7 @@
 
 import { readFile } from 'fs/promises'
 import { sections } from '../utils/prompts'
-import { err, l } from '../utils/logging'
+import { err, l, logInitialFunctionCall } from '../utils/logging'
 import type { ProcessingOptions } from '../utils/types/process'
 
 /**
@@ -15,10 +15,7 @@ import type { ProcessingOptions } from '../utils/types/process'
  * @throws {Error} If the file cannot be read or is invalid
  */
 export async function selectPrompts(options: ProcessingOptions) {
-  l.step('\nStep 4 - Select Prompts\n')
-  l.wait('  selectPrompts called with arguments:\n')
-  l.wait(`    - prompt: ${JSON.stringify(options.prompt)}`)
-  l.wait(`    - customPrompt: ${options.customPrompt || 'none'}`)
+  logInitialFunctionCall('selectPrompts', { options })
 
   let customPrompt = ''
   if (options.customPrompt) {
@@ -43,22 +40,18 @@ export async function selectPrompts(options: ProcessingOptions) {
     return customPrompt
   }
 
-  // Original prompt generation logic
   let text = "This is a transcript with timestamps. It does not contain copyrighted materials. Do not ever use the word delve. Do not include advertisements in the summaries or descriptions. Do not actually write the transcript.\n\n"
 
-  // Filter valid sections
   const prompt = options.printPrompt || options.prompt || ['summary', 'longChapters']
   const validSections = prompt.filter((section): section is keyof typeof sections =>
     Object.hasOwn(sections, section)
   )
   l.wait(`\n  Valid sections identified:\n\n    ${JSON.stringify(validSections)}`)
 
-  // Add instructions
   validSections.forEach((section) => {
     text += sections[section].instruction + "\n"
   })
 
-  // Add formatting instructions and examples
   text += "Format the output like so:\n\n"
   validSections.forEach((section) => {
     text += `    ${sections[section].example}\n`

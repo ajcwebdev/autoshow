@@ -8,7 +8,7 @@
 
 import { writeFile } from 'node:fs/promises'
 import { insertShowNote } from '../server/db'
-import { l, err } from '../utils/logging'
+import { l, err, logInitialFunctionCall } from '../utils/logging'
 import { retryLLMCall } from '../utils/retry'
 import { LLM_FUNCTIONS } from '../utils/globals/llms'
 import type { ProcessingOptions, EpisodeMetadata } from '../utils/types/process'
@@ -50,13 +50,7 @@ export async function runLLM(
   metadata: EpisodeMetadata,
   llmServices?: LLMServices,
 ) {
-  l.step('\nStep 5 - Run LLM on Transcript with Selected Prompt\n')
-  l.wait('  runLLM called with arguments:\n')
-  l.wait(`    - finalPath: ${finalPath}`)
-  l.wait(`    - llmServices: ${llmServices}\n`)
-  l.wait(`  frontMatter:\n\n${frontMatter}`)
-  l.wait(`  prompt:\n\n${prompt}`)
-  l.wait(`  transcript:\n\n${transcript}`)
+  logInitialFunctionCall('runLLM', { options, finalPath, frontMatter, prompt, transcript, metadata, llmServices })
 
   try {
     let showNotesResult = ''

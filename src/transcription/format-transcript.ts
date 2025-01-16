@@ -112,14 +112,14 @@ export function formatAssemblyTranscript(transcript: AssemblyAIPollingResponse, 
 export function formatWhisperTranscript(lrcContent: string): string {
   const lines = lrcContent.split('\n')
     .filter(line => !line.startsWith('[by:whisper.cpp]'))
-    .map(line => line.replace(/\[(\d{2,3}):(\d{2})\.(\d{2})\]/g, (_, p1, p2) => `[${p1}:${p2}]`))
+    .map(line => line.replace(/\[(\d{1,3}):(\d{2})(\.\d+)?\]/g, (_, p1, p2) => `[${p1}:${p2}]`))
 
   const finalLines: string[] = []
   let currentTimestamp = ''
   let currentWords: string[] = []
 
   lines.forEach(line => {
-    const match = line.match(/^\[(\d{2,3}:\d{2})\]\s*(.*)$/)
+    const match = line.match(/^\[(\d{1,3}:\d{2})\]\s*(.*)$/)
     if (match) {
       const timestamp = match[1] || ''
       const text = match[2]

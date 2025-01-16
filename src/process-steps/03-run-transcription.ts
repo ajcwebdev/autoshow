@@ -3,7 +3,7 @@
 import { callWhisper } from '../transcription/whisper'
 import { callDeepgram } from '../transcription/deepgram'
 import { callAssembly } from '../transcription/assembly'
-import { l, err } from '../utils/logging'
+import { l, err, logInitialFunctionCall } from '../utils/logging'
 import { retryTranscriptionCall } from '../utils/retry'
 import type { ProcessingOptions } from '../utils/types/process'
 import type { TranscriptServices } from '../utils/types/transcription'
@@ -23,17 +23,11 @@ export async function runTranscription(
   finalPath: string,
   transcriptServices?: TranscriptServices
 ) {
-  // Log function call
-  l.step('\nStep 3 - Run Transcription\n')
-  l.wait('  runTranscription called with arguments:\n')
-  l.wait(`    - finalPath: ${finalPath}`)
-  l.wait(`    - transcriptServices: ${transcriptServices}`)
+  logInitialFunctionCall('runTranscription', { options, finalPath, transcriptServices })
 
   try {
     switch (transcriptServices) {
       case 'deepgram':
-        // If user typed `--deepgram BASE`, then `options.deepgram` will be "BASE"
-        // If user typed just `--deepgram`, then `options.deepgram` will be true
         const deepgramModel = typeof options.deepgram === 'string' ? options.deepgram : 'NOVA_2'
         const deepgramTranscript = await retryTranscriptionCall(
           () => callDeepgram(options, finalPath, deepgramModel),
@@ -45,8 +39,6 @@ export async function runTranscription(
         return deepgramTranscript
 
       case 'assembly':
-        // If user typed `--assembly NANO`, then `options.assembly` will be "NANO"
-        // If user typed just `--assembly`, then `options.assembly` will be true
         const assemblyModel = typeof options.assembly === 'string' ? options.assembly : 'NANO'
         const assemblyTranscript = await retryTranscriptionCall(
           () => callAssembly(options, finalPath, assemblyModel),

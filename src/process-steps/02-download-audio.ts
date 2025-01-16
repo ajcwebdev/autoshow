@@ -10,7 +10,7 @@
 
 import { readFile, access } from 'node:fs/promises'
 import { fileTypeFromBuffer } from 'file-type'
-import { l, err } from '../utils/logging'
+import { l, err, logInitialFunctionCall } from '../utils/logging'
 import { executeWithRetry } from '../utils/retry'
 import { execPromise } from '../utils/globals/process'
 import type { SupportedFileType, ProcessingOptions } from '../utils/types/process'
@@ -79,70 +79,53 @@ export async function downloadAudio(
   input: string,
   filename: string
 ): Promise<string> {
-  // Log function inputs
-  l.step('\nStep 2 - Download and Convert Audio\n')
-  l.wait('  downloadAudio called with the following arguments:\n')
-  l.wait(`    - input: ${input}`)
-  l.wait(`    - filename: ${filename}`)
+  logInitialFunctionCall('downloadAudio', { options, input, filename })
 
-  // Define output paths using the provided filename
   const finalPath = `content/${filename}`
   const outputPath = `${finalPath}.wav`
 
-  // Handle online content (YouTube, RSS feeds, etc.)
   if (options.video || options.playlist || options.urls || options.rss || options.channel) {
     try {
-      // Execute yt-dlp with retry logic
       await executeWithRetry(
         'yt-dlp',
         [
-          '--no-warnings',           // Suppress warning messages
-          '--restrict-filenames',    // Use safe filenames
-          '--extract-audio',         // Extract audio stream
-          '--audio-format', 'wav',   // Convert to WAV
-          '--postprocessor-args', 'ffmpeg:-ar 16000 -ac 1', // 16kHz mono
-          '--no-playlist',           // Don't expand playlists
-          '-o', outputPath,          // Output path
+          '--no-warnings',
+          '--restrict-filenames',
+          '--extract-audio',
+          '--audio-format', 'wav',
+          '--postprocessor-args', 'ffmpeg:-ar 16000 -ac 1',
+          '--no-playlist',
+          '-o', outputPath,
           input,
         ],
-        5 // Retry up to 5 times
+        5
       )
       l.wait(`\n  Audio downloaded successfully:\n    - ${outputPath}`)
     } catch (error) {
-      // Log the error and rethrow
       err(`Error downloading audio: ${error instanceof Error ? error.message : String(error)}`)
       throw error
     }
-  }
-  // Handle local file processing
-  else if (options.file) {
-    // Define supported media formats
+  } else if (options.file) {
     const supportedFormats: Set<SupportedFileType> = new Set([
-      // Audio formats
       'wav', 'mp3', 'm4a', 'aac', 'ogg', 'flac',
-      // Video formats
       'mp4', 'mkv', 'avi', 'mov', 'webm',
     ])
     try {
-      // Verify file exists and is accessible
       l.wait(`\n  Checking file access:\n    - ${input}`)
       await access(input)
       l.wait(`\n  File ${input} is accessible. Attempting to read file data for type detection...`)
 
-      // Read file and determine its type
       const buffer = await readFile(input)
       l.wait(`\n  Successfully read file: ${buffer.length} bytes`)
 
       const fileType = await fileTypeFromBuffer(buffer)
       l.wait(`\n  File type detection result: ${fileType?.ext ?? 'unknown'}`)
 
-      // Validate file type is supported
       if (!fileType || !supportedFormats.has(fileType.ext as SupportedFileType)) {
         throw new Error(
           fileType ? `Unsupported file type: ${fileType.ext}` : 'Unable to determine file type'
         )
       }
-      // Convert to standardized WAV format using ffmpeg
       l.wait(`    - Running ffmpeg command for ${input} -> ${outputPath}\n`)
       await execPromise(
         `ffmpeg -i "${input}" -ar 16000 -ac 1 -c:a pcm_s16le "${outputPath}"`
@@ -152,13 +135,10 @@ export async function downloadAudio(
       err(`Error processing local file: ${error instanceof Error ? error.message : String(error)}`)
       throw error
     }
-  }
-  // Handle invalid options
-  else {
+  } else {
     throw new Error('Invalid option provided for audio download/processing.')
   }
 
-  // Log return value
   l.wait(`\n  downloadAudio returning:\n    - outputPath: ${outputPath}\n`)
   return outputPath
 }

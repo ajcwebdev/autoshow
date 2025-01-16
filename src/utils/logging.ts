@@ -376,7 +376,11 @@ export function logCompletionSeparator(action: string): void {
 export function logInitialFunctionCall(functionName: string, details: Record<string, unknown>): void {
   l.info(`${functionName} called with the following arguments:`)
   for (const [key, value] of Object.entries(details)) {
-    l.opts(`  - ${key}: ${value}`)
+    if (typeof value === 'object' && value !== null) {
+      l.opts(`  - ${key}: ${JSON.stringify(value, null, 2)}`)
+    } else {
+      l.opts(`  - ${key}: ${value}`)
+    }
   }
   l.opts('')
 }

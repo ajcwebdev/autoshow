@@ -68,10 +68,24 @@ export const sections = {
     - The summary then outlines key points or arguments presented in the chapter\n`,
   },
 
+  chapterTitles: {
+    // Instructions and example for generating chapter titles
+    instruction: `- Create chapter titles based on the topics discussed throughout the transcript.
+  - Include timestamps for when these chapters begin.
+  - Chapters should be roughly 3-6 minutes long.\n`,
+    example: `## Chapters
+
+    ### 00:00 - Introduction and Overview
+    ### 03:12 - The History of Web Development
+    ### 07:45 - The Rise of JavaScript Frameworks
+    ### 12:30 - Server-Side Technologies
+    ### 18:00 - The Future of Web Development\n`,
+  },
+
   // Section for creating short chapter descriptions
   shortChapters: {
     // Instructions and example for generating concise chapter summaries
-    instruction: `- Create chapters based on the topics discussed throughout.
+    instruction: `- Create chapter titles and descriptions based on the topics discussed throughout.
   - Include timestamps for when these chapters begin.
   - Chapters should be roughly 3-6 minutes long.
   - Write a one-sentence description for each chapter (max 25 words).
@@ -87,7 +101,7 @@ export const sections = {
   // Section for creating medium-length chapter descriptions
   mediumChapters: {
     // Instructions and example for generating more detailed chapter summaries
-    instruction: `- Create chapters based on the topics discussed throughout.
+    instruction: `- Create chapter titles and descriptions based on the topics discussed throughout.
   - Include timestamps for when these chapters begin.
   - Chapters should be roughly 3-6 minutes long.
   - Write a one-paragraph description for each chapter (~50 words).
@@ -103,7 +117,7 @@ export const sections = {
   // Section for creating detailed, long chapter descriptions
   longChapters: {
     // Instructions and example for generating comprehensive chapter summaries
-    instruction: `- Create chapters based on the topics discussed throughout.
+    instruction: `- Create chapter titles and descriptions based on the topics discussed throughout.
   - Include timestamps for when these chapters begin.
   - Chapters should be roughly 3-6 minutes long.
   - Write a two-paragraph description for each chapter (75+ words).

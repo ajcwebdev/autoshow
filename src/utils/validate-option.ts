@@ -98,7 +98,7 @@ export async function checkWhisperDirAndModel(
       throw cloneError
     }
   } else {
-    l.wait(`\n  Whisper.cpp repo is already available at ./whisper.cpp\n`)
+    l.wait(`\n  Whisper.cpp repo is already available at:\n    - ./whisper.cpp\n`)
   }
 
   // Check if the chosen model file is present
@@ -112,7 +112,7 @@ export async function checkWhisperDirAndModel(
       throw modelError
     }
   } else {
-    l.wait(`  Model ${whisperModel} is already available at ./whisper.cpp/models/${modelGGMLName}\n`)
+    l.wait(`  Model ${whisperModel} is already available at\n    - ./whisper.cpp/models/${modelGGMLName}\n`)
   }
 }
 

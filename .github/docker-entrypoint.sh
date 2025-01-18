@@ -17,6 +17,9 @@ log_error() {
     exit 1
 }
 
+echo "Debug: (docker-entrypoint.sh) Checking /root/.ollama before starting Ollama..."
+ls -lR /root/.ollama || true
+
 # Start Ollama server in the background
 echo "Starting Ollama server..."
 ollama serve &

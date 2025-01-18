@@ -13,7 +13,6 @@ import type { OllamaModelType, OllamaResponse } from '../utils/types/llms'
  *
  * @param {string} prompt - The prompt or instructions to process.
  * @param {string} transcript - The transcript text.
- * @param {string} tempPath - (unused) The temporary file path (no longer used).
  * @param {string | OllamaModelType} [model='QWEN_2_5_0B'] - The Ollama model to use.
  * @returns {Promise<string>} A Promise resolving with the generated text.
  */
@@ -26,22 +25,27 @@ export const callOllama = async (
   l.wait(`    - model: ${model}`)
 
   try {
+    // Determine the final modelKey from the argument
     const modelKey = typeof model === 'string' ? model : 'QWEN_2_5_0B'
     const modelConfig = OLLAMA_MODELS[modelKey as OllamaModelType] || OLLAMA_MODELS.QWEN_2_5_0B
     const ollamaModelName = modelConfig.modelId
 
     l.wait(`    - modelName: ${modelKey}\n    - ollamaModelName: ${ollamaModelName}`)
 
+    // Determine host/port from environment or fallback
     const ollamaHost = env['OLLAMA_HOST'] || 'localhost'
     const ollamaPort = env['OLLAMA_PORT'] || '11434'
-    l.wait(`\n  Using Ollama host: ${ollamaHost}, port: ${ollamaPort}`)
+    l.info(`\n  [callOllama] OLLAMA_HOST=${ollamaHost}, OLLAMA_PORT=${ollamaPort}`)
 
+    // Combine prompt + transcript
     const combinedPrompt = `${prompt}\n${transcript}`
 
+    // Ensure Ollama server is running and that the model is pulled
     await checkOllamaServerAndModel(ollamaHost, ollamaPort, ollamaModelName)
 
-    l.wait(`    - Sending chat request to http://${ollamaHost}:${ollamaPort} using model '${ollamaModelName}'`)
+    l.wait(`\n  Sending chat request to http://${ollamaHost}:${ollamaPort} using model '${ollamaModelName}'`)
 
+    // Make the actual request to Ollama
     const response = await fetch(`http://${ollamaHost}:${ollamaPort}/api/chat`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -56,9 +60,11 @@ export const callOllama = async (
       throw new Error(`HTTP error! status: ${response.status}`)
     }
 
-    const data = await response.json() as OllamaResponse
+    // Parse returned JSON
+    const data = (await response.json()) as OllamaResponse
     const fullContent = data?.message?.content || ''
 
+    // Log token usage if provided by the server
     const totalPromptTokens = data.prompt_eval_count ?? 0
     const totalCompletionTokens = data.eval_count ?? 0
 
@@ -68,7 +74,7 @@ export const callOllama = async (
       tokenUsage: {
         input: totalPromptTokens || undefined,
         output: totalCompletionTokens || undefined,
-        total: totalPromptTokens + totalCompletionTokens || undefined,
+        total: (totalPromptTokens + totalCompletionTokens) || undefined,
       },
     })
 

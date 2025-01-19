@@ -103,54 +103,108 @@ export function formatAssemblyTranscript(transcript: AssemblyAIPollingResponse, 
  * Converts LRC content (common lyrics file format) to plain text with timestamps.
  * - Strips out lines that contain certain metadata (like [by:whisper.cpp]).
  * - Converts original timestamps [MM:SS.xx] to a simplified [MM:SS] format.
- * - Collapses lines with single or few words into lines of up to 15 words, retaining only the first timestamp
- *   among collapsed lines and removing subsequent timestamps.
+ * - Properly extracts all timestamps in each line, then merges them into
+ *   chunks of up to 15 words, adopting the newest timestamp as soon
+ *   as it appears.
  *
  * @param lrcContent - The content of the LRC file as a string
  * @returns The converted text content with simple timestamps
  */
 export function formatWhisperTranscript(lrcContent: string): string {
-  const lines = lrcContent.split('\n')
+  // 1) Remove lines like `[by:whisper.cpp]`, convert "[MM:SS.xx]" to "[MM:SS]"
+  const rawLines = lrcContent
+    .split('\n')
     .filter(line => !line.startsWith('[by:whisper.cpp]'))
-    .map(line => line.replace(/\[(\d{1,3}):(\d{2})(\.\d+)?\]/g, (_, p1, p2) => `[${p1}:${p2}]`))
+    .map(line =>
+      line.replace(
+        /\[(\d{1,3}):(\d{2})(\.\d+)?\]/g,
+        (_, minutes, seconds) => `[${minutes}:${seconds}]`
+      )
+    )
 
-  const finalLines: string[] = []
-  let currentTimestamp = ''
-  let currentWords: string[] = []
-
-  lines.forEach(line => {
-    const match = line.match(/^\[(\d{1,3}:\d{2})\]\s*(.*)$/)
-    if (match) {
-      const timestamp = match[1] || ''
-      const text = match[2]
-      if (currentWords.length > 0) {
-        finalLines.push(`[${currentTimestamp}] ${currentWords.join(' ')}`)
-        currentWords = []
-      }
-      currentTimestamp = timestamp
-      const splitted = (text || '').split(/\s+/).filter(Boolean)
-      splitted.forEach(word => {
-        if (currentWords.length >= 15) {
-          finalLines.push(`[${currentTimestamp}] ${currentWords.join(' ')}`)
-          currentWords = []
-        }
-        currentWords.push(word)
-      })
-    } else {
-      const splitted = line.trim().split(/\s+/).filter(Boolean)
-      splitted.forEach(word => {
-        if (currentWords.length >= 15) {
-          finalLines.push(`[${currentTimestamp}] ${currentWords.join(' ')}`)
-          currentWords = []
-        }
-        currentWords.push(word)
-      })
-    }
-  })
-
-  if (currentWords.length > 0) {
-    finalLines.push(`[${currentTimestamp}] ${currentWords.join(' ')}`)
+  // We define a Segment with timestamp: string | undefined
+  type Segment = {
+    timestamp: string | undefined
+    words: string[]
   }
 
+  /**
+   * Given a line (which may contain multiple [MM:SS] tags),
+   * extract those timestamps + the words in between.
+   */
+  function parseLineIntoSegments(line: string): Segment[] {
+    const segments: Segment[] = []
+    const pattern = /\[(\d{1,3}:\d{2})\]/g
+
+    let lastIndex = 0
+    let match: RegExpExecArray | null
+    let currentTimestamp: string | undefined = undefined
+
+    while ((match = pattern.exec(line)) !== null) {
+      // Text before this timestamp
+      const textBeforeThisTimestamp = line.slice(lastIndex, match.index).trim()
+      if (textBeforeThisTimestamp) {
+        segments.push({
+          timestamp: currentTimestamp,
+          words: textBeforeThisTimestamp.split(/\s+/).filter(Boolean),
+        })
+      }
+      // Update timestamp to the newly found one
+      currentTimestamp = match[1]
+      lastIndex = pattern.lastIndex
+    }
+
+    // After the last timestamp, grab any trailing text
+    const trailing = line.slice(lastIndex).trim()
+    if (trailing) {
+      segments.push({
+        timestamp: currentTimestamp,
+        words: trailing.split(/\s+/).filter(Boolean),
+      })
+    }
+
+    // If line had no timestamps, the entire line is one segment with `timestamp: undefined`.
+    return segments
+  }
+
+  // 2) Flatten all lines into an array of typed segments
+  const allSegments: Segment[] = rawLines.flatMap(line => parseLineIntoSegments(line))
+
+  // 3) Accumulate words into lines up to 15 words each.
+  //    Whenever we see a new timestamp, we finalize the previous chunk
+  //    and start a new chunk with that timestamp.
+  const finalLines: string[] = []
+  let currentTimestamp: string | undefined = undefined
+  let currentWords: string[] = []
+
+  function finalizeChunk() {
+    if (currentWords.length > 0) {
+      // If we have never encountered a timestamp, default to "00:00"
+      const tsToUse = currentTimestamp ?? '00:00'
+      finalLines.push(`[${tsToUse}] ${currentWords.join(' ')}`)
+      currentWords = []
+    }
+  }
+
+  for (const segment of allSegments) {
+    // If this segment has a new timestamp, finalize the old chunk and start new
+    if (segment.timestamp !== undefined) {
+      finalizeChunk()
+      currentTimestamp = segment.timestamp
+    }
+
+    // Accumulate words from this segment, chunking at 15
+    for (const word of segment.words) {
+      currentWords.push(word)
+      if (currentWords.length === 15) {
+        finalizeChunk()
+      }
+    }
+  }
+
+  // 4) Finalize any leftover words
+  finalizeChunk()
+
+  // 5) Return as simple text
   return finalLines.join('\n')
 }

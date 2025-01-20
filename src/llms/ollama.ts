@@ -2,7 +2,7 @@
 
 import { env } from 'node:process'
 import { OLLAMA_MODELS } from '../utils/globals/llms'
-import { l, err, logAPIResults } from '../utils/logging'
+import { l, err, logLLMCost } from '../utils/logging'
 import { checkOllamaServerAndModel } from '../utils/validate-option'
 import type { OllamaModelType, OllamaResponse } from '../utils/types/llms'
 
@@ -68,7 +68,7 @@ export const callOllama = async (
     const totalPromptTokens = data.prompt_eval_count ?? 0
     const totalCompletionTokens = data.eval_count ?? 0
 
-    logAPIResults({
+    logLLMCost({
       modelName: modelKey,
       stopReason: 'stop',
       tokenUsage: {

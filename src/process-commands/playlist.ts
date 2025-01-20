@@ -6,9 +6,9 @@
  */
 
 import { processVideo } from './video'
-import { savePlaylistInfo } from '../utils/save-info'
+import { savePlaylistInfo } from '../utils/validate-option'
 import { execFilePromise } from '../utils/globals/process'
-import { l, err, logPlaylistSeparator, logInitialFunctionCall } from '../utils/logging'
+import { l, err, logSeparator, logInitialFunctionCall } from '../utils/logging'
 import type { ProcessingOptions } from '../utils/types/process'
 import type { TranscriptServices } from '../utils/types/transcription'
 import type { LLMServices } from '../utils/types/llms'
@@ -76,7 +76,12 @@ export async function processPlaylist(
     // Process each video sequentially, with error handling for individual videos
     for (const [index, url] of urls.entries()) {
       // Visual separator for each video in the console
-      logPlaylistSeparator(index, urls.length, url)
+      logSeparator({
+        type: 'playlist',
+        index,
+        total: urls.length,
+        descriptor: url
+      })
       try {
         // Process the video using the existing processVideo function
         await processVideo(options, url, llmServices, transcriptServices)

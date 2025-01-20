@@ -4,6 +4,58 @@ import type { TranscriptServices, WhisperModelType } from './transcription'
 import type { LLMServices } from './llms'
 
 /**
+ * A union type representing the various logging contexts for which a separator can be logged.
+ */
+export type SeparatorParams =
+  | {
+      /**
+       * The context type: channel, playlist, or urls
+       */
+      type: 'channel' | 'playlist' | 'urls'
+      /**
+       * The zero-based index of the current item being processed
+       */
+      index: number
+      /**
+       * The total number of items to be processed
+       */
+      total: number
+      /**
+       * The URL string to be displayed
+       */
+      descriptor: string
+    }
+  | {
+      /**
+       * The context type: rss
+       */
+      type: 'rss'
+      /**
+       * The zero-based index of the current item being processed
+       */
+      index: number
+      /**
+       * The total number of items to be processed
+       */
+      total: number
+      /**
+       * The title string to be displayed
+       */
+      descriptor: string
+    }
+  | {
+      /**
+       * The context type: completion
+       */
+      type: 'completion'
+      /**
+       * The action string that was completed successfully
+       */
+      descriptor: string
+    }
+
+
+/**
  * @interface EpisodeMetadata
  * @property {string} [showLink]
  * @property {string} [channel]

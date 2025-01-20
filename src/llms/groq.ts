@@ -2,7 +2,7 @@
 
 import { env } from 'node:process'
 import { GROQ_MODELS } from '../utils/globals/llms'
-import { err, logAPIResults } from '../utils/logging'
+import { err, logLLMCost } from '../utils/logging'
 import type { GroqModelType, GroqChatCompletionResponse } from '../utils/types/llms'
 
 /**
@@ -58,7 +58,7 @@ export const callGroq = async (
       throw new Error('No content generated from the Groq API')
     }
 
-    logAPIResults({
+    logLLMCost({
       modelName: modelKey,
       stopReason: data.choices[0]?.finish_reason ?? 'unknown',
       tokenUsage: {

@@ -5,27 +5,33 @@
  * @packageDocumentation
  */
 
-import { XMLParser } from 'fast-xml-parser'
 import { exec, execFile } from 'node:child_process'
 import { promisify } from 'node:util'
+import { processVideo } from '../../process-commands/video'
+import { processPlaylist } from '../../process-commands/playlist'
+import { processChannel } from '../../process-commands/channel'
+import { processURLs } from '../../process-commands/urls'
+import { processFile } from '../../process-commands/file'
+import { processRSS } from '../../process-commands/rss'
+
+import type { ValidAction, HandlerFunction } from '../types/process'
 
 export const execPromise = promisify(exec)
 export const execFilePromise = promisify(execFile)
 
-/**
- * Configure XML parser for RSS feed processing.
- * Handles attributes without prefixes and allows boolean values.
- *
- */
-export const parser = new XMLParser({
-  ignoreAttributes: false,
-  attributeNamePrefix: '',
-  allowBooleanAttributes: true,
-})
-
 /* ------------------------------------------------------------------
  * Prompt & Action Choices
  * ------------------------------------------------------------------ */
+
+// Map each action to its corresponding handler function
+export const PROCESS_HANDLERS: Record<ValidAction, HandlerFunction> = {
+  video: processVideo,
+  playlist: processPlaylist,
+  channel: processChannel,
+  urls: processURLs,
+  file: processFile,
+  rss: processRSS,
+}
 
 /**
  * Provides user-friendly prompt choices for content generation or summary tasks.
@@ -97,18 +103,4 @@ export const ACTION_OPTIONS: Array<{
     message: 'Enter the podcast RSS feed URL:',
     validate: (input: string) => (input ? true : 'Please enter a valid URL.'),
   },
-]
-
-/**
- * Additional CLI flags or options that can be enabled.
- * 
- */
-export const otherOptions: string[] = [
-  'speakerLabels',
-  'prompt',
-  'saveAudio',
-  'order',
-  'skip',
-  'info',
-  'item',
 ]

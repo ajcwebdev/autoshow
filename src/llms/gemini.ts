@@ -3,7 +3,7 @@
 import { env } from 'node:process'
 import { GoogleGenerativeAI } from "@google/generative-ai"
 import { GEMINI_MODELS } from '../utils/globals/llms'
-import { err, logAPIResults } from '../utils/logging'
+import { err, logLLMCost } from '../utils/logging'
 import type { GeminiModelType } from '../utils/types/llms'
 
 /**
@@ -46,7 +46,7 @@ export const callGemini = async (
       const { usageMetadata } = response
       const { promptTokenCount, candidatesTokenCount, totalTokenCount } = usageMetadata ?? {}
 
-      logAPIResults({
+      logLLMCost({
         modelName: actualModel,
         stopReason: 'complete',
         tokenUsage: {

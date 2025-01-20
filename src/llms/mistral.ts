@@ -3,7 +3,7 @@
 import { env } from 'node:process'
 import { Mistral } from '@mistralai/mistralai'
 import { MISTRAL_MODELS } from '../utils/globals/llms'
-import { err, logAPIResults } from '../utils/logging'
+import { err, logLLMCost } from '../utils/logging'
 import type { MistralModelType } from '../utils/types/llms'
 
 /**
@@ -46,7 +46,7 @@ export const callMistral = async (
     const content = firstChoice.message.content
     const contentString = Array.isArray(content) ? content.join('') : content
 
-    logAPIResults({
+    logLLMCost({
       modelName: actualModel,
       stopReason: firstChoice.finishReason ?? 'unknown',
       tokenUsage: {

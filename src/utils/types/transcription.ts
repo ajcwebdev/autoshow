@@ -13,12 +13,23 @@ export type TranscriptServiceConfig = {
 }
 
 /**
- * Interface for transcription cost info.
+ * Describes parameters needed for logging transcription cost details.
  */
-export interface TranscriptionCostInfo {
+export type TranscriptionCostInfo = {
+  /**
+   * The name of the model being used
+   */
   modelName: string
-  cost: number
-  minutes: number
+
+  /**
+   * The cost (in USD) per minute for the model
+   */
+  costPerMinute: number
+
+  /**
+   * The file path to the audio file
+   */
+  filePath: string
 }
 
 /**

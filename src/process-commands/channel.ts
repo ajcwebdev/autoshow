@@ -6,13 +6,93 @@
  */
 
 import { processVideo } from './video'
-import { saveChannelInfo } from '../utils/save-info'
 import { execFilePromise } from '../utils/globals/process'
-import { err, logChannelProcessingAction, logChannelProcessingStatus, logChannelSeparator, logInitialFunctionCall } from '../utils/logging'
-import { validateChannelOptions, selectVideos } from '../utils/validate-option'
-import type { ProcessingOptions } from '../utils/types/process'
+import { validateChannelOptions, saveChannelInfo } from '../utils/validate-option'
+import { l, err, logSeparator, logChannelProcessingAction, logChannelProcessingStatus, logInitialFunctionCall } from '../utils/logging'
+
+import type { ProcessingOptions, VideoInfo } from '../utils/types/process'
 import type { TranscriptServices } from '../utils/types/transcription'
 import type { LLMServices } from '../utils/types/llms'
+
+/**
+ * Fetches, sorts, and selects which videos to process based on provided options, 
+ * including retrieving details for each video via yt-dlp.
+ * 
+ * @param stdout - The raw output from yt-dlp containing the video URLs
+ * @param options - Configuration options for processing
+ * @returns A promise resolving to an object containing all fetched videos and the subset of videos selected to process
+ */
+export async function selectVideos(
+  stdout: string,
+  options: ProcessingOptions
+): Promise<{ allVideos: VideoInfo[], videosToProcess: VideoInfo[] }> {
+  // Prepare URLs
+  const videoUrls = stdout.trim().split('\n').filter(Boolean)
+  l.opts(`\nFetching detailed information for ${videoUrls.length} videos...`)
+
+  // Retrieve video details
+  const videoDetailsPromises = videoUrls.map(async (url) => {
+    try {
+      const { stdout } = await execFilePromise('yt-dlp', [
+        '--print', '%(upload_date)s|%(timestamp)s|%(is_live)s|%(webpage_url)s',
+        '--no-warnings',
+        url,
+      ])
+
+      const [uploadDate, timestamp, isLive, videoUrl] = stdout.trim().split('|')
+
+      if (!uploadDate || !timestamp || !videoUrl) {
+        throw new Error('Incomplete video information received from yt-dlp')
+      }
+
+      // Convert upload date to Date object
+      const year = uploadDate.substring(0, 4)
+      const month = uploadDate.substring(4, 6)
+      const day = uploadDate.substring(6, 8)
+      const date = new Date(`${year}-${month}-${day}`)
+
+      return {
+        uploadDate,
+        url: videoUrl,
+        date,
+        timestamp: parseInt(timestamp, 10) || date.getTime() / 1000,
+        isLive: isLive === 'True'
+      }
+    } catch (error) {
+      err(`Error getting details for video ${url}: ${error instanceof Error ? error.message : String(error)}`)
+      return null
+    }
+  })
+
+  const videoDetailsResults = await Promise.all(videoDetailsPromises)
+  const allVideos = videoDetailsResults.filter((video): video is VideoInfo => video !== null)
+
+  // Exit if no videos were found in the channel
+  if (allVideos.length === 0) {
+    err('Error: No videos found in the channel.')
+    process.exit(1)
+  }
+
+  // Sort videos based on timestamp
+  allVideos.sort((a, b) => a.timestamp - b.timestamp)
+
+  // If order is 'newest' (default), reverse the sorted array
+  if (options.order !== 'oldest') {
+    allVideos.reverse()
+  }
+
+  l.opts(`\nFound ${allVideos.length} videos in the channel...`)
+
+  // Select videos to process based on options
+  let videosToProcess: VideoInfo[]
+  if (options.last) {
+    videosToProcess = allVideos.slice(0, options.last)
+  } else {
+    videosToProcess = allVideos.slice(options.skip || 0)
+  }
+
+  return { allVideos, videosToProcess }
+}
 
 /**
  * Processes an entire YouTube channel by:
@@ -69,7 +149,12 @@ export async function processChannel(
     for (const [index, video] of videosToProcess.entries()) {
       const url = video.url
       // Visual separator for each video in the console
-      logChannelSeparator(index, videosToProcess.length, url)
+      logSeparator({
+        type: 'channel',
+        index,
+        total: videosToProcess.length,
+        descriptor: url
+      })
       try {
         // Process the video using the existing processVideo function
         await processVideo(options, url, llmServices, transcriptServices)

@@ -3,7 +3,7 @@
 import { env } from 'node:process'
 import { CohereClient } from 'cohere-ai'
 import { COHERE_MODELS } from '../utils/globals/llms'
-import { err, logAPIResults } from '../utils/logging'
+import { err, logLLMCost } from '../utils/logging'
 import type { CohereModelType } from '../utils/types/llms'
 
 /**
@@ -43,7 +43,7 @@ export const callCohere = async (
 
     const { inputTokens, outputTokens } = meta?.tokens ?? {}
 
-    logAPIResults({
+    logLLMCost({
       modelName: actualModel,
       stopReason: finishReason ?? 'unknown',
       tokenUsage: {

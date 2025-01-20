@@ -5,17 +5,146 @@
  * @packageDocumentation
  */
 
+import { XMLParser } from 'fast-xml-parser'
 import { generateMarkdown } from '../process-steps/01-generate-markdown'
 import { downloadAudio } from '../process-steps/02-download-audio'
 import { runTranscription } from '../process-steps/03-run-transcription'
 import { selectPrompts } from '../process-steps/04-select-prompt'
 import { runLLM } from '../process-steps/05-run-llm'
-import { saveRSSFeedInfo } from '../utils/save-info'
-import { validateRSSOptions, selectItems, saveAudio } from '../utils/validate-option'
-import { l, err, logRSSProcessingAction, logRSSProcessingStatus, logRSSSeparator, logInitialFunctionCall } from '../utils/logging'
+import { validateRSSOptions, saveAudio, saveRSSFeedInfo } from '../utils/validate-option'
+import { l, err, logSeparator, logInitialFunctionCall, logRSSProcessingStatus } from '../utils/logging'
+
 import type { ProcessingOptions, RSSItem } from '../utils/types/process'
 import type { TranscriptServices } from '../utils/types/transcription'
 import type { LLMServices } from '../utils/types/llms'
+
+/**
+ * Configure XML parser for RSS feed processing.
+ * Handles attributes without prefixes and allows boolean values.
+ *
+ */
+export const parser = new XMLParser({
+  ignoreAttributes: false,
+  attributeNamePrefix: '',
+  allowBooleanAttributes: true,
+})
+
+/**
+ * Fetches and parses an RSS feed, then filters which items to process based on provided options.
+ * 
+ * @param rssUrl - URL of the RSS feed to fetch
+ * @param options - Configuration options for filtering
+ * @returns A promise that resolves to an object with filtered RSS items and the channel title
+ * @throws Will exit the process on network or parsing errors, or if no valid items are found
+ */
+export async function selectItems(
+  rssUrl: string,
+  options: ProcessingOptions
+): Promise<{ items: RSSItem[]; channelTitle: string }> {
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), 10000)
+
+  try {
+    const response = await fetch(rssUrl, {
+      method: 'GET',
+      headers: { Accept: 'application/rss+xml' },
+      signal: controller.signal,
+    })
+    clearTimeout(timeout)
+
+    if (!response.ok) {
+      err(`HTTP error! status: ${response.status}`)
+      process.exit(1)
+    }
+
+    const text = await response.text()
+    const feed = parser.parse(text)
+    const {
+      title: channelTitle,
+      link: channelLink,
+      image: channelImageObject,
+      item: feedItems,
+    } = feed.rss.channel
+    const channelImage = channelImageObject?.url || ''
+    const feedItemsArray = Array.isArray(feedItems) ? feedItems : [feedItems]
+    const defaultDate = new Date().toISOString().substring(0, 10)
+
+    // Build the unfiltered items array (audio/video only)
+    const unfilteredItems: RSSItem[] = feedItemsArray
+      .filter((item) => {
+        if (!item.enclosure || !item.enclosure.type) return false
+        const audioVideoTypes = ['audio/', 'video/']
+        return audioVideoTypes.some((type) => item.enclosure.type.startsWith(type))
+      })
+      .map((item) => {
+        let publishDate: string
+        try {
+          const date = item.pubDate ? new Date(item.pubDate) : new Date()
+          publishDate = date.toISOString().substring(0, 10)
+        } catch {
+          publishDate = defaultDate
+        }
+
+        return {
+          showLink: item.enclosure?.url || '',
+          channel: channelTitle || '',
+          channelURL: channelLink || '',
+          title: item.title || '',
+          description: '',
+          publishDate,
+          coverImage: item['itunes:image']?.href || channelImage || '',
+        }
+      })
+
+    if (unfilteredItems.length === 0) {
+      err('Error: No audio/video items found in the RSS feed.')
+      process.exit(1)
+    }
+
+    // Now apply the filtering logic
+    let itemsToProcess: RSSItem[] = []
+
+    if (options.item && options.item.length > 0) {
+      itemsToProcess = unfilteredItems.filter((item) =>
+        options.item!.includes(item.showLink)
+      )
+      if (itemsToProcess.length === 0) {
+        err('Error: No matching items found for the provided URLs.')
+        process.exit(1)
+      }
+    } else if (options.lastDays !== undefined) {
+      const now = new Date()
+      const cutoff = new Date(now.getTime() - options.lastDays * 24 * 60 * 60 * 1000)
+
+      itemsToProcess = unfilteredItems.filter((item) => {
+        const itemDate = new Date(item.publishDate)
+        return itemDate >= cutoff
+      })
+    } else if (options.date && options.date.length > 0) {
+      const selectedDates = new Set(options.date)
+      itemsToProcess = unfilteredItems.filter((item) =>
+        selectedDates.has(item.publishDate)
+      )
+    } else if (options.last) {
+      itemsToProcess = unfilteredItems.slice(0, options.last)
+    } else {
+      const sortedItems =
+        options.order === 'oldest'
+          ? unfilteredItems.slice().reverse()
+          : unfilteredItems
+      itemsToProcess = sortedItems.slice(options.skip || 0)
+    }
+
+    return { items: itemsToProcess, channelTitle: channelTitle || '' }
+  } catch (error) {
+    if ((error as Error).name === 'AbortError') {
+      err('Error: Fetch request timed out.')
+    } else {
+      err(`Error fetching RSS feed: ${(error as Error).message}`)
+    }
+    process.exit(1)
+  }
+}
 
 /**
  * Processes a single RSS item by generating markdown, downloading audio, transcribing,
@@ -100,7 +229,6 @@ export async function processRSS(
 
   try {
     validateRSSOptions(options)
-    logRSSProcessingAction(options)
 
     // Combined fetch + filtering now happens in selectItems:
     const { items, channelTitle } = await selectItems(rssUrl, options)
@@ -123,7 +251,12 @@ export async function processRSS(
     const results = []
 
     for (const [index, item] of items.entries()) {
-      logRSSSeparator(index, items.length, item.title)
+      logSeparator({
+        type: 'rss',
+        index,
+        total: items.length,
+        descriptor: item.title
+      })
       const result = await processItems(item, options, llmServices, transcriptServices)
       results.push(result)
     }

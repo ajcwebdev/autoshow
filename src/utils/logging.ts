@@ -4,9 +4,65 @@ import { execPromise } from './globals/process'
 import { ALL_MODELS } from './globals/llms'
 import chalk from 'chalk'
 
-import type { ProcessingOptions } from './types/process'
+import type { ProcessingOptions, SeparatorParams } from './types/process'
 import type { TranscriptionCostInfo } from './types/transcription'
-import type { TokenUsage, CostCalculation, APILogInfo, ChainableLogger } from './types/logging'
+import type { LogLLMCost, ChainableLogger } from './types/logging'
+
+/**
+ * Logs the first step of a top-level function call with its relevant options or parameters.
+ *
+ * @param functionName - The name of the top-level function being invoked.
+ * @param details - An object containing relevant parameters to log
+ */
+export function logInitialFunctionCall(functionName: string, details: Record<string, unknown>): void {
+  l.info(`${functionName} called with the following arguments:`)
+  for (const [key, value] of Object.entries(details)) {
+    if (typeof value === 'object' && value !== null) {
+      l.opts(`  - ${key}: ${JSON.stringify(value, null, 2)}`)
+    } else {
+      l.opts(`  - ${key}: ${value}`)
+    }
+  }
+  l.opts('')
+}
+
+/**
+ * Logs a visual separator for different processing contexts, including channels, playlists, RSS feeds, URLs, 
+ * and a final completion message. 
+ *
+ * - For `channel`, `playlist`, or `urls`, provide `index`, `total`, and `descriptor` representing the URL.
+ * - For `rss`, provide `index`, `total`, and `descriptor` representing the RSS item title.
+ * - For `completion`, provide only the `descriptor` representing the completed action.
+ *
+ * @param params - An object describing the context and values needed to log the separator.
+ */
+export function logSeparator(params: SeparatorParams): void {
+  switch (params.type) {
+    case 'channel':
+    case 'playlist':
+    case 'urls':
+      l.opts(`\n================================================================================================`)
+      if (params.type === 'urls') {
+        l.opts(`  Processing URL ${params.index + 1}/${params.total}: ${params.descriptor}`)
+      } else {
+        l.opts(`  Processing video ${params.index + 1}/${params.total}: ${params.descriptor}`)
+      }
+      l.opts(`================================================================================================\n`)
+      break
+
+    case 'rss':
+      l.opts(`\n========================================================================================`)
+      l.opts(`  Item ${params.index + 1}/${params.total} processing: ${params.descriptor}`)
+      l.opts(`========================================================================================\n`)
+      break
+
+    case 'completion':
+      l.final(`\n================================================================================================`)
+      l.final(`  ${params.descriptor} Processing Completed Successfully.`)
+      l.final(`================================================================================================\n`)
+      break
+  }
+}
 
 /**
  * Finds the model configuration based on the model key
@@ -25,72 +81,6 @@ function findModelConfig(modelKey: string) {
 }
 
 /**
- * Determines if a cost is effectively zero
- * @param cost - The cost to check
- * @returns true if the cost is zero or very close to zero
- */
-function isEffectivelyZero(cost: number): boolean {
-  return Math.abs(cost) < 0.00001
-}
-
-/**
- * Calculates the cost for token usage based on the model's pricing
- * @param modelKey - The key/name of the model
- * @param tokenUsage - Object containing token usage information
- * @returns Object containing calculated costs
- */
-function calculateCosts(modelKey: string, tokenUsage: TokenUsage): CostCalculation {
-  const modelConfig = findModelConfig(modelKey)
-  
-  if (!modelConfig) {
-    console.warn(`Warning: Could not find cost configuration for model: ${modelKey}`)
-    return {
-      inputCost: undefined,
-      outputCost: undefined,
-      totalCost: undefined
-    }
-  }
-
-  // If both costs per million are zero, return all zeros
-  if (modelConfig.inputCostPer1M === 0 && modelConfig.outputCostPer1M === 0) {
-    return {
-      inputCost: 0,
-      outputCost: 0,
-      totalCost: 0
-    }
-  }
-
-  // Calculate costs if token usage is available
-  const inputCost = tokenUsage.input 
-    ? (tokenUsage.input / 1_000_000) * modelConfig.inputCostPer1M
-    : undefined
-
-  const outputCost = tokenUsage.output
-    ? (tokenUsage.output / 1_000_000) * modelConfig.outputCostPer1M
-    : undefined
-
-  // Calculate total cost only if both input and output costs are available
-  const totalCost = inputCost !== undefined && outputCost !== undefined
-    ? inputCost + outputCost
-    : undefined
-
-  // Check if costs are effectively zero
-  if (inputCost !== undefined && isEffectivelyZero(inputCost)) {
-    return {
-      inputCost: 0,
-      outputCost: 0,
-      totalCost: 0
-    }
-  }
-
-  return {
-    inputCost,
-    outputCost,
-    totalCost
-  }
-}
-
-/**
  * Formats a cost value to a standardized string representation
  * @param cost - The cost value to format
  * @returns Formatted cost string
@@ -106,7 +96,7 @@ function formatCost(cost: number | undefined): string {
  * Includes token usage and cost calculations.
  * @param info - Object containing model info, stop reason, and token usage
  */
-export function logAPIResults(info: APILogInfo): void {
+export function logLLMCost(info: LogLLMCost): void {
   const { modelName, stopReason, tokenUsage } = info
   
   // Get model display name if available, otherwise use the provided name
@@ -128,17 +118,45 @@ export function logAPIResults(info: APILogInfo): void {
   }
 
   // Calculate and log costs
-  const costs = calculateCosts(modelName, tokenUsage)
+  let inputCost: number | undefined
+  let outputCost: number | undefined
+  let totalCost: number | undefined
+
+  // Check if model config is found
+  if (!modelConfig) {
+    console.warn(`Warning: Could not find cost configuration for model: ${modelName}`)
+  } else if (modelConfig.inputCostPer1M === 0 && modelConfig.outputCostPer1M === 0) {
+    // If both costs per million are zero, return all zeros
+    inputCost = 0
+    outputCost = 0
+    totalCost = 0
+  } else {
+    // Calculate costs if token usage is available
+    if (tokenUsage.input) {
+      const rawInputCost = (tokenUsage.input / 1_000_000) * modelConfig.inputCostPer1M
+      inputCost = Math.abs(rawInputCost) < 0.00001 ? 0 : rawInputCost
+    }
+
+    if (tokenUsage.output) {
+      outputCost = (tokenUsage.output / 1_000_000) * modelConfig.outputCostPer1M
+    }
+
+    // Calculate total cost only if both input and output costs are available
+    if (inputCost !== undefined && outputCost !== undefined) {
+      totalCost = inputCost + outputCost
+    }
+  }
+
   const costLines = []
   
-  if (costs.inputCost !== undefined) {
-    costLines.push(`Input cost: ${formatCost(costs.inputCost)}`)
+  if (inputCost !== undefined) {
+    costLines.push(`Input cost: ${formatCost(inputCost)}`)
   }
-  if (costs.outputCost !== undefined) {
-    costLines.push(`Output cost: ${formatCost(costs.outputCost)}`)
+  if (outputCost !== undefined) {
+    costLines.push(`Output cost: ${formatCost(outputCost)}`)
   }
-  if (costs.totalCost !== undefined) {
-    costLines.push(`Total cost: ${chalk.bold(formatCost(costs.totalCost))}`)
+  if (totalCost !== undefined) {
+    costLines.push(`Total cost: ${chalk.bold(formatCost(totalCost))}`)
   }
 
   // Log costs if any calculations were successful
@@ -148,30 +166,25 @@ export function logAPIResults(info: APILogInfo): void {
 }
 
 /**
- * Asynchronously retrieves the duration (in seconds) of an audio file using ffprobe.
- * @param filePath - The path to the audio file.
- * @returns {Promise<number>} - The duration of the audio in seconds.
+ * Asynchronously logs the estimated transcription cost based on audio duration and per-minute cost.
+ * Internally calculates the audio file duration using ffprobe.
+ * @param info - Object containing the model name, cost per minute, and path to the audio file.
  * @throws {Error} If ffprobe fails or returns invalid data.
  */
-export async function getAudioDurationInSeconds(filePath: string): Promise<number> {
-  const cmd = `ffprobe -v error -show_entries format=duration -of csv=p=0 "${filePath}"`
+export async function logTranscriptionCost(info: TranscriptionCostInfo): Promise<void> {
+  const cmd = `ffprobe -v error -show_entries format=duration -of csv=p=0 "${info.filePath}"`
   const { stdout } = await execPromise(cmd)
   const seconds = parseFloat(stdout.trim())
   if (isNaN(seconds)) {
-    throw new Error(`Could not parse audio duration for file: ${filePath}`)
+    throw new Error(`Could not parse audio duration for file: ${info.filePath}`)
   }
-  return seconds
-}
+  const minutes = seconds / 60
+  const cost = info.costPerMinute * minutes
 
-/**
- * Logs the estimated transcription cost based on audio duration and per-minute cost.
- * @param info - Object containing the model name, total cost, and audio length in minutes.
- */
-export function logTranscriptionCost(info: TranscriptionCostInfo): void {
   l.wait(
     `  - Estimated Transcription Cost for ${info.modelName}:\n` +
-    `    - Audio Length: ${info.minutes.toFixed(2)} minutes\n` +
-    `    - Cost: $${info.cost.toFixed(4)}`
+    `    - Audio Length: ${minutes.toFixed(2)} minutes\n` +
+    `    - Cost: $${cost.toFixed(4)}`
   )
 }
 
@@ -226,22 +239,6 @@ function createChainableErrorLogger(): ChainableLogger {
 // Create and export the chainable loggers
 export const l = createChainableLogger()
 export const err = createChainableErrorLogger()
-
-/**
- * Logs the current RSS processing action based on provided options.
- * 
- * @param options - Configuration options determining what to process.
- */
-export function logRSSProcessingAction(options: ProcessingOptions): void {
-  if (options.item && options.item.length > 0) {
-    l.wait('\nProcessing specific items:')
-    options.item.forEach((url) => l.wait(`  - ${url}`))
-  } else if (options.last) {
-    l.wait(`\nProcessing the last ${options.last} items`)
-  } else if (options.skip) {
-    l.wait(`  - Skipping first ${options.skip || 0} items`)
-  }
-}
 
 /**
  * Logs the processing status and item counts for RSS feeds.
@@ -302,85 +299,4 @@ export function logChannelProcessingStatus(
     l.wait(`\n  - Found ${total} videos in the channel.`)
     l.wait(`  - Processing all ${processing} videos.\n`)
   }
-}
-
-/**
- * Logs a visual separator for Channel processing.
- *
- * @param index - The zero-based index of the current video being processed.
- * @param total - Total number of videos in the channel.
- * @param url - The URL of the video being processed.
- */
-export function logChannelSeparator(index: number, total: number, url: string): void {
-  l.opts(`\n================================================================================================`)
-  l.opts(`  Processing video ${index + 1}/${total}: ${url}`)
-  l.opts(`================================================================================================\n`)
-}
-
-/**
- * Logs a visual separator for Playlist processing.
- *
- * @param index - The zero-based index of the current video being processed.
- * @param total - Total number of videos in the playlist.
- * @param url - The URL of the video being processed.
- */
-export function logPlaylistSeparator(index: number, total: number, url: string): void {
-  l.opts(`\n================================================================================================`)
-  l.opts(`  Processing video ${index + 1}/${total}: ${url}`)
-  l.opts(`================================================================================================\n`)
-}
-
-/**
- * Logs a visual separator for an arbitrary list of URLs.
- *
- * @param index - The zero-based index of the current URL being processed.
- * @param total - Total number of URLs in the list.
- * @param url - The URL being processed.
- */
-export function logURLsSeparator(index: number, total: number, url: string): void {
-  l.opts(`\n================================================================================================`)
-  l.opts(`  Processing URL ${index + 1}/${total}: ${url}`)
-  l.opts(`================================================================================================\n`)
-}
-
-/**
- * Logs a visual separator for RSS items.
- *
- * @param index - The zero-based index of the current RSS item being processed.
- * @param total - Total number of RSS items in the feed.
- * @param title - The title of the RSS item being processed.
- */
-export function logRSSSeparator(index: number, total: number, title: string): void {
-  l.opts(`\n========================================================================================`)
-  l.opts(`  Item ${index + 1}/${total} processing: ${title}`)
-  l.opts(`========================================================================================\n`)
-}
-
-/**
- * Logs a visual separator indicating the completion of a given action.
- *
- * @param action - The action that was completed successfully.
- */
-export function logCompletionSeparator(action: string): void {
-  l.final(`\n================================================================================================`)
-  l.final(`  ${action} Processing Completed Successfully.`)
-  l.final(`================================================================================================\n`)
-}
-
-/**
- * Logs the first step of a top-level function call with its relevant options or parameters.
- *
- * @param functionName - The name of the top-level function being invoked.
- * @param details - An object containing relevant parameters to log
- */
-export function logInitialFunctionCall(functionName: string, details: Record<string, unknown>): void {
-  l.info(`${functionName} called with the following arguments:`)
-  for (const [key, value] of Object.entries(details)) {
-    if (typeof value === 'object' && value !== null) {
-      l.opts(`  - ${key}: ${JSON.stringify(value, null, 2)}`)
-    } else {
-      l.opts(`  - ${key}: ${value}`)
-    }
-  }
-  l.opts('')
 }

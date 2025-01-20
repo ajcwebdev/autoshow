@@ -3,7 +3,7 @@
 import { env } from 'node:process'
 import { Anthropic } from '@anthropic-ai/sdk'
 import { CLAUDE_MODELS } from '../utils/globals/llms'
-import { err, logAPIResults } from '../utils/logging'
+import { err, logLLMCost } from '../utils/logging'
 import type { ClaudeModelType } from '../utils/types/llms'
 
 /**
@@ -42,7 +42,7 @@ export const callClaude = async (
       throw new Error('No text content generated from the API')
     }
 
-    logAPIResults({
+    logLLMCost({
       modelName: actualModel,
       stopReason: response.stop_reason ?? 'unknown',
       tokenUsage: {

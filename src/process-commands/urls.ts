@@ -7,8 +7,8 @@
 
 import { readFile } from 'node:fs/promises'
 import { processVideo } from './video'
-import { saveURLsInfo } from '../utils/save-info'
-import { l, err, logURLsSeparator, logInitialFunctionCall } from '../utils/logging'
+import { saveURLsInfo } from '../utils/validate-option'
+import { l, err, logSeparator, logInitialFunctionCall } from '../utils/logging'
 import type { ProcessingOptions } from '../utils/types/process'
 import type { TranscriptServices } from '../utils/types/transcription'
 import type { LLMServices } from '../utils/types/llms'
@@ -62,7 +62,12 @@ export async function processURLs(
     // Process each URL sequentially, with error handling for individual videos
     for (const [index, url] of urls.entries()) {
       // Visual separator for each video in the console
-      logURLsSeparator(index, urls.length, url)
+      logSeparator({
+        type: 'urls',
+        index,
+        total: urls.length,
+        descriptor: url
+      })
       try {
         // Process the video using the existing processVideo function
         await processVideo(options, url, llmServices, transcriptServices)

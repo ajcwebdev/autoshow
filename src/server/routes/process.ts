@@ -6,12 +6,20 @@ import { processRSS } from '../../process-commands/rss'
 import { processPlaylist } from '../../process-commands/playlist'
 import { processChannel } from '../../process-commands/channel'
 import { processFile } from '../../process-commands/file'
-import { validateRequest, validateProcessAction } from '../../utils/validate-option'
+import { validateRequest, validateServerProcessAction } from '../utils/validation'
 import { l, err } from '../../../src/utils/logging'
 import type { FastifyRequest, FastifyReply } from 'fastify'
 import type { ProcessRequestBody } from '../../utils/types/process'
 
-// Handler for the /process route
+/**
+ * Handler for the /process route.
+ * Receives and validates the request body, maps request data to processing options,
+ * and calls the appropriate process handler based on the provided process type.
+ *
+ * @param request - FastifyRequest object containing the incoming request data
+ * @param reply - FastifyReply object for sending the response
+ * @returns A Promise that resolves to void
+ */
 export const handleProcessRequest = async (
   request: FastifyRequest,
   reply: FastifyReply
@@ -26,7 +34,7 @@ export const handleProcessRequest = async (
     const { type } = requestData
 
     try {
-      validateProcessAction(type, 'type')
+      validateServerProcessAction(type)
     } catch {
       l('Invalid or missing process type, sending 400')
       reply.status(400).send({ error: 'Valid process type is required' })

@@ -3,7 +3,7 @@
 import { env } from 'node:process'
 import { OpenAI } from 'openai'
 import { GPT_MODELS } from '../utils/globals/llms'
-import { err, logAPIResults } from '../utils/logging'
+import { err, logLLMCost } from '../utils/logging'
 import type { ChatGPTModelType } from '../utils/types/llms'
 
 /**
@@ -43,7 +43,7 @@ export const callChatGPT = async (
 
     const content = firstChoice.message.content
 
-    logAPIResults({
+    logLLMCost({
       modelName: actualModel,
       stopReason: firstChoice.finish_reason ?? 'unknown',
       tokenUsage: {

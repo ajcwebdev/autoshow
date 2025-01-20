@@ -15,9 +15,10 @@ import { argv, exit } from 'node:process'
 import { fileURLToPath } from 'node:url'
 import { Command } from 'commander'
 import { selectPrompts } from './process-steps/04-select-prompt'
-import { validateProcessAction, validateLLM, validateTranscription, processAction } from './utils/validate-option'
-import { l, err, logCompletionSeparator } from './utils/logging'
+import { processAction, validateInputCLI } from './utils/validate-option'
+import { l, err, logSeparator } from './utils/logging'
 import { envVarsMap } from './utils/globals/llms'
+
 import type { ProcessingOptions } from './utils/types/process'
 
 // Initialize the command-line interface using Commander.js
@@ -67,12 +68,7 @@ program
   .option('--printPrompt <sections...>', 'Print the prompt sections without processing')
   .option('--customPrompt <filePath>', 'Use a custom prompt from a markdown file')
   .option('--saveAudio', 'Do not delete intermediary files after processing')
-  // Added options to override environment variables from CLI
-  /**
-   * Additional CLI options to allow passing API keys from the command line,
-   * overriding .env values if they exist. This way, if the .env is missing
-   * a key, the user can supply it via the CLI.
-   */
+  // Options to override environment variables from CLI
   .option('--openaiApiKey <key>', 'Specify OpenAI API key (overrides .env variable)')
   .option('--anthropicApiKey <key>', 'Specify Anthropic API key (overrides .env variable)')
   .option('--deepgramApiKey <key>', 'Specify Deepgram API key (overrides .env variable)')
@@ -84,21 +80,6 @@ program
   .option('--togetherApiKey <key>', 'Specify Together API key (overrides .env variable)')
   .option('--fireworksApiKey <key>', 'Specify Fireworks API key (overrides .env variable)')
   .option('--groqApiKey <key>', 'Specify Groq API key (overrides .env variable)')
-  // Add examples and additional help text
-  .addHelpText(
-    'after',
-    `
-        Examples:
-          $ autoshow --video "https://www.youtube.com/watch?v=..."
-          $ autoshow --playlist "https://www.youtube.com/playlist?list=..."
-          $ autoshow --channel "https://www.youtube.com/channel/..."
-          $ autoshow --file "content/audio.mp3"
-          $ autoshow --rss "https://feeds.transistor.fm/fsjam-podcast/"
-
-        Documentation: https://github.com/ajcwebdev/autoshow#readme
-        Report Issues: https://github.com/ajcwebdev/autoshow/issues
-        `
-  )
 
 /**
  * Main action for the program.
@@ -125,19 +106,13 @@ program.action(async (options: ProcessingOptions) => {
     exit(0)
   }
 
-  // 1) Validate which action was chosen
-  const action = validateProcessAction(options, "action")
-
-  // 2) Validate LLM
-  const llmServices = validateLLM(options)
-
-  // 3) Validate transcription
-  const transcriptServices = validateTranscription(options)
+  // Validate action, LLM, and transcription inputs
+  const { action, llmServices, transcriptServices } = validateInputCLI(options)
 
   try {
     // Helper to handle all action processing logic. If successful, log and exit.
     await processAction(action, options, llmServices, transcriptServices)
-    logCompletionSeparator(action)
+    logSeparator({ type: 'completion', descriptor: action })
     exit(0)
   } catch (error) {
     err(`Error processing ${action}:`, (error as Error).message)

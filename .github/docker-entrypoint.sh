@@ -17,15 +17,15 @@ log_error() {
     exit 1
 }
 
-echo "Debug: (docker-entrypoint.sh) Checking /root/.ollama before starting Ollama..."
-ls -lR /root/.ollama || true
+# echo "Debug: (docker-entrypoint.sh) Checking /root/.ollama before starting Ollama..."
+# ls -lR /root/.ollama || true
 
-# Start Ollama server in the background
-echo "Starting Ollama server..."
-ollama serve &
+# # Start Ollama server in the background
+# echo "Starting Ollama server..."
+# ollama serve &
 
-# Wait for Ollama server to start
-sleep 5
+# # Wait for Ollama server to start
+# sleep 5
 
 # If first argument is "serve", then start the server.
 if [ "$1" = "serve" ]; then

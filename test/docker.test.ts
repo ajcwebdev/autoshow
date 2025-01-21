@@ -41,11 +41,6 @@ const commands = [
     expectedFile: 'audio-prompt.md',
     newName: '08-docker-file-default.md'
   },
-  // {
-  //   cmd: 'npm run docker-cli -- --file "content/audio.mp3" --prompt titles --whisper base --ollama',
-  //   expectedFile: 'audio-ollama-shownotes.md',
-  //   newName: '09-docker-titles-prompt-whisper-tiny-ollama-shownotes.md'
-  // },
   {
     cmd: 'npm run docker-cli -- --file "content/audio.mp3" --whisper base --prompt titles summary mediumChapters takeaways questions',
     expectedFile: 'audio-prompt.md',

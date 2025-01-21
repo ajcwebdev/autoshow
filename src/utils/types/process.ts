@@ -323,6 +323,10 @@ export interface VideoInfo {
  * Item in an RSS feed.
  */
 export type RSSItem = {
+  enclosure?: {
+    url?: string
+    type?: string
+  }
   /** The publication date of the RSS item (e.g., '2024-09-24'). */
   publishDate: string
 

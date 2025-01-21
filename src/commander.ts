@@ -15,7 +15,7 @@ import { argv, exit } from 'node:process'
 import { fileURLToPath } from 'node:url'
 import { Command } from 'commander'
 import { selectPrompts } from './process-steps/04-select-prompt'
-import { processAction, validateInputCLI } from './utils/validate-option'
+import { processAction, validateCLIOptions } from './utils/validate-option'
 import { l, err, logSeparator } from './utils/logging'
 import { envVarsMap } from './utils/globals/llms'
 
@@ -107,7 +107,7 @@ program.action(async (options: ProcessingOptions) => {
   }
 
   // Validate action, LLM, and transcription inputs
-  const { action, llmServices, transcriptServices } = validateInputCLI(options)
+  const { action, llmServices, transcriptServices } = validateCLIOptions(options)
 
   try {
     // Helper to handle all action processing logic. If successful, log and exit.

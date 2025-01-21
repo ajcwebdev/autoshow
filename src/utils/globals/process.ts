@@ -19,6 +19,19 @@ import type { ValidAction, HandlerFunction } from '../types/process'
 export const execPromise = promisify(exec)
 export const execFilePromise = promisify(execFile)
 
+import { XMLParser } from 'fast-xml-parser'
+
+/**
+ * Configure XML parser for RSS feed processing.
+ * Handles attributes without prefixes and allows boolean values.
+ *
+ */
+export const parser = new XMLParser({
+  ignoreAttributes: false,
+  attributeNamePrefix: '',
+  allowBooleanAttributes: true,
+})
+
 /* ------------------------------------------------------------------
  * Prompt & Action Choices
  * ------------------------------------------------------------------ */

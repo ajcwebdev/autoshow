@@ -13,6 +13,16 @@ import type { ProcessingOptions } from '../utils/types/process'
 import type { TranscriptServices } from '../utils/types/transcription'
 import type { LLMServices } from '../utils/types/llms'
 
+// Parse the JSON output
+interface PlaylistEntry {
+  id: string;
+}
+
+interface PlaylistData {
+  title: string;
+  entries: PlaylistEntry[];
+}
+
 /**
  * Processes an entire YouTube playlist by:
  * 1. Fetching all video URLs from the playlist using yt-dlp.
@@ -51,13 +61,11 @@ export async function processPlaylist(
       err(`yt-dlp warnings: ${stderr}`)
     }
 
-    // Parse the JSON output
-    const playlistData = JSON.parse(stdout)
-    const playlistTitle = playlistData.title
-    const entries = playlistData.entries
+    const playlistData: PlaylistData = JSON.parse(stdout);
+    const playlistTitle = playlistData.title;
+    const entries: PlaylistEntry[] = playlistData.entries;
 
-    // Extract video URLs using entry.id
-    const urls = entries.map((entry: any) => `https://www.youtube.com/watch?v=${entry.id}`)
+    const urls: string[] = entries.map((entry: PlaylistEntry) => `https://www.youtube.com/watch?v=${entry.id}`);
 
     // Exit if no videos were found in the playlist
     if (urls.length === 0) {

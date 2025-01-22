@@ -13,20 +13,22 @@
   color-scheme: dark;
 
   /* Core theme colors (HSL hue, saturation, lightness) */
-  --theme-bg: 210deg 6% 12%;
-  --theme-link: 330deg 49% 67%;
-  --theme-text: 220deg 3% 79%;
-  --theme-accent: 159deg 64% 45%;
-  --theme-accent-2: 0deg 0% 93%;
-  --theme-quote: 102deg 100% 86%;
+  --theme-bg: #170c32;
+  --theme-bg-2: #202146;
+  --theme-link: #dd546e;
+  --theme-text: #ffffff;
+  --theme-accent: #92406e;
+  --theme-accent-2: #eb8071;
+  --theme-quote: #dd546e;
+
 
   /* Additional variables for form elements and states */
-  --primary-color: hsl(var(--theme-accent));
+  /* --primary-color: hsl(var(--theme-accent));
   --primary-hover: hsl(159deg 64% 55%);
   --disabled-color: hsl(220deg 3% 30%);
   --error-bg: hsl(0deg 50% 15%);
   --error-border: hsl(0deg 50% 25%);
-  --error-text: hsl(0deg 100% 90%);
+  --error-text: hsl(0deg 100% 90%); */
 
   /* Typography variables for consistent font sizes and line heights */
   --font-family: 'Helvetica Neue', Arial, sans-serif;
@@ -47,15 +49,14 @@ html, body {
   font-family: var(--font-family); /* Apply chosen font family */
   font-size: var(--font-size-base);/* Base font size for scaling text */
   line-height: var(--line-height-base); /* Improve readability */
-  color: hsl(var(--theme-text));  /* Set text color from theme */
-  background-color: hsl(var(--theme-bg)); /* Dark background */
+  color: var(--theme-text);  /* Set text color from theme */
+  background-color: var(--theme-bg); /* Dark background */
 }
 
 body {
   padding: 20px; /* Add space around the content to avoid touching edges */
   align-items: center;
 }
-
 
 /* -----------------------
    LAYOUT & STRUCTURE
@@ -78,7 +79,7 @@ footer div {
    We ensure it matches the dark theme and center it as well.
 */
 header#main-header {
-  background-color: hsl(var(--theme-bg)); /* Same as main background for consistency */
+  background-color: var(--theme-bg); /* Same as main background for consistency */
   margin-bottom: 2rem;                    /* Space below header before main content */
 }
 
@@ -90,7 +91,7 @@ header#main-header > div {
 }
 
 header#main-header a {
-  color: hsl(var(--theme-text)); /* Link color matches text color */
+  color: var(--theme-text); /* Link color matches text color */
   text-decoration: none;         /* Remove underline for a cleaner look */
   font-weight: bold;             /* Slightly bolder text for emphasis */
   transition: color 0.2s;        /* Smooth transition on hover */
@@ -109,7 +110,7 @@ header#main-header nav#navigation-menu ul {
 }
 
 header#main-header nav#navigation-menu a {
-  color: hsl(var(--theme-text)); /* Inherit text color for nav links */
+  color: var(--theme-text); /* Inherit text color for nav links */
   text-decoration: none;         /* No underline for nav links */
   transition: color 0.2s;        /* Smooth hover transition */
 }
@@ -126,21 +127,21 @@ header#main-header nav#navigation-menu a:hover {
    a fixed max-width, and some padding. Inner sections also have their own styling.
 */
 main#main {
-  background-color: hsl(var(--theme-bg)); /* Match theme background */
+  background-color: var(--theme-bg); /* Match theme background */
   border-radius: 8px;      /* Rounded corners for softer look */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5); /* Subtle shadow for depth */
+  box-shadow: 0 2px 8px var(--theme-accent); /* Subtle shadow for depth */
   padding: 20px;           /* Internal spacing */
 }
 
 main#main > section {
-  background-color: hsl(var(--theme-bg)); /* Blend with main container */
+  background-color: var(--theme-bg-2); /* Blend with main container */
   padding: 1rem;                          /* Inner padding for content separation */
   border-radius: 8px;                     /* Round corners to match parent container */
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3); /* A lighter shadow for nested sections */
+  box-shadow: 0 1px 2px var(--theme-accent); /* A lighter shadow for nested sections */
 }
 
 main#main > section h1 {
-  color: var(--primary-color);            /* Heading color stands out */
+  color: var(--primary-accent);            /* Heading color stands out */
   margin-bottom: 1.5rem;                  /* Space below heading */
 }
 
@@ -152,8 +153,8 @@ main#main > section h1 {
    and text colors. A touch of accent color is used for emphasis.
 */
 footer {
-  background-color: hsl(var(--theme-bg)); /* Dark themed footer */
-  color: hsl(var(--theme-text));          /* Footer text color */
+  background-color: var(--theme-bg); /* Dark themed footer */
+  color: var(--theme-text);          /* Footer text color */
   margin-top: 2rem;                       /* Space above footer */
   text-align: center;                     /* Center footer content */
   padding: 1rem 0;                        /* Vertical padding for breathing room */
@@ -190,7 +191,7 @@ h1 {
   font-size: 2rem;       /* Larger text for primary headings */
   margin-bottom: 1.5rem; /* Space below heading */
   text-align: center;    /* Center headings globally */
-  color: var(--primary-color); /* Use accent color for headings */
+  color: var(--primary-accent); /* Use accent color for headings */
 }
 
 
@@ -200,10 +201,10 @@ h1 {
    Styles for forms and form elements, integrated with the dark theme.
 */
 form {
-  background-color: hsl(var(--theme-bg)); /* Same dark background */
-  padding: 2rem;                          /* Comfortable padding inside form */
-  border-radius: 8px;                     /* Rounded corners */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5); /* Subtle shadow for form container */
+  background-color: var(--theme-bg-2); /* Same dark background */
+  /* padding: 2rem;                         
+  border-radius: 8px;                 
+  box-shadow: 0 2px 4px var(--theme-accent);  */
 }
 
 .form-group {
@@ -214,19 +215,20 @@ label {
   display: block;              /* Labels on their own line */
   margin-bottom: 0.5rem;       /* Space below label */
   font-weight: 600;            /* Make labels bold for clarity */
-  color: hsl(var(--theme-text)); /* Same text color as theme */
+  color: var(--theme-text); /* Same text color as theme */
 }
 
 input[type="text"],
 select {
   width: 95%;                     /* Nearly full width for comfortable typing */
   padding: 0.75rem 1rem;          /* Spacing inside fields */
-  border: 1px solid hsl(210deg 6% 25%); /* Neutral border color */
+  border: 1px solid var(--theme-text); /* Neutral border color */
   border-radius: 4px;             /* Slightly rounded edges */
   font-size: 1rem;                /* Match base font size */
-  background-color: hsl(210deg 6% 18%); /* Dark input background */
-  color: hsl(var(--theme-text));  /* Light text on dark background */
+  background-color: var(--theme-text); /* Dark input background */
+  color: var(--theme-text);  /* Light text on dark background */
   transition: border-color 0.2s;  /* Smooth focus transition */
+  color:  var(--theme-bg-2);
 }
 
 input[type="text"]:focus,
@@ -238,8 +240,8 @@ select:focus {
 button {
   width: 100%;               /* Full width buttons for clarity */
   padding: 0.75rem 1rem;     /* Spacing inside button */
-  background-color: var(--primary-color); /* Use accent color for CTAs */
-  color: #fff;               /* White text on accent background */
+  background-color: var(--theme-link); /* Use accent color for CTAs */
+  color: var(--theme-text);               /* White text on accent background */
   border: none;              /* Remove default border */
   border-radius: 4px;        /* Rounded edges */
   font-size: 1.125rem;       /* Slightly larger text for emphasis */
@@ -248,7 +250,7 @@ button {
 }
 
 button:hover {
-  background-color: var(--primary-hover); /* Slightly different shade on hover */
+  background-color: var(--theme-bg); /* Slightly different shade on hover */
 }
 
 button:disabled {
@@ -279,13 +281,13 @@ button:disabled {
 }
 
 pre {
-  background-color: hsl(210deg 6% 18%);   /* Dark background for code blocks */
-  border: 1px solid hsl(210deg 6% 25%);   /* Slight border for definition */
+  background-color: #170c32;   /* Dark background for code blocks */
+  border: 1px solid #202146;   /* Slight border for definition */
   border-radius: 4px;                     /* Soft edges */
   padding: 1rem;                          /* Internal spacing */
   overflow-x: auto;                       /* Allow horizontal scroll if code is long */
   font-size: 1rem;                        /* Base font size for code */
-  color: hsl(var(--theme-text));          /* Light text on dark background */
+  color: var(--theme-text);          /* Light text on dark background */
 }
 
 

@@ -329,6 +329,7 @@ const Form: React.FC = () => {
     <div className="container">
       <Inputs onNewShowNote={fetchShowNotes} />
       <ul className="show-notes-list">
+      <h1>Show Notes</h1>
         {showNotes.map((note) => (
           <li key={note.id}>
             <a href={`/show-notes/${note.id}`}>{note.title}</a> - {note.date}

@@ -136,7 +136,7 @@ main#main {
 
 
 main#main > section h1 {
-  color: var(--primary-accent);            /* Heading color stands out */
+  color: var(--theme-accent-2)   !important;      /* Heading color stands out */
   margin-bottom: 1.5rem;                  /* Space below heading */
 }
 
@@ -346,4 +346,9 @@ input[type="checkbox"]:focus {
 }
 h1, h2, h3, h4, h5, h6 {
   border-bottom: none; /* Removes border globally */
+  color: var(--theme-accent) !important;
+}
+
+h2, h3, h4, h5, h6 {
+  color: var(--theme-link) !important;
 }

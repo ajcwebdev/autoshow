@@ -293,6 +293,24 @@ const requests = [
     data: {
       type: 'video',
       url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
+      llm: 'deepseek',
+    },
+    endpoint: '/process',
+    outputFiles: ['FILE_30.md'],
+  },
+  // {
+  //   data: {
+  //     type: 'video',
+  //     url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
+  //     llm: 'grok',
+  //   },
+  //   endpoint: '/process',
+  //   outputFiles: ['FILE_30.md'],
+  // },
+  {
+    data: {
+      type: 'video',
+      url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
       whisperModel: 'tiny',
     },
     endpoint: '/process',

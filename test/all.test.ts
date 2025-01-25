@@ -222,12 +222,12 @@ const commands = [
     expectedFile: 'audio-deepseek-shownotes.md',
     newName: '41-deepsek-shownotes.md'
   },
-  // {
-  //   // process file using Grok for LLM operations
-  //   cmd: 'npm run as -- --file "content/audio.mp3" --grok',
-  //   expectedFile: 'audio-grok-shownotes.md',
-  //   newName: '41-grok-shownotes.md'
-  // },
+  {
+    // process file using Grok for LLM operations
+    cmd: 'npm run as -- --file "content/audio.mp3" --grok',
+    expectedFile: 'audio-grok-shownotes.md',
+    newName: '41-grok-shownotes.md'
+  },
   {
     // process file using Fireworks for LLM operations
     cmd: 'npm run as -- --file "content/audio.mp3" --fireworks',

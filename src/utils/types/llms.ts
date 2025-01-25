@@ -18,7 +18,7 @@ export type ModelConfigValue = {
 /**
  * Options for Language Models (LLMs) that can be used in the application.
  */
-export type LLMServices = 'chatgpt' | 'claude' | 'cohere' | 'mistral' | 'ollama' | 'gemini' | 'deepseek' | 'fireworks' | 'together' | 'groq'
+export type LLMServices = 'chatgpt' | 'claude' | 'cohere' | 'mistral' | 'ollama' | 'gemini' | 'deepseek' | 'fireworks' | 'together' | 'groq' | 'grok'
 
 export type LLMServiceConfig = {
   name: string
@@ -83,6 +83,11 @@ export type TogetherModelType = 'LLAMA_3_2_3B' | 'LLAMA_3_1_405B' | 'LLAMA_3_1_7
  * Available Groq models.
  */
 export type GroqModelType = 'LLAMA_3_2_1B_PREVIEW' | 'LLAMA_3_2_3B_PREVIEW' | 'LLAMA_3_3_70B_VERSATILE' | 'LLAMA_3_1_8B_INSTANT' | 'MIXTRAL_8X7B_INSTRUCT'
+
+/**
+ * Available Grok models.
+ */
+export type GrokModelType = 'GROK_2_LATEST'
 
 /**
  * Local model with Ollama.

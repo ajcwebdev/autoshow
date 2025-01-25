@@ -81,12 +81,12 @@ const commands = [
     expectedFile: '2024-09-24-ep0-fsjam-podcast-deepseek-shownotes.md',
     newName: '13-deepseek-shownotes.md'
   },
-  // {
-  //   // process video using Grok for LLM operations
-  //   cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --grok',
-  //   expectedFile: '2024-09-24-ep0-fsjam-podcast-grok-shownotes.md',
-  //   newName: '13-grok-shownotes.md'
-  // },
+  {
+    // process video using Grok for LLM operations
+    cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --grok',
+    expectedFile: '2024-09-24-ep0-fsjam-podcast-grok-shownotes.md',
+    newName: '13-grok-shownotes.md'
+  },
   {
     // process video using Fireworks for LLM operations
     cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --fireworks',

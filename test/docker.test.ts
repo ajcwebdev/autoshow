@@ -76,11 +76,11 @@ const commands = [
     expectedFile: 'audio-deepseek-shownotes.md',
     newName: '15-docker-three-prompts-grok-shownotes.md'
   },
-  // {
-  //   cmd: 'npm run docker-cli -- --file "content/audio.mp3" --prompt titles summary shortChapters --whisper base --grok',
-  //   expectedFile: 'audio-grok-shownotes.md',
-  //   newName: '15-docker-three-prompts-grok-shownotes.md'
-  // },
+  {
+    cmd: 'npm run docker-cli -- --file "content/audio.mp3" --prompt titles summary shortChapters --whisper base --grok',
+    expectedFile: 'audio-grok-shownotes.md',
+    newName: '15-docker-three-prompts-grok-shownotes.md'
+  },
   {
     cmd: 'npm run docker-cli -- --file "content/audio.mp3" --prompt titles summary shortChapters --whisper base --fireworks',
     expectedFile: 'audio-fireworks-shownotes.md',

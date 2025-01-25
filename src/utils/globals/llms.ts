@@ -7,7 +7,7 @@ import { callGemini } from '../../llms/gemini'
 import { callCohere } from '../../llms/cohere'
 import { callMistral } from '../../llms/mistral'
 import { callDeepSeek } from '../../llms/deepseek'
-// import { callGrok } from '../../llms/grok'
+import { callGrok } from '../../llms/grok'
 import { callFireworks } from '../../llms/fireworks'
 import { callTogether } from '../../llms/together'
 import { callGroq } from '../../llms/groq'
@@ -21,7 +21,7 @@ import type {
   GeminiModelType,
   MistralModelType,
   DeepSeekModelType,
-  // GrokModelType,
+  GrokModelType,
   TogetherModelType,
   FireworksModelType,
   GroqModelType,
@@ -48,7 +48,7 @@ export const LLM_SERVICES: Record<string, LLMServiceConfig> = {
   COHERE: { name: 'Cohere', value: 'cohere' },
   MISTRAL: { name: 'Mistral', value: 'mistral' },
   DEEPSEEK: { name: 'DeepSeek', value: 'deepseek' },
-  // GROK: { name: 'Grok', value: 'grok' },
+  GROK: { name: 'Grok', value: 'grok' },
   FIREWORKS: { name: 'Fireworks AI', value: 'fireworks' },
   TOGETHER: { name: 'Together AI', value: 'together' },
   GROQ: { name: 'Groq', value: 'groq' },
@@ -112,7 +112,7 @@ export const LLM_FUNCTIONS = {
   cohere: callCohere,
   mistral: callMistral,
   deepseek: callDeepSeek,
-  // grok: callGrok,
+  grok: callGrok,
   fireworks: callFireworks,
   together: callTogether,
   groq: callGroq,
@@ -467,6 +467,20 @@ export const GROQ_MODELS: ModelConfig<GroqModelType> = {
 }
 
 /**
+ * Configuration for Grok models, mapping model types to their display names and identifiers.
+ * Pricing is hypothetical or as provided by xAI docs
+ * @type {ModelConfig<GrokModelType>}
+ */
+export const GROK_MODELS: ModelConfig<GrokModelType> = {
+  GROK_2_LATEST: {
+    name: 'Grok 2 Latest',
+    modelId: 'grok-2-latest',
+    inputCostPer1M: 2.00,
+    outputCostPer1M: 10.00
+  },
+}
+
+/**
  * Configuration for DeepSeek models, mapping model types to their display names and identifiers.
  * Pricing is based on publicly listed rates for DeepSeek. 
  * @type {ModelConfig<DeepSeekModelType>}
@@ -497,7 +511,7 @@ export const ALL_MODELS: { [key: string]: ModelConfigValue } = {
   ...COHERE_MODELS,
   ...MISTRAL_MODELS,
   ...DEEPSEEK_MODELS,
-  // ...GROK_MODELS,
+  ...GROK_MODELS,
   ...FIREWORKS_MODELS,
   ...TOGETHER_MODELS,
   ...GROQ_MODELS,

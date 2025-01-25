@@ -10,7 +10,7 @@
 
 import { readFile } from 'node:fs/promises'
 import { env } from 'node:process'
-import { l, err, getAudioDurationInSeconds, logTranscriptionCost } from '../utils/logging'
+import { l, err, logTranscriptionCost } from '../utils/logging'
 import { formatAssemblyTranscript } from './format-transcript'
 import { ASSEMBLY_MODELS } from '../utils/globals/transcription'
 import type { ProcessingOptions } from '../utils/types/process'
@@ -57,10 +57,11 @@ export async function callAssembly(
 
     const modelInfo = ASSEMBLY_MODELS[model as AssemblyModelType] || ASSEMBLY_MODELS.NANO
 
-    const seconds = await getAudioDurationInSeconds(audioFilePath)
-    const minutes = seconds / 60
-    const estimatedCost = modelInfo.costPerMinute * minutes
-    logTranscriptionCost({ modelName: modelInfo.name, cost: estimatedCost, minutes })
+    await logTranscriptionCost({
+      modelName: modelInfo.name,
+      costPerMinute: modelInfo.costPerMinute,
+      filePath: audioFilePath
+    })
 
     // Step 1: Uploading the audio file to AssemblyAI
     l.wait('\n  Uploading audio file to AssemblyAI...')

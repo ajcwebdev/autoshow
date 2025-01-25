@@ -2,7 +2,7 @@
 
 import { env } from 'node:process'
 import { FIREWORKS_MODELS } from '../utils/globals/llms'
-import { err, logAPIResults } from '../utils/logging'
+import { err, logLLMCost } from '../utils/logging'
 import type { FireworksModelType, FireworksResponse } from '../utils/types/llms'
 
 /**
@@ -59,7 +59,7 @@ export const callFireworks = async (
       throw new Error('No content generated from the Fireworks API')
     }
 
-    logAPIResults({
+    logLLMCost({
       modelName: modelKey,
       stopReason: data.choices[0]?.finish_reason ?? 'unknown',
       tokenUsage: {

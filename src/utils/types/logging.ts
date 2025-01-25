@@ -1,21 +1,38 @@
 // src/types/logging.ts
 
-export interface TokenUsage {
-  input: number | undefined
-  output: number | undefined
-  total: number | undefined
-}
-
-export interface CostCalculation {
-  inputCost: number | undefined
-  outputCost: number | undefined
-  totalCost: number | undefined
-}
-
-export interface APILogInfo {
+/**
+ * Represents the complete LLM cost and usage details for logging
+ */
+export type LogLLMCost = {
+  /**
+   * The name of the model used
+   */
   modelName: string
+
+  /**
+   * The reason why the model request stopped
+   */
   stopReason: string
-  tokenUsage: TokenUsage
+
+  /**
+   * Contains token usage details
+   */
+  tokenUsage: {
+    /**
+     * Number of input tokens used
+     */
+    input: number | undefined
+
+    /**
+     * Number of output tokens generated
+     */
+    output: number | undefined
+
+    /**
+     * Total number of tokens involved in the request
+     */
+    total: number | undefined
+  }
 }
 
 /**

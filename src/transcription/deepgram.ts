@@ -10,7 +10,7 @@
 
 import { readFile } from 'node:fs/promises'
 import { env } from 'node:process'
-import { l, err, getAudioDurationInSeconds, logTranscriptionCost } from '../utils/logging'
+import { l, err, logTranscriptionCost } from '../utils/logging'
 import { formatDeepgramTranscript } from './format-transcript'
 import { DEEPGRAM_MODELS } from '../utils/globals/transcription'
 import type { ProcessingOptions } from '../utils/types/process'
@@ -40,10 +40,11 @@ export async function callDeepgram(
   try {
     const modelInfo = DEEPGRAM_MODELS[model as DeepgramModelType] || DEEPGRAM_MODELS.NOVA_2
 
-    const seconds = await getAudioDurationInSeconds(`${finalPath}.wav`)
-    const minutes = seconds / 60
-    const estimatedCost = modelInfo.costPerMinute * minutes
-    logTranscriptionCost({ modelName: modelInfo.name, cost: estimatedCost, minutes })
+    await logTranscriptionCost({
+      modelName: modelInfo.name,
+      costPerMinute: modelInfo.costPerMinute,
+      filePath: `${finalPath}.wav`
+    })
 
     const apiUrl = new URL('https://api.deepgram.com/v1/listen')
 

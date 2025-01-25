@@ -6,7 +6,7 @@
  */
 
 import { readFile, unlink } from 'node:fs/promises'
-import { formatWhisperTranscript } from './format-transcript'
+// import { formatWhisperTranscript } from './format-transcript'
 import { checkWhisperDirAndModel } from '../utils/validate-option'
 import { WHISPER_MODELS } from '../utils/globals/transcription'
 import { execPromise } from '../utils/globals/process'
@@ -63,9 +63,12 @@ export async function callWhisper(
     }
 
     // Convert .lrc -> .txt
-    l.wait(`\n  Transcript LRC file successfully created, reading file for txt conversion:\n    - ${finalPath}.lrc`)
+    l.wait(`\n  Transcript LRC file successfully created, reading file for txt conversion:\n    - ${finalPath}.lrc\n`)
     const lrcContent = await readFile(`${finalPath}.lrc`, 'utf8')
-    const txtContent = formatWhisperTranscript(lrcContent)
+    l.dim(lrcContent)
+    const txtContent = `${lrcContent}`
+    // const txtContent = formatWhisperTranscript(lrcContent)
+    l.dim(txtContent)
     await unlink(`${finalPath}.lrc`)
 
     // Return the transcript text

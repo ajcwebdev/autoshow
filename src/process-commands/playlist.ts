@@ -6,18 +6,28 @@
  */
 
 import { processVideo } from './video'
-import { savePlaylistInfo } from '../utils/save-info'
+import { saveInfo } from '../utils/validate-option'
 import { execFilePromise } from '../utils/globals/process'
-import { l, err, logPlaylistSeparator, logInitialFunctionCall } from '../utils/logging'
+import { l, err, logSeparator, logInitialFunctionCall } from '../utils/logging'
 import type { ProcessingOptions } from '../utils/types/process'
 import type { TranscriptServices } from '../utils/types/transcription'
 import type { LLMServices } from '../utils/types/llms'
+
+// Parse the JSON output
+interface PlaylistEntry {
+  id: string;
+}
+
+interface PlaylistData {
+  title: string;
+  entries: PlaylistEntry[];
+}
 
 /**
  * Processes an entire YouTube playlist by:
  * 1. Fetching all video URLs from the playlist using yt-dlp.
  * 2. Optionally extracting metadata for all videos.
- * 3. Processing each video sequentially with error handling.
+ * 3. Processing each video sequentially with error handling for individual videos.
  *
  * The function continues processing remaining videos even if individual videos fail.
  *
@@ -51,13 +61,11 @@ export async function processPlaylist(
       err(`yt-dlp warnings: ${stderr}`)
     }
 
-    // Parse the JSON output
-    const playlistData = JSON.parse(stdout)
-    const playlistTitle = playlistData.title
-    const entries = playlistData.entries
+    const playlistData: PlaylistData = JSON.parse(stdout);
+    const playlistTitle = playlistData.title;
+    const entries: PlaylistEntry[] = playlistData.entries;
 
-    // Extract video URLs using entry.id
-    const urls = entries.map((entry: any) => `https://www.youtube.com/watch?v=${entry.id}`)
+    const urls: string[] = entries.map((entry: PlaylistEntry) => `https://www.youtube.com/watch?v=${entry.id}`);
 
     // Exit if no videos were found in the playlist
     if (urls.length === 0) {
@@ -69,14 +77,19 @@ export async function processPlaylist(
 
     // If the --info option is provided, save playlist info and return
     if (options.info) {
-      await savePlaylistInfo(urls, playlistTitle)
+      await saveInfo('playlist', urls, playlistTitle)
       return
     }
 
     // Process each video sequentially, with error handling for individual videos
     for (const [index, url] of urls.entries()) {
       // Visual separator for each video in the console
-      logPlaylistSeparator(index, urls.length, url)
+      logSeparator({
+        type: 'playlist',
+        index,
+        total: urls.length,
+        descriptor: url
+      })
       try {
         // Process the video using the existing processVideo function
         await processVideo(options, url, llmServices, transcriptServices)

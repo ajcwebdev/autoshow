@@ -3,8 +3,18 @@
 import { env } from 'node:process'
 import { Anthropic } from '@anthropic-ai/sdk'
 import { CLAUDE_MODELS } from '../utils/globals/llms'
-import { err, logAPIResults } from '../utils/logging'
+import { err, logLLMCost } from '../utils/logging'
 import type { ClaudeModelType } from '../utils/types/llms'
+
+/**
+ * Extracts text content from the API response
+ * @param content - The content returned by the API
+ * @returns The extracted text content, or null if no text content is found
+ */
+interface ContentBlock {
+  type: string;
+  text?: string;
+}
 
 /**
  * Main function to call Claude API.
@@ -42,7 +52,7 @@ export const callClaude = async (
       throw new Error('No text content generated from the API')
     }
 
-    logAPIResults({
+    logLLMCost({
       modelName: actualModel,
       stopReason: response.stop_reason ?? 'unknown',
       tokenUsage: {
@@ -59,18 +69,13 @@ export const callClaude = async (
   }
 }
 
-/**
- * Extracts text content from the API response
- * @param content - The content returned by the API
- * @returns The extracted text content, or null if no text content is found
- */
-function extractTextContent(content: any[]): string | null {
+function extractTextContent(content: ContentBlock[]): string | null {
   for (const block of content) {
     if (typeof block === 'object' && block !== null && 'type' in block) {
       if (block.type === 'text' && 'text' in block) {
-        return block.text
+        return block.text ?? null;
       }
     }
   }
-  return null
+  return null;
 }

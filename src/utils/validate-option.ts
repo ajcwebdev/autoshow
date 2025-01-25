@@ -1,22 +1,405 @@
 // src/utils/validate-option.ts
 
-import { unlink } from 'node:fs/promises'
+/**
+ * @file Provides functions for validating user-supplied CLI options and filtering items for both RSS feeds and channels.
+ * 
+ * @remarks
+ * This refactoring unifies aspects of RSS and channel processing by splitting option validation
+ * (which checks flags like `--last` or `--skip`) from item filtering (which requires actual RSS or channel data).
+ * 
+ * @packageDocumentation
+ */
+
+import { unlink, writeFile } from 'node:fs/promises'
 import { exit } from 'node:process'
 import { spawn } from 'node:child_process'
 import { existsSync } from 'node:fs'
-import { processVideo } from '../process-commands/video'
-import { processPlaylist } from '../process-commands/playlist'
-import { processChannel } from '../process-commands/channel'
-import { processURLs } from '../process-commands/urls'
-import { processFile } from '../process-commands/file'
-import { processRSS } from '../process-commands/rss'
 import { l, err } from '../utils/logging'
-import { ACTION_OPTIONS, otherOptions, parser, execPromise, execFilePromise } from './globals/process'
+import { execPromise, execFilePromise, PROCESS_HANDLERS, ACTION_OPTIONS } from './globals/process'
 import { LLM_OPTIONS } from './globals/llms'
 import { TRANSCRIPT_OPTIONS } from './globals/transcription'
-import type { ProcessingOptions, ValidAction, HandlerFunction, ProcessRequestBody, RSSItem, VideoInfo } from './types/process'
+
+import type { ProcessingOptions, ValidAction, HandlerFunction, VideoMetadata, VideoInfo, RSSItem } from './types/process'
 import type { TranscriptServices } from './types/transcription'
 import type { LLMServices, OllamaTagsResponse } from './types/llms'
+
+/**
+ * Validates CLI options by ensuring that only one of each set of conflicting options is provided,
+ * and returning the validated action, chosen LLM services, and chosen transcription services.
+ * 
+ * @param options - The command-line options provided by the user
+ * @returns An object containing the validated `action`, `llmServices`, and `transcriptServices`
+ * @throws An error (and exits) if invalid or missing action, or multiple conflicting options
+ */
+export function validateCLIOptions(options: ProcessingOptions): {
+  action: ValidAction
+  llmServices: LLMServices | undefined
+  transcriptServices: TranscriptServices
+} {
+  /**
+   * Helper function to validate that only one option from a list is provided.
+   * Prevents users from specifying multiple conflicting options simultaneously.
+   *
+   * @param optionKeys - The list of option keys to check
+   * @param errorMessage - The prefix of the error message
+   * @returns The selected option or undefined
+   */
+  function checkSingleOption(optionKeys: string[], errorMessage: string): string | undefined {
+    const selectedOptions = optionKeys.filter((opt) => {
+      const value = options[opt as keyof ProcessingOptions]
+      if (Array.isArray(value)) {
+        return value.length > 0
+      }
+      return value !== undefined && value !== null && value !== false
+    })
+
+    if (selectedOptions.length > 1) {
+      err(
+        `Error: Multiple ${errorMessage} provided (${selectedOptions.join(', ')}). Please specify only one.`
+      )
+      exit(1)
+    }
+
+    return selectedOptions[0] as string | undefined
+  }
+
+  const actionValues = ACTION_OPTIONS.map((opt) => opt.name)
+  const selectedAction = checkSingleOption(actionValues, 'input option')
+  if (!selectedAction || !(selectedAction in PROCESS_HANDLERS)) {
+    err(`Invalid or missing action`)
+    exit(1)
+  }
+
+  const action = selectedAction as ValidAction
+  const llmKey = checkSingleOption(LLM_OPTIONS as string[], 'LLM option') as LLMServices | undefined
+  const llmServices = llmKey
+
+  const transcriptKey = checkSingleOption(TRANSCRIPT_OPTIONS, 'transcription option')
+  const transcriptServices = (transcriptKey as TranscriptServices) || 'whisper'
+  if (transcriptServices === 'whisper' && !options.whisper) {
+    options.whisper = 'large-v3-turbo'
+  }
+
+  return { action, llmServices, transcriptServices }
+}
+
+/**
+ * Validates RSS flags (e.g., --last, --skip, --order, --date, --lastDays) without requiring feed data.
+ * 
+ * @param options - The command-line options provided by the user
+ * @throws Exits the process if any flag is invalid
+ */
+export function validateRSSOptions(options: ProcessingOptions): void {
+  if (options.last !== undefined) {
+    if (!Number.isInteger(options.last) || options.last < 1) {
+      err('Error: The --last option must be a positive integer.')
+      process.exit(1)
+    }
+    if (options.skip !== undefined || options.order !== undefined) {
+      err('Error: The --last option cannot be used with --skip or --order.')
+      process.exit(1)
+    }
+  }
+
+  if (options.skip !== undefined && (!Number.isInteger(options.skip) || options.skip < 0)) {
+    err('Error: The --skip option must be a non-negative integer.')
+    process.exit(1)
+  }
+
+  if (options.order !== undefined && !['newest', 'oldest'].includes(options.order)) {
+    err("Error: The --order option must be either 'newest' or 'oldest'.")
+    process.exit(1)
+  }
+
+  if (options.lastDays !== undefined) {
+    if (!Number.isInteger(options.lastDays) || options.lastDays < 1) {
+      err('Error: The --lastDays option must be a positive integer.')
+      process.exit(1)
+    }
+    if (
+      options.last !== undefined ||
+      options.skip !== undefined ||
+      options.order !== undefined ||
+      (options.date && options.date.length > 0)
+    ) {
+      err('Error: The --lastDays option cannot be used with --last, --skip, --order, or --date.')
+      process.exit(1)
+    }
+  }
+
+  if (options.date && options.date.length > 0) {
+    const dateRegex = /^\d{4}-\d{2}-\d{2}$/
+    for (const d of options.date) {
+      if (!dateRegex.test(d)) {
+        err(`Error: Invalid date format "${d}". Please use YYYY-MM-DD format.`)
+        process.exit(1)
+      }
+    }
+
+    if (
+      options.last !== undefined ||
+      options.skip !== undefined ||
+      options.order !== undefined
+    ) {
+      err('Error: The --date option cannot be used with --last, --skip, or --order.')
+      process.exit(1)
+    }
+  }
+}
+
+/**
+ * Filters RSS feed items based on user-supplied options (e.g., item URLs, date ranges, etc.).
+ * 
+ * @param options - Configuration options to filter the feed items
+ * @param feedItemsArray - Parsed array of RSS feed items (raw JSON from XML parser)
+ * @param channelTitle - Title of the RSS channel (optional)
+ * @param channelLink - URL to the RSS channel (optional)
+ * @param channelImage - A fallback channel image URL (optional)
+ * @returns Filtered RSS items based on the provided options
+ */
+export async function filterRSSItems(
+  options: ProcessingOptions,
+  feedItemsArray?: any,
+  channelTitle?: string,
+  channelLink?: string,
+  channelImage?: string
+): Promise<RSSItem[]> {
+  const defaultDate = new Date().toISOString().substring(0, 10)
+  const unfilteredItems: RSSItem[] = (feedItemsArray || [])
+    .filter((item: any) => {
+      if (!item.enclosure || !item.enclosure.type) return false
+      const audioVideoTypes = ['audio/', 'video/']
+      return audioVideoTypes.some((type) => item.enclosure.type.startsWith(type))
+    })
+    .map((item: any) => {
+      let publishDate: string
+      try {
+        const date = item.pubDate ? new Date(item.pubDate) : new Date()
+        publishDate = date.toISOString().substring(0, 10)
+      } catch {
+        publishDate = defaultDate
+      }
+
+      return {
+        showLink: item.enclosure?.url || '',
+        channel: channelTitle || '',
+        channelURL: channelLink || '',
+        title: item.title || '',
+        description: '',
+        publishDate,
+        coverImage: item['itunes:image']?.href || channelImage || '',
+      }
+    })
+
+  let itemsToProcess: RSSItem[] = []
+
+  if (options.item && options.item.length > 0) {
+    itemsToProcess = unfilteredItems.filter((it) =>
+      options.item!.includes(it.showLink)
+    )
+  } else if (options.lastDays !== undefined) {
+    const now = new Date()
+    const cutoff = new Date(now.getTime() - options.lastDays * 24 * 60 * 60 * 1000)
+
+    itemsToProcess = unfilteredItems.filter((it) => {
+      const itDate = new Date(it.publishDate)
+      return itDate >= cutoff
+    })
+  } else if (options.date && options.date.length > 0) {
+    const selectedDates = new Set(options.date)
+    itemsToProcess = unfilteredItems.filter((it) =>
+      selectedDates.has(it.publishDate)
+    )
+  } else if (options.last) {
+    itemsToProcess = unfilteredItems.slice(0, options.last)
+  } else {
+    const sortedItems =
+      options.order === 'oldest'
+        ? unfilteredItems.slice().reverse()
+        : unfilteredItems
+    itemsToProcess = sortedItems.slice(options.skip || 0)
+  }
+
+  return itemsToProcess
+}
+
+/**
+ * A helper function that validates RSS action input and processes it if valid.
+ * Separately validates flags with {@link validateRSSOptions} and leaves feed-item filtering to {@link filterRSSItems}.
+ *
+ * @param options - The ProcessingOptions containing RSS feed details
+ * @param handler - The function to handle each RSS feed
+ * @param llmServices - The optional LLM service for processing
+ * @param transcriptServices - The chosen transcription service
+ * @throws An error if no valid RSS URLs are provided
+ * @returns A promise that resolves when all RSS feeds have been processed
+ */
+export async function validateRSSAction(
+  options: ProcessingOptions,
+  handler: HandlerFunction,
+  llmServices?: LLMServices,
+  transcriptServices?: TranscriptServices
+): Promise<void> {
+  if (options.item && !Array.isArray(options.item)) {
+    options.item = [options.item]
+  }
+  if (typeof options.rss === 'string') {
+    options.rss = [options.rss]
+  }
+
+  validateRSSOptions(options)
+
+  const rssUrls = options.rss
+  if (!rssUrls || rssUrls.length === 0) {
+    throw new Error(`No valid RSS URLs provided for processing`)
+  }
+
+  for (const rssUrl of rssUrls) {
+    await handler(options, rssUrl, llmServices, transcriptServices)
+  }
+}
+
+/**
+ * Combines the validation logic for action, LLM, and transcription selection from the CLI options,
+ * returning an object containing the validated action, chosen LLM services, and chosen transcription services.
+ *
+ * @param options - The command-line options provided by the user
+ * @returns An object containing the validated `action`, `llmServices`, and `transcriptServices`
+ * @throws An error (and exits) if the action is invalid or missing
+ */
+export function validateInputCLI(options: ProcessingOptions): {
+  action: ValidAction
+  llmServices: LLMServices | undefined
+  transcriptServices: TranscriptServices
+} {
+  // Validate which action was chosen
+  const actionValues = ACTION_OPTIONS.map((opt) => opt.name)
+  const selectedAction = validateOption(actionValues, options, 'input option')
+  if (!selectedAction || !(selectedAction in PROCESS_HANDLERS)) {
+    err(`Invalid or missing action`)
+    exit(1)
+  }
+  const action = selectedAction as ValidAction
+
+  // Validate LLM
+  const llmKey = validateOption(LLM_OPTIONS as string[], options, 'LLM option') as LLMServices | undefined
+  const llmServices = llmKey
+
+  // Validate transcription
+  const transcriptKey = validateOption(TRANSCRIPT_OPTIONS, options, 'transcription option')
+  const transcriptServices = (transcriptKey as TranscriptServices) || 'whisper'
+  if (transcriptServices === 'whisper' && !options.whisper) {
+    options.whisper = 'large-v3-turbo'
+  }
+
+  return { action, llmServices, transcriptServices }
+}
+
+/**
+ * Routes the specified action to the appropriate handler or validation logic,
+ * providing a single entry point for executing the user's command-line choices.
+ *
+ * @param action - The validated action user wants to run (e.g., "video", "rss", etc.)
+ * @param options - The ProcessingOptions containing user inputs and flags
+ * @param llmServices - The optional LLM service for processing
+ * @param transcriptServices - The optional transcription service
+ * @returns Promise<void> Resolves or rejects based on processing outcome
+ * @throws {Error} If the action is invalid or the required input is missing
+ */
+export async function processAction(
+  action: ValidAction,
+  options: ProcessingOptions,
+  llmServices?: LLMServices,
+  transcriptServices?: TranscriptServices
+): Promise<void> {
+  const handler = PROCESS_HANDLERS[action]
+
+  // If user selected RSS, run specialized validation and logic
+  if (action === 'rss') {
+    await validateRSSAction(options, handler, llmServices, transcriptServices)
+    return
+  }
+
+  // For other actions, ensure we have a valid input string
+  const input = options[action]
+  if (!input || typeof input !== 'string') {
+    throw new Error(`No valid input provided for ${action} processing`)
+  }
+
+  // Execute the handler directly
+  await handler(options, input, llmServices, transcriptServices)
+}
+
+/**
+ * Helper function to validate that only one option from a list is provided.
+ * Prevents users from specifying multiple conflicting options simultaneously.
+ * 
+ * @param optionKeys - The list of option keys to check.
+ * @param options - The options object.
+ * @param errorMessage - The prefix of the error message.
+ * @returns The selected option or undefined.
+ */
+export function validateOption(
+  optionKeys: string[],
+  options: ProcessingOptions,
+  errorMessage: string
+): string | undefined {
+  // Filter out which options from the provided list are actually set
+  const selectedOptions = optionKeys.filter((opt) => {
+    const value = options[opt as keyof ProcessingOptions]
+    if (Array.isArray(value)) {
+      // For array options like 'rss', consider it provided only if the array is non-empty
+      return value.length > 0
+    }
+    // Exclude undefined, null, and false values
+    return value !== undefined && value !== null && value !== false
+  })
+
+  // If more than one option is selected, throw an error
+  if (selectedOptions.length > 1) {
+    err(
+      `Error: Multiple ${errorMessage} provided (${selectedOptions.join(', ')}). Please specify only one.`
+    )
+    exit(1)
+  }
+  return selectedOptions[0] as string | undefined
+}
+
+/**
+ * Validates channel processing options for consistency and correct values.
+ * Logs the current channel processing action based on provided options.
+ * 
+ * @param options - Configuration options to validate
+ * @throws Will exit the process if validation fails
+ */
+export function validateChannelOptions(options: ProcessingOptions): void {
+  if (options.last !== undefined) {
+    if (!Number.isInteger(options.last) || options.last < 1) {
+      err('Error: The --last option must be a positive integer.')
+      process.exit(1)
+    }
+    if (options.skip !== undefined || options.order !== undefined) {
+      err('Error: The --last option cannot be used with --skip or --order.')
+      process.exit(1)
+    }
+  }
+
+  if (options.skip !== undefined && (!Number.isInteger(options.skip) || options.skip < 0)) {
+    err('Error: The --skip option must be a non-negative integer.')
+    process.exit(1)
+  }
+
+  if (options.order !== undefined && !['newest', 'oldest'].includes(options.order)) {
+    err("Error: The --order option must be either 'newest' or 'oldest'.")
+    process.exit(1)
+  }
+
+  if (options.last) {
+    l.wait(`\nProcessing the last ${options.last} videos`)
+  } else if (options.skip) {
+    l.wait(`\nSkipping first ${options.skip || 0} videos`)
+  }
+}
 
 /**
  * Removes temporary files generated during content processing.
@@ -25,12 +408,9 @@ import type { LLMServices, OllamaTagsResponse } from './types/llms'
  * 
  * Files cleaned up include:
  * - .wav: Audio files
- * - .txt: Transcription text
- * - .md: Markdown content
- * - .lrc: Lyrics/subtitles
  * 
  * @param {string} id - Base filename (without extension) used to identify related files.
- *                     All files matching pattern `${id}${extension}` will be deleted.
+ * @param {boolean} [ensureFolders] - If true, skip deletion to allow creation or preservation of metadata folders.
  * 
  * @returns {Promise<void>} Resolves when cleanup is complete.
  * 
@@ -44,34 +424,30 @@ import type { LLMServices, OllamaTagsResponse } from './types/llms'
  *   await saveAudio('content/my-video-2024-03-21')
  *   // Will attempt to delete:
  *   // - content/my-video-2024-03-21.wav
- *   // - content/my-video-2024-03-21.txt
- *   // - content/my-video-2024-03-21.md
- *   // - content/my-video-2024-03-21.lrc
  * } catch (error) {
  *   err('Cleanup failed:', error)
  * }
  */
-export async function saveAudio(id: string) {
-  l.step('\nStep 6 - Cleaning Up Extra Files\n')
-  // Define extensions of temporary files to be cleaned up
-  const extensions = [
-    '.wav',  // Audio files
-  ]
+export async function saveAudio(id: string, ensureFolders?: boolean) {
+  if (ensureFolders) {
+    // If "ensureFolders" is set, skip deleting files
+    // (this can serve as a placeholder for ensuring directories)
+    l.info('\nSkipping cleanup to preserve or ensure metadata directories.\n')
+    return
+  }
 
+  l.step('\nStep 6 - Cleaning Up Extra Files\n')
+  const extensions = ['.wav']
   l.wait(`\n  Temporary files deleted:`)
 
-  // Attempt to delete each file type
   for (const ext of extensions) {
     try {
-      // Delete file and log success
       await unlink(`${id}${ext}`)
       l.wait(`    - ${id}${ext}`)
     } catch (error) {
-      // Only log errors that aren't "file not found" (ENOENT)
       if (error instanceof Error && (error as Error).message !== 'ENOENT') {
         err(`Error deleting file ${id}${ext}: ${(error as Error).message}`)
       }
-      // Silently continue if file doesn't exist
     }
   }
 }
@@ -236,535 +612,165 @@ export async function checkOllamaServerAndModel(
   }
 }
 
-// Map each action to its corresponding handler function
-export const PROCESS_HANDLERS: Record<ValidAction, HandlerFunction> = {
-  video: processVideo,
-  playlist: processPlaylist,
-  channel: processChannel,
-  urls: processURLs,
-  file: processFile,
-  rss: processRSS,
-}
-
 /**
- * Validates either the action the user wants to run by checking their provided options,
- * or the process type string.
- *
- * @param input - A string (when validating a process type), or a `ProcessingOptions` object (when validating an action).
- * @param mode - A string specifying which validation logic to apply: `'action'` or `'type'`.
- * @returns A `ValidAction` when validating an action, or a valid `ProcessRequestBody['type']` when validating a process type.
- * @throws An error if the action or type is invalid or missing.
- */
-export function validateProcessAction(input: ProcessingOptions | string, mode: 'action' | 'type'): ValidAction | ProcessRequestBody['type'] {
-  if (mode === 'action') {
-    const options = input as ProcessingOptions
-    const actionValues = ACTION_OPTIONS.map((opt) => opt.name)
-    const selectedAction = validateOption(actionValues, options, 'input option')
-    if (!selectedAction || !(selectedAction in PROCESS_HANDLERS)) {
-      err(`Invalid or missing action`)
-      exit(1)
-    }
-    return selectedAction as ValidAction
-  } else {
-    const type = input as string
-    if (!['video', 'urls', 'rss', 'playlist', 'file', 'channel'].includes(type)) {
-      err(`Invalid or missing process type`)
-      exit(1)
-    }
-    return type as ValidAction
-  }
-}
-
-/**
- * Validates which LLM service was chosen by the user.
+ * Sanitizes a title string for use in filenames by:
+ * - Removing special characters except spaces and hyphens
+ * - Converting spaces and underscores to hyphens
+ * - Converting to lowercase
+ * - Limiting length to 200 characters
  * 
- * @param options - The ProcessingOptions containing user inputs
- * @returns The chosen LLM service, or undefined if none was chosen
- */
-export function validateLLM(options: ProcessingOptions): LLMServices | undefined {
-  const llmKey = validateOption(LLM_OPTIONS as string[], options, 'LLM option') as LLMServices | undefined
-  return llmKey
-}
-
-/**
- * Validates which transcription service was chosen by the user.
- * Also sets a default Whisper model if whisper is selected but no model specified.
+ * @param {string} title - The title to sanitize.
+ * @returns {string} The sanitized title safe for use in filenames.
  * 
- * @param options - The ProcessingOptions containing user inputs
- * @returns The chosen transcription service
+ * @example
+ * sanitizeTitle('My Video Title! (2024)') // returns 'my-video-title-2024'
  */
-export function validateTranscription(options: ProcessingOptions): TranscriptServices {
-  const transcriptKey = validateOption(TRANSCRIPT_OPTIONS, options, 'transcription option')
-  const transcriptServices: TranscriptServices = (transcriptKey as TranscriptServices) || 'whisper'
-
-  if (transcriptServices === 'whisper' && !options.whisper) {
-    options.whisper = 'large-v3-turbo'
-  }
-
-  return transcriptServices
+export function sanitizeTitle(title: string): string {
+  return title
+    .replace(/[^\w\s-]/g, '')      // Remove all non-word characters except spaces and hyphens
+    .trim()                        // Remove leading and trailing whitespace
+    .replace(/[\s_]+/g, '-')       // Replace spaces and underscores with hyphens
+    .replace(/-+/g, '-')           // Replace multiple hyphens with a single hyphen
+    .toLowerCase()                 // Convert to lowercase
+    .slice(0, 200)                 // Limit the length to 200 characters
 }
 
 /**
- * Centralized function for processing any action. If the action is 'rss',
- * then we perform RSS-specific validation & processing. Otherwise, we get
- * the relevant handler and run it on the user input.
- *
- * @param action - The validated action user wants to run ('video', 'rss', etc.)
- * @param options - The ProcessingOptions containing user inputs and flags
- * @param llmServices - The optional LLM service for processing
- * @param transcriptServices - The optional transcription service
+ * Builds the front matter content string array from the provided metadata object
+ * 
+ * @param {object} metadata - The metadata object
+ * @param {string} metadata.showLink
+ * @param {string} metadata.channel
+ * @param {string} metadata.channelURL
+ * @param {string} metadata.title
+ * @param {string} metadata.description
+ * @param {string} metadata.publishDate
+ * @param {string} metadata.coverImage
+ * @returns {string[]} The front matter array
  */
-export async function processAction(
-  action: ValidAction,
-  options: ProcessingOptions,
-  llmServices?: LLMServices,
-  transcriptServices?: TranscriptServices
+export function buildFrontMatter(metadata: {
+  showLink: string
+  channel: string
+  channelURL: string
+  title: string
+  description: string
+  publishDate: string
+  coverImage: string
+}): string[] {
+  return [
+    '---',
+    `showLink: "${metadata.showLink}"`,
+    `channel: "${metadata.channel}"`,
+    `channelURL: "${metadata.channelURL}"`,
+    `title: "${metadata.title}"`,
+    `description: "${metadata.description}"`,
+    `publishDate: "${metadata.publishDate}"`,
+    `coverImage: "${metadata.coverImage}"`,
+    '---\n',
+  ]
+}
+
+/**
+ * Saves metadata or feed information to a JSON file, consolidating the logic from the original
+ * savePlaylistInfo, saveURLsInfo, saveChannelInfo, and saveRSSFeedInfo functions.
+ *
+ * @param type - The type of data to save ('playlist', 'urls', 'channel', or 'rss')
+ * @param data - The actual data to process and save:
+ *   - For 'playlist' or 'urls': an array of string URLs
+ *   - For 'channel': an array of VideoInfo objects
+ *   - For 'rss': an array of RSSItem objects
+ * @param title - The title or name associated with the data (e.g., a playlist/channel title)
+ * @returns A Promise that resolves when the file has been written successfully
+ */
+export async function saveInfo(
+  type: 'playlist' | 'urls' | 'channel' | 'rss',
+  data: string[] | VideoInfo[] | RSSItem[],
+  title?: string
 ): Promise<void> {
-  // Look up the correct handler function for our action
-  const handler = PROCESS_HANDLERS[action]
-
-  // If the user selected RSS, we do specialized validation and run the RSS logic.
-  if (action === 'rss') {
-    // This calls your existing function that normalizes/validates RSS options
-    // and then processes each RSS feed URL by calling `handler(...)`.
-    await validateRSSAction(options, handler, llmServices, transcriptServices)
+  // Handle RSS items (no metadata extraction needed, just save as-is)
+  if (type === 'rss') {
+    const items = data as RSSItem[]
+    const jsonContent = JSON.stringify(items, null, 2)
+    const sanitizedTitle = sanitizeTitle(title || '')
+    const jsonFilePath = `content/${sanitizedTitle}_info.json`
+    await writeFile(jsonFilePath, jsonContent)
+    l.wait(`RSS feed information saved to: ${jsonFilePath}`)
     return
   }
 
-  // For non-RSS actions, just ensure we have a valid input string
-  const input = options[action]
-  if (!input || typeof input !== 'string') {
-    throw new Error(`No valid input provided for ${action} processing`)
+  // Handle channel, playlist, or urls (extract metadata via yt-dlp)
+  let urls: string[] = []
+  let outputFilePath = ''
+  let successLogFunction = l.success
+
+  if (type === 'channel') {
+    const videosToProcess = data as VideoInfo[]
+    // Convert VideoInfo objects to an array of strings (URLs)
+    urls = videosToProcess.map((video) => video.url)
+    outputFilePath = 'content/channel_info.json'
+    successLogFunction = l.success
+  } else if (type === 'playlist') {
+    urls = data as string[]
+    const sanitizedTitle = sanitizeTitle(title || 'playlist')
+    outputFilePath = `content/${sanitizedTitle}_info.json`
+    successLogFunction = l.success
+  } else if (type === 'urls') {
+    urls = data as string[]
+    const date = new Date().toISOString().split('T')[0]
+    const uniqueId = Date.now()
+    outputFilePath = `content/urls_info_${date}_${uniqueId}.json`
+    // For URLs, we use l.wait to log
+    successLogFunction = l.wait
   }
 
-  // Run the handler with the provided input
-  await handler(options, input, llmServices, transcriptServices)
-}
+  const metadataList = await Promise.all(
+    urls.map(async (url) => {
+      try {
+        // Execute yt-dlp command to extract metadata
+        const { stdout } = await execFilePromise('yt-dlp', [
+          '--restrict-filenames',
+          '--print', '%(webpage_url)s',
+          '--print', '%(channel)s',
+          '--print', '%(uploader_url)s',
+          '--print', '%(title)s',
+          '--print', '%(upload_date>%Y-%m-%d)s',
+          '--print', '%(thumbnail)s',
+          url,
+        ])
 
-/**
- * Helper function to validate that only one option from a list is provided.
- * Prevents users from specifying multiple conflicting options simultaneously.
- * 
- * @param optionKeys - The list of option keys to check.
- * @param options - The options object.
- * @param errorMessage - The prefix of the error message.
- * @returns The selected option or undefined.
- */
-export function validateOption(
-  optionKeys: string[],
-  options: ProcessingOptions,
-  errorMessage: string
-): string | undefined {
-  // Filter out which options from the provided list are actually set
-  const selectedOptions = optionKeys.filter((opt) => {
-    const value = options[opt as keyof ProcessingOptions]
-    if (Array.isArray(value)) {
-      // For array options like 'rss', consider it provided only if the array is non-empty
-      return value.length > 0
-    }
-    // Exclude undefined, null, and false values
-    return value !== undefined && value !== null && value !== false
-  })
+        const [
+          showLink, channel, channelURL, vidTitle, publishDate, coverImage
+        ] = stdout.trim().split('\n')
 
-  // If more than one option is selected, throw an error
-  if (selectedOptions.length > 1) {
-    err(
-      `Error: Multiple ${errorMessage} provided (${selectedOptions.join(', ')}). Please specify only one.`
-    )
-    exit(1)
-  }
-  return selectedOptions[0] as string | undefined
-}
-
-/**
- * Fetches, sorts, and selects which videos to process based on provided options, 
- * including retrieving details for each video via yt-dlp.
- * 
- * @param stdout - The raw output from yt-dlp containing the video URLs
- * @param options - Configuration options for processing
- * @returns A promise resolving to an object containing all fetched videos and the subset of videos selected to process
- */
-export async function selectVideos(
-  stdout: string,
-  options: ProcessingOptions
-): Promise<{ allVideos: VideoInfo[], videosToProcess: VideoInfo[] }> {
-  // Prepare URLs
-  const videoUrls = stdout.trim().split('\n').filter(Boolean)
-  l.opts(`\nFetching detailed information for ${videoUrls.length} videos...`)
-
-  // Retrieve video details
-  const videoDetailsPromises = videoUrls.map(async (url) => {
-    try {
-      const { stdout } = await execFilePromise('yt-dlp', [
-        '--print', '%(upload_date)s|%(timestamp)s|%(is_live)s|%(webpage_url)s',
-        '--no-warnings',
-        url,
-      ])
-
-      const [uploadDate, timestamp, isLive, videoUrl] = stdout.trim().split('|')
-
-      if (!uploadDate || !timestamp || !videoUrl) {
-        throw new Error('Incomplete video information received from yt-dlp')
-      }
-
-      // Convert upload date to Date object
-      const year = uploadDate.substring(0, 4)
-      const month = uploadDate.substring(4, 6)
-      const day = uploadDate.substring(6, 8)
-      const date = new Date(`${year}-${month}-${day}`)
-
-      return {
-        uploadDate,
-        url: videoUrl,
-        date,
-        timestamp: parseInt(timestamp, 10) || date.getTime() / 1000,
-        isLive: isLive === 'True'
-      }
-    } catch (error) {
-      err(`Error getting details for video ${url}: ${error instanceof Error ? error.message : String(error)}`)
-      return null
-    }
-  })
-
-  const videoDetailsResults = await Promise.all(videoDetailsPromises)
-  const allVideos = videoDetailsResults.filter((video): video is VideoInfo => video !== null)
-
-  // Exit if no videos were found in the channel
-  if (allVideos.length === 0) {
-    err('Error: No videos found in the channel.')
-    process.exit(1)
-  }
-
-  // Sort videos based on timestamp
-  allVideos.sort((a, b) => a.timestamp - b.timestamp)
-
-  // If order is 'newest' (default), reverse the sorted array
-  if (options.order !== 'oldest') {
-    allVideos.reverse()
-  }
-
-  l.opts(`\nFound ${allVideos.length} videos in the channel...`)
-
-  // Select videos to process based on options
-  let videosToProcess: VideoInfo[]
-  if (options.last) {
-    videosToProcess = allVideos.slice(0, options.last)
-  } else {
-    videosToProcess = allVideos.slice(options.skip || 0)
-  }
-
-  return { allVideos, videosToProcess }
-}
-
-/**
- * Fetches and parses an RSS feed, then filters which items to process based on provided options.
- * This function combines the old `extractItems` and `selectItemsToProcess` into one.
- * 
- * @param rssUrl - URL of the RSS feed to fetch
- * @param options - Configuration options for filtering
- * @returns A promise that resolves to an object with filtered RSS items and the channel title
- * @throws Will exit the process on network or parsing errors, or if no valid items are found
- */
-export async function selectItems(
-  rssUrl: string,
-  options: ProcessingOptions
-): Promise<{ items: RSSItem[]; channelTitle: string }> {
-  const controller = new AbortController()
-  const timeout = setTimeout(() => controller.abort(), 10000)
-
-  try {
-    const response = await fetch(rssUrl, {
-      method: 'GET',
-      headers: { Accept: 'application/rss+xml' },
-      signal: controller.signal,
-    })
-    clearTimeout(timeout)
-
-    if (!response.ok) {
-      err(`HTTP error! status: ${response.status}`)
-      process.exit(1)
-    }
-
-    const text = await response.text()
-    const feed = parser.parse(text)
-    const {
-      title: channelTitle,
-      link: channelLink,
-      image: channelImageObject,
-      item: feedItems,
-    } = feed.rss.channel
-    const channelImage = channelImageObject?.url || ''
-    const feedItemsArray = Array.isArray(feedItems) ? feedItems : [feedItems]
-    const defaultDate = new Date().toISOString().substring(0, 10)
-
-    // Build the unfiltered items array (audio/video only)
-    const unfilteredItems: RSSItem[] = feedItemsArray
-      .filter((item) => {
-        if (!item.enclosure || !item.enclosure.type) return false
-        const audioVideoTypes = ['audio/', 'video/']
-        return audioVideoTypes.some((type) => item.enclosure.type.startsWith(type))
-      })
-      .map((item) => {
-        let publishDate: string
-        try {
-          const date = item.pubDate ? new Date(item.pubDate) : new Date()
-          publishDate = date.toISOString().substring(0, 10)
-        } catch {
-          publishDate = defaultDate
+        if (!showLink || !channel || !channelURL || !vidTitle || !publishDate || !coverImage) {
+          throw new Error('Incomplete metadata received from yt-dlp.')
         }
 
         return {
-          showLink: item.enclosure?.url || '',
-          channel: channelTitle || '',
-          channelURL: channelLink || '',
-          title: item.title || '',
+          showLink,
+          channel,
+          channelURL,
+          title: vidTitle,
           description: '',
           publishDate,
-          coverImage: item['itunes:image']?.href || channelImage || '',
-        }
-      })
-
-    if (unfilteredItems.length === 0) {
-      err('Error: No audio/video items found in the RSS feed.')
-      process.exit(1)
-    }
-
-    // Now apply the filtering logic
-    let itemsToProcess: RSSItem[] = []
-
-    if (options.item && options.item.length > 0) {
-      itemsToProcess = unfilteredItems.filter((item) =>
-        options.item!.includes(item.showLink)
-      )
-      if (itemsToProcess.length === 0) {
-        err('Error: No matching items found for the provided URLs.')
-        process.exit(1)
+          coverImage,
+        } as VideoMetadata
+      } catch (error) {
+        err(
+          `Error extracting metadata for ${url}: ${
+            error instanceof Error ? error.message : String(error)
+          }`
+        )
+        return null
       }
-    } else if (options.lastDays !== undefined) {
-      const now = new Date()
-      const cutoff = new Date(now.getTime() - options.lastDays * 24 * 60 * 60 * 1000)
+    })
+  )
 
-      itemsToProcess = unfilteredItems.filter((item) => {
-        const itemDate = new Date(item.publishDate)
-        return itemDate >= cutoff
-      })
-    } else if (options.date && options.date.length > 0) {
-      const selectedDates = new Set(options.date)
-      itemsToProcess = unfilteredItems.filter((item) =>
-        selectedDates.has(item.publishDate)
-      )
-    } else if (options.last) {
-      itemsToProcess = unfilteredItems.slice(0, options.last)
-    } else {
-      const sortedItems =
-        options.order === 'oldest'
-          ? unfilteredItems.slice().reverse()
-          : unfilteredItems
-      itemsToProcess = sortedItems.slice(options.skip || 0)
-    }
+  const validMetadata = metadataList.filter(
+    (metadata): metadata is VideoMetadata => metadata !== null
+  )
 
-    return { items: itemsToProcess, channelTitle: channelTitle || '' }
-  } catch (error) {
-    if ((error as Error).name === 'AbortError') {
-      err('Error: Fetch request timed out.')
-    } else {
-      err(`Error fetching RSS feed: ${(error as Error).message}`)
-    }
-    process.exit(1)
-  }
-}
-
-/**
- * Normalizes RSS-related options so that `options.rss` and `options.item` are always arrays.
- * This ensures consistent types for further validation or processing.
- * 
- * @param options - The processing options object.
- */
-function normalizeRSSOptions(options: ProcessingOptions): void {
-  // Ensure options.item is always an array if provided via command line
-  if (options.item && !Array.isArray(options.item)) {
-    options.item = [options.item]
-  }
-
-  // Ensure options.rss is always an array, in case it's a single string
-  if (typeof options.rss === 'string') {
-    options.rss = [options.rss]
-  }
-}
-
-/**
- * Validates RSS processing options for consistency and correct values.
- * 
- * @param options - Configuration options to validate.
- * @throws Will exit the process if validation fails.
- */
-export function validateRSSOptions(options: ProcessingOptions): void {
-  if (options.last !== undefined) {
-    if (!Number.isInteger(options.last) || options.last < 1) {
-      err('Error: The --last option must be a positive integer.')
-      process.exit(1)
-    }
-    if (options.skip !== undefined || options.order !== undefined) {
-      err('Error: The --last option cannot be used with --skip or --order.')
-      process.exit(1)
-    }
-  }
-
-  if (options.skip !== undefined && (!Number.isInteger(options.skip) || options.skip < 0)) {
-    err('Error: The --skip option must be a non-negative integer.')
-    process.exit(1)
-  }
-
-  if (options.order !== undefined && !['newest', 'oldest'].includes(options.order)) {
-    err("Error: The --order option must be either 'newest' or 'oldest'.")
-    process.exit(1)
-  }
-
-  if (options.lastDays !== undefined) {
-    if (!Number.isInteger(options.lastDays) || options.lastDays < 1) {
-      err('Error: The --lastDays option must be a positive integer.')
-      process.exit(1)
-    }
-    if (
-      options.last !== undefined ||
-      options.skip !== undefined ||
-      options.order !== undefined ||
-      (options.date && options.date.length > 0)
-    ) {
-      err('Error: The --lastDays option cannot be used with --last, --skip, --order, or --date.')
-      process.exit(1)
-    }
-  }
-
-  if (options.date && options.date.length > 0) {
-    const dateRegex = /^\d{4}-\d{2}-\d{2}$/
-    for (const d of options.date) {
-      if (!dateRegex.test(d)) {
-        err(`Error: Invalid date format "${d}". Please use YYYY-MM-DD format.`)
-        process.exit(1)
-      }
-    }
-
-    if (
-      options.last !== undefined ||
-      options.skip !== undefined ||
-      options.order !== undefined
-    ) {
-      err('Error: The --date option cannot be used with --last, --skip, or --order.')
-      process.exit(1)
-    }
-  }
-}
-
-/**
- * Validates channel processing options for consistency and correct values.
- * 
- * @param options - Configuration options to validate.
- * @throws Will exit the process if validation fails.
- */
-export function validateChannelOptions(options: ProcessingOptions): void {
-  if (options.last !== undefined) {
-    if (!Number.isInteger(options.last) || options.last < 1) {
-      err('Error: The --last option must be a positive integer.')
-      process.exit(1)
-    }
-    if (options.skip !== undefined || options.order !== undefined) {
-      err('Error: The --last option cannot be used with --skip or --order.')
-      process.exit(1)
-    }
-  }
-
-  if (options.skip !== undefined && (!Number.isInteger(options.skip) || options.skip < 0)) {
-    err('Error: The --skip option must be a non-negative integer.')
-    process.exit(1)
-  }
-
-  if (options.order !== undefined && !['newest', 'oldest'].includes(options.order)) {
-    err("Error: The --order option must be either 'newest' or 'oldest'.")
-    process.exit(1)
-  }
-}
-
-/**
- * A helper function that validates RSS action input and processes it if valid.
- *
- * @param options - The ProcessingOptions containing RSS feed details.
- * @param handler - The function to handle each RSS feed.
- * @param llmServices - The optional LLM service for processing.
- * @param transcriptServices - The chosen transcription service.
- * @throws An error if no valid RSS URLs are provided for processing.
- * @returns A promise that resolves when all RSS feeds have been processed.
- */
-export async function validateRSSAction(
-  options: ProcessingOptions,
-  handler: HandlerFunction,
-  llmServices?: LLMServices,
-  transcriptServices?: TranscriptServices
-): Promise<void> {
-  // Normalize RSS options so we always have arrays
-  normalizeRSSOptions(options)
-
-  // Validate the rest of the RSS-related flags
-  validateRSSOptions(options)
-
-  // For RSS feeds, process multiple URLs
-  const rssUrls = options.rss
-  if (!rssUrls || rssUrls.length === 0) {
-    throw new Error(`No valid RSS URLs provided for processing`)
-  }
-
-  // Iterate over each RSS feed URL and process it
-  for (const rssUrl of rssUrls) {
-    await handler(options, rssUrl, llmServices, transcriptServices)
-  }
-}
-
-// Function to map request data to processing options
-export function validateRequest(requestData: any): {
-  options: ProcessingOptions
-  llmServices?: LLMServices
-  transcriptServices?: TranscriptServices
-} {
-  // Initialize options object
-  const options: ProcessingOptions = {}
-
-  // Variables to hold selected services
-  let llmServices: LLMServices | undefined
-  let transcriptServices: TranscriptServices | undefined
-
-  // Check if a valid LLM service is provided
-  if (requestData.llm && LLM_OPTIONS.includes(requestData.llm)) {
-    // Set the LLM service
-    llmServices = requestData.llm as LLMServices
-    // Set the LLM model or default to true
-    options[llmServices] = requestData.llmModel || true
-  }
-
-  // Determine transcript service or default to 'whisper' if not specified
-  transcriptServices = TRANSCRIPT_OPTIONS.includes(requestData.transcriptServices)
-    ? (requestData.transcriptServices as TranscriptServices)
-    : 'whisper'
-
-  // Set transcript options based on the selected service
-  if (transcriptServices === 'whisper') {
-    // Set the Whisper model or default to 'large-v3-turbo'
-    options.whisper = requestData.whisperModel || 'large-v3-turbo'
-  } else if (transcriptServices === 'deepgram') {
-    options.deepgram = true
-  } else if (transcriptServices === 'assembly') {
-    options.assembly = true
-  }
-
-  // Map additional options from the request data
-  for (const opt of otherOptions) {
-    if (requestData[opt] !== undefined) {
-      // Set the option if it is provided
-      // @ts-ignore
-      options[opt] = requestData[opt]
-    }
-  }
-
-  // Return the mapped options along with selected services
-  // @ts-ignore
-  return { options, llmServices, transcriptServices }
+  const jsonContent = JSON.stringify(validMetadata, null, 2)
+  await writeFile(outputFilePath, jsonContent)
+  successLogFunction(`${type === 'urls' ? 'Video' : type.charAt(0).toUpperCase() + type.slice(1)} information saved to: ${outputFilePath}`)
 }

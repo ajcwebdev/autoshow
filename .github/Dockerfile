@@ -78,22 +78,22 @@ RUN chmod +x /usr/src/app/docker-entrypoint.sh
 # 2) Setup Ollama with models
 # ---------------------------------------------------
 
-# 1. Use the Ollama image as a base
-FROM ollama/ollama:latest AS ollama
+# # 1. Use the Ollama image as a base
+# FROM ollama/ollama:latest AS ollama
 
-# 2. Set working directory to Ollama config directory
-WORKDIR /root/.ollama
+# # 2. Set working directory to Ollama config directory
+# WORKDIR /root/.ollama
 
-# 3. Start Ollama server and pull models
-RUN ollama serve & \
-    sleep 10 && \
-    ollama pull qwen2.5:0.5b && \
-    ollama ls && \
-    echo "Listing /root/.ollama after qwen2.5:0.5b pull:" && \
-    ls -lh /root/.ollama || true && \
-    echo "Listing /root/.ollama/models after qwen2.5:0.5b pull:" && \
-    ls -lh /root/.ollama/models || true && \
-    pkill ollama
+# # 3. Start Ollama server and pull models
+# RUN ollama serve & \
+#     sleep 10 && \
+#     ollama pull qwen2.5:0.5b && \
+#     ollama ls && \
+#     echo "Listing /root/.ollama after qwen2.5:0.5b pull:" && \
+#     ls -lh /root/.ollama || true && \
+#     echo "Listing /root/.ollama/models after qwen2.5:0.5b pull:" && \
+#     ls -lh /root/.ollama/models || true && \
+#     pkill ollama
 
 # ---------------------------------------------------
 # 3) Final stage combining everything
@@ -101,16 +101,16 @@ RUN ollama serve & \
 
 FROM base
 
-# 1. Copy Ollama binary
-COPY --from=ollama /bin/ollama /usr/local/bin/ollama
+# # 1. Copy Ollama binary
+# COPY --from=ollama /bin/ollama /usr/local/bin/ollama
 
-# 2. Copy pre-downloaded models
-COPY --from=ollama /root/.ollama /root/.ollama
+# # 2. Copy pre-downloaded models
+# COPY --from=ollama /root/.ollama /root/.ollama
 
-RUN echo "Listing /root/.ollama in final stage:" && \
-    ls -lh /root/.ollama || true && \
-    echo "Listing /root/.ollama/models in final stage:" && \
-    ls -lh /root/.ollama/models || true
+# RUN echo "Listing /root/.ollama in final stage:" && \
+#     ls -lh /root/.ollama || true && \
+#     echo "Listing /root/.ollama/models in final stage:" && \
+#     ls -lh /root/.ollama/models || true
 
 # Set environment variables for Whisper
 ENV WHISPER_FORCE_CPU=1
@@ -122,9 +122,9 @@ RUN mkdir -p /usr/src/app/content
 # 4. Set proper permissions for the entire app directory including content
 RUN chown -R node:node /usr/src/app \
  && chmod -R 755 /usr/src/app \
- && chmod 777 /usr/src/app/content \
- && chown -R node:node /root/.ollama \
- && chmod -R 755 /root/.ollama
+ && chmod 777 /usr/src/app/content
+#  && chown -R node:node /root/.ollama \
+#  && chmod -R 755 /root/.ollama
 
 # Switch to non-root user
 USER node

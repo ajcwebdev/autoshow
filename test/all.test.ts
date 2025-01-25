@@ -111,11 +111,11 @@ const commands = [
     expectedFile: 'audio-prompt.md',
     newName: '22-docker-file-default.md'
   },
-  {
-    cmd: 'npm run docker-cli -- --file "content/audio.mp3" --prompt titles --whisper tiny --ollama LLAMA_3_2_1B',
-    expectedFile: 'audio-ollama-shownotes.md',
-    newName: '23-docker-titles-prompt-whisper-tiny-ollama-shownotes.md'
-  },
+  // {
+  //   cmd: 'npm run docker-cli -- --file "content/audio.mp3" --prompt titles --whisper tiny --ollama LLAMA_3_2_1B',
+  //   expectedFile: 'audio-ollama-shownotes.md',
+  //   newName: '23-docker-titles-prompt-whisper-tiny-ollama-shownotes.md'
+  // },
   {
     cmd: 'npm run docker-cli -- --file "content/audio.mp3" --whisper tiny',
     expectedFile: 'audio-prompt.md',

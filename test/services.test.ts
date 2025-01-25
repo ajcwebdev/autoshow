@@ -76,52 +76,64 @@ const commands = [
     newName: '12-mistral-shownotes.md'
   },
   {
+    // process video using DeepSeek for LLM operations
+    cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --deepseek',
+    expectedFile: '2024-09-24-ep0-fsjam-podcast-deepseek-shownotes.md',
+    newName: '13-deepseek-shownotes.md'
+  },
+  {
+    // process video using Grok for LLM operations
+    cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --grok',
+    expectedFile: '2024-09-24-ep0-fsjam-podcast-grok-shownotes.md',
+    newName: '13-grok-shownotes.md'
+  },
+  {
     // process video using Fireworks for LLM operations
     cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --fireworks',
     expectedFile: '2024-09-24-ep0-fsjam-podcast-fireworks-shownotes.md',
-    newName: '13-fireworks-shownotes.md'
+    newName: '14-fireworks-shownotes.md'
   },
   {
     // process video using Together for LLM operations
     cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --together',
     expectedFile: '2024-09-24-ep0-fsjam-podcast-together-shownotes.md',
-    newName: '14-together-shownotes.md'
+    newName: '15-together-shownotes.md'
   },
   {
     // process video using BLANK for LLM operations
     cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --groq',
     expectedFile: '2024-09-24-ep0-fsjam-podcast-groq-shownotes.md',
-    newName: '15-groq-shownotes.md'
+    newName: '16-groq-shownotes.md'
   },
   {
     // process video using Deepgram for transcription
     cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --deepgram',
     expectedFile: '2024-09-24-ep0-fsjam-podcast-prompt.md',
-    newName: '16-deepgram-prompt.md'
+    newName: '17-deepgram-prompt.md'
   },
   {
     // Process video using Deepgram Nova 2 model
     cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --deepgram NOVA_2',
     expectedFile: '2024-09-24-ep0-fsjam-podcast-prompt.md',
-    newName: '17-deepgram-nova-2-prompt.md'
+    newName: '18-deepgram-nova-2-prompt.md'
   },
   {
     // process video using AssemblyAI for transcription
     cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --assembly',
     expectedFile: '2024-09-24-ep0-fsjam-podcast-prompt.md',
-    newName: '18-assembly-prompt.md'
+    newName: '19-assembly-prompt.md'
   },
   {
     // Process video using AssemblyAI Nano model
     cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --assembly NANO',
     expectedFile: '2024-09-24-ep0-fsjam-podcast-prompt.md',
-    newName: '19-assembly-nano-prompt.md'
+    newName: '20-assembly-nano-prompt.md'
   },
   {
     // Process an audio file using AssemblyAI with speaker labels
     cmd: 'npm run as -- --video "https://ajc.pics/audio/fsjam-short.mp3" --assembly --speakerLabels',
     expectedFile: '2024-05-08-fsjam-short-prompt.md',
-    newName: '20-assembly-speaker-labels-prompt.md'
+    newName: '21-assembly-speaker-labels-prompt.md'
   }
 ]
 

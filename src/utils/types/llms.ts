@@ -18,7 +18,7 @@ export type ModelConfigValue = {
 /**
  * Options for Language Models (LLMs) that can be used in the application.
  */
-export type LLMServices = 'chatgpt' | 'claude' | 'cohere' | 'mistral' | 'ollama' | 'gemini' | 'fireworks' | 'together' | 'groq'
+export type LLMServices = 'chatgpt' | 'claude' | 'cohere' | 'mistral' | 'ollama' | 'gemini' | 'deepseek' | 'fireworks' | 'together' | 'groq' | 'grok'
 
 export type LLMServiceConfig = {
   name: string
@@ -85,9 +85,20 @@ export type TogetherModelType = 'LLAMA_3_2_3B' | 'LLAMA_3_1_405B' | 'LLAMA_3_1_7
 export type GroqModelType = 'LLAMA_3_2_1B_PREVIEW' | 'LLAMA_3_2_3B_PREVIEW' | 'LLAMA_3_3_70B_VERSATILE' | 'LLAMA_3_1_8B_INSTANT' | 'MIXTRAL_8X7B_INSTRUCT'
 
 /**
+ * Available Grok models.
+ */
+export type GrokModelType = 'GROK_2_LATEST'
+
+/**
  * Local model with Ollama.
  */
 export type OllamaModelType = 'LLAMA_3_2_1B' | 'LLAMA_3_2_3B' | 'GEMMA_2_2B' | 'PHI_3_5' | 'QWEN_2_5_0B' | 'QWEN_2_5_1B' | 'QWEN_2_5_3B'
+
+/**
+ * @typedef DeepSeekModelType
+ * Represents the possible DeepSeek model IDs used within the application.
+ */
+export type DeepSeekModelType = 'DEEPSEEK_CHAT' | 'DEEPSEEK_REASONER'
 
 // API Response Types
 /**

@@ -72,19 +72,29 @@ const commands = [
     newName: '14-docker-three-prompts-mistral-shownotes.md'
   },
   {
+    cmd: 'npm run docker-cli -- --file "content/audio.mp3" --prompt titles summary shortChapters --whisper base --deepseek',
+    expectedFile: 'audio-deepseek-shownotes.md',
+    newName: '15-docker-three-prompts-grok-shownotes.md'
+  },
+  {
+    cmd: 'npm run docker-cli -- --file "content/audio.mp3" --prompt titles summary shortChapters --whisper base --grok',
+    expectedFile: 'audio-grok-shownotes.md',
+    newName: '15-docker-three-prompts-grok-shownotes.md'
+  },
+  {
     cmd: 'npm run docker-cli -- --file "content/audio.mp3" --prompt titles summary shortChapters --whisper base --fireworks',
     expectedFile: 'audio-fireworks-shownotes.md',
-    newName: '15-docker-three-prompts-fireworks-shownotes.md'
+    newName: '16-docker-three-prompts-fireworks-shownotes.md'
   },
   {
     cmd: 'npm run docker-cli -- --file "content/audio.mp3" --prompt titles summary shortChapters --whisper base --together',
     expectedFile: 'audio-together-shownotes.md',
-    newName: '16-docker-three-prompts-together-shownotes.md'
+    newName: '17-docker-three-prompts-together-shownotes.md'
   },
   {
     cmd: 'npm run docker-cli -- --file "content/audio.mp3" --prompt titles summary shortChapters --whisper base --groq',
     expectedFile: 'audio-groq-shownotes.md',
-    newName: '17-docker-three-prompts-groq-shownotes.md'
+    newName: '18-docker-three-prompts-groq-shownotes.md'
   },
 ]
 

@@ -7,7 +7,7 @@
 
 import { readFile } from 'node:fs/promises'
 import { processVideo } from './video'
-import { saveURLsInfo } from '../utils/validate-option'
+import { saveInfo } from '../utils/validate-option'
 import { l, err, logSeparator, logInitialFunctionCall } from '../utils/logging'
 import type { ProcessingOptions } from '../utils/types/process'
 import type { TranscriptServices } from '../utils/types/transcription'
@@ -55,7 +55,7 @@ export async function processURLs(
 
     // If the --info option is provided, extract metadata for all videos
     if (options.info) {
-      await saveURLsInfo(urls)
+      await saveInfo('urls', urls, '')
       return
     }
 

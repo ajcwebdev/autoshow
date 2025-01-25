@@ -6,7 +6,7 @@
  */
 
 import { processVideo } from './video'
-import { savePlaylistInfo } from '../utils/validate-option'
+import { saveInfo } from '../utils/validate-option'
 import { execFilePromise } from '../utils/globals/process'
 import { l, err, logSeparator, logInitialFunctionCall } from '../utils/logging'
 import type { ProcessingOptions } from '../utils/types/process'
@@ -27,7 +27,7 @@ interface PlaylistData {
  * Processes an entire YouTube playlist by:
  * 1. Fetching all video URLs from the playlist using yt-dlp.
  * 2. Optionally extracting metadata for all videos.
- * 3. Processing each video sequentially with error handling.
+ * 3. Processing each video sequentially with error handling for individual videos.
  *
  * The function continues processing remaining videos even if individual videos fail.
  *
@@ -77,7 +77,7 @@ export async function processPlaylist(
 
     // If the --info option is provided, save playlist info and return
     if (options.info) {
-      await savePlaylistInfo(urls, playlistTitle)
+      await saveInfo('playlist', urls, playlistTitle)
       return
     }
 

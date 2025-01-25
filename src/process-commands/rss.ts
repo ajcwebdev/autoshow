@@ -19,9 +19,10 @@ import { downloadAudio } from '../process-steps/02-download-audio'
 import { runTranscription } from '../process-steps/03-run-transcription'
 import { selectPrompts } from '../process-steps/04-select-prompt'
 import { runLLM } from '../process-steps/05-run-llm'
-import { filterRSSItems, saveRSSFeedInfo, saveAudio } from '../utils/validate-option'
+import { filterRSSItems, saveAudio, saveInfo } from '../utils/validate-option'
 import { l, err, logSeparator, logInitialFunctionCall, logRSSProcessingStatus } from '../utils/logging'
 import { parser } from '../utils/globals/process'
+import { retryRSSFetch } from '../utils/retry'
 
 import type { ProcessingOptions, RSSItem } from '../utils/types/process'
 import type { TranscriptServices } from '../utils/types/transcription'
@@ -44,11 +45,15 @@ export async function selectRSSItemsToProcess(
   const timeout = setTimeout(() => controller.abort(), 10000)
 
   try {
-    const response = await fetch(rssUrl, {
-      method: 'GET',
-      headers: { Accept: 'application/rss+xml' },
-      signal: controller.signal,
-    })
+    const response = await retryRSSFetch(
+      () => fetch(rssUrl, {
+        method: 'GET',
+        headers: { Accept: 'application/rss+xml' },
+        signal: controller.signal,
+      }),
+      5,
+      5000
+    )
     clearTimeout(timeout)
 
     if (!response.ok) {
@@ -123,7 +128,7 @@ export async function processRSS(
     if (options.info) {
       if (items.length > 0) {
         await saveAudio('', true)
-        await saveRSSFeedInfo(items, channelTitle || '')
+        await saveInfo('rss', items, channelTitle || '')
       }
       return
     }

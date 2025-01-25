@@ -265,19 +265,6 @@ export function logRSSProcessingStatus(
 }
 
 /**
- * Logs the current channel processing action based on provided options.
- * 
- * @param options - Configuration options determining what to process.
- */
-export function logChannelProcessingAction(options: ProcessingOptions): void {
-  if (options.last) {
-    l.wait(`\nProcessing the last ${options.last} videos`)
-  } else if (options.skip) {
-    l.wait(`\nSkipping first ${options.skip || 0} videos`)
-  }
-}
-
-/**
  * Logs the processing status and video counts for channel downloads.
  * 
  * @param total - Total number of videos found.

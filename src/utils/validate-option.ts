@@ -367,6 +367,7 @@ export function validateOption(
 
 /**
  * Validates channel processing options for consistency and correct values.
+ * Logs the current channel processing action based on provided options.
  * 
  * @param options - Configuration options to validate
  * @throws Will exit the process if validation fails
@@ -391,6 +392,12 @@ export function validateChannelOptions(options: ProcessingOptions): void {
   if (options.order !== undefined && !['newest', 'oldest'].includes(options.order)) {
     err("Error: The --order option must be either 'newest' or 'oldest'.")
     process.exit(1)
+  }
+
+  if (options.last) {
+    l.wait(`\nProcessing the last ${options.last} videos`)
+  } else if (options.skip) {
+    l.wait(`\nSkipping first ${options.skip || 0} videos`)
   }
 }
 
@@ -664,82 +671,58 @@ export function buildFrontMatter(metadata: {
 }
 
 /**
- * Saves metadata for all videos in the playlist to a JSON file if `--info` is provided.
- * 
- * @param urls - Array of all video URLs in the playlist
- * @param playlistTitle - Title of the YouTube playlist
- * @returns Promise that resolves when the JSON file has been saved
- */
-export async function savePlaylistInfo(urls: string[], playlistTitle: string): Promise<void> {
-  // Collect metadata for all videos in parallel
-  const metadataList = await Promise.all(
-    urls.map(async (url: string) => {
-      try {
-        // Execute yt-dlp command to extract metadata
-        const { stdout } = await execFilePromise('yt-dlp', [
-          '--restrict-filenames',
-          '--print', '%(webpage_url)s',
-          '--print', '%(channel)s',
-          '--print', '%(uploader_url)s',
-          '--print', '%(title)s',
-          '--print', '%(upload_date>%Y-%m-%d)s',
-          '--print', '%(thumbnail)s',
-          url,
-        ])
-
-        // Split the output into individual metadata fields
-        const [
-          showLink, channel, channelURL, title, publishDate, coverImage
-        ] = stdout.trim().split('\n')
-
-        // Validate that all required metadata fields are present
-        if (!showLink || !channel || !channelURL || !title || !publishDate || !coverImage) {
-          throw new Error('Incomplete metadata received from yt-dlp.')
-        }
-
-        // Return the metadata object
-        return {
-          showLink,
-          channel,
-          channelURL,
-          title,
-          description: '',
-          publishDate,
-          coverImage,
-        } as VideoMetadata
-      } catch (error) {
-        // Log error but return null to filter out failed extractions
-        err(
-          `Error extracting metadata for ${url}: ${
-            error instanceof Error ? error.message : String(error)
-          }`
-        )
-        return null
-      }
-    })
-  )
-
-  // Filter out any null results due to errors
-  const validMetadata = metadataList.filter(
-    (metadata): metadata is VideoMetadata => metadata !== null
-  )
-
-  // Save metadata to a JSON file
-  const jsonContent = JSON.stringify(validMetadata, null, 2)
-  const sanitizedTitle = sanitizeTitle(playlistTitle)
-  const jsonFilePath = `content/${sanitizedTitle}_info.json`
-  await writeFile(jsonFilePath, jsonContent)
-  l.success(`Playlist information saved to: ${jsonFilePath}`)
-}
-
-/**
- * Saves metadata for all videos in the provided URLs to a JSON file.
+ * Saves metadata or feed information to a JSON file, consolidating the logic from the original
+ * savePlaylistInfo, saveURLsInfo, saveChannelInfo, and saveRSSFeedInfo functions.
  *
- * @param urls - The list of video URLs
- * @returns Promise that resolves when the JSON file is saved
+ * @param type - The type of data to save ('playlist', 'urls', 'channel', or 'rss')
+ * @param data - The actual data to process and save:
+ *   - For 'playlist' or 'urls': an array of string URLs
+ *   - For 'channel': an array of VideoInfo objects
+ *   - For 'rss': an array of RSSItem objects
+ * @param title - The title or name associated with the data (e.g., a playlist/channel title)
+ * @returns A Promise that resolves when the file has been written successfully
  */
-export async function saveURLsInfo(urls: string[]): Promise<void> {
-  // Collect metadata for all videos in parallel
+export async function saveInfo(
+  type: 'playlist' | 'urls' | 'channel' | 'rss',
+  data: string[] | VideoInfo[] | RSSItem[],
+  title?: string
+): Promise<void> {
+  // Handle RSS items (no metadata extraction needed, just save as-is)
+  if (type === 'rss') {
+    const items = data as RSSItem[]
+    const jsonContent = JSON.stringify(items, null, 2)
+    const sanitizedTitle = sanitizeTitle(title || '')
+    const jsonFilePath = `content/${sanitizedTitle}_info.json`
+    await writeFile(jsonFilePath, jsonContent)
+    l.wait(`RSS feed information saved to: ${jsonFilePath}`)
+    return
+  }
+
+  // Handle channel, playlist, or urls (extract metadata via yt-dlp)
+  let urls: string[] = []
+  let outputFilePath = ''
+  let successLogFunction = l.success
+
+  if (type === 'channel') {
+    const videosToProcess = data as VideoInfo[]
+    // Convert VideoInfo objects to an array of strings (URLs)
+    urls = videosToProcess.map((video) => video.url)
+    outputFilePath = 'content/channel_info.json'
+    successLogFunction = l.success
+  } else if (type === 'playlist') {
+    urls = data as string[]
+    const sanitizedTitle = sanitizeTitle(title || 'playlist')
+    outputFilePath = `content/${sanitizedTitle}_info.json`
+    successLogFunction = l.success
+  } else if (type === 'urls') {
+    urls = data as string[]
+    const date = new Date().toISOString().split('T')[0]
+    const uniqueId = Date.now()
+    outputFilePath = `content/urls_info_${date}_${uniqueId}.json`
+    // For URLs, we use l.wait to log
+    successLogFunction = l.wait
+  }
+
   const metadataList = await Promise.all(
     urls.map(async (url) => {
       try {
@@ -755,84 +738,24 @@ export async function saveURLsInfo(urls: string[]): Promise<void> {
           url,
         ])
 
-        // Split the output into individual metadata fields
         const [
-          showLink, channel, channelURL, title, publishDate, coverImage
+          showLink, channel, channelURL, vidTitle, publishDate, coverImage
         ] = stdout.trim().split('\n')
 
-        // Validate that all required metadata fields are present
-        if (!showLink || !channel || !channelURL || !title || !publishDate || !coverImage) {
+        if (!showLink || !channel || !channelURL || !vidTitle || !publishDate || !coverImage) {
           throw new Error('Incomplete metadata received from yt-dlp.')
         }
 
-        // Return the metadata object
         return {
-          showLink, channel, channelURL, title, description: '', publishDate, coverImage
+          showLink,
+          channel,
+          channelURL,
+          title: vidTitle,
+          description: '',
+          publishDate,
+          coverImage,
         } as VideoMetadata
       } catch (error) {
-        // Log error but return null to filter out failed extractions
-        err(
-          `Error extracting metadata for ${url}: ${error instanceof Error ? error.message : String(error)}`
-        )
-        return null
-      }
-    })
-  )
-
-  // Filter out any null results due to errors
-  const validMetadata = metadataList.filter(
-    (metadata): metadata is VideoMetadata => metadata !== null
-  )
-
-  // Save metadata to a JSON file
-  const jsonContent = JSON.stringify(validMetadata, null, 2)
-  const date = new Date().toISOString().split('T')[0]
-  const uniqueId = Date.now()
-  const jsonFilePath = `content/urls_info_${date}_${uniqueId}.json`
-  await writeFile(jsonFilePath, jsonContent)
-  l.wait(`Video information saved to: ${jsonFilePath}`)
-}
-
-/**
- * Saves channel info for the selected videos to a JSON file.
- * 
- * @param videosToProcess - The videos selected for processing
- * @throws If metadata extraction fails
- */
-export async function saveChannelInfo(videosToProcess: VideoInfo[]): Promise<void> {
-  // Collect metadata for selected videos in parallel
-  const metadataList = await Promise.all(
-    videosToProcess.map(async (video) => {
-      const url = video.url
-      try {
-        // Execute yt-dlp command to extract metadata
-        const { stdout } = await execFilePromise('yt-dlp', [
-          '--restrict-filenames',
-          '--print', '%(webpage_url)s',
-          '--print', '%(channel)s',
-          '--print', '%(uploader_url)s',
-          '--print', '%(title)s',
-          '--print', '%(upload_date>%Y-%m-%d)s',
-          '--print', '%(thumbnail)s',
-          url,
-        ])
-
-        // Split the output into individual metadata fields
-        const [
-          showLink, channel, channelURL, title, publishDate, coverImage
-        ] = stdout.trim().split('\n')
-
-        // Validate that all required metadata fields are present
-        if (!showLink || !channel || !channelURL || !title || !publishDate || !coverImage) {
-          throw new Error('Incomplete metadata received from yt-dlp.')
-        }
-
-        // Return the metadata object
-        return {
-          showLink, channel, channelURL, title, description: '', publishDate, coverImage
-        } as VideoMetadata
-      } catch (error) {
-        // Log error but return null to filter out failed extractions
         err(
           `Error extracting metadata for ${url}: ${
             error instanceof Error ? error.message : String(error)
@@ -843,28 +766,11 @@ export async function saveChannelInfo(videosToProcess: VideoInfo[]): Promise<voi
     })
   )
 
-  // Filter out any null results due to errors
   const validMetadata = metadataList.filter(
     (metadata): metadata is VideoMetadata => metadata !== null
   )
 
-  // Save metadata to a JSON file
   const jsonContent = JSON.stringify(validMetadata, null, 2)
-  const jsonFilePath = 'content/channel_info.json'
-  await writeFile(jsonFilePath, jsonContent)
-  l.success(`Channel information saved to: ${jsonFilePath}`)
-}
-
-/**
- * Saves feed information to a JSON file.
- * 
- * @param items - Array of RSS items to save
- * @param channelTitle - The title of the RSS channel
- */
-export async function saveRSSFeedInfo(items: RSSItem[], channelTitle: string): Promise<void> {
-  const jsonContent = JSON.stringify(items, null, 2)
-  const sanitizedTitle = sanitizeTitle(channelTitle)
-  const jsonFilePath = `content/${sanitizedTitle}_info.json`
-  await writeFile(jsonFilePath, jsonContent)
-  l.wait(`RSS feed information saved to: ${jsonFilePath}`)
+  await writeFile(outputFilePath, jsonContent)
+  successLogFunction(`${type === 'urls' ? 'Video' : type.charAt(0).toUpperCase() + type.slice(1)} information saved to: ${outputFilePath}`)
 }

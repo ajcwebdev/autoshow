@@ -37,7 +37,7 @@ const commands = [
     // Process video with Claude using CLAUDE_3_SONNET model.
     cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --claude CLAUDE_3_SONNET',
     expectedFile: '2024-09-24-ep0-fsjam-podcast-claude-shownotes.md',
-    newName: '06-claude-shownotes.md'
+    newName: '06-claude-claude-3-sonnet-shownotes.md'
   },
   {
     // process video using Gemini for LLM operations.
@@ -49,19 +49,19 @@ const commands = [
     // Process video with Gemini using GEMINI_1_5_FLASH model.
     cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --gemini GEMINI_1_5_FLASH',
     expectedFile: '2024-09-24-ep0-fsjam-podcast-gemini-shownotes.md',
-    newName: '08-gemini-shownotes.md'
+    newName: '08-gemini-1-5-flash-shownotes.md'
   },
   {
     // process video using Cohere for LLM operations
     cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --cohere',
     expectedFile: '2024-09-24-ep0-fsjam-podcast-cohere-shownotes.md',
-    newName: '09-cohere-shownotes.md'
+    newName: '09-cohere-default-shownotes.md'
   },
   {
     // Process video with Cohere using COMMAND_R_PLUS model.
     cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --cohere COMMAND_R_PLUS',
     expectedFile: '2024-09-24-ep0-fsjam-podcast-cohere-shownotes.md',
-    newName: '10-cohere-shownotes.md'
+    newName: '10-cohere-command-r-plus-shownotes.md'
   },
   {
     // process video using Mistral for LLM operations
@@ -100,10 +100,10 @@ const commands = [
     newName: '16-deepgram-prompt.md'
   },
   {
-    // Process video using Deepgram and Llama.
-    cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --deepgram --ollama',
-    expectedFile: '2024-09-24-ep0-fsjam-podcast-ollama-shownotes.md',
-    newName: '17-deepgram-ollama-shownotes.md'
+    // Process video using Deepgram Nova 2 model
+    cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --deepgram NOVA_2',
+    expectedFile: '2024-09-24-ep0-fsjam-podcast-prompt.md',
+    newName: '17-deepgram-nova-2-prompt.md'
   },
   {
     // process video using AssemblyAI for transcription
@@ -112,10 +112,10 @@ const commands = [
     newName: '18-assembly-prompt.md'
   },
   {
-    // Process video using AssemblyAI and Llama.
-    cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --assembly --ollama',
-    expectedFile: '2024-09-24-ep0-fsjam-podcast-ollama-shownotes.md',
-    newName: '19-assembly-ollama-shownotes.md'
+    // Process video using AssemblyAI Nano model
+    cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --assembly NANO',
+    expectedFile: '2024-09-24-ep0-fsjam-podcast-prompt.md',
+    newName: '19-assembly-nano-prompt.md'
   },
   {
     // Process an audio file using AssemblyAI with speaker labels

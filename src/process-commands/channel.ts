@@ -16,8 +16,8 @@
 
 import { processVideo } from './video'
 import { execFilePromise } from '../utils/globals/process'
-import { validateChannelOptions, saveChannelInfo } from '../utils/validate-option'
-import { l, err, logSeparator, logChannelProcessingAction, logChannelProcessingStatus, logInitialFunctionCall } from '../utils/logging'
+import { validateChannelOptions, saveInfo } from '../utils/validate-option'
+import { l, err, logSeparator, logChannelProcessingStatus, logInitialFunctionCall } from '../utils/logging'
 
 import type { ProcessingOptions, VideoInfo } from '../utils/types/process'
 import type { TranscriptServices } from '../utils/types/transcription'
@@ -120,7 +120,6 @@ export async function processChannel(
   logInitialFunctionCall('processChannel', { llmServices, transcriptServices })
   try {
     validateChannelOptions(options)
-    logChannelProcessingAction(options)
 
     const { stdout, stderr } = await execFilePromise('yt-dlp', [
       '--flat-playlist',
@@ -137,7 +136,7 @@ export async function processChannel(
     logChannelProcessingStatus(allVideos.length, videosToProcess.length, options)
 
     if (options.info) {
-      await saveChannelInfo(videosToProcess)
+      await saveInfo('channel', videosToProcess, '')
       return
     }
 

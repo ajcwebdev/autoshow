@@ -8,28 +8,6 @@ const BASE_URL = 'http://localhost:3000'
 const OUTPUT_DIR = 'content'
 
 const requests = [
-  // Playlist Endpoint Requests
-  {
-    data: {
-      type: 'playlist',
-      url: 'https://www.youtube.com/playlist?list=PLCVnrVv4KhXPz0SoAVu8Rc1emAdGPbSbr',
-      prompts: ['titles', 'summary'],
-      whisperModel: 'tiny',
-    },
-    endpoint: '/process',
-    outputFiles: ['FILE_01.md', 'FILE_02.md'],
-  },
-  // URLs Endpoint Requests
-  {
-    data: {
-      type: 'urls',
-      filePath: 'content/example-urls.md',
-      prompts: ['titles', 'summary'],
-      whisperModel: 'tiny',
-    },
-    endpoint: '/process',
-    outputFiles: ['FILE_03.md', 'FILE_04.md'],
-  },
   // File Endpoint Requests
   {
     data: {
@@ -37,7 +15,7 @@ const requests = [
       filePath: 'content/audio.mp3',
     },
     endpoint: '/process',
-    outputFiles: ['FILE_05.md'],
+    outputFiles: ['01-file-default.md'],
   },
   {
     data: {
@@ -46,7 +24,7 @@ const requests = [
       whisperModel: 'tiny',
     },
     endpoint: '/process',
-    outputFiles: ['FILE_06.md'],
+    outputFiles: ['02-file-whisper-tiny.md'],
   },
   {
     data: {
@@ -57,17 +35,7 @@ const requests = [
       llm: 'ollama',
     },
     endpoint: '/process',
-    outputFiles: ['FILE_07.md'],
-  },
-  // RSS Endpoint Requests
-  {
-    data: {
-      type: 'rss',
-      url: 'https://ajcwebdev.substack.com/feed/',
-      whisperModel: 'tiny',
-    },
-    endpoint: '/process',
-    outputFiles: ['FILE_08.md'],
+    outputFiles: ['03-file-ollama-shownotes.md'],
   },
   // Video Endpoint Requests
   {
@@ -76,7 +44,7 @@ const requests = [
       url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
     },
     endpoint: '/process',
-    outputFiles: ['FILE_09.md'],
+    outputFiles: ['04-video-default.md'],
   },
   {
     data: {
@@ -86,7 +54,39 @@ const requests = [
       whisperModel: 'tiny',
     },
     endpoint: '/process',
-    outputFiles: ['FILE_11.md'],
+    outputFiles: ['05-video-whisper-tiny-prompts.md'],
+  },
+  // Playlist Endpoint Requests
+  {
+    data: {
+      type: 'playlist',
+      url: 'https://www.youtube.com/playlist?list=PLCVnrVv4KhXPz0SoAVu8Rc1emAdGPbSbr',
+      prompts: ['titles', 'summary'],
+      whisperModel: 'tiny',
+    },
+    endpoint: '/process',
+    outputFiles: ['06-playlist-default.md', '07-playlist-default.md'],
+  },
+  // URLs Endpoint Requests
+  {
+    data: {
+      type: 'urls',
+      filePath: 'content/example-urls.md',
+      prompts: ['titles', 'summary'],
+      whisperModel: 'tiny',
+    },
+    endpoint: '/process',
+    outputFiles: ['08-urls-whisper-tiny-prompts.md', '09-urls-whisper-tiny-prompts.md'],
+  },
+  // RSS Endpoint Requests
+  {
+    data: {
+      type: 'rss',
+      url: 'https://ajcwebdev.substack.com/feed/',
+      whisperModel: 'tiny',
+    },
+    endpoint: '/process',
+    outputFiles: ['10-rss-whisper-tiny.md'],
   },
 ]
 

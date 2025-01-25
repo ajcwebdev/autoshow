@@ -112,3 +112,40 @@ export async function retryTranscriptionCall(
 
   throw new Error('Transcription call failed after maximum retries.')
 }
+
+/**
+ * Retries a given RSS fetch with the specified maximum attempts and delay between retries.
+ * 
+ * @param {() => Promise<Response>} fn - The function to execute for the RSS fetch
+ * @param {number} maxRetries - The maximum number of retry attempts
+ * @param {number} delayBetweenRetries - Delay in milliseconds between retry attempts
+ * @returns {Promise<Response>} Resolves with the Response object if successful
+ * @throws {Error} If fetch fails after all attempts
+ */
+export async function retryRSSFetch(
+  fn: () => Promise<Response>,
+  maxRetries: number,
+  delayBetweenRetries: number
+): Promise<Response> {
+  let attempt = 0
+
+  while (attempt < maxRetries) {
+    try {
+      attempt++
+      l.wait(`  Attempt ${attempt} - Fetching RSS...\n`)
+      const response = await fn()
+      l.wait(`\n  RSS fetch succeeded on attempt ${attempt}.`)
+      return response
+    } catch (error) {
+      err(`  Attempt ${attempt} failed: ${(error as Error).message}`)
+      if (attempt >= maxRetries) {
+        err(`  Max retries (${maxRetries}) reached. Aborting RSS fetch.`)
+        throw error
+      }
+      l.wait(`  Retrying in ${delayBetweenRetries / 1000} seconds...`)
+      await new Promise((resolve) => setTimeout(resolve, delayBetweenRetries))
+    }
+  }
+
+  throw new Error('RSS fetch failed after maximum retries.')
+}

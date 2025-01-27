@@ -148,6 +148,12 @@ export type ProcessingOptions = {
   /** Flag to use speaker labels in AssemblyAI transcription. */
   speakerLabels?: boolean
 
+  /** File path for estimating transcription cost. */
+  transcriptCost?: string
+
+  /** File path for estimating LLM cost. */
+  llmCost?: string
+
   /** ChatGPT model to use (e.g., 'GPT_4o_MINI'). */
   chatgpt?: string
 

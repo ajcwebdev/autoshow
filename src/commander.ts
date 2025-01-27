@@ -16,7 +16,7 @@ import { fileURLToPath } from 'node:url'
 import { Command } from 'commander'
 import { selectPrompts } from './process-steps/04-select-prompt'
 import { processAction, validateCLIOptions } from './utils/validate-option'
-import { l, err, logSeparator } from './utils/logging'
+import { l, err, logSeparator, estimateTranscriptCost, estimateLLMCost } from './utils/logging'
 import { envVarsMap } from './utils/globals/llms'
 
 import type { ProcessingOptions } from './utils/types/process'
@@ -53,6 +53,8 @@ program
   .option('--deepgram [model]', 'Use Deepgram for transcription with optional model specification')
   .option('--assembly [model]', 'Use AssemblyAI for transcription with optional model specification')
   .option('--speakerLabels', 'Use speaker labels for AssemblyAI transcription')
+  .option('--transcriptCost <filePath>', 'Estimate transcription cost for the given file')
+  .option('--llmCost <filePath>', 'Estimate LLM cost for the given prompt and transcript file')
   // LLM service options
   .option('--ollama [model]', 'Use Ollama for processing with optional model specification')
   .option('--chatgpt [model]', 'Use ChatGPT for processing with optional model specification')
@@ -106,6 +108,64 @@ program.action(async (options: ProcessingOptions) => {
   if (options.printPrompt) {
     const prompt = await selectPrompts({ printPrompt: options.printPrompt })
     console.log(prompt)
+    exit(0)
+  }
+
+  // Handle transcript cost estimation
+  if (options.transcriptCost) {
+    let transcriptServices: 'deepgram' | 'assembly' | 'whisper' | undefined = undefined
+
+    if (typeof options.deepgram !== 'undefined') {
+      transcriptServices = 'deepgram'
+    } else if (typeof options.assembly !== 'undefined') {
+      transcriptServices = 'assembly'
+    } else if (typeof options.whisper !== 'undefined') {
+      transcriptServices = 'whisper'
+    }
+
+    if (!transcriptServices) {
+      err('Please specify which transcription service to use (e.g., --deepgram, --assembly, --whisper).')
+      exit(1)
+    }
+
+    await estimateTranscriptCost(options, transcriptServices)
+    exit(0)
+  }
+
+  // Handle LLM cost estimation
+  if (options.llmCost) {
+    let llmService: 'ollama' | 'chatgpt' | 'claude' | 'gemini' | 'cohere' | 'mistral' | 'deepseek' | 'grok' | 'fireworks' | 'together' | 'groq' | undefined = undefined
+
+    if (typeof options.ollama !== 'undefined') {
+      llmService = 'ollama'
+    } else if (typeof options.chatgpt !== 'undefined') {
+      llmService = 'chatgpt'
+    } else if (typeof options.claude !== 'undefined') {
+      llmService = 'claude'
+    } else if (typeof options.gemini !== 'undefined') {
+      llmService = 'gemini'
+    } else if (typeof options.cohere !== 'undefined') {
+      llmService = 'cohere'
+    } else if (typeof options.mistral !== 'undefined') {
+      llmService = 'mistral'
+    } else if (typeof options.deepseek !== 'undefined') {
+      llmService = 'deepseek'
+    } else if (typeof options.grok !== 'undefined') {
+      llmService = 'grok'
+    } else if (typeof options.fireworks !== 'undefined') {
+      llmService = 'fireworks'
+    } else if (typeof options.together !== 'undefined') {
+      llmService = 'together'
+    } else if (typeof options.groq !== 'undefined') {
+      llmService = 'groq'
+    }
+
+    if (!llmService) {
+      err('Please specify which LLM service to use (e.g., --chatgpt, --claude, --ollama, etc.).')
+      exit(1)
+    }
+
+    await estimateLLMCost(options, llmService)
     exit(0)
   }
 

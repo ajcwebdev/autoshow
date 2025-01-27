@@ -17,7 +17,7 @@ import { existsSync } from 'node:fs'
 import { l, err } from '../utils/logging'
 import { execPromise, execFilePromise, PROCESS_HANDLERS, ACTION_OPTIONS } from './globals/process'
 import { LLM_OPTIONS } from './globals/llms'
-import { TRANSCRIPT_OPTIONS } from './globals/transcription'
+import { TRANSCRIPT_OPTIONS, WHISPER_MODELS } from './globals/transcription'
 
 import type { ProcessingOptions, ValidAction, HandlerFunction, VideoMetadata, VideoInfo, RSSItem } from './types/process'
 import type { TranscriptServices } from './types/transcription'
@@ -454,19 +454,37 @@ export async function saveAudio(id: string, ensureFolders?: boolean) {
 /**
  * Checks if whisper.cpp directory exists and, if missing, clones and compiles it.
  * Also checks if the chosen model file is present and, if missing, downloads it.
- * @param {string} whisperModel - The requested Whisper model name
- * @param {string} modelGGMLName - The corresponding GGML model filename
- * @returns {Promise<void>}
+ * @param whisperModel - The requested Whisper model name (e.g. "turbo" or "large-v3-turbo")
+ * @param modelGGMLName - The corresponding GGML model filename (e.g. "ggml-large-v3-turbo.bin")
  */
 export async function checkWhisperDirAndModel(
   whisperModel: string,
   modelGGMLName: string
 ): Promise<void> {
-  // Check if whisper.cpp directory is present
+  // OPTIONAL: If you want to handle "turbo" as an alias for "large-v3-turbo"
+  // so the user can do --whisper=turbo but the script sees "large-v3-turbo".
+  if (whisperModel === 'turbo') {
+    whisperModel = 'large-v3-turbo'
+  }
+
+  // Double-check that the requested model is actually in WHISPER_MODELS,
+  // to avoid passing an unrecognized name to download-ggml-model.sh
+  if (!Object.prototype.hasOwnProperty.call(WHISPER_MODELS, whisperModel)) {
+    throw new Error(
+      `Unknown Whisper model "${whisperModel}". ` +
+      `Please use one of: ${Object.keys(WHISPER_MODELS).join(', ')}`
+    )
+  }
+
+  // 1. Ensure whisper.cpp is cloned and built
   if (!existsSync('./whisper.cpp')) {
     l.dim(`\n  No whisper.cpp repo found, cloning and compiling...\n`)
     try {
-      await execPromise('git clone https://github.com/ggerganov/whisper.cpp.git && cmake -B whisper.cpp/build -S whisper.cpp && cmake --build whisper.cpp/build --config Release')
+      await execPromise(
+        'git clone https://github.com/ggerganov/whisper.cpp.git ' +
+        '&& cmake -B whisper.cpp/build -S whisper.cpp ' +
+        '&& cmake --build whisper.cpp/build --config Release'
+      )
       l.dim(`\n    - whisper.cpp clone and compilation complete.\n`)
     } catch (cloneError) {
       err(`Error cloning/building whisper.cpp: ${(cloneError as Error).message}`)
@@ -476,18 +494,40 @@ export async function checkWhisperDirAndModel(
     l.dim(`\n  Whisper.cpp repo is already available at:\n    - ./whisper.cpp\n`)
   }
 
-  // Check if the chosen model file is present
-  if (!existsSync(`./whisper.cpp/models/${modelGGMLName}`)) {
-    l.dim(`\n  Model not found, downloading...\n    - ${whisperModel}\n`)
+  // Also check for whisper-cli binary, just in case
+  const whisperCliPath = './whisper.cpp/build/bin/whisper-cli'
+  if (!existsSync(whisperCliPath)) {
+    l.dim(`\n  No whisper-cli binary found, rebuilding...\n`)
+    try {
+      await execPromise(
+        'cmake -B whisper.cpp/build -S whisper.cpp ' +
+        '&& cmake --build whisper.cpp/build --config Release'
+      )
+      l.dim(`\n    - whisper.cpp build completed.\n`)
+    } catch (buildError) {
+      err(`Error (re)building whisper.cpp: ${(buildError as Error).message}`)
+      throw buildError
+    }
+  } else {
+    l.dim(`  Found whisper-cli at:\n    - ${whisperCliPath}\n`)
+  }
+
+  // 2. Make sure the chosen model file is present
+  const modelPath = `./whisper.cpp/models/${modelGGMLName}`
+  if (!existsSync(modelPath)) {
+    l.dim(`\n  Model not found locally, attempting download...\n    - ${whisperModel}\n`)
     try {
       await execPromise(`bash ./whisper.cpp/models/download-ggml-model.sh ${whisperModel}`)
-      l.dim('    - Model download completed, running transcription...\n')
+      l.dim('    - Model download completed.\n')
     } catch (modelError) {
       err(`Error downloading model: ${(modelError as Error).message}`)
       throw modelError
     }
   } else {
-    l.dim(`  Model ${whisperModel} is already available at\n    - ./whisper.cpp/models/${modelGGMLName}\n`)
+    l.dim(
+      `  Model "${whisperModel}" is already available at:\n` +
+      `    - ${modelPath}\n`
+    )
   }
 }
 

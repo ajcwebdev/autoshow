@@ -1,11 +1,14 @@
 // src/utils/logging.ts
 
+import { readFile } from 'node:fs/promises'
 import { execPromise } from './globals/process'
 import { ALL_MODELS } from './globals/llms'
+import { DEEPGRAM_MODELS, ASSEMBLY_MODELS } from './globals/transcription'
 import chalk from 'chalk'
 
 import type { ProcessingOptions, SeparatorParams } from './types/process'
-import type { TranscriptionCostInfo } from './types/transcription'
+import type { LLMServices } from './types/llms'
+import type { TranscriptServices, DeepgramModelType, AssemblyModelType, TranscriptionCostInfo } from './types/transcription'
 import type { LogLLMCost, ChainableLogger } from './types/logging'
 
 /**
@@ -167,6 +170,81 @@ export function logLLMCost(info: LogLLMCost): void {
 }
 
 /**
+ * Minimal token counting utility. Splits on whitespace to get an approximate token count.
+ * For more accurate results with ChatGPT, a library like 'tiktoken' can be integrated.
+ *
+ * @param text - The text for which we need an approximate token count
+ * @returns Approximate token count
+ */
+function approximateTokens(text: string): number {
+  const words = text.trim().split(/\s+/)
+  // This is a naive approximation of tokens
+  return Math.max(1, words.length)
+}
+
+/**
+ * estimateLLMCost()
+ * -----------------
+ * Estimates the cost for an LLM-based model by:
+ * 1. Reading a combined prompt + transcript file
+ * 2. Approximating the token usage
+ * 3. Looking up cost info from the LLM model config
+ * 4. Logging the estimated cost to the console
+ *
+ * @param {ProcessingOptions} options - The command-line options (must include `llmCost` file path)
+ * @param {LLMServices} llmService - The selected LLM service (e.g., 'chatgpt', 'ollama', 'claude', etc.)
+ * @returns {Promise<void>} A promise that resolves when cost estimation is complete
+ */
+export async function estimateLLMCost(
+  options: ProcessingOptions,
+  llmService: LLMServices
+): Promise<void> {
+  const filePath = options.llmCost
+  if (!filePath) {
+    throw new Error('No file path provided to estimate LLM cost.')
+  }
+
+  l.dim(`\nEstimating LLM cost for '${llmService}' with file: ${filePath}`)
+
+  try {
+    // Read content from file
+    const content = await readFile(filePath, 'utf8')
+    const tokenCount = approximateTokens(content)
+
+    /**
+     * Determine if the user provided a specific model string (e.g. "--chatgpt GPT_4o"),
+     * otherwise fallback to a default model if only "--chatgpt" was used.
+     */
+    let userModel = typeof options[llmService] === 'string'
+      ? options[llmService] as string
+      : undefined
+
+    // Provide default fallback for ChatGPT if no string model was given
+    if (llmService === 'chatgpt' && (userModel === undefined || userModel === 'true')) {
+      userModel = 'GPT_4o_MINI'
+    }
+
+    // If still nothing is set, use the service name as a last resort
+    const modelName = userModel || llmService
+
+    // Log cost using the same function that logs LLM usage after real calls
+    logLLMCost({
+      modelName,
+      stopReason: 'n/a',
+      tokenUsage: {
+        input: tokenCount,
+        output: 4000,
+        total: tokenCount
+      }
+    })
+
+  } catch (error) {
+    err(`Error estimating LLM cost: ${(error as Error).message}`)
+    throw error
+  }
+}
+
+/**
  * Asynchronously logs the estimated transcription cost based on audio duration and per-minute cost.
  * Internally calculates the audio file duration using ffprobe.
  * @param info - Object containing the model name, cost per minute, and path to the audio file.
@@ -187,6 +265,54 @@ export async function logTranscriptionCost(info: TranscriptionCostInfo): Promise
     `    - Audio Length: ${minutes.toFixed(2)} minutes\n` +
     `    - Cost: $${cost.toFixed(4)}`
   )
+}
+
+/**
+ * Estimates transcription cost for the provided file and chosen transcription service.
+ * 
+ * @param {ProcessingOptions} options - The command-line options (must include `transcriptCost` file path).
+ * @param {TranscriptServices} transcriptServices - The selected transcription service (e.g., "deepgram", "assembly", "whisper").
+ * @returns {Promise<void>} A promise that resolves when cost estimation is complete.
+ */
+export async function estimateTranscriptCost(
+  options: ProcessingOptions,
+  transcriptServices: TranscriptServices
+): Promise<void> {
+  const filePath = options.transcriptCost
+  if (!filePath) {
+    throw new Error('No file path provided to estimate transcription cost.')
+  }
+
+  switch (transcriptServices) {
+    case 'deepgram': {
+      const deepgramModel = typeof options.deepgram === 'string' ? options.deepgram : 'NOVA_2'
+      const modelInfo = DEEPGRAM_MODELS[deepgramModel as DeepgramModelType] || DEEPGRAM_MODELS.NOVA_2
+      await logTranscriptionCost({
+        modelName: modelInfo.name,
+        costPerMinute: modelInfo.costPerMinute,
+        filePath
+      })
+      break
+    }
+    case 'assembly': {
+      const assemblyModel = typeof options.assembly === 'string' ? options.assembly : 'NANO'
+      const modelInfo = ASSEMBLY_MODELS[assemblyModel as AssemblyModelType] || ASSEMBLY_MODELS.NANO
+      await logTranscriptionCost({
+        modelName: modelInfo.name,
+        costPerMinute: modelInfo.costPerMinute,
+        filePath
+      })
+      break
+    }
+    case 'whisper': {
+      // Currently, no official cost data for Whisper.cpp
+      l('\nNo cost data available for Whisper.\n')
+      break
+    }
+    default: {
+      throw new Error(`Unsupported transcription service for cost estimation: ${transcriptServices}`)
+    }
+  }
 }
 
 /**

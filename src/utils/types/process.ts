@@ -175,6 +175,12 @@ export type ProcessingOptions = {
   /** Gemini model to use (e.g., 'GEMINI_1_5_FLASH'). */
   gemini?: string
 
+  /** DeepSeek model to use (e.g., ''). */
+  deepseek?: string
+
+  /** Grok model to use (e.g., ''). */
+  grok?: string
+
   /** Array of prompt sections to include (e.g., ['titles', 'summary']). */
   prompt?: string[]
 

@@ -50,12 +50,13 @@ export async function runLLM(
   metadata: EpisodeMetadata,
   llmServices?: LLMServices,
 ) {
-  logInitialFunctionCall('runLLM', { options, finalPath, frontMatter, prompt, transcript, metadata, llmServices })
+  l.step(`\nStep 5 - Run Language Model\n`)
+  logInitialFunctionCall('runLLM', { llmServices, metadata })
 
   try {
     let showNotesResult = ''
     if (llmServices) {
-      l.wait(`\n  Preparing to process with '${llmServices}' Language Model...\n`)
+      l.dim(`\n  Preparing to process with '${llmServices}' Language Model...\n`)
       const llmFunction = LLM_FUNCTIONS[llmServices]
 
       if (!llmFunction) {
@@ -73,12 +74,12 @@ export async function runLLM(
 
       const outputFilename = `${finalPath}-${llmServices}-shownotes.md`
       await writeFile(outputFilename, `${frontMatter}\n${showNotes}\n\n## Transcript\n\n${transcript}`)
-      l.wait(`\n  LLM processing completed, combined front matter + LLM output + transcript written to:\n    - ${outputFilename}`)
+      l.dim(`\n  LLM processing completed, combined front matter + LLM output + transcript written to:\n    - ${outputFilename}`)
       showNotesResult = showNotes
     } else {
-      l.wait('\n  No LLM selected, skipping processing...')
+      l.dim('  No LLM selected, skipping processing...')
       const noLLMFile = `${finalPath}-prompt.md`
-      l.wait(`\n  Writing front matter + prompt + transcript to file:\n    - ${noLLMFile}`)
+      l.dim(`\n  Writing front matter + prompt + transcript to file:\n    - ${noLLMFile}`)
       await writeFile(noLLMFile, `${frontMatter}\n${prompt}\n## Transcript\n\n${transcript}`)
     }
 

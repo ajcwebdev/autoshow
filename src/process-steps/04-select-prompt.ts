@@ -15,21 +15,22 @@ import type { ProcessingOptions } from '../utils/types/process'
  * @throws {Error} If the file cannot be read or is invalid
  */
 export async function selectPrompts(options: ProcessingOptions) {
+  l.step(`\nStep 4 - Select Prompts\n`)
   logInitialFunctionCall('selectPrompts', { options })
 
   let customPrompt = ''
   if (options.customPrompt) {
-    l.wait(`\n  Custom prompt path provided, attempting to read: ${options.customPrompt}`)
+    l.dim(`\n  Custom prompt path provided, attempting to read: ${options.customPrompt}`)
 
-    l.wait('\n  readCustomPrompt called with arguments:\n')
-    l.wait(`    - filePath: ${options.customPrompt}`)
+    l.dim('\n  readCustomPrompt called with arguments:\n')
+    l.dim(`    - filePath: ${options.customPrompt}`)
 
     try {
-      l.wait(`\n  Reading custom prompt file:\n    - ${options.customPrompt}`)
+      l.dim(`\n  Reading custom prompt file:\n    - ${options.customPrompt}`)
       const customPromptFileContents = await readFile(options.customPrompt, 'utf8')
-      l.wait(`\n  Successfully read custom prompt file, character length:\n\n    - ${customPromptFileContents.length}`)
+      l.dim(`\n  Successfully read custom prompt file, character length:\n\n    - ${customPromptFileContents.length}`)
       customPrompt = customPromptFileContents.trim()
-      l.wait('\n  Custom prompt file successfully processed.')
+      l.dim('\n  Custom prompt file successfully processed.')
     } catch (error) {
       err(`Error reading custom prompt file: ${(error as Error).message}`)
       customPrompt = ''
@@ -46,7 +47,7 @@ export async function selectPrompts(options: ProcessingOptions) {
   const validSections = prompt.filter((section): section is keyof typeof sections =>
     Object.hasOwn(sections, section)
   )
-  l.wait(`\n  Valid sections identified:\n\n    ${JSON.stringify(validSections)}`)
+  l.dim(`${JSON.stringify(validSections, null, 2)}`)
 
   validSections.forEach((section) => {
     text += sections[section].instruction + "\n"
@@ -56,5 +57,6 @@ export async function selectPrompts(options: ProcessingOptions) {
   validSections.forEach((section) => {
     text += `    ${sections[section].example}\n`
   })
+  // l.dim(`\n  selectPrompts returning:\n\n${text}`)
   return text
 }

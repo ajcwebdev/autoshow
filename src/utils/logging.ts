@@ -15,12 +15,13 @@ import type { LogLLMCost, ChainableLogger } from './types/logging'
  * @param details - An object containing relevant parameters to log
  */
 export function logInitialFunctionCall(functionName: string, details: Record<string, unknown>): void {
-  l.info(`${functionName} called with the following arguments:`)
+  l.opts(`${functionName} called with the following arguments:\n`)
   for (const [key, value] of Object.entries(details)) {
     if (typeof value === 'object' && value !== null) {
-      l.opts(`  - ${key}: ${JSON.stringify(value, null, 2)}`)
+      l.opts(`${key}:\n`)
+      l.opts(`${JSON.stringify(value, null, 2)}`)
     } else {
-      l.opts(`  - ${key}: ${value}`)
+      l.opts(`${key}: ${value}`)
     }
   }
   l.opts('')
@@ -41,19 +42,19 @@ export function logSeparator(params: SeparatorParams): void {
     case 'channel':
     case 'playlist':
     case 'urls':
-      l.opts(`\n================================================================================================`)
+      l.final(`\n================================================================================================`)
       if (params.type === 'urls') {
-        l.opts(`  Processing URL ${params.index + 1}/${params.total}: ${params.descriptor}`)
+        l.final(`  Processing URL ${params.index + 1}/${params.total}: ${params.descriptor}`)
       } else {
-        l.opts(`  Processing video ${params.index + 1}/${params.total}: ${params.descriptor}`)
+        l.final(`  Processing video ${params.index + 1}/${params.total}: ${params.descriptor}`)
       }
-      l.opts(`================================================================================================\n`)
+      l.final(`================================================================================================\n`)
       break
 
     case 'rss':
-      l.opts(`\n========================================================================================`)
-      l.opts(`  Item ${params.index + 1}/${params.total} processing: ${params.descriptor}`)
-      l.opts(`========================================================================================\n`)
+      l.final(`\n========================================================================================`)
+      l.final(`  Item ${params.index + 1}/${params.total} processing: ${params.descriptor}`)
+      l.final(`========================================================================================\n`)
       break
 
     case 'completion':
@@ -104,7 +105,7 @@ export function logLLMCost(info: LogLLMCost): void {
   const displayName = modelConfig?.name ?? modelName
   
   // Log stop/finish reason and model
-  l.wait(`  - ${stopReason ? `${stopReason} Reason` : 'Status'}: ${stopReason}\n  - Model: ${displayName}`)
+  l.dim(`  - ${stopReason ? `${stopReason} Reason` : 'Status'}: ${stopReason}\n  - Model: ${displayName}`)
   
   // Format token usage string based on available data
   const tokenLines = []
@@ -114,7 +115,7 @@ export function logLLMCost(info: LogLLMCost): void {
   
   // Log token usage if any data is available
   if (tokenLines.length > 0) {
-    l.wait(`  - Token Usage:\n    - ${tokenLines.join('\n    - ')}`)
+    l.dim(`  - Token Usage:\n    - ${tokenLines.join('\n    - ')}`)
   }
 
   // Calculate and log costs
@@ -161,7 +162,7 @@ export function logLLMCost(info: LogLLMCost): void {
 
   // Log costs if any calculations were successful
   if (costLines.length > 0) {
-    l.wait(`  - Cost Breakdown:\n    - ${costLines.join('\n    - ')}`)
+    l.dim(`  - Cost Breakdown:\n    - ${costLines.join('\n    - ')}`)
   }
 }
 
@@ -181,7 +182,7 @@ export async function logTranscriptionCost(info: TranscriptionCostInfo): Promise
   const minutes = seconds / 60
   const cost = info.costPerMinute * minutes
 
-  l.wait(
+  l.dim(
     `  - Estimated Transcription Cost for ${info.modelName}:\n` +
     `    - Audio Length: ${minutes.toFixed(2)} minutes\n` +
     `    - Cost: $${cost.toFixed(4)}`
@@ -253,14 +254,14 @@ export function logRSSProcessingStatus(
   options: ProcessingOptions
 ): void {
   if (options.item && options.item.length > 0) {
-    l.wait(`\n  - Found ${total} items in the RSS feed.`)
-    l.wait(`  - Processing ${processing} specified items.`)
+    l.dim(`\n  - Found ${total} items in the RSS feed.`)
+    l.dim(`  - Processing ${processing} specified items.`)
   } else if (options.last) {
-    l.wait(`\n  - Found ${total} items in the RSS feed.`)
-    l.wait(`  - Processing the last ${options.last} items.`)
+    l.dim(`\n  - Found ${total} items in the RSS feed.`)
+    l.dim(`  - Processing the last ${options.last} items.`)
   } else {
-    l.wait(`\n  - Found ${total} item(s) in the RSS feed.`)
-    l.wait(`  - Processing ${processing} item(s) after skipping ${options.skip || 0}.\n`)
+    l.dim(`\n  - Found ${total} item(s) in the RSS feed.`)
+    l.dim(`  - Processing ${processing} item(s) after skipping ${options.skip || 0}.\n`)
   }
 }
 
@@ -277,13 +278,13 @@ export function logChannelProcessingStatus(
   options: ProcessingOptions
 ): void {
   if (options.last) {
-    l.wait(`\n  - Found ${total} videos in the channel.`)
-    l.wait(`  - Processing the last ${processing} videos.`)
+    l.dim(`\n  - Found ${total} videos in the channel.`)
+    l.dim(`  - Processing the last ${processing} videos.`)
   } else if (options.skip) {
-    l.wait(`\n  - Found ${total} videos in the channel.`)
-    l.wait(`  - Processing ${processing} videos after skipping ${options.skip || 0}.\n`)
+    l.dim(`\n  - Found ${total} videos in the channel.`)
+    l.dim(`  - Processing ${processing} videos after skipping ${options.skip || 0}.\n`)
   } else {
-    l.wait(`\n  - Found ${total} videos in the channel.`)
-    l.wait(`  - Processing all ${processing} videos.\n`)
+    l.dim(`\n  - Found ${total} videos in the channel.`)
+    l.dim(`  - Processing all ${processing} videos.\n`)
   }
 }

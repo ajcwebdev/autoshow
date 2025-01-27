@@ -52,7 +52,7 @@ export function insertShowNote(
   transcript: string,
   llmOutput: string
 ): void {
-  l.wait('\n  Inserting show note into the database...')
+  l.dim('\n  Inserting show note into the database...')
   db.prepare(`
     INSERT INTO show_notes (
       showLink,
@@ -81,5 +81,5 @@ export function insertShowNote(
     transcript,
     llmOutput
   )
-  l.wait('\n    - Show note inserted successfully.\n')
+  l.dim('    - Show note inserted successfully.\n')
 }

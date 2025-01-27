@@ -395,9 +395,9 @@ export function validateChannelOptions(options: ProcessingOptions): void {
   }
 
   if (options.last) {
-    l.wait(`\nProcessing the last ${options.last} videos`)
+    l.dim(`\nProcessing the last ${options.last} videos`)
   } else if (options.skip) {
-    l.wait(`\nSkipping first ${options.skip || 0} videos`)
+    l.dim(`\nSkipping first ${options.skip || 0} videos`)
   }
 }
 
@@ -432,18 +432,17 @@ export async function saveAudio(id: string, ensureFolders?: boolean) {
   if (ensureFolders) {
     // If "ensureFolders" is set, skip deleting files
     // (this can serve as a placeholder for ensuring directories)
-    l.info('\nSkipping cleanup to preserve or ensure metadata directories.\n')
+    l.dim('\nSkipping cleanup to preserve or ensure metadata directories.\n')
     return
   }
 
-  l.step('\nStep 6 - Cleaning Up Extra Files\n')
   const extensions = ['.wav']
-  l.wait(`\n  Temporary files deleted:`)
+  l.dim(`  Temporary files deleted:`)
 
   for (const ext of extensions) {
     try {
       await unlink(`${id}${ext}`)
-      l.wait(`    - ${id}${ext}`)
+      l.dim(`    - ${id}${ext}`)
     } catch (error) {
       if (error instanceof Error && (error as Error).message !== 'ENOENT') {
         err(`Error deleting file ${id}${ext}: ${(error as Error).message}`)
@@ -465,30 +464,30 @@ export async function checkWhisperDirAndModel(
 ): Promise<void> {
   // Check if whisper.cpp directory is present
   if (!existsSync('./whisper.cpp')) {
-    l.wait(`\n  No whisper.cpp repo found, cloning and compiling...\n`)
+    l.dim(`\n  No whisper.cpp repo found, cloning and compiling...\n`)
     try {
       await execPromise('git clone https://github.com/ggerganov/whisper.cpp.git && cmake -B whisper.cpp/build -S whisper.cpp && cmake --build whisper.cpp/build --config Release')
-      l.wait(`\n    - whisper.cpp clone and compilation complete.\n`)
+      l.dim(`\n    - whisper.cpp clone and compilation complete.\n`)
     } catch (cloneError) {
       err(`Error cloning/building whisper.cpp: ${(cloneError as Error).message}`)
       throw cloneError
     }
   } else {
-    l.wait(`\n  Whisper.cpp repo is already available at:\n    - ./whisper.cpp\n`)
+    l.dim(`\n  Whisper.cpp repo is already available at:\n    - ./whisper.cpp\n`)
   }
 
   // Check if the chosen model file is present
   if (!existsSync(`./whisper.cpp/models/${modelGGMLName}`)) {
-    l.wait(`\n  Model not found, downloading...\n    - ${whisperModel}\n`)
+    l.dim(`\n  Model not found, downloading...\n    - ${whisperModel}\n`)
     try {
       await execPromise(`bash ./whisper.cpp/models/download-ggml-model.sh ${whisperModel}`)
-      l.wait('    - Model download completed, running transcription...\n')
+      l.dim('    - Model download completed, running transcription...\n')
     } catch (modelError) {
       err(`Error downloading model: ${(modelError as Error).message}`)
       throw modelError
     }
   } else {
-    l.wait(`  Model ${whisperModel} is already available at\n    - ./whisper.cpp/models/${modelGGMLName}\n`)
+    l.dim(`  Model ${whisperModel} is already available at\n    - ./whisper.cpp/models/${modelGGMLName}\n`)
   }
 }
 
@@ -518,18 +517,18 @@ export async function checkOllamaServerAndModel(
     }
   }
 
-  l.info(`[checkOllamaServerAndModel] Checking server: http://${ollamaHost}:${ollamaPort}`)
+  l.dim(`[checkOllamaServerAndModel] Checking server: http://${ollamaHost}:${ollamaPort}`)
 
   // 1) Confirm the server is running
   if (await checkServer()) {
-    l.wait('\n  Ollama server is already running...')
+    l.dim('\n  Ollama server is already running...')
   } else {
     // If the Docker-based environment uses 'ollama' as hostname but it's not up, that's likely an error
     if (ollamaHost === 'ollama') {
       throw new Error('Ollama server is not running. Please ensure the Ollama server is running and accessible.')
     } else {
       // Attempt to spawn an Ollama server locally
-      l.wait('\n  Ollama server is not running. Attempting to start it locally...')
+      l.dim('\n  Ollama server is not running. Attempting to start it locally...')
       const ollamaProcess = spawn('ollama', ['serve'], {
         detached: true,
         stdio: 'ignore',
@@ -540,7 +539,7 @@ export async function checkOllamaServerAndModel(
       let attempts = 0
       while (attempts < 30) {
         if (await checkServer()) {
-          l.wait('    - Ollama server is now ready.\n')
+          l.dim('    - Ollama server is now ready.\n')
           break
         }
         await new Promise((resolve) => setTimeout(resolve, 1000))
@@ -553,7 +552,7 @@ export async function checkOllamaServerAndModel(
   }
 
   // 2) Confirm the model is available; if not, pull it
-  l.wait(`  Checking if model is available: ${ollamaModelName}`)
+  l.dim(`  Checking if model is available: ${ollamaModelName}`)
   try {
     const tagsResponse = await fetch(`http://${ollamaHost}:${ollamaPort}/api/tags`)
     if (!tagsResponse.ok) {
@@ -562,10 +561,10 @@ export async function checkOllamaServerAndModel(
 
     const tagsData = (await tagsResponse.json()) as OllamaTagsResponse
     const isModelAvailable = tagsData.models.some((m) => m.name === ollamaModelName)
-    l.info(`[checkOllamaServerAndModel] isModelAvailable=${isModelAvailable}`)
+    l.dim(`[checkOllamaServerAndModel] isModelAvailable=${isModelAvailable}`)
 
     if (!isModelAvailable) {
-      l.wait(`\n  Model ${ollamaModelName} is NOT available; pulling now...`)
+      l.dim(`\n  Model ${ollamaModelName} is NOT available; pulling now...`)
       const pullResponse = await fetch(`http://${ollamaHost}:${ollamaPort}/api/pull`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -595,7 +594,7 @@ export async function checkOllamaServerAndModel(
           try {
             const parsedLine = JSON.parse(line)
             if (parsedLine.status === 'success') {
-              l.wait(`    - Model ${ollamaModelName} pulled successfully.\n`)
+              l.dim(`    - Model ${ollamaModelName} pulled successfully.\n`)
               break
             }
           } catch (parseError) {
@@ -604,7 +603,7 @@ export async function checkOllamaServerAndModel(
         }
       }
     } else {
-      l.wait(`\n  Model ${ollamaModelName} is already available.\n`)
+      l.dim(`\n  Model ${ollamaModelName} is already available.\n`)
     }
   } catch (error) {
     err(`Error checking/pulling model: ${(error as Error).message}`)
@@ -694,7 +693,7 @@ export async function saveInfo(
     const sanitizedTitle = sanitizeTitle(title || '')
     const jsonFilePath = `content/${sanitizedTitle}_info.json`
     await writeFile(jsonFilePath, jsonContent)
-    l.wait(`RSS feed information saved to: ${jsonFilePath}`)
+    l.dim(`RSS feed information saved to: ${jsonFilePath}`)
     return
   }
 

@@ -70,8 +70,6 @@ export async function processVideo(
       await saveAudio(finalPath)
     }
 
-    l.wait('\n  processVideo command completed successfully.')
-
     return {
       frontMatter,
       prompt: selectedPrompts,

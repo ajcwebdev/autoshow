@@ -21,8 +21,8 @@ export const callOllama = async (
   transcript: string,
   model: string | OllamaModelType = 'QWEN_2_5_0B'
 ) => {
-  l.wait('\n  callOllama called with arguments:')
-  l.wait(`    - model: ${model}`)
+  l.dim('\n  callOllama called with arguments:')
+  l.dim(`    - model: ${model}`)
 
   try {
     // Determine the final modelKey from the argument
@@ -30,12 +30,12 @@ export const callOllama = async (
     const modelConfig = OLLAMA_MODELS[modelKey as OllamaModelType] || OLLAMA_MODELS.QWEN_2_5_0B
     const ollamaModelName = modelConfig.modelId
 
-    l.wait(`    - modelName: ${modelKey}\n    - ollamaModelName: ${ollamaModelName}`)
+    l.dim(`    - modelName: ${modelKey}\n    - ollamaModelName: ${ollamaModelName}`)
 
     // Determine host/port from environment or fallback
     const ollamaHost = env['OLLAMA_HOST'] || 'localhost'
     const ollamaPort = env['OLLAMA_PORT'] || '11434'
-    l.info(`\n  [callOllama] OLLAMA_HOST=${ollamaHost}, OLLAMA_PORT=${ollamaPort}`)
+    l.dim(`\n  [callOllama] OLLAMA_HOST=${ollamaHost}, OLLAMA_PORT=${ollamaPort}`)
 
     // Combine prompt + transcript
     const combinedPrompt = `${prompt}\n${transcript}`
@@ -43,7 +43,7 @@ export const callOllama = async (
     // Ensure Ollama server is running and that the model is pulled
     await checkOllamaServerAndModel(ollamaHost, ollamaPort, ollamaModelName)
 
-    l.wait(`\n  Sending chat request to http://${ollamaHost}:${ollamaPort} using model '${ollamaModelName}'`)
+    l.dim(`\n  Sending chat request to http://${ollamaHost}:${ollamaPort} using model '${ollamaModelName}'`)
 
     // Make the actual request to Ollama
     const response = await fetch(`http://${ollamaHost}:${ollamaPort}/api/chat`, {

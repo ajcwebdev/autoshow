@@ -59,6 +59,7 @@ export async function generateMarkdown(
   options: ProcessingOptions,
   input: string | RSSItem
 ): Promise<MarkdownData> {
+  l.step(`\nStep 1 - Generate Markdown\n`)
   logInitialFunctionCall('generateMarkdown', { options, input })
 
   const { filename, metadata } = await (async () => {
@@ -68,7 +69,7 @@ export async function generateMarkdown(
       case !!options.urls:
       case !!options.channel:
         try {
-          l.wait('\n  Extracting metadata with yt-dlp. Parsing output...\n')
+          l.dim('  Extracting metadata with yt-dlp. Parsing output...')
           const { stdout } = await execFilePromise('yt-dlp', [
             '--restrict-filenames',
             '--print', '%(webpage_url)s',
@@ -109,7 +110,7 @@ export async function generateMarkdown(
         }
 
       case !!options.file:
-        l.wait('\n  Generating markdown for a local file...')
+        l.dim('\n  Generating markdown for a local file...')
         const originalFilename = basename(input as string)
         const filenameWithoutExt = originalFilename.replace(extname(originalFilename), '')
         const localFilename = sanitizeTitle(filenameWithoutExt)
@@ -128,7 +129,7 @@ export async function generateMarkdown(
         }
 
       case !!options.rss:
-        l.wait('\n  Generating markdown for an RSS item...\n')
+        l.dim('\n  Generating markdown for an RSS item...\n')
         const item = input as RSSItem
         const {
           publishDate,
@@ -163,6 +164,7 @@ export async function generateMarkdown(
   const frontMatter = buildFrontMatter(metadata)
   const frontMatterContent = frontMatter.join('\n')
 
-  l.wait(`  generateMarkdown returning:\n\n    - finalPath: ${finalPath}\n    - filename: ${filename}\n`)
+  l.dim(`\n  generateMarkdown returning:\n\n    - finalPath: ${finalPath}\n    - filename: ${filename}\n`)
+  l.dim(`frontMatterContent:\n\n${frontMatterContent}\n`)
   return { frontMatter: frontMatterContent, finalPath, filename, metadata }
 }

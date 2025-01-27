@@ -3,7 +3,7 @@
 import chalk from 'chalk'
 
 import type { ChainableLogger } from './types/logging'
-import type { ProcessingOptions, SeparatorParams } from './types/process'
+import type { SeparatorParams } from './types/process'
 
 /**
  * Logs the first step of a top-level function call with its relevant options or parameters.
@@ -113,51 +113,3 @@ function createChainableErrorLogger(): ChainableLogger {
 // Create and export the chainable loggers
 export const l = createChainableLogger()
 export const err = createChainableErrorLogger()
-
-/**
- * Logs the processing status and item counts for RSS feeds.
- * 
- * @param total - Total number of RSS items found.
- * @param processing - Number of RSS items to process.
- * @param options - Configuration options.
- */
-export function logRSSProcessingStatus(
-  total: number,
-  processing: number,
-  options: ProcessingOptions
-): void {
-  if (options.item && options.item.length > 0) {
-    l.dim(`\n  - Found ${total} items in the RSS feed.`)
-    l.dim(`  - Processing ${processing} specified items.`)
-  } else if (options.last) {
-    l.dim(`\n  - Found ${total} items in the RSS feed.`)
-    l.dim(`  - Processing the last ${options.last} items.`)
-  } else {
-    l.dim(`\n  - Found ${total} item(s) in the RSS feed.`)
-    l.dim(`  - Processing ${processing} item(s) after skipping ${options.skip || 0}.\n`)
-  }
-}
-
-/**
- * Logs the processing status and video counts for channel downloads.
- * 
- * @param total - Total number of videos found.
- * @param processing - Number of videos to process.
- * @param options - Configuration options.
- */
-export function logChannelProcessingStatus(
-  total: number,
-  processing: number,
-  options: ProcessingOptions
-): void {
-  if (options.last) {
-    l.dim(`\n  - Found ${total} videos in the channel.`)
-    l.dim(`  - Processing the last ${processing} videos.`)
-  } else if (options.skip) {
-    l.dim(`\n  - Found ${total} videos in the channel.`)
-    l.dim(`  - Processing ${processing} videos after skipping ${options.skip || 0}.\n`)
-  } else {
-    l.dim(`\n  - Found ${total} videos in the channel.`)
-    l.dim(`  - Processing all ${processing} videos.\n`)
-  }
-}

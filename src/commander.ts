@@ -16,8 +16,9 @@ import { fileURLToPath } from 'node:url'
 import { Command } from 'commander'
 import { selectPrompts } from './process-steps/04-select-prompt'
 import { processAction, validateCLIOptions } from './utils/validate-option'
-import { l, err, logSeparator, estimateTranscriptCost, estimateLLMCost } from './utils/logging'
-import { envVarsMap } from './utils/globals/llms'
+import { l, err, logSeparator } from './utils/logging'
+import { envVarsMap, estimateLLMCost } from './utils/llm-utils'
+import { estimateTranscriptCost } from './utils/transcription-utils'
 
 import type { ProcessingOptions } from './utils/types/process'
 

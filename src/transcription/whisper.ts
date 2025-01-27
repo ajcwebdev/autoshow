@@ -6,10 +6,8 @@
  */
 
 import { readFile, unlink } from 'node:fs/promises'
-// import { formatWhisperTranscript } from './format-transcript'
-import { checkWhisperDirAndModel } from '../utils/validate-option'
-import { WHISPER_MODELS } from '../utils/globals/transcription'
-import { execPromise } from '../utils/globals/process'
+import { WHISPER_MODELS, checkWhisperDirAndModel } from '../utils/transcription-utils'
+import { execPromise } from '../utils/validate-option'
 import { l, err } from '../utils/logging'
 import type { ProcessingOptions } from '../utils/types/process'
 import type { WhisperModelType } from '../utils/types/transcription'

@@ -11,17 +11,124 @@
  */
 
 import { unlink, writeFile } from 'node:fs/promises'
+import { exec, execFile } from 'node:child_process'
+import { promisify } from 'node:util'
 import { exit } from 'node:process'
-import { spawn } from 'node:child_process'
-import { existsSync } from 'node:fs'
+import { processVideo } from '../process-commands/video'
+import { processPlaylist } from '../process-commands/playlist'
+import { processChannel } from '../process-commands/channel'
+import { processURLs } from '../process-commands/urls'
+import { processFile } from '../process-commands/file'
+import { processRSS } from '../process-commands/rss'
 import { l, err } from '../utils/logging'
-import { execPromise, execFilePromise, PROCESS_HANDLERS, ACTION_OPTIONS } from './globals/process'
-import { LLM_OPTIONS } from './globals/llms'
-import { TRANSCRIPT_OPTIONS, WHISPER_MODELS } from './globals/transcription'
+import { LLM_OPTIONS } from './llm-utils'
+import { TRANSCRIPT_OPTIONS } from './transcription-utils'
 
-import type { ProcessingOptions, ValidAction, HandlerFunction, VideoMetadata, VideoInfo, RSSItem } from './types/process'
 import type { TranscriptServices } from './types/transcription'
-import type { LLMServices, OllamaTagsResponse } from './types/llms'
+import type { LLMServices } from './types/llms'
+import type { ProcessingOptions, VideoMetadata, VideoInfo, RSSItem, ValidAction, HandlerFunction } from './types/process'
+
+export const execPromise = promisify(exec)
+export const execFilePromise = promisify(execFile)
+
+import { XMLParser } from 'fast-xml-parser'
+
+/**
+ * Configure XML parser for RSS feed processing.
+ * Handles attributes without prefixes and allows boolean values.
+ *
+ */
+export const parser = new XMLParser({
+  ignoreAttributes: false,
+  attributeNamePrefix: '',
+  allowBooleanAttributes: true,
+})
+
+/* ------------------------------------------------------------------
+ * Prompt & Action Choices
+ * ------------------------------------------------------------------ */
+
+// Map each action to its corresponding handler function
+export const PROCESS_HANDLERS: Record<ValidAction, HandlerFunction> = {
+  video: processVideo,
+  playlist: processPlaylist,
+  channel: processChannel,
+  urls: processURLs,
+  file: processFile,
+  rss: processRSS,
+}
+
+/**
+ * Provides user-friendly prompt choices for content generation or summary tasks.
+ * 
+ */
+export const PROMPT_CHOICES: Array<{ name: string; value: string }> = [
+  { name: 'Titles', value: 'titles' },
+  { name: 'Summary', value: 'summary' },
+  { name: 'Short Summary', value: 'shortSummary' },
+  { name: 'Long Summary', value: 'longSummary' },
+  { name: 'Bullet Point Summary', value: 'bulletPoints' },
+  { name: 'Short Chapters', value: 'shortChapters' },
+  { name: 'Medium Chapters', value: 'mediumChapters' },
+  { name: 'Long Chapters', value: 'longChapters' },
+  { name: 'Key Takeaways', value: 'takeaways' },
+  { name: 'Questions', value: 'questions' },
+  { name: 'FAQ', value: 'faq' },
+  { name: 'Blog', value: 'blog' },
+  { name: 'Rap Song', value: 'rapSong' },
+  { name: 'Rock Song', value: 'rockSong' },
+  { name: 'Country Song', value: 'countrySong' },
+]
+
+/**
+ * Available action options for content processing with additional metadata.
+ * 
+ */
+export const ACTION_OPTIONS: Array<{
+  name: string
+  description: string
+  message: string
+  validate: (input: string) => boolean | string
+}> = [
+  {
+    name: 'video',
+    description: 'Single YouTube Video',
+    message: 'Enter the YouTube video URL:',
+    validate: (input: string) => (input ? true : 'Please enter a valid URL.'),
+  },
+  {
+    name: 'playlist',
+    description: 'YouTube Playlist',
+    message: 'Enter the YouTube playlist URL:',
+    validate: (input: string) => (input ? true : 'Please enter a valid URL.'),
+  },
+  {
+    name: 'channel',
+    description: 'YouTube Channel',
+    message: 'Enter the YouTube channel URL:',
+    validate: (input: string) => (input ? true : 'Please enter a valid URL.'),
+  },
+  {
+    name: 'urls',
+    description: 'List of URLs from File',
+    message: 'Enter the file path containing URLs:',
+    validate: (input: string) =>
+      (input ? true : 'Please enter a valid file path.'),
+  },
+  {
+    name: 'file',
+    description: 'Local Audio/Video File',
+    message: 'Enter the local audio/video file path:',
+    validate: (input: string) =>
+      (input ? true : 'Please enter a valid file path.'),
+  },
+  {
+    name: 'rss',
+    description: 'Podcast RSS Feed',
+    message: 'Enter the podcast RSS feed URL:',
+    validate: (input: string) => (input ? true : 'Please enter a valid URL.'),
+  },
+]
 
 /**
  * Validates CLI options by ensuring that only one of each set of conflicting options is provided,
@@ -448,206 +555,6 @@ export async function saveAudio(id: string, ensureFolders?: boolean) {
         err(`Error deleting file ${id}${ext}: ${(error as Error).message}`)
       }
     }
-  }
-}
-
-/**
- * Checks if whisper.cpp directory exists and, if missing, clones and compiles it.
- * Also checks if the chosen model file is present and, if missing, downloads it.
- * @param whisperModel - The requested Whisper model name (e.g. "turbo" or "large-v3-turbo")
- * @param modelGGMLName - The corresponding GGML model filename (e.g. "ggml-large-v3-turbo.bin")
- */
-export async function checkWhisperDirAndModel(
-  whisperModel: string,
-  modelGGMLName: string
-): Promise<void> {
-  // OPTIONAL: If you want to handle "turbo" as an alias for "large-v3-turbo"
-  // so the user can do --whisper=turbo but the script sees "large-v3-turbo".
-  if (whisperModel === 'turbo') {
-    whisperModel = 'large-v3-turbo'
-  }
-
-  // Double-check that the requested model is actually in WHISPER_MODELS,
-  // to avoid passing an unrecognized name to download-ggml-model.sh
-  if (!Object.prototype.hasOwnProperty.call(WHISPER_MODELS, whisperModel)) {
-    throw new Error(
-      `Unknown Whisper model "${whisperModel}". ` +
-      `Please use one of: ${Object.keys(WHISPER_MODELS).join(', ')}`
-    )
-  }
-
-  // 1. Ensure whisper.cpp is cloned and built
-  if (!existsSync('./whisper.cpp')) {
-    l.dim(`\n  No whisper.cpp repo found, cloning and compiling...\n`)
-    try {
-      await execPromise(
-        'git clone https://github.com/ggerganov/whisper.cpp.git ' +
-        '&& cmake -B whisper.cpp/build -S whisper.cpp ' +
-        '&& cmake --build whisper.cpp/build --config Release'
-      )
-      l.dim(`\n    - whisper.cpp clone and compilation complete.\n`)
-    } catch (cloneError) {
-      err(`Error cloning/building whisper.cpp: ${(cloneError as Error).message}`)
-      throw cloneError
-    }
-  } else {
-    l.dim(`\n  Whisper.cpp repo is already available at:\n    - ./whisper.cpp\n`)
-  }
-
-  // Also check for whisper-cli binary, just in case
-  const whisperCliPath = './whisper.cpp/build/bin/whisper-cli'
-  if (!existsSync(whisperCliPath)) {
-    l.dim(`\n  No whisper-cli binary found, rebuilding...\n`)
-    try {
-      await execPromise(
-        'cmake -B whisper.cpp/build -S whisper.cpp ' +
-        '&& cmake --build whisper.cpp/build --config Release'
-      )
-      l.dim(`\n    - whisper.cpp build completed.\n`)
-    } catch (buildError) {
-      err(`Error (re)building whisper.cpp: ${(buildError as Error).message}`)
-      throw buildError
-    }
-  } else {
-    l.dim(`  Found whisper-cli at:\n    - ${whisperCliPath}\n`)
-  }
-
-  // 2. Make sure the chosen model file is present
-  const modelPath = `./whisper.cpp/models/${modelGGMLName}`
-  if (!existsSync(modelPath)) {
-    l.dim(`\n  Model not found locally, attempting download...\n    - ${whisperModel}\n`)
-    try {
-      await execPromise(`bash ./whisper.cpp/models/download-ggml-model.sh ${whisperModel}`)
-      l.dim('    - Model download completed.\n')
-    } catch (modelError) {
-      err(`Error downloading model: ${(modelError as Error).message}`)
-      throw modelError
-    }
-  } else {
-    l.dim(
-      `  Model "${whisperModel}" is already available at:\n` +
-      `    - ${modelPath}\n`
-    )
-  }
-}
-
-/**
- * checkOllamaServerAndModel()
- * ---------------------
- * Checks if the Ollama server is running, attempts to start it if not,
- * and ensures the specified model is available (pulling if needed).
- *
- * @param {string} ollamaHost - The Ollama host
- * @param {string} ollamaPort - The Ollama port
- * @param {string} ollamaModelName - The Ollama model name (e.g. 'qwen2.5:0.5b')
- * @returns {Promise<void>}
- */
-export async function checkOllamaServerAndModel(
-  ollamaHost: string,
-  ollamaPort: string,
-  ollamaModelName: string
-): Promise<void> {
-  // Helper to check if the Ollama server responds
-  async function checkServer(): Promise<boolean> {
-    try {
-      const serverResponse = await fetch(`http://${ollamaHost}:${ollamaPort}`)
-      return serverResponse.ok
-    } catch (error) {
-      return false
-    }
-  }
-
-  l.dim(`[checkOllamaServerAndModel] Checking server: http://${ollamaHost}:${ollamaPort}`)
-
-  // 1) Confirm the server is running
-  if (await checkServer()) {
-    l.dim('\n  Ollama server is already running...')
-  } else {
-    // If the Docker-based environment uses 'ollama' as hostname but it's not up, that's likely an error
-    if (ollamaHost === 'ollama') {
-      throw new Error('Ollama server is not running. Please ensure the Ollama server is running and accessible.')
-    } else {
-      // Attempt to spawn an Ollama server locally
-      l.dim('\n  Ollama server is not running. Attempting to start it locally...')
-      const ollamaProcess = spawn('ollama', ['serve'], {
-        detached: true,
-        stdio: 'ignore',
-      })
-      ollamaProcess.unref()
-
-      // Wait up to ~30 seconds for the server to respond
-      let attempts = 0
-      while (attempts < 30) {
-        if (await checkServer()) {
-          l.dim('    - Ollama server is now ready.\n')
-          break
-        }
-        await new Promise((resolve) => setTimeout(resolve, 1000))
-        attempts++
-      }
-      if (attempts === 30) {
-        throw new Error('Ollama server failed to become ready in time.')
-      }
-    }
-  }
-
-  // 2) Confirm the model is available; if not, pull it
-  l.dim(`  Checking if model is available: ${ollamaModelName}`)
-  try {
-    const tagsResponse = await fetch(`http://${ollamaHost}:${ollamaPort}/api/tags`)
-    if (!tagsResponse.ok) {
-      throw new Error(`HTTP error! status: ${tagsResponse.status}`)
-    }
-
-    const tagsData = (await tagsResponse.json()) as OllamaTagsResponse
-    const isModelAvailable = tagsData.models.some((m) => m.name === ollamaModelName)
-    l.dim(`[checkOllamaServerAndModel] isModelAvailable=${isModelAvailable}`)
-
-    if (!isModelAvailable) {
-      l.dim(`\n  Model ${ollamaModelName} is NOT available; pulling now...`)
-      const pullResponse = await fetch(`http://${ollamaHost}:${ollamaPort}/api/pull`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: ollamaModelName }),
-      })
-      if (!pullResponse.ok) {
-        throw new Error(`Failed to initiate pull for model ${ollamaModelName}`)
-      }
-      if (!pullResponse.body) {
-        throw new Error('Response body is null while pulling model.')
-      }
-
-      const reader = pullResponse.body.getReader()
-      const decoder = new TextDecoder()
-
-      // Stream the JSON lines from the server
-      while (true) {
-        const { done, value } = await reader.read()
-        if (done) break
-
-        const chunk = decoder.decode(value)
-        const lines = chunk.split('\n')
-        for (const line of lines) {
-          if (line.trim() === '') continue
-
-          // Each line should be a JSON object from the Ollama server
-          try {
-            const parsedLine = JSON.parse(line)
-            if (parsedLine.status === 'success') {
-              l.dim(`    - Model ${ollamaModelName} pulled successfully.\n`)
-              break
-            }
-          } catch (parseError) {
-            err(`Error parsing JSON while pulling model: ${parseError}`)
-          }
-        }
-      }
-    } else {
-      l.dim(`\n  Model ${ollamaModelName} is already available.\n`)
-    }
-  } catch (error) {
-    err(`Error checking/pulling model: ${(error as Error).message}`)
-    throw error
   }
 }
 

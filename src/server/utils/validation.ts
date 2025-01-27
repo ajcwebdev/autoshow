@@ -1,7 +1,7 @@
 
 
-import { LLM_OPTIONS } from '../../utils/globals/llms'
-import { TRANSCRIPT_OPTIONS } from '../../utils/globals/transcription'
+import { LLM_OPTIONS } from '../../utils/llm-utils'
+import { TRANSCRIPT_OPTIONS } from '../../utils/transcription-utils'
 
 import type { ProcessingOptions, ValidAction } from '../../utils/types/process'
 import type { TranscriptServices } from '../../utils/types/transcription'

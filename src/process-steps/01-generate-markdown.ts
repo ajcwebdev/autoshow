@@ -7,8 +7,7 @@
  */
 
 import { basename, extname } from 'node:path'
-import { execFilePromise } from '../utils/globals/process'
-import { sanitizeTitle, buildFrontMatter } from '../utils/validate-option'
+import { sanitizeTitle, buildFrontMatter, execFilePromise } from '../utils/validate-option'
 import { l, err, logInitialFunctionCall } from '../utils/logging'
 import type { MarkdownData, ProcessingOptions, RSSItem } from '../utils/types/process'
 

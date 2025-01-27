@@ -1,9 +1,9 @@
 // src/llms/ollama.ts
 
 import { env } from 'node:process'
-import { OLLAMA_MODELS } from '../utils/globals/llms'
-import { l, err, logLLMCost } from '../utils/logging'
-import { checkOllamaServerAndModel } from '../utils/validate-option'
+import { OLLAMA_MODELS } from '../utils/llm-utils'
+import { l, err } from '../utils/logging'
+import { logLLMCost, checkOllamaServerAndModel } from '../utils/llm-utils'
 import type { OllamaModelType, OllamaResponse } from '../utils/types/llms'
 
 /**

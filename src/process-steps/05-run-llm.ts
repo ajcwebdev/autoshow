@@ -10,7 +10,7 @@ import { writeFile } from 'node:fs/promises'
 import { insertShowNote } from '../server/db'
 import { l, err, logInitialFunctionCall } from '../utils/logging'
 import { retryLLMCall } from '../utils/retry'
-import { LLM_FUNCTIONS } from '../utils/globals/llms'
+import { LLM_FUNCTIONS } from '../utils/llm-utils'
 import type { ProcessingOptions, EpisodeMetadata } from '../utils/types/process'
 import type { LLMServices } from '../utils/types/llms'
 

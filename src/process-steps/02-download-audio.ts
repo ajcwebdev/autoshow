@@ -12,7 +12,7 @@ import { readFile, access } from 'node:fs/promises'
 import { fileTypeFromBuffer } from 'file-type'
 import { l, err, logInitialFunctionCall } from '../utils/logging'
 import { executeWithRetry } from '../utils/retry'
-import { execPromise } from '../utils/globals/process'
+import { execPromise } from '../utils/validate-option'
 import type { SupportedFileType, ProcessingOptions } from '../utils/types/process'
 
 /**

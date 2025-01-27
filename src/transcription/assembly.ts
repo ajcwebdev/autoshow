@@ -10,9 +10,8 @@
 
 import { readFile } from 'node:fs/promises'
 import { env } from 'node:process'
-import { l, err, logTranscriptionCost } from '../utils/logging'
-import { formatAssemblyTranscript } from './format-transcript'
-import { ASSEMBLY_MODELS } from '../utils/globals/transcription'
+import { l, err } from '../utils/logging'
+import { ASSEMBLY_MODELS, logTranscriptionCost, formatAssemblyTranscript } from '../utils/transcription-utils'
 import type { ProcessingOptions } from '../utils/types/process'
 import type {
   AssemblyAITranscriptionOptions,

@@ -3,10 +3,20 @@
 import '../../styles/global.css'
 import React, { useState, useEffect } from 'react'
 import {
-  PROMPT_CHOICES, TRANSCRIPTION_SERVICES, WHISPER_MODELS, LLM_SERVICES, LLM_MODELS, PROCESS_TYPES
+  PROMPT_CHOICES,
+  TRANSCRIPTION_SERVICES,
+  WHISPER_MODELS,
+  LLM_SERVICES,
+  LLM_MODELS,
+  PROCESS_TYPES
 } from '@/site-config'
 import type {
-  AlertProps, LlmServiceKey, ResultType, ShowNoteType, InputsProps, ProcessType
+  AlertProps,
+  LlmServiceKey,
+  ResultType,
+  ShowNoteType,
+  InputsProps,
+  ProcessType
 } from '../../utils/types.ts'
 
 // Alert component to display error messages
@@ -52,8 +62,17 @@ export const ShowNote: React.FC = () => {
   return (
     <div className="show-note">
       <h2>{showNote.title}</h2>
-      <p>Date: {showNote.date}</p>
-      <div>{formatContent(showNote.content)}</div>
+      {/* Use publishDate instead of date */}
+      <p>Date: {showNote.publishDate}</p>
+
+      {/* Use transcript (or other fields) instead of content */}
+      <div>{showNote.transcript ? formatContent(showNote.transcript) : 'No transcript available.'}</div>
+
+      <h3>Front Matter</h3>
+         {showNote.frontmatter && formatContent(showNote.frontmatter)}
+
+         <h3>Prompt</h3>
+         {showNote.prompt && formatContent(showNote.prompt)}
     </div>
   )
 }
@@ -91,11 +110,16 @@ const Inputs: React.FC<InputsProps> = ({ onNewShowNote }) => {
         type: processType,
         transcriptServices: transcriptionService,
         llm: llmService,
-        prompt: selectedPrompts
+        prompt: selectedPrompts,
       }
 
       // Add type-specific fields
-      if (processType === 'video' || processType === 'playlist' || processType === 'channel' || processType === 'rss') {
+      if (
+        processType === 'video' ||
+        processType === 'playlist' ||
+        processType === 'channel' ||
+        processType === 'rss'
+      ) {
         requestBody.url = url
       } else if (processType === 'file' || processType === 'urls') {
         requestBody.filePath = filePath
@@ -105,7 +129,6 @@ const Inputs: React.FC<InputsProps> = ({ onNewShowNote }) => {
       if (transcriptionService.startsWith('whisper')) {
         requestBody.whisperModel = whisperModel
       }
-
       if (llmService) {
         requestBody.llmModel = llmModel
       }
@@ -123,8 +146,10 @@ const Inputs: React.FC<InputsProps> = ({ onNewShowNote }) => {
         throw new Error(`HTTP error! status: ${response.status}`)
       }
 
-      const data = await response.json() as ResultType
+      const data = (await response.json()) as ResultType
       setResult(data)
+
+      // Trigger a refresh of the show notes list
       onNewShowNote()
     } catch (err: unknown) {
       if (err instanceof Error) {
@@ -165,13 +190,19 @@ const Inputs: React.FC<InputsProps> = ({ onNewShowNote }) => {
           </select>
         </div>
 
-        {(processType === 'video' || processType === 'playlist' || processType === 'channel' || processType === 'rss') && (
+        {(processType === 'video' ||
+          processType === 'playlist' ||
+          processType === 'channel' ||
+          processType === 'rss') && (
           <div className="form-group">
             <label htmlFor="url">
-              {processType === 'video' ? 'YouTube URL' :
-               processType === 'playlist' ? 'Playlist URL' :
-               processType === 'channel' ? 'Channel URL' :
-               'RSS URL'}
+              {processType === 'video'
+                ? 'YouTube URL'
+                : processType === 'playlist'
+                ? 'Playlist URL'
+                : processType === 'channel'
+                ? 'Channel URL'
+                : 'RSS URL'}
             </label>
             <input
               type="text"
@@ -249,7 +280,7 @@ const Inputs: React.FC<InputsProps> = ({ onNewShowNote }) => {
         </div>
 
         {/* Only show LLM Models if llmService is a valid key of LLM_MODELS */}
-        {llmService && (llmService in LLM_MODELS) && (
+        {llmService && llmService in LLM_MODELS && (
           <div className="form-group">
             <label htmlFor="llmModel">LLM Model</label>
             <select
@@ -296,10 +327,35 @@ const Inputs: React.FC<InputsProps> = ({ onNewShowNote }) => {
       </form>
 
       {error && <Alert message={error} variant="error" />}
+
       {result && (
         <div className="result">
           <h2>Result:</h2>
-          <div>{result.content ? formatContent(result.content) : result.message}</div>
+          {/* Display relevant fields instead of `result.content` or `result.message` */}
+          {result.transcript && (
+            <>
+              <h3>Transcript</h3>
+              <div>{formatContent(result.transcript)}</div>
+            </>
+          )}
+          {result.frontMatter && (
+            <>
+              <h3>Front Matter</h3>
+              <div>{formatContent(result.frontMatter)}</div>
+            </>
+          )}
+          {result.prompt && (
+            <>
+              <h3>Prompt</h3>
+              <div>{formatContent(result.prompt)}</div>
+            </>
+          )}
+          {result.llmOutput && (
+            <>
+              <h3>LLM Output</h3>
+              <div>{formatContent(result.llmOutput)}</div>
+            </>
+          )}
         </div>
       )}
     </>
@@ -329,10 +385,11 @@ const Form: React.FC = () => {
     <div className="container">
       <Inputs onNewShowNote={fetchShowNotes} />
       <ul className="show-notes-list">
-      <h1>Show Notes</h1>
+        <h1>Show Notes</h1>
         {showNotes.map((note) => (
           <li key={note.id}>
-            <a href={`/show-notes/${note.id}`}>{note.title}</a> - {note.date}
+            {/* Use publishDate instead of date */}
+            <a href={`/show-notes/${note.id}`}>{note.title}</a> - {note.publishDate}
           </li>
         ))}
       </ul>

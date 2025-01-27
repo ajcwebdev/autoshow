@@ -18,6 +18,10 @@ export interface InputsProps {
 
 // Define type for the result object returned by the server
 export interface ResultType {
+  transcript: string
+  frontMatter: string
+  prompt: string
+  llmOutput: string
   content?: string
   message?: string
 }
@@ -25,8 +29,11 @@ export interface ResultType {
 // Define types for show notes
 export interface ShowNoteType {
   title: string
-  date: string
+  publishDate: string
   content: string
+  transcript: string
+  frontmatter: string
+  prompt: string
   id?: number
 }
 

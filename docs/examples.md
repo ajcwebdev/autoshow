@@ -10,10 +10,13 @@
   - [Process All Videos from a YouTube Channel](#process-all-videos-from-a-youtube-channel)
   - [Process Podcast RSS Feed](#process-podcast-rss-feed)
 - [Transcription Options](#transcription-options)
+  - [Get Transcription Cost](#get-transcription-cost)
   - [Whisper](#whisper)
   - [Deepgram](#deepgram)
   - [Assembly](#assembly)
 - [Language Model (LLM) Options](#language-model-llm-options)
+  - [Run Only LLM Process Step](#run-only-llm-process-step)
+  - [Get LLM Cost](#get-llm-cost)
   - [Ollama Local Models](#ollama-local-models)
   - [OpenAI ChatGPT Models](#openai-chatgpt-models)
   - [Anthropic Claude Models](#anthropic-claude-models)
@@ -260,6 +263,13 @@ npm run as -- \
 
 ## Transcription Options
 
+### Get Transcription Cost
+
+```bash
+npm run as -- --transcriptCost "content/audio.mp3" --deepgram
+npm run as -- --transcriptCost "content/audio.mp3" --assembly
+```
+
 ### Whisper
 
 If neither the `--deepgram` or `--assembly` option is included for transcription, `autoshow` will default to running the largest Whisper.cpp model. To configure the size of the Whisper model, use the `--model` option and select one of the following:
@@ -358,6 +368,19 @@ For each model available for each provider, I have collected the following detai
 - Max Output, the upper limit of tokens a model can generate in a response, influencing response length and detail.
 - Cost of input and output tokens per million tokens.
   - Some model providers also offer a Batch API with input/output tokens at half the price.
+
+### Run Only LLM Process Step
+
+```bash
+npm run as -- --runLLM "content/audio-prompt.md" --chatgpt
+```
+
+### Get LLM Cost
+
+```bash
+npm run as -- --llmCost "content/audio-prompt.md" --chatgpt
+npm run as -- --llmCost "content/audio-prompt.md" --claude
+```
 
 ### Ollama Local Models
 

@@ -66,13 +66,13 @@ export type SeparatorParams =
  * @property {string} [coverImage]
  */
 export interface EpisodeMetadata {
-  showLink?: string
-  channel?: string
-  channelURL?: string
-  title?: string
-  description?: string
-  publishDate?: string
-  coverImage?: string
+  showLink?: string | undefined
+  channel?: string | undefined
+  channelURL?: string | undefined
+  title?: string | undefined
+  description?: string | undefined
+  publishDate?: string | undefined
+  coverImage?: string | undefined
 }
 
 /**
@@ -153,6 +153,9 @@ export type ProcessingOptions = {
 
   /** File path for estimating LLM cost. */
   llmCost?: string
+
+  /** Flag to run LLM on the processed transcript. */
+  runLLM?: string
 
   /** ChatGPT model to use (e.g., 'GPT_4o_MINI'). */
   chatgpt?: string

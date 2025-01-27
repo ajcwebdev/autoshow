@@ -10,9 +10,8 @@
 
 import { readFile } from 'node:fs/promises'
 import { env } from 'node:process'
-import { l, err, logTranscriptionCost } from '../utils/logging'
-import { formatAssemblyTranscript } from './format-transcript'
-import { ASSEMBLY_MODELS } from '../utils/globals/transcription'
+import { l, err } from '../utils/logging'
+import { ASSEMBLY_MODELS, logTranscriptionCost, formatAssemblyTranscript } from '../utils/transcription-utils'
 import type { ProcessingOptions } from '../utils/types/process'
 import type {
   AssemblyAITranscriptionOptions,
@@ -38,9 +37,9 @@ export async function callAssembly(
   finalPath: string,
   model: string = 'NANO'
 ) {
-  l.wait('\n  callAssembly called with arguments:\n')
-  l.wait(`    - finalPath: ${finalPath}`)
-  l.wait(`    - model: ${model}`)
+  l.dim('\n  callAssembly called with arguments:')
+  l.dim(`    - finalPath: ${finalPath}`)
+  l.dim(`    - model: ${model}`)
 
   if (!env['ASSEMBLY_API_KEY']) {
     throw new Error('ASSEMBLY_API_KEY environment variable is not set. Please set it to your AssemblyAI API key.')
@@ -64,7 +63,7 @@ export async function callAssembly(
     })
 
     // Step 1: Uploading the audio file to AssemblyAI
-    l.wait('\n  Uploading audio file to AssemblyAI...')
+    l.dim('\n  Uploading audio file to AssemblyAI...')
     const fileBuffer = await readFile(audioFilePath)
 
     const uploadResponse = await fetch(`${BASE_URL}/upload`, {
@@ -86,7 +85,7 @@ export async function callAssembly(
     if (!upload_url) {
       throw new Error('Upload URL not returned by AssemblyAI.')
     }
-    l.wait('    - Audio file uploaded successfully.')
+    l.dim('    - Audio file uploaded successfully.')
 
     // Step 2: Requesting the transcription
     const transcriptionOptions: AssemblyAITranscriptionOptions = {

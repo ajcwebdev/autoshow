@@ -66,13 +66,13 @@ export type SeparatorParams =
  * @property {string} [coverImage]
  */
 export interface EpisodeMetadata {
-  showLink?: string
-  channel?: string
-  channelURL?: string
-  title?: string
-  description?: string
-  publishDate?: string
-  coverImage?: string
+  showLink?: string | undefined
+  channel?: string | undefined
+  channelURL?: string | undefined
+  title?: string | undefined
+  description?: string | undefined
+  publishDate?: string | undefined
+  coverImage?: string | undefined
 }
 
 /**
@@ -148,6 +148,15 @@ export type ProcessingOptions = {
   /** Flag to use speaker labels in AssemblyAI transcription. */
   speakerLabels?: boolean
 
+  /** File path for estimating transcription cost. */
+  transcriptCost?: string
+
+  /** File path for estimating LLM cost. */
+  llmCost?: string
+
+  /** Flag to run LLM on the processed transcript. */
+  runLLM?: string
+
   /** ChatGPT model to use (e.g., 'GPT_4o_MINI'). */
   chatgpt?: string
 
@@ -174,6 +183,12 @@ export type ProcessingOptions = {
 
   /** Gemini model to use (e.g., 'GEMINI_1_5_FLASH'). */
   gemini?: string
+
+  /** DeepSeek model to use (e.g., ''). */
+  deepseek?: string
+
+  /** Grok model to use (e.g., ''). */
+  grok?: string
 
   /** Array of prompt sections to include (e.g., ['titles', 'summary']). */
   prompt?: string[]

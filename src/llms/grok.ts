@@ -7,7 +7,8 @@
 
 import { env } from 'node:process'
 import { OpenAI } from 'openai'
-import { err, logLLMCost } from '../utils/logging'
+import { err } from '../utils/logging'
+import { logLLMCost } from '../utils/llm-utils'
 import type { GroqChatCompletionResponse, GrokModelType } from '../utils/types/llms'
 
 /**

@@ -12,7 +12,7 @@ import { readFile, access } from 'node:fs/promises'
 import { fileTypeFromBuffer } from 'file-type'
 import { l, err, logInitialFunctionCall } from '../utils/logging'
 import { executeWithRetry } from '../utils/retry'
-import { execPromise } from '../utils/globals/process'
+import { execPromise } from '../utils/validate-option'
 import type { SupportedFileType, ProcessingOptions } from '../utils/types/process'
 
 /**
@@ -79,6 +79,7 @@ export async function downloadAudio(
   input: string,
   filename: string
 ): Promise<string> {
+  l.step(`\nStep 2 - Download Audio\n`)
   logInitialFunctionCall('downloadAudio', { options, input, filename })
 
   const finalPath = `content/${filename}`
@@ -100,7 +101,6 @@ export async function downloadAudio(
         ],
         5
       )
-      l.wait(`\n  Audio downloaded successfully:\n    - ${outputPath}`)
     } catch (error) {
       err(`Error downloading audio: ${error instanceof Error ? error.message : String(error)}`)
       throw error
@@ -111,26 +111,25 @@ export async function downloadAudio(
       'mp4', 'mkv', 'avi', 'mov', 'webm',
     ])
     try {
-      l.wait(`\n  Checking file access:\n    - ${input}`)
       await access(input)
-      l.wait(`\n  File ${input} is accessible. Attempting to read file data for type detection...`)
+      l.dim(`\n  File ${input} is accessible. Attempting to read file data for type detection...\n`)
 
       const buffer = await readFile(input)
-      l.wait(`\n  Successfully read file: ${buffer.length} bytes`)
+      l.dim(`    - Successfully read file: ${buffer.length} bytes`)
 
       const fileType = await fileTypeFromBuffer(buffer)
-      l.wait(`\n  File type detection result: ${fileType?.ext ?? 'unknown'}`)
+      l.dim(`    - File type detection result: ${fileType?.ext ?? 'unknown'}`)
 
       if (!fileType || !supportedFormats.has(fileType.ext as SupportedFileType)) {
         throw new Error(
           fileType ? `Unsupported file type: ${fileType.ext}` : 'Unable to determine file type'
         )
       }
-      l.wait(`    - Running ffmpeg command for ${input} -> ${outputPath}\n`)
+      l.dim(`    - Running ffmpeg command for ${input} -> ${outputPath}\n`)
       await execPromise(
         `ffmpeg -i "${input}" -ar 16000 -ac 1 -c:a pcm_s16le "${outputPath}"`
       )
-      l.wait(`  File converted to WAV format successfully:\n    - ${outputPath}`)
+      l.dim(`  File converted to WAV format successfully:\n    - ${outputPath}`)
     } catch (error) {
       err(`Error processing local file: ${error instanceof Error ? error.message : String(error)}`)
       throw error
@@ -139,6 +138,6 @@ export async function downloadAudio(
     throw new Error('Invalid option provided for audio download/processing.')
   }
 
-  l.wait(`\n  downloadAudio returning:\n    - outputPath: ${outputPath}\n`)
+  l.dim(`\n  downloadAudio returning:\n    - outputPath: ${outputPath}\n`)
   return outputPath
 }

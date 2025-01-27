@@ -10,9 +10,8 @@
 
 import { readFile } from 'node:fs/promises'
 import { env } from 'node:process'
-import { l, err, logTranscriptionCost } from '../utils/logging'
-import { formatDeepgramTranscript } from './format-transcript'
-import { DEEPGRAM_MODELS } from '../utils/globals/transcription'
+import { l, err } from '../utils/logging'
+import { DEEPGRAM_MODELS, logTranscriptionCost, formatDeepgramTranscript } from '../utils/transcription-utils'
 import type { ProcessingOptions } from '../utils/types/process'
 import type { DeepgramResponse, DeepgramModelType } from '../utils/types/transcription'
 
@@ -29,9 +28,9 @@ export async function callDeepgram(
   finalPath: string,
   model: string = 'NOVA_2'
 ) {
-  l.wait('\n  callDeepgram called with arguments:\n')
-  l.wait(`    - finalPath: ${finalPath}`)
-  l.wait(`    - model: ${model}`)
+  l.dim('\n  callDeepgram called with arguments:')
+  l.dim(`    - finalPath: ${finalPath}`)
+  l.dim(`    - model: ${model}`)
 
   if (!env['DEEPGRAM_API_KEY']) {
     throw new Error('DEEPGRAM_API_KEY environment variable is not set. Please set it to your Deepgram API key.')

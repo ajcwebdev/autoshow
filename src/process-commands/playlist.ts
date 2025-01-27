@@ -6,8 +6,7 @@
  */
 
 import { processVideo } from './video'
-import { saveInfo } from '../utils/validate-option'
-import { execFilePromise } from '../utils/globals/process'
+import { saveInfo, execFilePromise } from '../utils/validate-option'
 import { l, err, logSeparator, logInitialFunctionCall } from '../utils/logging'
 import type { ProcessingOptions } from '../utils/types/process'
 import type { TranscriptServices } from '../utils/types/transcription'

@@ -9,7 +9,7 @@ import { join } from 'node:path'
 const commands = [
   {
     // Process single local audio file.
-    cmd: 'npm run as -- --file "content/audio.mp3" --whisper tiny',
+    cmd: 'npm run as -- --file "content/audio.mp3" --whisper base',
     expectedFile: 'audio-prompt.md',
     newName: '01-file-default.md'
   },
@@ -53,7 +53,7 @@ const commands = [
   },
   {
     // Process multiple YouTube videos from URLs listed in a file.
-    cmd: 'npm run as -- --urls "content/example-urls.md"',
+    cmd: 'npm run as -- --urls "content/example-urls.md" --whisper tiny',
     expectedFiles: [
       { file: '2024-09-24-ep1-fsjam-podcast-prompt.md', newName: '09-urls-default.md' },
       { file: '2024-09-24-ep0-fsjam-podcast-prompt.md', newName: '10-urls-default.md' }

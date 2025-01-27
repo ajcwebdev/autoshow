@@ -19,9 +19,10 @@ import { downloadAudio } from '../process-steps/02-download-audio'
 import { runTranscription } from '../process-steps/03-run-transcription'
 import { selectPrompts } from '../process-steps/04-select-prompt'
 import { runLLM } from '../process-steps/05-run-llm'
-import { filterRSSItems, saveAudio, saveInfo } from '../utils/validate-option'
-import { l, err, logSeparator, logInitialFunctionCall, logRSSProcessingStatus } from '../utils/logging'
-import { parser } from '../utils/globals/process'
+import { saveAudio, saveInfo, parser } from '../utils/validate-option'
+import { filterRSSItems } from '../utils/rss-utils'
+import { l, err, logSeparator, logInitialFunctionCall } from '../utils/logging'
+import { logRSSProcessingStatus } from '../utils/rss-utils'
 import { retryRSSFetch } from '../utils/retry'
 
 import type { ProcessingOptions, RSSItem } from '../utils/types/process'
@@ -114,12 +115,12 @@ export async function processRSS(
   logInitialFunctionCall('processRSS', { llmServices, transcriptServices })
 
   if (options.item && options.item.length > 0) {
-    l.wait('\nProcessing specific items:')
-    options.item.forEach((url) => l.wait(`  - ${url}`))
+    l.dim('\nProcessing specific items:')
+    options.item.forEach((url) => l.dim(`  - ${url}`))
   } else if (options.last) {
-    l.wait(`\nProcessing the last ${options.last} items`)
+    l.dim(`\nProcessing the last ${options.last} items`)
   } else if (options.skip) {
-    l.wait(`  - Skipping first ${options.skip || 0} items`)
+    l.dim(`  - Skipping first ${options.skip || 0} items`)
   }
 
   try {
@@ -134,7 +135,7 @@ export async function processRSS(
     }
 
     if (items.length === 0) {
-      l.wait('\nNo items found matching the provided criteria for this feed. Skipping...')
+      l.dim('\nNo items found matching the provided criteria for this feed. Skipping...')
       return
     }
 

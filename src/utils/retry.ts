@@ -1,7 +1,7 @@
 // src/utils/retry.ts
 
 import { l, err } from './logging'
-import { execFilePromise } from './globals/process'
+import { execFilePromise } from './validate-option'
 
 /**
  * Executes a command with retry logic to recover from transient failures.
@@ -35,7 +35,7 @@ export async function executeWithRetry(
 
       // Exponential backoff: Wait before trying again
       const delayMs = 1000 * 2 ** (attempt - 1) // 1s, 2s, 4s, ...
-      l.wait(
+      l.dim(
         `Retry ${attempt} of ${retries} failed. Waiting ${delayMs} ms before next attempt...`
       )
       await new Promise((resolve) => setTimeout(resolve, delayMs))
@@ -61,9 +61,9 @@ export async function retryLLMCall(
   while (attempt < maxRetries) {
     try {
       attempt++
-      l.wait(`  Attempt ${attempt} - Processing LLM call...\n`)
+      l.dim(`  Attempt ${attempt} - Processing LLM call...\n`)
       await fn()
-      l.wait(`\n  LLM call completed successfully on attempt ${attempt}.`)
+      l.dim(`\n  LLM call completed successfully on attempt ${attempt}.`)
       return
     } catch (error) {
       err(`  Attempt ${attempt} failed: ${(error as Error).message}`)
@@ -71,7 +71,7 @@ export async function retryLLMCall(
         err(`  Max retries (${maxRetries}) reached. Aborting LLM processing.`)
         throw error
       }
-      l.wait(`  Retrying in ${delayBetweenRetries / 1000} seconds...`)
+      l.dim(`  Retrying in ${delayBetweenRetries / 1000} seconds...`)
       await new Promise((resolve) => setTimeout(resolve, delayBetweenRetries))
     }
   }
@@ -95,9 +95,8 @@ export async function retryTranscriptionCall(
   while (attempt < maxRetries) {
     try {
       attempt++
-      l.wait(`  Attempt ${attempt} - Processing Transcription call...\n`)
       const transcript = await fn()
-      l.wait(`\n  Transcription call completed successfully on attempt ${attempt}.`)
+      l.dim(`  Transcription call completed successfully on attempt ${attempt}.`)
       return transcript
     } catch (error) {
       err(`  Attempt ${attempt} failed: ${(error as Error).message}`)
@@ -105,7 +104,7 @@ export async function retryTranscriptionCall(
         err(`  Max retries (${maxRetries}) reached. Aborting transcription.`)
         throw error
       }
-      l.wait(`  Retrying in ${delayBetweenRetries / 1000} seconds...`)
+      l.dim(`  Retrying in ${delayBetweenRetries / 1000} seconds...`)
       await new Promise((resolve) => setTimeout(resolve, delayBetweenRetries))
     }
   }
@@ -132,9 +131,9 @@ export async function retryRSSFetch(
   while (attempt < maxRetries) {
     try {
       attempt++
-      l.wait(`  Attempt ${attempt} - Fetching RSS...\n`)
+      l.dim(`  Attempt ${attempt} - Fetching RSS...\n`)
       const response = await fn()
-      l.wait(`\n  RSS fetch succeeded on attempt ${attempt}.`)
+      l.dim(`\n  RSS fetch succeeded on attempt ${attempt}.`)
       return response
     } catch (error) {
       err(`  Attempt ${attempt} failed: ${(error as Error).message}`)
@@ -142,7 +141,7 @@ export async function retryRSSFetch(
         err(`  Max retries (${maxRetries}) reached. Aborting RSS fetch.`)
         throw error
       }
-      l.wait(`  Retrying in ${delayBetweenRetries / 1000} seconds...`)
+      l.dim(`  Retrying in ${delayBetweenRetries / 1000} seconds...`)
       await new Promise((resolve) => setTimeout(resolve, delayBetweenRetries))
     }
   }

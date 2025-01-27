@@ -1,8 +1,9 @@
 // src/llms/together.ts
 
 import { env } from 'node:process'
-import { TOGETHER_MODELS } from '../utils/globals/llms'
-import { err, logLLMCost } from '../utils/logging'
+import { TOGETHER_MODELS } from '../utils/llm-utils'
+import { err } from '../utils/logging'
+import { logLLMCost } from '../utils/llm-utils'
 import type { TogetherModelType, TogetherResponse } from '../utils/types/llms'
 
 /**

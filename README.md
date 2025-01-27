@@ -18,12 +18,11 @@ Autoshow automates the processing of audio and video content from various source
 
 The Autoshow workflow includes the following steps:
 
-1. The user provides input (video URL, playlist, RSS feed, or local file).
-2. The system downloads the audio (if necessary).
+1. The user provides a content input (video URL, playlist, RSS feed, or local file) and front matter is created based on the content's metadata.
+2. The audio is downloaded (if necessary).
 3. Transcription is performed using the selected service.
 4. A customizable prompt is inserted containing instructions for the contents of the show notes.
 5. The transcript is processed by the chosen LLM to generate show notes based on the selected prompts.
-6. Results are saved in markdown format with front matter.
 
 ### Key Features
 

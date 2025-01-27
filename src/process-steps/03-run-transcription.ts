@@ -23,6 +23,7 @@ export async function runTranscription(
   finalPath: string,
   transcriptServices?: TranscriptServices
 ) {
+  l.step(`\nStep 3 - Run Transcription\n`)
   logInitialFunctionCall('runTranscription', { options, finalPath, transcriptServices })
 
   try {
@@ -34,8 +35,8 @@ export async function runTranscription(
           5,
           5000
         )
-        l.wait('\n  Deepgram transcription completed successfully.\n')
-        l.wait(`\n    - deepgramModel: ${deepgramModel}`)
+        l.dim('\n  Deepgram transcription completed successfully.\n')
+        l.dim(`\n    - deepgramModel: ${deepgramModel}`)
         return deepgramTranscript
 
       case 'assembly':
@@ -45,8 +46,8 @@ export async function runTranscription(
           5,
           5000
         )
-        l.wait('\n  AssemblyAI transcription completed successfully.\n')
-        l.wait(`\n    - assemblyModel: ${assemblyModel}`)
+        l.dim('\n  AssemblyAI transcription completed successfully.\n')
+        l.dim(`\n    - assemblyModel: ${assemblyModel}`)
         return assemblyTranscript
 
       case 'whisper':
@@ -55,7 +56,7 @@ export async function runTranscription(
           5,
           5000
         )
-        l.wait('\n  Whisper transcription completed successfully.\n')
+        l.dim('\n  Whisper transcription completed successfully.\n')
         return whisperTranscript
 
       default:

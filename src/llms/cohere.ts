@@ -2,8 +2,9 @@
 
 import { env } from 'node:process'
 import { CohereClient } from 'cohere-ai'
-import { COHERE_MODELS } from '../utils/globals/llms'
-import { err, logLLMCost } from '../utils/logging'
+import { COHERE_MODELS } from '../utils/llm-utils'
+import { err } from '../utils/logging'
+import { logLLMCost } from '../utils/llm-utils'
 import type { CohereModelType } from '../utils/types/llms'
 
 /**

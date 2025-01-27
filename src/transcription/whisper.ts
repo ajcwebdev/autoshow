@@ -6,10 +6,8 @@
  */
 
 import { readFile, unlink } from 'node:fs/promises'
-// import { formatWhisperTranscript } from './format-transcript'
-import { checkWhisperDirAndModel } from '../utils/validate-option'
-import { WHISPER_MODELS } from '../utils/globals/transcription'
-import { execPromise } from '../utils/globals/process'
+import { WHISPER_MODELS, checkWhisperDirAndModel } from '../utils/transcription-utils'
+import { execPromise } from '../utils/validate-option'
 import { l, err } from '../utils/logging'
 import type { ProcessingOptions } from '../utils/types/process'
 import type { WhisperModelType } from '../utils/types/transcription'
@@ -24,8 +22,8 @@ export async function callWhisper(
   options: ProcessingOptions,
   finalPath: string
 ) {
-  l.wait('\n  callWhisper called with arguments:\n')
-  l.wait(`    - finalPath: ${finalPath}`)
+  l.opts('\n  callWhisper called with arguments:')
+  l.opts(`    - finalPath: ${finalPath}`)
 
   try {
     // Determine which model was requested (default to "base" if `--whisper` is passed with no model)
@@ -40,15 +38,15 @@ export async function callWhisper(
       throw new Error(`Unknown model type: ${whisperModel}`)
     }
 
-    l.wait(`\n  Whisper model information:\n\n    - whisperModel: ${whisperModel}`)
+    l.dim(`\n  Whisper model information:\n\n    - whisperModel: ${whisperModel}`)
 
     const modelGGMLName = WHISPER_MODELS[whisperModel as WhisperModelType]
-    l.wait(`    - modelGGMLName: ${modelGGMLName}`)
+    l.dim(`    - modelGGMLName: ${modelGGMLName}`)
 
     await checkWhisperDirAndModel(whisperModel, modelGGMLName)
 
     // Run whisper.cpp on the WAV file
-    l.wait(`  Invoking whisper.cpp on file:\n    - ${finalPath}.wav`)
+    l.dim(`  Invoking whisper.cpp on file:\n    - ${finalPath}.wav`)
     try {
       await execPromise(
         `./whisper.cpp/build/bin/whisper-cli --no-gpu ` +
@@ -62,17 +60,13 @@ export async function callWhisper(
       throw whisperError
     }
 
-    // Convert .lrc -> .txt
-    l.wait(`\n  Transcript LRC file successfully created, reading file for txt conversion:\n    - ${finalPath}.lrc\n`)
+    l.dim(`\n  Transcript LRC file successfully created, reading file for txt conversion:\n    - ${finalPath}.lrc\n`)
     const lrcContent = await readFile(`${finalPath}.lrc`, 'utf8')
-    l.dim(lrcContent)
+    // l.dim(lrcContent)
     const txtContent = `${lrcContent}`
-    // const txtContent = formatWhisperTranscript(lrcContent)
-    l.dim(txtContent)
     await unlink(`${finalPath}.lrc`)
 
     // Return the transcript text
-    l.wait('\n  Returning transcript text from callWhisper...')
     return txtContent
   } catch (error) {
     err('Error in callWhisper:', (error as Error).message)

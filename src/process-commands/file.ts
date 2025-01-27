@@ -72,7 +72,7 @@ export async function processFile(
       await saveAudio(finalPath)
     }
 
-    l.wait('  processFile command completed successfully.')
+    l.dim('\n  processFile command completed successfully.')
 
     return {
       frontMatter,

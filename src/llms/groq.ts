@@ -1,43 +1,45 @@
 // src/llms/groq.ts
 
-import { writeFile } from 'node:fs/promises'
 import { env } from 'node:process'
-import { GROQ_MODELS } from '../types/globals'
-import { l, wait, err } from '../utils/logging'
-import type { GroqChatCompletionResponse, GroqModelType } from '../types/llm-types'
-
-// Define the Groq API URL
-const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions'
+import { GROQ_MODELS } from '../utils/llm-utils'
+import { err } from '../utils/logging'
+import { logLLMCost } from '../utils/llm-utils'
+import type { GroqModelType, GroqChatCompletionResponse } from '../utils/types/llms'
 
 /**
  * Function to call the Groq chat completion API.
- * @param {string} promptAndTranscript - The combined prompt and transcript text to process.
- * @param {string} tempPath - The temporary file path to write the LLM output.
- * @param {string} model - The model to use, e.g., 'MIXTRAL_8X7B_32768'.
+ * @param {string} prompt - The prompt or instructions to process.
+ * @param {string} transcript - The transcript text.
+ * @param {string | GroqModelType} [model] - The model to use.
+ * @returns {Promise<string>} A Promise that resolves when the API call is complete.
+ * @throws {Error} If an error occurs during the API call.
  */
-export const callGroq = async (promptAndTranscript: string, tempPath: string, model: string = 'MIXTRAL_8X7B_32768'): Promise<void> => {
-  // Ensure that the API key is set
+export const callGroq = async (
+  prompt: string,
+  transcript: string,
+  model: string | GroqModelType = 'LLAMA_3_2_1B_PREVIEW'
+) => {
   if (!env['GROQ_API_KEY']) {
     throw new Error('GROQ_API_KEY environment variable is not set. Please set it to your Groq API key.')
   }
 
   try {
-    const actualModel = (GROQ_MODELS[model as GroqModelType] || GROQ_MODELS.MIXTRAL_8X7B_32768).modelId
+    const modelKey = typeof model === 'string' ? model : 'LLAMA_3_2_1B_PREVIEW'
+    const modelConfig = GROQ_MODELS[modelKey as GroqModelType] || GROQ_MODELS.LLAMA_3_2_1B_PREVIEW
+    const modelId = modelConfig.modelId
 
-    // Prepare the request body
+    const combinedPrompt = `${prompt}\n${transcript}`
     const requestBody = {
-      model: actualModel,
+      model: modelId,
       messages: [
         {
           role: 'user',
-          content: promptAndTranscript,
+          content: combinedPrompt,
         },
       ],
-      // max_tokens: 4000,
     }
 
-    // Send the POST request
-    const response = await fetch(GROQ_API_URL, {
+    const response = await fetch(`https://api.groq.com/openai/v1/chat/completions`, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${env['GROQ_API_KEY']}`,
@@ -46,42 +48,30 @@ export const callGroq = async (promptAndTranscript: string, tempPath: string, mo
       body: JSON.stringify(requestBody),
     })
 
-    // Check if the response is OK
     if (!response.ok) {
       const errorText = await response.text()
       throw new Error(`Groq API error: ${response.status} ${response.statusText} - ${errorText}`)
     }
 
-    // Parse the JSON response
-    const data = (await response.json()) as GroqChatCompletionResponse
-
-    // Extract the generated content
+    const data = await response.json() as GroqChatCompletionResponse
     const content = data.choices[0]?.message?.content
-    const finishReason = data.choices[0]?.finish_reason
-    const usedModel = data.model
-    const usage = data.usage
-
     if (!content) {
       throw new Error('No content generated from the Groq API')
     }
 
-    // Write the generated content to the specified output file
-    await writeFile(tempPath, content)
-    l(wait(`\n  Groq response saved to ${tempPath}`))
+    logLLMCost({
+      modelName: modelKey,
+      stopReason: data.choices[0]?.finish_reason ?? 'unknown',
+      tokenUsage: {
+        input: data.usage?.prompt_tokens,
+        output: data.usage?.completion_tokens,
+        total: data.usage?.total_tokens
+      }
+    })
 
-    // Log finish reason, used model, and token usage
-    l(wait(`\n  Finish Reason: ${finishReason}\n  Model Used: ${usedModel}`))
-    if (usage) {
-      const { prompt_tokens, completion_tokens, total_tokens } = usage
-      l(
-        wait(
-          `  Token Usage:\n    - ${prompt_tokens} prompt tokens\n    - ${completion_tokens} completion tokens\n    - ${total_tokens} total tokens`
-        )
-      )
-    }
+    return content
   } catch (error) {
-    // Log any errors that occur during the process
     err(`Error in callGroq: ${(error as Error).message}`)
-    throw error // Re-throw the error for handling by the caller
+    throw error
   }
 }

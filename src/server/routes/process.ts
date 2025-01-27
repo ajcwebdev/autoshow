@@ -1,29 +1,25 @@
 // src/server/routes/process.ts
 
-import type { FastifyRequest, FastifyReply } from 'fastify'
-import { processVideo } from '../../commands/process-video'
-import { processURLs } from '../../commands/process-urls'
-import { processRSS } from '../../commands/process-rss'
-import { processPlaylist } from '../../commands/process-playlist'
-import { processChannel } from '../../commands/process-channel'
-import { processFile } from '../../commands/process-file'
-import { reqToOpts } from '../utils/req-to-opts'
+import { processVideo } from '../../process-commands/video'
+import { processURLs } from '../../process-commands/urls'
+import { processRSS } from '../../process-commands/rss'
+import { processPlaylist } from '../../process-commands/playlist'
+import { processChannel } from '../../process-commands/channel'
+import { processFile } from '../../process-commands/file'
+import { validateRequest, validateServerProcessAction } from '../utils/validation'
 import { l, err } from '../../../src/utils/logging'
+import type { FastifyRequest, FastifyReply } from 'fastify'
+import type { ProcessRequestBody } from '../../utils/types/process'
 
-// Define types for the request body
-interface ProcessRequestBody {
-  type: 'video' | 'urls' | 'rss' | 'playlist' | 'file' | 'channel'
-  url?: string
-  filePath?: string
-  [key: string]: any // Allow for additional properties from reqToOpts
-}
-
-// Type guard to check if a string is a valid process type
-function isValidProcessType(type: string): type is ProcessRequestBody['type'] {
-  return ['video', 'urls', 'rss', 'playlist', 'file', 'channel'].includes(type)
-}
-
-// Handler for the /process route
+/**
+ * Handler for the /process route.
+ * Receives and validates the request body, maps request data to processing options,
+ * and calls the appropriate process handler based on the provided process type.
+ *
+ * @param request - FastifyRequest object containing the incoming request data
+ * @param reply - FastifyReply object for sending the response
+ * @returns A Promise that resolves to void
+ */
 export const handleProcessRequest = async (
   request: FastifyRequest,
   reply: FastifyReply
@@ -37,14 +33,16 @@ export const handleProcessRequest = async (
 
     const { type } = requestData
 
-    if (!type || !isValidProcessType(type)) {
+    try {
+      validateServerProcessAction(type)
+    } catch {
       l('Invalid or missing process type, sending 400')
       reply.status(400).send({ error: 'Valid process type is required' })
       return
     }
 
     // Map request data to processing options
-    const { options, llmServices, transcriptServices } = reqToOpts(requestData)
+    const { options, llmServices, transcriptServices } = validateRequest(requestData)
 
     // Process based on type
     switch (type) {
@@ -55,8 +53,17 @@ export const handleProcessRequest = async (
           return
         }
         options.video = url
-        const content = await processVideo(options, url, llmServices, transcriptServices)
-        reply.send({ content })
+
+        // Grab the object that includes frontMatter, prompt, llmOutput, and transcript
+        const result = await processVideo(options, url, llmServices, transcriptServices)
+
+        // Return the object, if there is no LLM output, it will be ''
+        reply.send({
+          frontMatter: result.frontMatter,
+          prompt: result.prompt,
+          llmOutput: result.llmOutput,
+          transcript: result.transcript,
+        })
         break
       }
 

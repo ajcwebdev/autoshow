@@ -6,32 +6,49 @@
 // 2. Send it to Deepgram for transcription with chosen parameters (model, formatting, punctuation, etc.).
 // 3. Check for successful response and extract the transcription results.
 // 4. Format the returned words array using formatDeepgramTranscript to add timestamps and newlines.
-// 5. Write the formatted transcript to a .txt file and create an empty .lrc file.
+// 5. Return the formatted transcript.
 
-import { writeFile, readFile } from 'node:fs/promises'
+import { readFile } from 'node:fs/promises'
 import { env } from 'node:process'
-import { l, wait, err } from '../utils/logging'
-import { formatDeepgramTranscript } from './transcription-utils'
-import type { DeepgramResponse } from '../types/transcript-service-types'
+import { l, err } from '../utils/logging'
+import { DEEPGRAM_MODELS, logTranscriptionCost, formatDeepgramTranscript } from '../utils/transcription-utils'
+import type { ProcessingOptions } from '../utils/types/process'
+import type { DeepgramResponse, DeepgramModelType } from '../utils/types/transcription'
 
 /**
  * Main function to handle transcription using Deepgram API.
- * @param finalPath - The base filename (without extension) for input/output files
- * @returns Promise<string> - The formatted transcript content
- * @throws Error if any step of the process fails (upload, transcription request, formatting)
+ * @param {ProcessingOptions} options - Additional processing options (e.g., speaker labels)
+ * @param {string} finalPath - The base filename (without extension) for input/output files
+ * @param {string} [model] - The Deepgram model to use (default is 'NOVA_2')
+ * @returns {Promise<string>} - The formatted transcript content
+ * @throws {Error} If any step of the process fails (upload, transcription request, formatting)
  */
-export async function callDeepgram(finalPath: string): Promise<string> {
-  l(wait('\n  Using Deepgram for transcription...\n'))
+export async function callDeepgram(
+  _options: ProcessingOptions,
+  finalPath: string,
+  model: string = 'NOVA_2'
+) {
+  l.dim('\n  callDeepgram called with arguments:')
+  l.dim(`    - finalPath: ${finalPath}`)
+  l.dim(`    - model: ${model}`)
 
   if (!env['DEEPGRAM_API_KEY']) {
     throw new Error('DEEPGRAM_API_KEY environment variable is not set. Please set it to your Deepgram API key.')
   }
 
   try {
+    const modelInfo = DEEPGRAM_MODELS[model as DeepgramModelType] || DEEPGRAM_MODELS.NOVA_2
+
+    await logTranscriptionCost({
+      modelName: modelInfo.name,
+      costPerMinute: modelInfo.costPerMinute,
+      filePath: `${finalPath}.wav`
+    })
+
     const apiUrl = new URL('https://api.deepgram.com/v1/listen')
 
     // Set query parameters for the chosen model and formatting
-    apiUrl.searchParams.append('model', 'nova-2')
+    apiUrl.searchParams.append('model', modelInfo.modelId)
     apiUrl.searchParams.append('smart_format', 'true')
     apiUrl.searchParams.append('punctuate', 'true')
     apiUrl.searchParams.append('diarize', 'false')
@@ -56,8 +73,7 @@ export async function callDeepgram(finalPath: string): Promise<string> {
 
     const result = await response.json() as DeepgramResponse
 
-    // Extract the transcription results
-    // Deepgram returns results in channels->alternatives->words
+    // Extract the transcription results, Deepgram returns results in channels->alternatives->words
     const channel = result.results?.channels?.[0]
     const alternative = channel?.alternatives?.[0]
 
@@ -67,18 +83,8 @@ export async function callDeepgram(finalPath: string): Promise<string> {
 
     // Format the returned words array
     const txtContent = formatDeepgramTranscript(alternative.words)
-
-    // Write the formatted transcript to a .txt file
-    await writeFile(`${finalPath}.txt`, txtContent)
-    l(wait(`\n  Transcript saved:\n    - ${finalPath}.txt\n`))
-
-    // Create an empty LRC file to meet pipeline expectations
-    await writeFile(`${finalPath}.lrc`, '')
-    l(wait(`\n  Empty LRC file created:\n    - ${finalPath}.lrc\n`))
-
     return txtContent
   } catch (error) {
-    // If any error occurred at any step, log it and rethrow
     err(`Error processing the transcription: ${(error as Error).message}`)
     throw error
   }

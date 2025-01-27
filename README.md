@@ -18,11 +18,11 @@ Autoshow automates the processing of audio and video content from various source
 
 The Autoshow workflow includes the following steps:
 
-1. The user provides input (video URL, playlist, RSS feed, or local file).
-2. The system downloads the audio (if necessary).
+1. The user provides a content input (video URL, playlist, RSS feed, or local file) and front matter is created based on the content's metadata.
+2. The audio is downloaded (if necessary).
 3. Transcription is performed using the selected service.
-4. The transcript is processed by the chosen LLM to generate a summary and chapters.
-5. Results are saved in markdown format with front matter.
+4. A customizable prompt is inserted containing instructions for the contents of the show notes.
+5. The transcript is processed by the chosen LLM to generate show notes based on the selected prompts.
 
 ### Key Features
 
@@ -35,8 +35,6 @@ The Autoshow workflow includes the following steps:
 - Markdown output with metadata and formatted content
 - Command-line interface for easy usage
 - *WIP: Node.js server and React frontend*
-
-See [`docs/roadmap.md`](/docs/roadmap.md) for details about current development work and future potential capabilities.
 
 ## Setup
 
@@ -103,30 +101,26 @@ Example commands for all available CLI options can be found in [`docs/examples.m
 
 - Main Entry Points (`src/cli`)
   - `commander.ts`: Defines the command-line interface using Commander
-  - `interactive.ts`: Defines the interactive terminal interface using Inquirer
 
-- Command Processors (`src/commands`)
-  - `process-file.ts`: Handles local audio/video file processing
-  - `process-video.ts`: Handles single YouTube video processing
-  - `process-urls.ts`: Processes videos from a list of URLs in a file
-  - `process-playlist.ts`: Processes all videos in a YouTube playlist
-  - `process-channel.ts`: Processes all videos from a YouTube channel
-  - `process-rss.ts`: Processes podcast RSS feeds
+- Process Commands (`src/process-commands`)
+  - `file.ts`: Handles local audio/video file processing
+  - `video.ts`: Handles single YouTube video processing
+  - `urls.ts`: Processes videos from a list of URLs in a file
+  - `playlist.ts`: Processes all videos in a YouTube playlist
+  - `channel.ts`: Processes all videos from a YouTube channel
+  - `rss.ts`: Processes podcast RSS feeds
 
-- Utility Functions (`src/utils`)
-  - `generate-markdown.ts`: Creates initial markdown files with metadata
-  - `download-audio.ts`: Downloads audio from YouTube videos
-  - `run-transcription.ts`: Manages the transcription process
-  - `run-llm.ts`: Handles LLM processing for summarization and chapter generation
-  - `clean-up-files.ts`: Removes temporary files after processing
-  - `logging.ts`: Reusable Chalk functions for logging colors
-  - `validate-option.ts`: Functions for validating CLI options and handling errors
+- Process Steps (`src/process-steps`)
+  - Step 1 - `generate-markdown.ts` creates initial markdown file with metadata
+  - Step 2 - `download-audio.ts` downloads audio from YouTube videos
+  - Step 3 - `run-transcription.ts` manages the transcription process
+  - Step 4 - `select-prompt.ts` defines the prompt structure for summarization and chapter generation
+  - Step 5 - `run-llm.ts` handles LLM processing for selected prompts
 
 - Transcription Services (`src/transcription`)
-  - `whisper.ts`: Uses Whisper.cpp, openai-whisper, or whisper-diarization for transcription
+  - `whisper.ts`: Uses Whisper.cpp for transcription
   - `deepgram.ts`: Integrates Deepgram transcription service
   - `assembly.ts`: Integrates AssemblyAI transcription service
-  - `transcription-utils.ts`: Transcript formatting functions
 
 - Language Models (`src/llms`)
   - `ollama.ts`: Integrations Ollama's locally available models
@@ -138,7 +132,27 @@ Example commands for all available CLI options can be found in [`docs/examples.m
   - `fireworks.ts`: Integrates Fireworks's open source models
   - `together.ts`: Integrates Together's open source models
   - `groq.ts`: Integrates Groq's open source models
-  - `prompt.ts`: Defines the prompt structure for summarization and chapter generation
+
+- Utility Files (`src/utils`)
+  - `logging.ts`: Reusable Chalk functions for logging colors
+  - `validate-option.ts`: Functions for validating CLI options and handling errors
+  - `format-transcript.ts`: Transcript formatting functions
+  - `globals.ts`: Globally defined variables and constants
+
+- Types (`src/types`)
+  - `process.ts`: Types for `commander.ts` and files in `process-commands` directory
+  - `llms.ts`: Types for `run-llm.ts` process step and files in `llms` directory
+  - `transcription.ts`: Types for `run-transcription.ts` process step and files in `transcription` directory
+
+- Server (`src/server`)
+  - `index.ts`: Initializes Fastify server with CORS support and defines API endpoints
+  - `db.ts`: Sets up SQLite database connection and schema for storing show notes
+  - API Routes (`src/server/routes`)
+    - `process.ts`: Handles different types of media processing requests (video, playlist, RSS, etc.)
+    - `show-note.ts`: Retrieves individual show notes from the database by ID
+    - `show-notes.ts`: Fetches all show notes from the database, ordered by date
+  - Server Utilities (`src/server/utils`)
+    - `req-to-opts.ts`: Maps API request data to processing options for LLM and transcription services
 
 ## Contributors
 

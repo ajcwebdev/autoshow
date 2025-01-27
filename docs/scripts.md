@@ -6,8 +6,6 @@ A list of scripts in Autoshow's `package.json` along with explanations for what 
 
 - [Setup Scripts](#setup-scripts)
   - [`setup`](#setup)
-  - [`setup-python`](#setup-python)
-  - [`setup-docker`](#setup-docker)
   - [`setup-all`](#setup-all)
 - [Base, Main, and Serve Commands](#base,-main,-and-serve-commands)
   - [`tsx:base`](#tsx:base)
@@ -30,47 +28,21 @@ A list of scripts in Autoshow's `package.json` along with explanations for what 
   - [`test-server-local`](#test-server-local)
   - [`test-server-all`](#test-server-all)
 - [Benchmarking Commands](#benchmarking-commands)
-- [Docker and Alternative Runtime Commands](#docker-and-alternative-runtime-commands)
-  - [`docker`](#docker)
-  - [`docker-up`](#docker-up)
-  - [`docker-list`](#docker-list)
-  - [`prune`](#prune)
-  - [`bun`](#bun)
-  - [`deno`](#deno)
+- [Docker Commands](#docker-commands)
+  - [`docker-setup`](#docker-setup)
+  - [`docker-cli`](#docker-cli)
+  - [`docker-serve`](#docker-serve)
+- [`bun`](#bun)
+- [`deno`](#deno)
 
 ## Setup Scripts
 
 ### `setup`
 
-Executes the `setup.sh` bash script located in the `./scripts/` directory.
-
-- Initializes the project by installing necessary dependencies and performing initial configuration tasks.
+Executes the `setup.sh` bash script located in the `./scripts/` directory. Initializes the project by installing necessary dependencies and performing initial configuration tasks.
 
 ```json
 "setup": "bash ./scripts/setup.sh"
-```
-
-### `setup-python`
-
-Runs the `setup-python.sh` bash script from the `./scripts/` directory.
-
-- Sets up the Python environment, installing any Python dependencies required by the project.
-
-```json
-"setup-python": "bash ./scripts/setup-python.sh"
-```
-
-### `setup-docker`
-
-Prepares the Docker environment without starting the containers.
-
-- `--build`: Builds images before starting containers.
-- `-d`: Runs containers in detached mode.
-- `--remove-orphans`: Removes containers not defined in the `docker-compose.yml`.
-- `--no-start`: Does not start the containers after creating them.
-
-```json
-"setup-docker": "docker compose up --build -d --remove-orphans --no-start"
 ```
 
 ### `setup-all`
@@ -78,11 +50,10 @@ Prepares the Docker environment without starting the containers.
 Runs all setup scripts sequentially to fully initialize the project.
 
 - `npm run setup`: Initializes the project.
-- `npm run setup-python`: Sets up the Python environment.
-- `npm run setup-docker`: Prepares the Docker environment.
+- `npm run docker-setup`: Prepares the Docker environment.
 
 ```json
-"setup-all": "npm run setup && npm run setup-python && npm run setup-docker"
+"setup-all": "npm run setup && npm run docker-setup"
 ```
 
 ## Base, Main, and Serve Commands
@@ -101,19 +72,16 @@ Sets up a base command for running TypeScript files using `tsx`, a TypeScript ex
 
 ### `as`
 
-Executes the main command-line interface (CLI) application.
-
-- Runs `src/cli/commander.ts` using `tsx` with the base options defined in `tsx:base`.
+Executes the main command-line interface (CLI) application. Runs `src/commander.ts` using `tsx` with the base options defined in `tsx:base`.
 
 ```json
-"as": "npm run tsx:base -- src/cli/commander.ts"
+"as": "npm run tsx:base -- src/commander.ts"
 ```
 
 ### `serve`
 
-Starts the server in watch mode, recompiling on changes.
+Starts the server in watch mode, recompiling on changes. Runs `src/server/index.ts`, the server entry point.
 
-- Runs `src/server/index.ts`, the server entry point.
 - `--watch`: Enables watch mode.
 - `--experimental-sqlite`: Enables experimental SQLite features.
 
@@ -125,9 +93,7 @@ Starts the server in watch mode, recompiling on changes.
 
 ### `video`
 
-Processes a single YouTube video using the CLI.
-
-- Runs the main CLI script with the `--video` option.
+Processes a single YouTube video using the CLI. Runs the main CLI script with the `--video` option.
 
 ```json
 "video": "npm run as -- --video"
@@ -135,9 +101,7 @@ Processes a single YouTube video using the CLI.
 
 ### `urls`
 
-Processes a list of YouTube URLs from a file.
-
-- Runs the CLI with the `--urls` option.
+Processes a list of YouTube URLs from a file. Runs the CLI with the `--urls` option.
 
 ```json
 "urls": "npm run as -- --urls"
@@ -145,9 +109,7 @@ Processes a list of YouTube URLs from a file.
 
 ### `playlist`
 
-Processes all videos in a YouTube playlist.
-
-- Runs the CLI with the `--playlist` option.
+Processes all videos in a YouTube playlist. Runs the CLI with the `--playlist` option.
 
 ```json
 "playlist": "npm run as -- --playlist"
@@ -155,9 +117,7 @@ Processes all videos in a YouTube playlist.
 
 ### `file`
 
-Processes a local audio or video file.
-
-- Runs the CLI with the `--file` option.
+Processes a local audio or video file. Runs the CLI with the `--file` option.
 
 ```json
 "file": "npm run as -- --file"
@@ -165,9 +125,7 @@ Processes a local audio or video file.
 
 ### `rss`
 
-Processes a podcast RSS feed.
-
-- Runs the CLI with the `--rss` option.
+Processes a podcast RSS feed. Runs the CLI with the `--rss` option.
 
 ```json
 "rss": "npm run as -- --rss"
@@ -175,10 +133,7 @@ Processes a podcast RSS feed.
 
 ### `info`
 
-Generates JSON files containing metadata information.
-
-- Runs the CLI with the `--info` option.
-- Useful for retrieving information without processing the content.
+Generates JSON files containing metadata information. Runs the CLI with the `--info` option which is useful for retrieving information without processing the content.
 
 ```json
 "info": "npm run as -- --info"
@@ -188,9 +143,7 @@ Generates JSON files containing metadata information.
 
 ### `test-local`
 
-Runs local unit tests.
-
-- Executes `test/local.test.ts` using `tsx` in test mode.
+Runs local unit tests. Executes `test/local.test.ts` using `tsx` in test mode.
 
 ```json
 "test-local": "tsx --test test/local.test.ts"
@@ -198,9 +151,7 @@ Runs local unit tests.
 
 ### `test-docker`
 
-Runs tests related to Docker services.
-
-- Executes `test/docker.test.ts` to verify Docker integrations.
+Runs tests related to Docker services. Executes `test/docker.test.ts` to verify Docker integrations.
 
 ```json
 "test-docker": "tsx --test test/docker.test.ts"
@@ -208,9 +159,7 @@ Runs tests related to Docker services.
 
 ### `test-services`
 
-Tests external services and APIs used by the application.
-
-- Runs `test/services.test.ts` to ensure service integrations are functioning.
+Tests external services and APIs used by the application. Runs `test/services.test.ts` to ensure service integrations are functioning.
 
 ```json
 "test-services": "tsx --test test/services.test.ts"
@@ -218,21 +167,19 @@ Tests external services and APIs used by the application.
 
 ### `test-all`
 
-Runs all test suites sequentially. Test runs include:
+Runs all tests including:
 
 - Local tests.
 - Service integration tests.
 - Docker-related tests.
 
 ```json
-"test-all": "npm run test-local && npm run test-services && npm run test-docker"
+"test-all": "tsx --test test/all.test.ts"
 ```
 
 ### `t`
 
-Alias for the `test-local` script.
-
-- Provides a shorthand command for running local tests.
+Alias for the `test-local` script. Provides a shorthand command for running local tests.
 
 ```json
 "t": "npm run test-local"
@@ -240,9 +187,7 @@ Alias for the `test-local` script.
 
 ### `test-server-local`
 
-Tests the local server functionality.
-
-- Runs `src/server/tests/fetch-local.ts` using `tsx`.
+Tests the local server functionality. Runs `src/server/tests/fetch-local.ts` using `tsx`.
 
 ```json
 "test-server-local": "npm run tsx:base -- src/server/tests/fetch-local.ts"
@@ -250,9 +195,7 @@ Tests the local server functionality.
 
 ### `test-server-all`
 
-Tests all server functionalities.
-
-- Runs `src/server/tests/fetch-all.ts` using `tsx`.
+Tests all server functionalities. Runs `src/server/tests/fetch-all.ts` using `tsx`.
 
 ```json
 "test-server-all": "npm run tsx:base -- src/server/tests/fetch-all.ts"
@@ -274,52 +217,30 @@ Scripts include:
 - `bench-large`: `tsx --test test/bench/large.test.ts`
 - `bench-turbo`: `tsx --test test/bench/turbo.test.ts`
 
-## Docker and Alternative Runtime Commands
+## Docker
 
-### `docker`
+### `docker-setup`
 
-Runs the `autoshow` service inside a Docker container with the `--whisperDocker` option.
+Prepares the Docker environment without starting the containers.
 
-- Allows you to run the application using the Dockerized `whisper` transcription service.
+- `--build`: Builds images before starting containers.
+- `-d`: Runs containers in detached mode.
 - `--remove-orphans`: Removes containers not defined in the `docker-compose.yml`.
-- `--rm`: Automatically removes the container when it exits.
+- `--no-start`: Does not start the containers after creating them.
 
 ```json
-"docker": "docker compose run --remove-orphans --rm autoshow --whisperDocker"
+"docker-setup": "docker compose up --build -d --remove-orphans --no-start"
 ```
 
-### `docker-up`
+### `docker-cli`
 
-Similar to `setup-docker`, prepares the Docker environment without starting containers.
+TODO
 
-- Ensures the Docker images are built and ready to start.
+### `docker-serve`
 
-```json
-"docker-up": "docker compose up --build -d --remove-orphans --no-start"
-```
+TODO
 
-### `docker-list`
-
-Lists Docker images and Docker Compose services.
-
-- `docker compose images`: Lists images used by the services.
-- `docker compose ls`: Lists all Docker Compose projects.
-
-```json
-"docker-list": "docker compose images && docker compose ls"
-```
-
-### `prune`
-
-Aggressively cleans up all unused Docker data such as stopped containers, networks, images, and volumes.
-
-- **Warning: This is a destructive operation that cannot be undone.**
-
-```json
-"prune": "docker system prune -af --volumes && docker image prune -af && docker container prune -f && docker volume prune -af"
-```
-
-### `bun`
+## `bun`
 
 Runs the CLI application using `Bun`, an alternative JavaScript runtime.
 
@@ -327,10 +248,10 @@ Runs the CLI application using `Bun`, an alternative JavaScript runtime.
 - `--no-warnings`: Suppresses warnings during execution.
 
 ```json
-"bun": "bun --env-file=.env --no-warnings src/cli/commander.ts"
+"bun": "bun --env-file=.env --no-warnings src/commander.ts"
 ```
 
-### `deno`
+## `deno`
 
 Runs the CLI application using `Deno`, another JavaScript and TypeScript runtime.
 
@@ -342,5 +263,5 @@ Runs the CLI application using `Deno`, another JavaScript and TypeScript runtime
 - `--unstable-sloppy-imports`: Enables experimental import features.
 
 ```json
-"deno": "deno run --allow-sys --allow-read --allow-run --allow-write --allow-env --unstable-sloppy-imports src/cli/commander.ts"
+"deno": "deno run --allow-sys --allow-read --allow-run --allow-write --allow-env --unstable-sloppy-imports src/commander.ts"
 ```

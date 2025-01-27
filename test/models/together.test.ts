@@ -1,0 +1,91 @@
+// test/models/together.test.ts
+
+import test from 'node:test'
+import { strictEqual } from 'node:assert/strict'
+import { execSync } from 'node:child_process'
+import { existsSync, renameSync } from 'node:fs'
+import { join } from 'node:path'
+
+const commands = [
+  {
+    // Process multiple YouTube videos from URLs with title prompts using default Together model
+    cmd: 'npm run as -- --urls "content/example-urls.md" --prompt titles --whisper tiny --together',
+    expectedFiles: [
+      { file: '2024-09-24-ep1-fsjam-podcast-together-shownotes.md', newName: '01-together-default.md' },
+      { file: '2024-09-24-ep0-fsjam-podcast-together-shownotes.md', newName: '02-together-default.md' }
+    ]
+  },
+  {
+    // Process video with LLAMA 3 2 3B model
+    cmd: 'npm run as -- --file "content/audio.mp3" --together LLAMA_3_2_3B',
+    expectedFile: 'audio-together-shownotes.md',
+    newName: '03-together-llama-3-2-3b.md'
+  },
+  {
+    // Process video with LLAMA 3 1 405B model
+    cmd: 'npm run as -- --file "content/audio.mp3" --together LLAMA_3_1_405B',
+    expectedFile: 'audio-together-shownotes.md',
+    newName: '04-together-llama-3-1-405b.md'
+  },
+  {
+    // Process video with LLAMA 3 1 70B model
+    cmd: 'npm run as -- --file "content/audio.mp3" --together LLAMA_3_1_70B',
+    expectedFile: 'audio-together-shownotes.md',
+    newName: '05-together-llama-3-1-70b.md'
+  },
+  {
+    // Process video with LLAMA 3 1 8B model
+    cmd: 'npm run as -- --file "content/audio.mp3" --together LLAMA_3_1_8B',
+    expectedFile: 'audio-together-shownotes.md',
+    newName: '06-together-llama-3-1-8b.md'
+  },
+  {
+    // Process video with Gemma 2 27B model
+    cmd: 'npm run as -- --file "content/audio.mp3" --together GEMMA_2_27B',
+    expectedFile: 'audio-together-shownotes.md',
+    newName: '07-together-gemma-2-27b.md'
+  },
+  {
+    // Process video with Gemma 2 9B model
+    cmd: 'npm run as -- --file "content/audio.mp3" --together GEMMA_2_9B',
+    expectedFile: 'audio-together-shownotes.md',
+    newName: '08-together-gemma-2-9b.md'
+  },
+  {
+    // Process video with QWEN 2 5 72B model
+    cmd: 'npm run as -- --file "content/audio.mp3" --together QWEN_2_5_72B',
+    expectedFile: 'audio-together-shownotes.md',
+    newName: '09-together-qwen-2-5-72b.md'
+  },
+  {
+    // Process video with QWEN 2 5 7B model
+    cmd: 'npm run as -- --file "content/audio.mp3" --together QWEN_2_5_7B',
+    expectedFile: 'audio-together-shownotes.md',
+    newName: '11-together-qwen-2-5-7b.md'
+  }
+]
+
+test('Autoshow Together Command Tests', async (t) => {
+  for (const [index, command] of commands.entries()) {
+    await t.test(`should run command ${index + 1} successfully`, async () => {
+      // Run the command
+      execSync(command.cmd, { stdio: 'inherit' })
+      
+      if (Array.isArray(command.expectedFiles)) {
+        for (const { file, newName } of command.expectedFiles) {
+          const filePath = join('content', file)
+          strictEqual(existsSync(filePath), true, `Expected file ${file} was not created`)
+          const newPath = join('content', newName)
+          renameSync(filePath, newPath)
+          strictEqual(existsSync(newPath), true, `File was not renamed to ${newName}`)
+        }
+      } else {
+        const filePath = join('content', command.expectedFile as string)
+        strictEqual(existsSync(filePath), true, `Expected file ${command.expectedFile} was not created`)
+        const newPath = join('content', command.newName as string)
+        renameSync(filePath, newPath)
+        strictEqual(existsSync(newPath), true, `File was not renamed to ${command.newName}`)
+      }
+    })
+  }
+})

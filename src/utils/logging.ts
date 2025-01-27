@@ -1,96 +1,115 @@
 // src/utils/logging.ts
 
-import type { ProcessingOptions } from '../types/main'
-import { XMLParser } from 'fast-xml-parser'
 import chalk from 'chalk'
-import type { ChalkInstance } from 'chalk'
+
+import type { ChainableLogger } from './types/logging'
+import type { SeparatorParams } from './types/process'
 
 /**
- * Configure XML parser for RSS feed processing
- * Handles attributes without prefixes and allows boolean values
+ * Logs the first step of a top-level function call with its relevant options or parameters.
+ *
+ * @param functionName - The name of the top-level function being invoked.
+ * @param details - An object containing relevant parameters to log
  */
-export const parser = new XMLParser({
-  ignoreAttributes: false,
-  attributeNamePrefix: '',
-  allowBooleanAttributes: true,
-})
+export function logInitialFunctionCall(functionName: string, details: Record<string, unknown>): void {
+  l.opts(`${functionName} called with the following arguments:\n`)
+  for (const [key, value] of Object.entries(details)) {
+    if (typeof value === 'object' && value !== null) {
+      l.opts(`${key}:\n`)
+      l.opts(`${JSON.stringify(value, null, 2)}`)
+    } else {
+      l.opts(`${key}: ${value}`)
+    }
+  }
+  l.opts('')
+}
 
 /**
- * Chalk styling for step indicators in the CLI
- * @type {ChalkInstance}
+ * Logs a visual separator for different processing contexts, including channels, playlists, RSS feeds, URLs, 
+ * and a final completion message. 
+ *
+ * - For `channel`, `playlist`, or `urls`, provide `index`, `total`, and `descriptor` representing the URL.
+ * - For `rss`, provide `index`, `total`, and `descriptor` representing the RSS item title.
+ * - For `completion`, provide only the `descriptor` representing the completed action.
+ *
+ * @param params - An object describing the context and values needed to log the separator.
  */
-export const step: ChalkInstance = chalk.bold.underline
+export function logSeparator(params: SeparatorParams): void {
+  switch (params.type) {
+    case 'channel':
+    case 'playlist':
+    case 'urls':
+      l.final(`\n================================================================================================`)
+      if (params.type === 'urls') {
+        l.final(`  Processing URL ${params.index + 1}/${params.total}: ${params.descriptor}`)
+      } else {
+        l.final(`  Processing video ${params.index + 1}/${params.total}: ${params.descriptor}`)
+      }
+      l.final(`================================================================================================\n`)
+      break
 
-/**
- * Chalk styling for dimmed text
- * @type {ChalkInstance}
- */
-export const dim: ChalkInstance = chalk.dim
+    case 'rss':
+      l.final(`\n========================================================================================`)
+      l.final(`  Item ${params.index + 1}/${params.total} processing: ${params.descriptor}`)
+      l.final(`========================================================================================\n`)
+      break
 
-/**
- * Chalk styling for success messages
- * @type {ChalkInstance}
- */
-export const success: ChalkInstance = chalk.bold.blue
-
-/**
- * Chalk styling for options display
- * @type {ChalkInstance}
- */
-export const opts: ChalkInstance = chalk.magentaBright.bold
-
-/**
- * Chalk styling for wait/processing messages
- * @type {ChalkInstance}
- */
-export const wait: ChalkInstance = chalk.bold.cyan
-
-/**
- * Chalk styling for final messages
- * @type {ChalkInstance}
- */
-export const final: ChalkInstance = chalk.bold.italic
-
-/**
- * Convenience export for console.log
- * @type {typeof console.log}
- */
-export const l: typeof console.log = console.log
-
-/**
- * Convenience export for console.error
- * @type {typeof console.log}
- */
-export const err: typeof console.error = console.error
-
-/**
- * Logs the current processing action based on provided options.
- * 
- * @param options - Configuration options determining what to process
- */
-export function logProcessingAction(options: ProcessingOptions): void {
-  if (options.item && options.item.length > 0) {
-    l(wait('\nProcessing specific items:'))
-    options.item.forEach((url) => l(wait(`  - ${url}`)))
-  } else if (options.last) {
-    l(wait(`\nProcessing the last ${options.last} items`))
-  } else if (options.skip) {
-    l(wait(`  - Skipping first ${options.skip || 0} items`))
+    case 'completion':
+      l.final(`\n================================================================================================`)
+      l.final(`  ${params.descriptor} Processing Completed Successfully.`)
+      l.final(`================================================================================================\n`)
+      break
   }
 }
-  
+
 /**
- * Logs the processing status and item counts.
+ * Creates a chainable logger function that maintains both function call and method syntax.
+ *
+ * @returns A chainable logger instance with styled methods.
  */
-export function logProcessingStatus(total: number, processing: number, options: ProcessingOptions): void {
-  if (options.item && options.item.length > 0) {
-    l(wait(`\n  - Found ${total} items in the RSS feed.`))
-    l(wait(`  - Processing ${processing} specified items.`))
-  } else if (options.last) {
-    l(wait(`\n  - Found ${total} items in the RSS feed.`))
-    l(wait(`  - Processing the last ${options.last} items.`))
-  } else {
-    l(wait(`\n  - Found ${total} item(s) in the RSS feed.`))
-    l(wait(`  - Processing ${processing} item(s) after skipping ${options.skip || 0}.\n`))
-  }
+function createChainableLogger(): ChainableLogger {
+  // Base logging function
+  const logger = (...args: any[]) => console.log(...args)
+
+  // Add chalk styles as methods
+  const styledLogger = Object.assign(logger, {
+    step: (...args: any[]) => console.log(chalk.bold.underline(...args)),
+    dim: (...args: any[]) => console.log(chalk.dim(...args)),
+    success: (...args: any[]) => console.log(chalk.bold.blue(...args)),
+    warn: (...args: any[]) => console.log(chalk.bold.yellow(...args)),
+    opts: (...args: any[]) => console.log(chalk.magentaBright.bold(...args)),
+    info: (...args: any[]) => console.log(chalk.magentaBright.bold(...args)),
+    wait: (...args: any[]) => console.log(chalk.bold.cyan(...args)),
+    final: (...args: any[]) => console.log(chalk.bold.italic(...args)),
+  })
+
+  return styledLogger
 }
+
+/**
+ * Creates a chainable error logger function.
+ *
+ * @returns A chainable logger that writes to stderr with styled methods.
+ */
+function createChainableErrorLogger(): ChainableLogger {
+  // Base error logging function
+  const errorLogger = (...args: any[]) => console.error(...args)
+
+  // Add chalk styles as methods
+  const styledErrorLogger = Object.assign(errorLogger, {
+    step: (...args: any[]) => console.error(chalk.bold.underline(...args)),
+    dim: (...args: any[]) => console.error(chalk.dim(...args)),
+    success: (...args: any[]) => console.error(chalk.bold.blue(...args)),
+    warn: (...args: any[]) => console.error(chalk.bold.yellow(...args)),
+    opts: (...args: any[]) => console.error(chalk.magentaBright.bold(...args)),
+    info: (...args: any[]) => console.error(chalk.magentaBright.bold(...args)),
+    wait: (...args: any[]) => console.error(chalk.bold.cyan(...args)),
+    final: (...args: any[]) => console.error(chalk.bold.italic(...args)),
+  })
+
+  return styledErrorLogger
+}
+
+// Create and export the chainable loggers
+export const l = createChainableLogger()
+export const err = createChainableErrorLogger()

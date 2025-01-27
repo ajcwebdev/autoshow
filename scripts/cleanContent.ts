@@ -9,7 +9,7 @@ const execAsync = promisify(exec)
 async function cleanContent() {
   try {
     const { stdout, stderr } = await execAsync(
-      'find content -type f -not \\( -name ".gitkeep" -o -name "audio.mp3" -o -name "example-urls.md" \\) -delete'
+      'find content -type f -not \\( -name ".gitkeep" -o -name "audio.mp3" -o -name "example-urls.md" -o -name "custom-prompt.md" \\) -delete'
     )
     if (stderr) {
       err('Error:', stderr)

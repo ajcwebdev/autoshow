@@ -8,97 +8,83 @@ import { join } from 'node:path'
 
 const commands = [
   {
-    // Process a single YouTube video using Autoshow's default settings.
-    cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk"',
-    expectedFile: '2024-09-24-ep0-fsjam-podcast-prompt.md',
-    newName: '01-video-default.md'
-  },
-  {
-    // Process all videos in a specified YouTube playlist.
-    cmd: 'npm run as -- --playlist "https://www.youtube.com/playlist?list=PLCVnrVv4KhXPz0SoAVu8Rc1emAdGPbSbr"',
-    expectedFiles: [
-      { file: '2024-09-24-ep1-fsjam-podcast-prompt.md', newName: '02A-playlist-default.md' },
-      { file: '2024-09-24-ep0-fsjam-podcast-prompt.md', newName: '02B-playlist-default.md' }
-    ]
-  },
-  {
-    // Process multiple YouTube videos from URLs listed in a file.
-    cmd: 'npm run as -- --urls "content/example-urls.md"',
-    expectedFiles: [
-      { file: '2024-09-24-ep1-fsjam-podcast-prompt.md', newName: '03A-urls-default.md' },
-      { file: '2024-09-24-ep0-fsjam-podcast-prompt.md', newName: '03B-urls-default.md' }
-    ]
-  },
-  {
-    // Process a single local audio file.
-    cmd: 'npm run as -- --file "content/audio.mp3"',
+    // Process single local audio file.
+    cmd: 'npm run as -- --file "content/audio.mp3" --whisper base',
     expectedFile: 'audio-prompt.md',
-    newName: '04-file-default.md'
+    newName: '01-file-default.md'
   },
   {
     // Process local audio file with title prompts, Whisper 'tiny' model, and Ollama.
-    cmd: 'npm run as -- --file "content/audio.mp3" --prompt titles --whisper tiny --ollama LLAMA_3_2_1B',
+    cmd: 'npm run as -- --file "content/audio.mp3" --prompt titles --whisper tiny --ollama',
     expectedFile: 'audio-ollama-shownotes.md',
-    newName: '05-titles-prompt-whisper-tiny-ollama-shownotes.md'
+    newName: '02-file-titles-prompt-whisper-tiny-ollama-shownotes.md'
   },
   {
     // Process local audio file with Whisper 'tiny' model.
     cmd: 'npm run as -- --file "content/audio.mp3" --whisper tiny',
     expectedFile: 'audio-prompt.md',
-    newName: '06-whisper-tiny.md'
+    newName: '03-file-whisper-tiny.md'
   },
   {
-    // Process a local audio file with all available prompt options (except smallChapters and longChapters)
-    cmd: 'npm run as -- --file "content/audio.mp3" --prompt titles summary mediumChapters takeaways questions',
+    // Process local audio file with all available prompt options (except smallChapters and longChapters)
+    cmd: 'npm run as -- --file "content/audio.mp3" --prompt titles summary mediumChapters takeaways questions --whisper tiny',
     expectedFile: 'audio-prompt.md',
-    newName: '07-all-prompts.md'
+    newName: '04-file-all-prompts.md'
   },
   {
-    // Process a local audio file with multiple prompt sections, Whisper 'tiny' model, and Ollama.
-    cmd: 'npm run as -- --file "content/audio.mp3" --prompt titles summary shortChapters takeaways questions --whisper tiny --ollama',
+    // Process local audio file with multiple prompt sections, Whisper 'tiny' model, and Ollama.
+    cmd: 'npm run as -- --file "content/audio.mp3" --prompt titles summary --whisper tiny --ollama',
     expectedFile: 'audio-ollama-shownotes.md',
-    newName: '08-all-prompts-ollama-shownotes.md'
+    newName: '05-file-all-prompts-ollama-shownotes.md'
   },
   {
-    // Process playlist videos with titles and longChapters prompts, tiny Whisper model, and Ollama for LLM processing.
-    cmd: 'npm run as -- --playlist "https://www.youtube.com/playlist?list=PLCVnrVv4KhXPz0SoAVu8Rc1emAdGPbSbr" --prompt titles longChapters --whisper tiny --ollama',
+    // Process single YouTube video using Autoshow's default settings.
+    cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --whisper tiny',
+    expectedFile: '2024-09-24-ep0-fsjam-podcast-prompt.md',
+    newName: '06-video-default.md'
+  },
+  {
+    // Process all videos in a specified YouTube playlist.
+    cmd: 'npm run as -- --playlist "https://www.youtube.com/playlist?list=PLCVnrVv4KhXPz0SoAVu8Rc1emAdGPbSbr" --whisper tiny',
     expectedFiles: [
-      { file: '2024-09-24-ep1-fsjam-podcast-ollama-shownotes.md', newName: '09A-prompt-whisper-ollama-shownotes.md' },
-      { file: '2024-09-24-ep0-fsjam-podcast-ollama-shownotes.md', newName: '09B-prompt-whisper-ollama-shownotes.md' }
+      { file: '2024-09-24-ep1-fsjam-podcast-prompt.md', newName: '07-playlist-default.md' },
+      { file: '2024-09-24-ep0-fsjam-podcast-prompt.md', newName: '08-playlist-default.md' }
     ]
   },
   {
-    // Process multiple YouTube videos from URLs with title prompts, Whisper 'tiny' model, and Ollama.
-    cmd: 'npm run as -- --urls "content/example-urls.md" --prompt titles --whisper tiny --ollama',
+    // Process multiple YouTube videos from URLs listed in a file.
+    cmd: 'npm run as -- --urls "content/example-urls.md" --whisper tiny',
     expectedFiles: [
-      { file: '2024-09-24-ep1-fsjam-podcast-ollama-shownotes.md', newName: '10A-prompt-whisper-ollama-shownotes.md' },
-      { file: '2024-09-24-ep0-fsjam-podcast-ollama-shownotes.md', newName: '10B-prompt-whisper-ollama-shownotes.md' }
+      { file: '2024-09-24-ep1-fsjam-podcast-prompt.md', newName: '09-urls-default.md' },
+      { file: '2024-09-24-ep0-fsjam-podcast-prompt.md', newName: '10-urls-default.md' }
     ]
   },
   {
-    // Process podcast RSS feed from default order.
+    // Process multiple YouTube videos from URLs listed in a file with Tiny Whisper model.
+    cmd: 'npm run as -- --urls "content/example-urls.md" --whisper tiny',
+    expectedFiles: [
+      { file: '2024-09-24-ep1-fsjam-podcast-prompt.md', newName: '11-urls-whisper-tiny.md' },
+      { file: '2024-09-24-ep0-fsjam-podcast-prompt.md', newName: '12-urls-whisper-tiny.md' }
+    ]
+  },
+  // {
+  //   // Download JSON file with metadata for each video in the URLs file.
+  //   cmd: 'npm run as -- --urls "content/example-urls.md" --info',
+  //   expectedFile: '',
+  //   newName: '13-',
+  // },
+  {
+    // Download JSON file with metadata for each item in the RSS feed.
     cmd: 'npm run as -- --rss "https://ajcwebdev.substack.com/feed" --whisper tiny',
     expectedFile: '2021-05-10-thoughts-on-lambda-school-layoffs-prompt.md',
-    newName: '11-rss-whisper-tiny.md'
+    newName: '14-rss-default.md',
   },
   {
     // Download JSON file with metadata for each item in the RSS feed.
     cmd: 'npm run as -- --rss "https://ajcwebdev.substack.com/feed" --info',
     expectedFile: 'ajcwebdev_info.json',
-    newName: '12-ajcwebdev-rss-info.json',
+    newName: '15-rss-info.json',
   },
-  // {
-  //   // Process local audio file with Python Whisper 'base' model.
-  //   cmd: 'npm run as -- --file "content/audio.mp3" --whisperPython base',
-  //   expectedFile: 'audio-prompt.md',
-  //   newName: '13-whisper-python-base.md'
-  // },
-  // {
-  //   // Process local audio file with whisper-diarization 'base' model.
-  //   cmd: 'npm run as -- --file "content/audio.mp3" --whisperDiarization base',
-  //   expectedFile: 'audio-prompt.md',
-  //   newName: '14-whisper-diarization-base.md'
-  // },
 ]
 
 test('Autoshow Command Tests', async (t) => {

@@ -2,7 +2,7 @@
 
 import fs from 'fs/promises'
 import path from 'path'
-import { l, err } from '../../../src/utils/logging'
+import { l, err } from '../../utils/logging'
 
 const BASE_URL = 'http://localhost:3000'
 const OUTPUT_DIR = 'content'
@@ -288,6 +288,24 @@ const requests = [
     },
     endpoint: '/process',
     outputFiles: ['FILE_29.md'],
+  },
+  {
+    data: {
+      type: 'video',
+      url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
+      llm: 'deepseek',
+    },
+    endpoint: '/process',
+    outputFiles: ['FILE_30.md'],
+  },
+  {
+    data: {
+      type: 'video',
+      url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
+      llm: 'grok',
+    },
+    endpoint: '/process',
+    outputFiles: ['FILE_30.md'],
   },
   {
     data: {

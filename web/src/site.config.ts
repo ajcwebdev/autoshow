@@ -62,6 +62,7 @@ export const LLM_SERVICES = [
 
 export const LLM_MODELS = {
   ollama: [
+    { value: 'deepseek-r1:1.5b', label: 'DEEPSEEK R1 1.5B' },
     { value: 'qwen2.5:0.5b', label: 'QWEN 2 5 0B' },
     { value: 'qwen2.5:1.5b', label: 'QWEN 2.5 1.5B' },
     { value: 'qwen2.5:3b', label: 'QWEN 2.5 3B' },

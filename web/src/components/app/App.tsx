@@ -1,48 +1,33 @@
 // web/src/components/app/App.tsx
 
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import Form from './Form.tsx'
 import '../../styles/global.css'
 
-import type { ShowNoteType } from '../../types.ts'
+import { ShowNotes } from './ShowNotes.tsx'
 
 /**
- * The App component displays the Form component and a list of existing show notes.
- * Once show notes are fetched from the backend, each note is listed for navigation
- * to a detailed view.
+ * The App component renders the Form component and the ShowNotes component.
+ * The refreshCount state is used to trigger re-fetching of show notes in the ShowNotes component.
  *
- * @returns {JSX.Element} A container wrapping input fields and a list of show notes
+ * @returns {JSX.Element} A container wrapping the Form and ShowNotes components
  */
 const App: React.FC = () => {
-  const [showNotes, setShowNotes] = useState<ShowNoteType[]>([])
+  const [refreshCount, setRefreshCount] = useState(0)
 
-  // Fetch show notes function
-  const fetchShowNotes = () => {
-    fetch('http://localhost:3000/show-notes')
-      .then((response) => response.json())
-      .then((data) => {
-        setShowNotes(data.showNotes)
-      })
-      .catch((error) => {
-        console.error('Error fetching show notes:', error)
-      })
+  /**
+   * This function increments the refreshCount state. It is passed to the Form component
+   * so that when a new show note is created, the ShowNotes component can be triggered
+   * to re-fetch data from the backend.
+   */
+  const handleNewShowNote = () => {
+    setRefreshCount((prevCount) => prevCount + 1)
   }
-
-  useEffect(() => {
-    fetchShowNotes()
-  }, [])
 
   return (
     <div className="container">
-      <Form onNewShowNote={fetchShowNotes} />
-      <ul className="show-notes-list">
-        <h1>Show Notes</h1>
-        {showNotes.map((note) => (
-          <li key={note.id}>
-            <a href={`/show-notes/${note.id}`}>{note.title}</a> - {note.publishDate}
-          </li>
-        ))}
-      </ul>
+      <Form onNewShowNote={handleNewShowNote} />
+      <ShowNotes refreshCount={refreshCount} />
     </div>
   )
 }

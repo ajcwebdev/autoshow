@@ -66,7 +66,8 @@ export async function runLLM(
 
       await retryLLMCall(
         async () => {
-          showNotes = await llmFunction(prompt, transcript, options[llmServices])
+          const llmOptions = options[llmServices] ?? '';
+          showNotes = await llmFunction(prompt, transcript, llmOptions)
         },
         5,
         5000

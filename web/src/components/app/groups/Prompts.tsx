@@ -1,7 +1,7 @@
 // web/src/components/app/groups/Prompts.tsx
 
 import React from 'react'
-import { PROMPT_CHOICES } from '@/site-config'
+import { PROMPT_CHOICES } from '../../../../../shared/constants'
 
 /**
  * The Prompts component contains checkboxes for all available prompts.

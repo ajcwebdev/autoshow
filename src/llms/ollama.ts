@@ -1,10 +1,8 @@
 // src/llms/ollama.ts
 
 import { env } from 'node:process'
-import { OLLAMA_MODELS } from '../utils/step-utils/llm-utils'
 import { l, err } from '../utils/logging'
 import { logLLMCost, checkOllamaServerAndModel } from '../utils/step-utils/llm-utils'
-import type { OllamaModelType } from '../utils/types/llms'
 
 /**
  * callOllama()
@@ -13,24 +11,21 @@ import type { OllamaModelType } from '../utils/types/llms'
  *
  * @param {string} prompt - The prompt or instructions to process.
  * @param {string} transcript - The transcript text.
- * @param {string | OllamaModelType} [model='QWEN_2_5_0B'] - The Ollama model to use.
+ * @param {string} [model='qwen2.5:0.5b'] - The Ollama model to use.
  * @returns {Promise<string>} A Promise resolving with the generated text.
  */
 export const callOllama = async (
   prompt: string,
   transcript: string,
-  model: string | OllamaModelType = 'QWEN_2_5_0B'
+  model: string
 ) => {
   l.dim('\n  callOllama called with arguments:')
   l.dim(`    - model: ${model}`)
 
   try {
     // Determine the final modelKey from the argument
-    const modelKey = typeof model === 'string' ? model : 'QWEN_2_5_0B'
-    const modelConfig = OLLAMA_MODELS[modelKey as OllamaModelType] || OLLAMA_MODELS.QWEN_2_5_0B
-    const ollamaModelName = modelConfig.modelId
-
-    l.dim(`    - modelName: ${modelKey}\n    - ollamaModelName: ${ollamaModelName}`)
+    const modelKey = typeof model === 'string' ? model : 'qwen2.5:0.5b'
+    l.dim(`    - modelKey: ${modelKey}`)
 
     // Determine host/port from environment or fallback
     const ollamaHost = env['OLLAMA_HOST'] || 'localhost'
@@ -41,16 +36,16 @@ export const callOllama = async (
     const combinedPrompt = `${prompt}\n${transcript}`
 
     // Ensure Ollama server is running and that the model is pulled
-    await checkOllamaServerAndModel(ollamaHost, ollamaPort, ollamaModelName)
+    await checkOllamaServerAndModel(ollamaHost, ollamaPort, modelKey)
 
-    l.dim(`\n  Sending chat request to http://${ollamaHost}:${ollamaPort} using model '${ollamaModelName}'`)
+    l.dim(`\n  Sending chat request to http://${ollamaHost}:${ollamaPort} using model '${modelKey}'`)
 
     // Make the actual request to Ollama
     const response = await fetch(`http://${ollamaHost}:${ollamaPort}/api/chat`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: ollamaModelName,
+        model: modelKey,
         messages: [{ role: 'user', content: combinedPrompt }],
         stream: false,
       }),

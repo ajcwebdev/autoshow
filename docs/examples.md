@@ -391,20 +391,20 @@ npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --ollama
 Select Ollama model:
 
 ```bash
-npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --ollama LLAMA_3_2_1B
-npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --ollama LLAMA_3_2_3B
-npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --ollama GEMMA_2_2B
-npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --ollama PHI_3_5
-npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --ollama QWEN_2_5_1B
-npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --ollama QWEN_2_5_3B
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --ollama deepseek-r1:1.5b
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --ollama qwen2.5:0.5b
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --ollama qwen2.5:1.5b
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --ollama qwen2.5:3b
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --ollama llama3.2:1b
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --ollama llama3.2:3b
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --ollama gemma2:2b
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --ollama phi3.5:3.8b
 ```
 
 ### OpenAI's ChatGPT Models
 
 ```bash
-npm run as -- \
-  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
-  --chatgpt
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --chatgpt
 ```
 
 Select ChatGPT model:
@@ -416,11 +416,8 @@ npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --chatgpt GP
 # Select GPT-4o model - https://platform.openai.com/docs/models/gpt-4o
 npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --chatgpt GPT_4o
 
-# Select GPT-4 Turbo model - https://platform.openai.com/docs/models/gpt-4-turbo-and-gpt-4
-npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --chatgpt GPT_4_TURBO
-
-# Select GPT-4 model - https://platform.openai.com/docs/models/gpt-4-turbo-and-gpt-4
-npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --chatgpt GPT_4
+# Select o1_MINI model - https://platform.openai.com/docs/models/#o1
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --chatgpt o1_MINI
 ```
 
 Include OpenAI API key directly in CLI command instead of in `.env` file:
@@ -442,6 +439,7 @@ Select Claude model:
 
 ```bash
 npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --claude CLAUDE_3_5_SONNET
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --claude CLAUDE_3_5_HAIKU
 npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --claude CLAUDE_3_OPUS
 npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --claude CLAUDE_3_SONNET
 npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --claude CLAUDE_3_HAIKU

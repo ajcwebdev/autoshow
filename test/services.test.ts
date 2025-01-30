@@ -34,10 +34,10 @@ const commands = [
     newName: '05-claude-default.md'
   },
   {
-    // Process video with Claude using CLAUDE_3_SONNET model.
-    cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --claude CLAUDE_3_SONNET',
+    // Process video with Claude using CLAUDE_3_5_HAIKU model.
+    cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --claude CLAUDE_3_5_HAIKU',
     expectedFile: '2024-09-24-ep0-fsjam-podcast-claude-shownotes.md',
-    newName: '06-claude-claude-3-sonnet-shownotes.md'
+    newName: '06-claude-claude-3-5-haiku-shownotes.md'
   },
   {
     // process video using Gemini for LLM operations.

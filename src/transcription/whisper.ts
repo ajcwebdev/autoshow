@@ -6,11 +6,11 @@
  */
 
 import { readFile, unlink } from 'node:fs/promises'
-import { WHISPER_MODELS, checkWhisperDirAndModel } from '../utils/step-utils/transcription-utils'
+import { checkWhisperDirAndModel } from '../utils/step-utils/transcription-utils'
+import { WHISPER_MODELS } from '../../shared/constants'
 import { execPromise } from '../utils/validate-option'
 import { l, err } from '../utils/logging'
 import type { ProcessingOptions } from '../utils/types/process'
-import type { WhisperModelType } from '../utils/types/transcription'
 
 /**
  * Main function to handle transcription using local Whisper.cpp.
@@ -33,24 +33,23 @@ export async function callWhisper(
         ? 'base'
         : (() => { throw new Error('Invalid whisper option') })()
 
-    // Validate that the requested model is in our known model list
-    if (!(whisperModel in WHISPER_MODELS)) {
+    // Lookup the model entry from the shared constants array
+    const whisperModelEntry = WHISPER_MODELS.find(m => m.value === whisperModel)
+    if (!whisperModelEntry) {
       throw new Error(`Unknown model type: ${whisperModel}`)
     }
 
     l.dim(`\n  Whisper model information:\n\n    - whisperModel: ${whisperModel}`)
+    l.dim(`    - modelGGMLName: ${whisperModelEntry.bin}`)
 
-    const modelGGMLName = WHISPER_MODELS[whisperModel as WhisperModelType]
-    l.dim(`    - modelGGMLName: ${modelGGMLName}`)
-
-    await checkWhisperDirAndModel(whisperModel, modelGGMLName as string)
+    await checkWhisperDirAndModel(whisperModelEntry.value, whisperModelEntry.bin)
 
     // Run whisper.cpp on the WAV file
     l.dim(`  Invoking whisper.cpp on file:\n    - ${finalPath}.wav`)
     try {
       await execPromise(
         `./whisper.cpp/build/bin/whisper-cli --no-gpu ` +
-        `-m "whisper.cpp/models/${modelGGMLName}" ` +
+        `-m "whisper.cpp/models/${whisperModelEntry.bin}" ` +
         `-f "${finalPath}.wav" ` +
         `-of "${finalPath}" ` +
         `--output-lrc`
@@ -62,7 +61,6 @@ export async function callWhisper(
 
     l.dim(`\n  Transcript LRC file successfully created, reading file for txt conversion:\n    - ${finalPath}.lrc\n`)
     const lrcContent = await readFile(`${finalPath}.lrc`, 'utf8')
-    // l.dim(lrcContent)
     const txtContent = `${lrcContent}`
     await unlink(`${finalPath}.lrc`)
 

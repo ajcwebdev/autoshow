@@ -22,7 +22,7 @@ import { processFile } from '../process-commands/file'
 import { processRSS } from '../process-commands/rss'
 import { l, err } from '../utils/logging'
 import { LLM_OPTIONS } from './step-utils/llm-utils'
-import { TRANSCRIPT_OPTIONS } from './step-utils/transcription-utils'
+import { TRANSCRIPTION_SERVICES } from '../../shared/constants'
 import { validateRSSAction } from './command-utils/rss-utils'
 import { XMLParser } from 'fast-xml-parser'
 
@@ -70,14 +70,14 @@ export function validateRequest(requestData: any): {
   }
 
   // Determine transcript service or default to 'whisper' if not specified
-  transcriptServices = TRANSCRIPT_OPTIONS.includes(requestData.transcriptServices)
+  transcriptServices = TRANSCRIPTION_SERVICES.includes(requestData.transcriptServices)
     ? (requestData.transcriptServices as TranscriptServices)
     : 'whisper'
 
   // Set transcript options based on the selected service
   if (transcriptServices === 'whisper') {
-    // Set the Whisper model or default to 'large-v3-turbo'
-    options.whisper = requestData.whisperModel || 'large-v3-turbo'
+    // Set the Whisper model or default to 'base'
+    options.whisper = requestData.whisperModel || 'base'
   } else if (transcriptServices === 'deepgram') {
     options.deepgram = true
   } else if (transcriptServices === 'assembly') {
@@ -133,28 +133,7 @@ export const PROCESS_HANDLERS: Record<ValidAction, HandlerFunction> = {
   rss: processRSS,
 }
 
-/**
- * Provides user-friendly prompt choices for content generation or summary tasks.
- * 
- */
-export const PROMPT_CHOICES: Array<{ name: string; value: string }> = [
-  { name: 'Titles', value: 'titles' },
-  { name: 'Summary', value: 'summary' },
-  { name: 'Short Summary', value: 'shortSummary' },
-  { name: 'Long Summary', value: 'longSummary' },
-  { name: 'Bullet Point Summary', value: 'bulletPoints' },
-  { name: 'Chapter Titles', value: 'chapterTitles' },
-  { name: 'Short Chapters', value: 'shortChapters' },
-  { name: 'Medium Chapters', value: 'mediumChapters' },
-  { name: 'Long Chapters', value: 'longChapters' },
-  { name: 'Key Takeaways', value: 'takeaways' },
-  { name: 'Questions', value: 'questions' },
-  { name: 'FAQ', value: 'faq' },
-  { name: 'Blog', value: 'blog' },
-  { name: 'Rap Song', value: 'rapSong' },
-  { name: 'Rock Song', value: 'rockSong' },
-  { name: 'Country Song', value: 'countrySong' },
-]
+// Removed the duplicated `PROMPT_CHOICES` definition. Now imported from '../../../shared/constants'.
 
 /**
  * Available action options for content processing with additional metadata.
@@ -257,10 +236,10 @@ export function validateCLIOptions(options: ProcessingOptions): {
   const llmKey = checkSingleOption(LLM_OPTIONS as string[], 'LLM option') as LLMServices | undefined
   const llmServices = llmKey
 
-  const transcriptKey = checkSingleOption(TRANSCRIPT_OPTIONS, 'transcription option')
+  const transcriptKey = checkSingleOption(TRANSCRIPTION_SERVICES.map(service => service.toString()), 'transcription option')
   const transcriptServices = (transcriptKey as TranscriptServices) || 'whisper'
   if (transcriptServices === 'whisper' && !options.whisper) {
-    options.whisper = 'large-v3-turbo'
+    options.whisper = 'base'
   }
 
   return { action, llmServices, transcriptServices }
@@ -293,10 +272,10 @@ export function validateInputCLI(options: ProcessingOptions): {
   const llmServices = llmKey
 
   // Validate transcription
-  const transcriptKey = validateOption(TRANSCRIPT_OPTIONS, options, 'transcription option')
+  const transcriptKey = validateOption(TRANSCRIPTION_SERVICES.map(service => service.toString()), options, 'transcription option')
   const transcriptServices = (transcriptKey as TranscriptServices) || 'whisper'
   if (transcriptServices === 'whisper' && !options.whisper) {
-    options.whisper = 'large-v3-turbo'
+    options.whisper = 'base'
   }
 
   return { action, llmServices, transcriptServices }

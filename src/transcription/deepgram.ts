@@ -11,9 +11,10 @@
 import { readFile } from 'node:fs/promises'
 import { env } from 'node:process'
 import { l, err } from '../utils/logging'
-import { DEEPGRAM_MODELS, logTranscriptionCost, formatDeepgramTranscript } from '../utils/step-utils/transcription-utils'
+import { logTranscriptionCost, formatDeepgramTranscript } from '../utils/step-utils/transcription-utils'
+import { DEEPGRAM_MODELS } from '../../shared/constants'
 import type { ProcessingOptions } from '../utils/types/process'
-import type { DeepgramResponse, DeepgramModelType } from '../utils/types/transcription'
+import type { DeepgramModelType } from '../utils/types/transcription'
 
 /**
  * Main function to handle transcription using Deepgram API.
@@ -75,7 +76,7 @@ export async function callDeepgram(
       throw new Error(`Deepgram API request failed with status ${response.status}`)
     }
 
-    const result = await response.json() as DeepgramResponse
+    const result = await response.json()
 
     // Extract the transcription results, Deepgram returns results in channels->alternatives->words
     const channel = result.results?.channels?.[0]

@@ -37,7 +37,7 @@ const commands = [
   },
   {
     // Process local audio file with title prompts, Whisper 'tiny' model, and Ollama.
-    cmd: 'npm run as -- --file "content/audio.mp3" --prompt titles --whisper tiny --ollama LLAMA_3_2_1B',
+    cmd: 'npm run as -- --file "content/audio.mp3" --prompt titles --whisper tiny --ollama qwen2.5:0.5b',
     expectedFile: 'audio-ollama-shownotes.md',
     newName: '07-titles-prompt-whisper-tiny-ollama-shownotes.md'
   },
@@ -55,13 +55,13 @@ const commands = [
   },
   {
     // Process local audio file with multiple prompt sections, Whisper 'tiny' model, and Ollama.
-    cmd: 'npm run as -- --file "content/audio.mp3" --prompt titles summary shortChapters takeaways questions --whisper tiny --ollama LLAMA_3_2_1B',
+    cmd: 'npm run as -- --file "content/audio.mp3" --prompt titles summary shortChapters takeaways questions --whisper tiny --ollama qwen2.5:0.5b',
     expectedFile: 'audio-ollama-shownotes.md',
     newName: '10-all-prompts-ollama-shownotes.md'
   },
   {
     // Process playlist videos with titles and longChapters prompts, tiny Whisper model, and Ollama for LLM processing.
-    cmd: 'npm run as -- --playlist "https://www.youtube.com/playlist?list=PLCVnrVv4KhXPz0SoAVu8Rc1emAdGPbSbr" --prompt titles longChapters --whisper tiny --ollama LLAMA_3_2_1B',
+    cmd: 'npm run as -- --playlist "https://www.youtube.com/playlist?list=PLCVnrVv4KhXPz0SoAVu8Rc1emAdGPbSbr" --prompt titles longChapters --whisper tiny --ollama qwen2.5:0.5b',
     expectedFiles: [
       { file: '2024-09-24-ep1-fsjam-podcast-ollama-shownotes.md', newName: '11-prompt-whisper-ollama-shownotes.md' },
       { file: '2024-09-24-ep0-fsjam-podcast-ollama-shownotes.md', newName: '12-prompt-whisper-ollama-shownotes.md' }
@@ -69,7 +69,7 @@ const commands = [
   },
   {
     // Process multiple YouTube videos from URLs with title prompts, Whisper 'tiny' model, and Ollama.
-    cmd: 'npm run as -- --urls "content/example-urls.md" --prompt titles --whisper tiny --ollama LLAMA_3_2_1B',
+    cmd: 'npm run as -- --urls "content/example-urls.md" --prompt titles --whisper tiny --ollama qwen2.5:0.5b',
     expectedFiles: [
       { file: '2024-09-24-ep1-fsjam-podcast-ollama-shownotes.md', newName: '13-prompt-whisper-ollama-shownotes.md' },
       { file: '2024-09-24-ep0-fsjam-podcast-ollama-shownotes.md', newName: '14-prompt-whisper-ollama-shownotes.md' }
@@ -112,7 +112,7 @@ const commands = [
     newName: '22-docker-file-default.md'
   },
   // {
-  //   cmd: 'npm run docker-cli -- --file "content/audio.mp3" --prompt titles --whisper tiny --ollama LLAMA_3_2_1B',
+  //   cmd: 'npm run docker-cli -- --file "content/audio.mp3" --prompt titles --whisper tiny --ollama qwen2.5:0.5b',
   //   expectedFile: 'audio-ollama-shownotes.md',
   //   newName: '23-docker-titles-prompt-whisper-tiny-ollama-shownotes.md'
   // },
@@ -175,8 +175,8 @@ const commands = [
     newName: '35-claude-default.md'
   },
   {
-    // Process file with Claude using CLAUDE_3_SONNET model.
-    cmd: 'npm run as -- --file "content/audio.mp3" --claude CLAUDE_3_SONNET',
+    // Process file with Claude using CLAUDE_3_5_HAIKU model.
+    cmd: 'npm run as -- --file "content/audio.mp3" --claude CLAUDE_3_5_HAIKU',
     expectedFile: 'audio-claude-shownotes.md',
     newName: '36-claude-shownotes.md'
   },

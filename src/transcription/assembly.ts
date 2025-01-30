@@ -11,16 +11,10 @@
 import { readFile } from 'node:fs/promises'
 import { env } from 'node:process'
 import { l, err } from '../utils/logging'
-import { ASSEMBLY_MODELS, logTranscriptionCost, formatAssemblyTranscript } from '../utils/step-utils/transcription-utils'
+import { logTranscriptionCost, formatAssemblyTranscript } from '../utils/step-utils/transcription-utils'
+import { ASSEMBLY_MODELS } from '../../shared/constants'
 import type { ProcessingOptions } from '../utils/types/process'
-import type {
-  AssemblyAITranscriptionOptions,
-  AssemblyAIErrorResponse,
-  AssemblyAIUploadResponse,
-  AssemblyAITranscript,
-  AssemblyAIPollingResponse,
-  AssemblyModelType
-} from '../utils/types/transcription'
+import type { AssemblyModelType } from '../utils/types/transcription'
 
 const BASE_URL = 'https://api.assemblyai.com/v2'
 
@@ -80,11 +74,11 @@ export async function callAssembly(
     })
 
     if (!uploadResponse.ok) {
-      const errorData = await uploadResponse.json() as AssemblyAIErrorResponse
+      const errorData = await uploadResponse.json()
       throw new Error(`File upload failed: ${errorData.error || uploadResponse.statusText}`)
     }
 
-    const uploadData = await uploadResponse.json() as AssemblyAIUploadResponse
+    const uploadData = await uploadResponse.json()
     const { upload_url } = uploadData
     if (!upload_url) {
       throw new Error('Upload URL not returned by AssemblyAI.')
@@ -92,7 +86,7 @@ export async function callAssembly(
     l.dim('    - Audio file uploaded successfully.')
 
     // Step 2: Requesting the transcription
-    const transcriptionOptions: AssemblyAITranscriptionOptions = {
+    const transcriptionOptions = {
       audio_url: upload_url,
       speech_model: modelInfo.modelId as 'default' | 'nano',
       speaker_labels: speakerLabels || false
@@ -108,13 +102,13 @@ export async function callAssembly(
       throw new Error(`HTTP error! status: ${response.status}`)
     }
 
-    const transcriptData = await response.json() as AssemblyAITranscript
+    const transcriptData = await response.json()
 
     // Step 3: Polling for transcription completion
-    let transcript: AssemblyAIPollingResponse
+    let transcript
     while (true) {
       const pollingResponse = await fetch(`${BASE_URL}/transcript/${transcriptData.id}`, { headers })
-      transcript = await pollingResponse.json() as AssemblyAIPollingResponse
+      transcript = await pollingResponse.json()
 
       if (transcript.status === 'completed' || transcript.status === 'error') {
         break

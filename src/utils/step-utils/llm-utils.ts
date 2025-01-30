@@ -19,7 +19,6 @@ import { l, err } from '../logging'
 
 import type {
   ModelConfig,
-  OllamaModelType,
   ChatGPTModelType,
   ClaudeModelType,
   CohereModelType,
@@ -300,62 +299,6 @@ export const LLM_FUNCTIONS = {
   fireworks: callFireworks,
   together: callTogether,
   groq: callGroq,
-}
-
-/**
- * Configuration for Ollama models, mapping model types to their display names and identifiers.
- * Each model has a human-readable name and a corresponding model identifier used for API calls.
- * @type {ModelConfig<OllamaModelType>}
- */
-export const OLLAMA_MODELS: ModelConfig<OllamaModelType> = {
-  DEEPSEEK_R1_1_5B: {
-    name: 'DEEPSEEK R1 1.5B',
-    modelId: 'deepseek-r1:1.5b',
-    inputCostPer1M: 0.00,
-    outputCostPer1M: 0.00
-  },
-  LLAMA_3_2_1B: {
-    name: 'LLAMA 3 2 1B',
-    modelId: 'llama3.2:1b',
-    inputCostPer1M: 0.00,
-    outputCostPer1M: 0.00
-  },
-  LLAMA_3_2_3B: {
-    name: 'LLAMA 3 2 3B',
-    modelId: 'llama3.2:3b',
-    inputCostPer1M: 0.00,
-    outputCostPer1M: 0.00
-  },
-  GEMMA_2_2B: {
-    name: 'GEMMA 2 2B',
-    modelId: 'gemma2:2b',
-    inputCostPer1M: 0.00,
-    outputCostPer1M: 0.00
-  },
-  PHI_3_5: {
-    name: 'PHI 3 5',
-    modelId: 'phi3.5:3.8b',
-    inputCostPer1M: 0.00,
-    outputCostPer1M: 0.00
-  },
-  QWEN_2_5_0B: {
-    name: 'QWEN 2 5 0B',
-    modelId: 'qwen2.5:0.5b',
-    inputCostPer1M: 0.00,
-    outputCostPer1M: 0.00
-  },
-  QWEN_2_5_1B: {
-    name: 'QWEN 2 5 1B',
-    modelId: 'qwen2.5:1.5b',
-    inputCostPer1M: 0.00,
-    outputCostPer1M: 0.00
-  },
-  QWEN_2_5_3B: {
-    name: 'QWEN 2 5 3B',
-    modelId: 'qwen2.5:3b',
-    inputCostPer1M: 0.00,
-    outputCostPer1M: 0.00
-  },
 }
 
 /**
@@ -694,7 +637,6 @@ export const DEEPSEEK_MODELS: ModelConfig<DeepSeekModelType> = {
  * All available model configurations combined
  */
 export const ALL_MODELS: { [key: string]: ModelConfigValue } = {
-  ...OLLAMA_MODELS,
   ...GPT_MODELS,
   ...CLAUDE_MODELS,
   ...GEMINI_MODELS,

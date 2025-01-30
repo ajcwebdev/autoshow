@@ -1,8 +1,7 @@
 // web/src/components/app/groups/LLMService.tsx
 
 import React from 'react'
-import { LLM_SERVICES, LLM_MODELS } from '@/site-config'
-import type { LlmServiceKey } from '../../../types'
+import { LLM_SERVICES, LLM_MODELS } from '../../../../../shared/constants'
 
 /**
  * The LLMService component provides a dropdown for selecting the LLM service,
@@ -36,7 +35,7 @@ export const LLMService: React.FC<{
    */
   React.useEffect(() => {
     if (llmService && llmService in LLM_MODELS && !llmModel) {
-      setLlmModel((LLM_MODELS[llmService as LlmServiceKey][0] as { value: string }).value)
+      setLlmModel((LLM_MODELS[llmService as keyof typeof LLM_MODELS][0].value))
     }
   }, [llmService, llmModel, setLlmModel])
 
@@ -69,7 +68,7 @@ export const LLMService: React.FC<{
             value={llmModel}
             onChange={(e) => setLlmModel(e.target.value)}
           >
-            {LLM_MODELS[llmService as LlmServiceKey].map((model) => (
+            {LLM_MODELS[llmService as keyof typeof LLM_MODELS].map((model) => (
               <option key={model.value} value={model.value}>
                 {model.label}
               </option>

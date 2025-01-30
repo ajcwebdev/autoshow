@@ -1,8 +1,8 @@
 // src/utils/channel-utils.ts
 
-import { l, err } from '../utils/logging'
+import { l, err } from '../logging'
 
-import type { ProcessingOptions } from './types/process'
+import type { ProcessingOptions } from '../types/process'
 
 /**
  * Validates channel processing options for consistency and correct values.

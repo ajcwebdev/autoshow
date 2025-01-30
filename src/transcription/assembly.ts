@@ -11,7 +11,7 @@
 import { readFile } from 'node:fs/promises'
 import { env } from 'node:process'
 import { l, err } from '../utils/logging'
-import { ASSEMBLY_MODELS, logTranscriptionCost, formatAssemblyTranscript } from '../utils/transcription-utils'
+import { ASSEMBLY_MODELS, logTranscriptionCost, formatAssemblyTranscript } from '../utils/step-utils/transcription-utils'
 import type { ProcessingOptions } from '../utils/types/process'
 import type {
   AssemblyAITranscriptionOptions,
@@ -54,7 +54,11 @@ export async function callAssembly(
     const { speakerLabels } = options
     const audioFilePath = `${finalPath}.wav`
 
-    const modelInfo = ASSEMBLY_MODELS[model as AssemblyModelType] || ASSEMBLY_MODELS.NANO
+    const modelInfo = ASSEMBLY_MODELS[model as AssemblyModelType] || ASSEMBLY_MODELS['NANO']
+
+    if (!modelInfo) {
+      throw new Error(`Model information for model ${model} is not available.`)
+    }
 
     await logTranscriptionCost({
       modelName: modelInfo.name,

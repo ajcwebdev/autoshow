@@ -1,10 +1,10 @@
 // src/llms/together.ts
 
 import { env } from 'node:process'
-import { TOGETHER_MODELS } from '../utils/llm-utils'
+import { TOGETHER_MODELS } from '../utils/step-utils/llm-utils'
 import { err } from '../utils/logging'
-import { logLLMCost } from '../utils/llm-utils'
-import type { TogetherModelType, TogetherResponse } from '../utils/types/llms'
+import { logLLMCost } from '../utils/step-utils/llm-utils'
+import type { TogetherModelType } from '../utils/types/llms'
 
 /**
  * Main function to call Together AI API.
@@ -54,7 +54,7 @@ export const callTogether = async (
       throw new Error(`Together AI API error: ${response.status} ${response.statusText} - ${errorText}`)
     }
 
-    const data = await response.json() as TogetherResponse
+    const data = await response.json()
     const content = data.choices[0]?.message?.content
     if (!content) {
       throw new Error('No content generated from the Together AI API')

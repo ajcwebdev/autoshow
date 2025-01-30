@@ -1,21 +1,21 @@
-// src/utils/globals/llms.ts
+// src/utils/llm-utils.ts
 
 import { spawn } from 'node:child_process'
 import { readFile } from 'node:fs/promises'
-import { callOllama } from '../llms/ollama'
-import { callChatGPT } from '../llms/chatgpt'
-import { callClaude } from '../llms/claude'
-import { callGemini } from '../llms/gemini'
-import { callCohere } from '../llms/cohere'
-import { callMistral } from '../llms/mistral'
-import { callDeepSeek } from '../llms/deepseek'
-import { callGrok } from '../llms/grok'
-import { callFireworks } from '../llms/fireworks'
-import { callTogether } from '../llms/together'
-import { callGroq } from '../llms/groq'
+import { callOllama } from '../../llms/ollama'
+import { callChatGPT } from '../../llms/chatgpt'
+import { callClaude } from '../../llms/claude'
+import { callGemini } from '../../llms/gemini'
+import { callCohere } from '../../llms/cohere'
+import { callMistral } from '../../llms/mistral'
+import { callDeepSeek } from '../../llms/deepseek'
+import { callGrok } from '../../llms/grok'
+import { callFireworks } from '../../llms/fireworks'
+import { callTogether } from '../../llms/together'
+import { callGroq } from '../../llms/groq'
 
 import chalk from 'chalk'
-import { l, err } from './logging'
+import { l, err } from '../logging'
 
 import type {
   ModelConfig,
@@ -34,9 +34,9 @@ import type {
   LLMServices,
   ModelConfigValue,
   OllamaTagsResponse
-} from './types/llms'
-import type { LogLLMCost } from './types/logging'
-import type { RequestBody, ProcessingOptions } from './types/process'
+} from '../types/llms'
+import type { LogLLMCost } from '../types/logging'
+import type { RequestBody, ProcessingOptions } from '../types/process'
 
 /**
  * Finds the model configuration based on the model key

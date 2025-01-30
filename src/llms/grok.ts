@@ -8,8 +8,8 @@
 import { env } from 'node:process'
 import { OpenAI } from 'openai'
 import { err } from '../utils/logging'
-import { logLLMCost } from '../utils/llm-utils'
-import type { GroqChatCompletionResponse, GrokModelType } from '../utils/types/llms'
+import { logLLMCost } from '../utils/step-utils/llm-utils'
+import type { GrokModelType } from '../utils/types/llms'
 
 /**
  * Calls the Grok API to generate a response to a prompt and transcript.
@@ -58,7 +58,7 @@ export async function callGrok(
           content: combinedPrompt
         }
       ],
-    }) as GroqChatCompletionResponse
+    })
 
     const firstChoice = response.choices[0]
     if (!firstChoice || !firstChoice.message?.content) {

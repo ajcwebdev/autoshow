@@ -4,7 +4,7 @@ import { callWhisper } from '../transcription/whisper'
 import { callDeepgram } from '../transcription/deepgram'
 import { callAssembly } from '../transcription/assembly'
 import { l, err, logInitialFunctionCall } from '../utils/logging'
-import { retryTranscriptionCall } from '../utils/retry'
+import { retryTranscriptionCall } from '../utils/step-utils/retry'
 import type { ProcessingOptions } from '../utils/types/process'
 import type { TranscriptServices } from '../utils/types/transcription'
 

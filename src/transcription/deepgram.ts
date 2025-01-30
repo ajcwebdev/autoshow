@@ -11,7 +11,7 @@
 import { readFile } from 'node:fs/promises'
 import { env } from 'node:process'
 import { l, err } from '../utils/logging'
-import { DEEPGRAM_MODELS, logTranscriptionCost, formatDeepgramTranscript } from '../utils/transcription-utils'
+import { DEEPGRAM_MODELS, logTranscriptionCost, formatDeepgramTranscript } from '../utils/step-utils/transcription-utils'
 import type { ProcessingOptions } from '../utils/types/process'
 import type { DeepgramResponse, DeepgramModelType } from '../utils/types/transcription'
 
@@ -37,7 +37,11 @@ export async function callDeepgram(
   }
 
   try {
-    const modelInfo = DEEPGRAM_MODELS[model as DeepgramModelType] || DEEPGRAM_MODELS.NOVA_2
+    const modelInfo = DEEPGRAM_MODELS[model as DeepgramModelType] || DEEPGRAM_MODELS['NOVA_2']
+
+    if (!modelInfo) {
+      throw new Error(`Model information for model ${model} is not defined.`)
+    }
 
     await logTranscriptionCost({
       modelName: modelInfo.name,

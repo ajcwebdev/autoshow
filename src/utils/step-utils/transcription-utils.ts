@@ -1,4 +1,4 @@
-// src/utils/transcription-globals.ts
+// src/utils/transcription-utils.ts
 
 /**
  * @file Defines Deepgram and Assembly transcription model configurations,
@@ -7,16 +7,10 @@
  */
 
 import { existsSync } from 'node:fs'
-import { execPromise } from './validate-option'
-import { l, err } from './logging'
-import type { ProcessingOptions } from './types/process'
-import type { TranscriptServices, TranscriptionCostInfo, WhisperModelType, TranscriptServiceConfig, DeepgramModelType, AssemblyModelType } from './types/transcription'
-
-import type {
-  AssemblyAIPollingResponse,
-  AssemblyAIUtterance,
-  AssemblyAIWord
-} from '../utils/types/transcription'
+import { execPromise } from '../validate-option'
+import { l, err } from '../logging'
+import type { ProcessingOptions } from '../types/process'
+import type { TranscriptServices, TranscriptionCostInfo, WhisperModelType, TranscriptServiceConfig, DeepgramModelType, AssemblyModelType, AssemblyAIPollingResponse, AssemblyAIUtterance, AssemblyAIWord } from '../types/transcription'
 
 /**
  * Formats the Deepgram transcript by adding timestamps and newlines based on conditions.

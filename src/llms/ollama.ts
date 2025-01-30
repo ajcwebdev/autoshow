@@ -1,10 +1,10 @@
 // src/llms/ollama.ts
 
 import { env } from 'node:process'
-import { OLLAMA_MODELS } from '../utils/llm-utils'
+import { OLLAMA_MODELS } from '../utils/step-utils/llm-utils'
 import { l, err } from '../utils/logging'
-import { logLLMCost, checkOllamaServerAndModel } from '../utils/llm-utils'
-import type { OllamaModelType, OllamaResponse } from '../utils/types/llms'
+import { logLLMCost, checkOllamaServerAndModel } from '../utils/step-utils/llm-utils'
+import type { OllamaModelType } from '../utils/types/llms'
 
 /**
  * callOllama()
@@ -61,7 +61,7 @@ export const callOllama = async (
     }
 
     // Parse returned JSON
-    const data = (await response.json()) as OllamaResponse
+    const data = (await response.json())
     const fullContent = data?.message?.content || ''
 
     // Log token usage if provided by the server

@@ -6,7 +6,7 @@
  */
 
 import { readFile, unlink } from 'node:fs/promises'
-import { WHISPER_MODELS, checkWhisperDirAndModel } from '../utils/transcription-utils'
+import { WHISPER_MODELS, checkWhisperDirAndModel } from '../utils/step-utils/transcription-utils'
 import { execPromise } from '../utils/validate-option'
 import { l, err } from '../utils/logging'
 import type { ProcessingOptions } from '../utils/types/process'
@@ -43,7 +43,7 @@ export async function callWhisper(
     const modelGGMLName = WHISPER_MODELS[whisperModel as WhisperModelType]
     l.dim(`    - modelGGMLName: ${modelGGMLName}`)
 
-    await checkWhisperDirAndModel(whisperModel, modelGGMLName)
+    await checkWhisperDirAndModel(whisperModel, modelGGMLName as string)
 
     // Run whisper.cpp on the WAV file
     l.dim(`  Invoking whisper.cpp on file:\n    - ${finalPath}.wav`)

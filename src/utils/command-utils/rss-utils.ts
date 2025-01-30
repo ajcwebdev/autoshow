@@ -2,11 +2,11 @@
 
 import { exec, execFile } from 'node:child_process'
 import { promisify } from 'node:util'
-import { l, err } from '../utils/logging'
+import { l, err } from '../../utils/logging'
 
-import type { TranscriptServices } from './types/transcription'
-import type { LLMServices } from './types/llms'
-import type { ProcessingOptions, RSSItem, HandlerFunction } from './types/process'
+import type { TranscriptServices } from '../types/transcription'
+import type { LLMServices } from '../types/llms'
+import type { ProcessingOptions, RSSItem, HandlerFunction } from '../types/process'
 
 export const execPromise = promisify(exec)
 export const execFilePromise = promisify(execFile)

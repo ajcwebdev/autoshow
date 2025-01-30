@@ -17,7 +17,7 @@
 import { processVideo } from './video'
 import { saveInfo, execFilePromise } from '../utils/validate-option'
 import { l, err, logSeparator, logInitialFunctionCall } from '../utils/logging'
-import { validateChannelOptions, logChannelProcessingStatus } from '../utils/channel-utils'
+import { validateChannelOptions, logChannelProcessingStatus } from '../utils/command-utils/channel-utils'
 
 import type { ProcessingOptions, VideoInfo } from '../utils/types/process'
 import type { TranscriptServices } from '../utils/types/transcription'

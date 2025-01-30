@@ -35,6 +35,7 @@
     "t": "npm run test-local",
     "test-local": "tsx --test test/local.test.ts",
     "test-docker": "tsx --test test/docker.test.ts",
+    "td": "tsx --test test/docker.test.ts",
     "test-services": "tsx --test test/services.test.ts",
     "test-server-all": "npm run tsx:base -- src/server/tests/fetch-all.ts",
     "ts": "npm run tsx:base -- src/server/tests/fetch-local.ts",

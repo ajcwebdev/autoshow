@@ -5,8 +5,7 @@ FROM node:22-slim AS base
 
 # 2. Install system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    ffmpeg git make curl ca-certificates cmake python3 python3-pip \
-    libopenblas-dev g++ build-essential \
+    ffmpeg git wget ca-certificates cmake python3 build-essential \
  && rm -rf /var/lib/apt/lists/* \
  && apt-get clean \
  && update-ca-certificates
@@ -15,14 +14,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 WORKDIR /usr/src/app
 
 # 4. Install yt-dlp
-RUN curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp \
-    -o /usr/local/bin/yt-dlp \
+RUN wget https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp \
+    -O /usr/local/bin/yt-dlp \
  && chmod a+rx /usr/local/bin/yt-dlp
 
 # 5. Install tsx globally
 RUN npm install -g tsx
 
-# 6. Clone whisper.cpp at specific tag (v1.7.3)
+# 6. Clone whisper.cpp
 RUN git clone --depth=1 https://github.com/ggerganov/whisper.cpp.git
 
 # 7. Configure with CMake (verbose output)

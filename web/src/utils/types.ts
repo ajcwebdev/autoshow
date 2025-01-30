@@ -34,8 +34,9 @@ export interface ShowNoteType {
   transcript: string
   frontmatter: string
   prompt: string
+  llmOutput?: string
   id?: number
 }
 
 // Define type for different process options
-export type ProcessType = 'video' | 'playlist' | 'channel' | 'urls' | 'file' | 'rss'
+export type ProcessType = 'video' | 'file'

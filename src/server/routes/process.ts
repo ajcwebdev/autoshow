@@ -1,10 +1,6 @@
 // src/server/routes/process.ts
 
 import { processVideo } from '../../process-commands/video'
-import { processURLs } from '../../process-commands/urls'
-import { processRSS } from '../../process-commands/rss'
-import { processPlaylist } from '../../process-commands/playlist'
-import { processChannel } from '../../process-commands/channel'
 import { processFile } from '../../process-commands/file'
 import { validateRequest, validateServerProcessAction } from '../utils/validation'
 import { l, err } from '../../../src/utils/logging'
@@ -53,65 +49,13 @@ export const handleProcessRequest = async (
           return
         }
         options.video = url
-
-        // Grab the object that includes frontMatter, prompt, llmOutput, and transcript
         const result = await processVideo(options, url, llmServices, transcriptServices)
-
-        // Return the object, if there is no LLM output, it will be ''
         reply.send({
           frontMatter: result.frontMatter,
           prompt: result.prompt,
           llmOutput: result.llmOutput,
           transcript: result.transcript,
         })
-        break
-      }
-
-      case 'channel': {
-        const { url } = requestData
-        if (!url) {
-          reply.status(400).send({ error: 'Channel URL is required' })
-          return
-        }
-        options.channel = url
-        const content = await processChannel(options, url, llmServices, transcriptServices)
-        reply.send({ content })
-        break
-      }
-
-      case 'urls': {
-        const { filePath } = requestData
-        if (!filePath) {
-          reply.status(400).send({ error: 'File path is required' })
-          return
-        }
-        options.urls = filePath
-        await processURLs(options, filePath, llmServices, transcriptServices)
-        reply.send({ message: 'URLs processed successfully.' })
-        break
-      }
-
-      case 'rss': {
-        const { url } = requestData
-        if (!url) {
-          reply.status(400).send({ error: 'RSS URL is required' })
-          return
-        }
-        options.rss = url
-        await processRSS(options, url, llmServices, transcriptServices)
-        reply.send({ message: 'RSS feed processed successfully.' })
-        break
-      }
-
-      case 'playlist': {
-        const { url } = requestData
-        if (!url) {
-          reply.status(400).send({ error: 'Playlist URL is required' })
-          return
-        }
-        options.playlist = url
-        await processPlaylist(options, url, llmServices, transcriptServices)
-        reply.send({ message: 'Playlist processed successfully.' })
         break
       }
 
@@ -122,8 +66,13 @@ export const handleProcessRequest = async (
           return
         }
         options.file = filePath
-        await processFile(options, filePath, llmServices, transcriptServices)
-        reply.send({ message: 'File processed successfully.' })
+        const result = await processFile(options, filePath, llmServices, transcriptServices)
+        reply.send({
+          frontMatter: result.frontMatter,
+          prompt: result.prompt,
+          llmOutput: result.llmOutput,
+          transcript: result.transcript,
+        })
         break
       }
     }

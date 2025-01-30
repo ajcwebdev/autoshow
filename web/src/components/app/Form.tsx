@@ -3,20 +3,10 @@
 import '../../styles/global.css'
 import React, { useState, useEffect } from 'react'
 import {
-  PROMPT_CHOICES,
-  TRANSCRIPTION_SERVICES,
-  WHISPER_MODELS,
-  LLM_SERVICES,
-  LLM_MODELS,
-  PROCESS_TYPES
+  PROMPT_CHOICES, TRANSCRIPTION_SERVICES, WHISPER_MODELS, LLM_SERVICES, LLM_MODELS, PROCESS_TYPES
 } from '@/site-config'
 import type {
-  AlertProps,
-  LlmServiceKey,
-  ResultType,
-  ShowNoteType,
-  InputsProps,
-  ProcessType
+  AlertProps, LlmServiceKey, ResultType, ShowNoteType, InputsProps, ProcessType
 } from '../../utils/types.ts'
 
 // Alert component to display error messages
@@ -62,17 +52,19 @@ export const ShowNote: React.FC = () => {
   return (
     <div className="show-note">
       <h2>{showNote.title}</h2>
-      {/* Use publishDate instead of date */}
       <p>Date: {showNote.publishDate}</p>
 
-      {/* Use transcript (or other fields) instead of content */}
-      <div>{showNote.transcript ? formatContent(showNote.transcript) : 'No transcript available.'}</div>
+      <h3>LLM Output</h3>
+      <div>{showNote.llmOutput && formatContent(showNote.llmOutput)}</div>
 
       <h3>Front Matter</h3>
-         {showNote.frontmatter && formatContent(showNote.frontmatter)}
+      <div>{showNote.frontmatter && formatContent(showNote.frontmatter)}</div>
 
-         <h3>Prompt</h3>
-         {showNote.prompt && formatContent(showNote.prompt)}
+      <h3>Transcript</h3>
+      <div>{showNote.transcript ? formatContent(showNote.transcript) : 'No transcript available.'}</div>
+
+      <h3>Prompt</h3>
+      <div>{showNote.prompt && formatContent(showNote.prompt)}</div>
     </div>
   )
 }
@@ -84,14 +76,13 @@ const Inputs: React.FC<InputsProps> = ({ onNewShowNote }) => {
   const [filePath, setFilePath] = useState<string>('')
   const [transcriptionService, setTranscriptionService] = useState<string>('whisper')
   const [whisperModel, setWhisperModel] = useState<string>('base')
-  const [llmService, setLlmService] = useState<string>('')
+  const [llmService, setLlmService] = useState<string>('ollama')
   const [llmModel, setLlmModel] = useState<string>('')
   const [selectedPrompts, setSelectedPrompts] = useState<string[]>(['summary'])
   const [result, setResult] = useState<ResultType | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
-  // Handle form submission
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setIsLoading(true)
@@ -105,7 +96,6 @@ const Inputs: React.FC<InputsProps> = ({ onNewShowNote }) => {
     }
 
     try {
-      // Base request body with common fields
       const requestBody: any = {
         type: processType,
         transcriptServices: transcriptionService,
@@ -113,15 +103,9 @@ const Inputs: React.FC<InputsProps> = ({ onNewShowNote }) => {
         prompt: selectedPrompts,
       }
 
-      // Add type-specific fields
-      if (
-        processType === 'video' ||
-        processType === 'playlist' ||
-        processType === 'channel' ||
-        processType === 'rss'
-      ) {
+      if (processType === 'video') {
         requestBody.url = url
-      } else if (processType === 'file' || processType === 'urls') {
+      } else if (processType === 'file') {
         requestBody.filePath = filePath
       }
 
@@ -133,7 +117,6 @@ const Inputs: React.FC<InputsProps> = ({ onNewShowNote }) => {
         requestBody.llmModel = llmModel
       }
 
-      // Send POST request to the backend
       const response = await fetch('http://localhost:3000/process', {
         method: 'POST',
         headers: {
@@ -149,7 +132,6 @@ const Inputs: React.FC<InputsProps> = ({ onNewShowNote }) => {
       const data = (await response.json()) as ResultType
       setResult(data)
 
-      // Trigger a refresh of the show notes list
       onNewShowNote()
     } catch (err: unknown) {
       if (err instanceof Error) {
@@ -162,7 +144,6 @@ const Inputs: React.FC<InputsProps> = ({ onNewShowNote }) => {
     }
   }
 
-  // Format content by adding line breaks
   const formatContent = (text: string) => {
     return text.split('\n').map((line: string, index: number) => (
       <React.Fragment key={index}>
@@ -190,19 +171,11 @@ const Inputs: React.FC<InputsProps> = ({ onNewShowNote }) => {
           </select>
         </div>
 
-        {(processType === 'video' ||
-          processType === 'playlist' ||
-          processType === 'channel' ||
-          processType === 'rss') && (
+        {(processType === 'video') && (
           <div className="form-group">
             <label htmlFor="url">
-              {processType === 'video'
-                ? 'YouTube URL'
-                : processType === 'playlist'
-                ? 'Playlist URL'
-                : processType === 'channel'
-                ? 'Channel URL'
-                : 'RSS URL'}
+              {processType === 'video'}
+              YouTube URL
             </label>
             <input
               type="text"
@@ -214,7 +187,7 @@ const Inputs: React.FC<InputsProps> = ({ onNewShowNote }) => {
           </div>
         )}
 
-        {(processType === 'file' || processType === 'urls') && (
+        {(processType === 'file') && (
           <div className="form-group">
             <label htmlFor="filePath">File Path</label>
             <input
@@ -266,7 +239,6 @@ const Inputs: React.FC<InputsProps> = ({ onNewShowNote }) => {
             value={llmService}
             onChange={(e) => {
               setLlmService(e.target.value)
-              // Reset the LLM model when the service changes
               setLlmModel('')
             }}
           >
@@ -279,7 +251,6 @@ const Inputs: React.FC<InputsProps> = ({ onNewShowNote }) => {
           </select>
         </div>
 
-        {/* Only show LLM Models if llmService is a valid key of LLM_MODELS */}
         {llmService && llmService in LLM_MODELS && (
           <div className="form-group">
             <label htmlFor="llmModel">LLM Model</label>
@@ -331,11 +302,10 @@ const Inputs: React.FC<InputsProps> = ({ onNewShowNote }) => {
       {result && (
         <div className="result">
           <h2>Result:</h2>
-          {/* Display relevant fields instead of `result.content` or `result.message` */}
-          {result.transcript && (
+          {result.llmOutput && (
             <>
-              <h3>Transcript</h3>
-              <div>{formatContent(result.transcript)}</div>
+              <h3>LLM Output</h3>
+              <div>{formatContent(result.llmOutput)}</div>
             </>
           )}
           {result.frontMatter && (
@@ -350,10 +320,10 @@ const Inputs: React.FC<InputsProps> = ({ onNewShowNote }) => {
               <div>{formatContent(result.prompt)}</div>
             </>
           )}
-          {result.llmOutput && (
+          {result.transcript && (
             <>
-              <h3>LLM Output</h3>
-              <div>{formatContent(result.llmOutput)}</div>
+              <h3>Transcript</h3>
+              <div>{formatContent(result.transcript)}</div>
             </>
           )}
         </div>
@@ -388,7 +358,6 @@ const Form: React.FC = () => {
         <h1>Show Notes</h1>
         {showNotes.map((note) => (
           <li key={note.id}>
-            {/* Use publishDate instead of date */}
             <a href={`/show-notes/${note.id}`}>{note.title}</a> - {note.publishDate}
           </li>
         ))}

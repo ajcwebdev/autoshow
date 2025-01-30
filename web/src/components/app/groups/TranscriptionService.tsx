@@ -1,7 +1,7 @@
 // web/src/components/app/groups/TranscriptionService.tsx
 
 import React from 'react'
-import { TRANSCRIPTION_SERVICES, WHISPER_MODELS } from '@/site-config'
+import { TRANSCRIPTION_SERVICES, WHISPER_MODELS } from '../../../../../shared/constants'
 
 /**
  * The TranscriptionService component provides a dropdown for selecting

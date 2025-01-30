@@ -1,10 +1,10 @@
 // src/llms/fireworks.ts
 
 import { env } from 'node:process'
-import { FIREWORKS_MODELS } from '../utils/llm-utils'
+import { FIREWORKS_MODELS } from '../utils/step-utils/llm-utils'
 import { err } from '../utils/logging'
-import { logLLMCost } from '../utils/llm-utils'
-import type { FireworksModelType, FireworksResponse } from '../utils/types/llms'
+import { logLLMCost } from '../utils/step-utils/llm-utils'
+import type { FireworksModelType } from '../utils/types/llms'
 
 /**
  * Main function to call Fireworks AI API.
@@ -53,7 +53,7 @@ export const callFireworks = async (
       throw new Error(`Fireworks API error: ${response.status} ${response.statusText} - ${errorText}`)
     }
 
-    const data = await response.json() as FireworksResponse
+    const data = await response.json()
     const content = data.choices[0]?.message?.content
 
     if (!content) {

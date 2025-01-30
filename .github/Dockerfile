@@ -1,16 +1,11 @@
 # .github/Dockerfile
 
-# ---------------------------------------------------
-# 1) Node base image - Using Debian slim for smaller footprint
-# ---------------------------------------------------
-
 # 1. Use Node 22-slim as base image
 FROM node:22-slim AS base
 
 # 2. Install system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    ffmpeg git make curl ca-certificates cmake python3 python3-pip \
-    libopenblas-dev g++ build-essential \
+    ffmpeg git wget ca-certificates cmake python3 build-essential \
  && rm -rf /var/lib/apt/lists/* \
  && apt-get clean \
  && update-ca-certificates
@@ -19,14 +14,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 WORKDIR /usr/src/app
 
 # 4. Install yt-dlp
-RUN curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp \
-    -o /usr/local/bin/yt-dlp \
+RUN wget https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp \
+    -O /usr/local/bin/yt-dlp \
  && chmod a+rx /usr/local/bin/yt-dlp
 
 # 5. Install tsx globally
 RUN npm install -g tsx
 
-# 6. Clone whisper.cpp at specific tag (v1.7.3)
+# 6. Clone whisper.cpp
 RUN git clone --depth=1 https://github.com/ggerganov/whisper.cpp.git
 
 # 7. Configure with CMake (verbose output)
@@ -67,6 +62,7 @@ RUN npm ci --production && npm cache clean --force
 
 # 15. Copy source code
 COPY src ./src
+COPY shared ./shared
 
 # 16. Copy Docker entrypoint script
 COPY .github/docker-entrypoint.sh ./
@@ -74,61 +70,24 @@ COPY .github/docker-entrypoint.sh ./
 # 17. Set permissions to make the script executable
 RUN chmod +x /usr/src/app/docker-entrypoint.sh
 
-# ---------------------------------------------------
-# 2) Setup Ollama with models
-# ---------------------------------------------------
-
-# # 1. Use the Ollama image as a base
-# FROM ollama/ollama:latest AS ollama
-
-# # 2. Set working directory to Ollama config directory
-# WORKDIR /root/.ollama
-
-# # 3. Start Ollama server and pull models
-# RUN ollama serve & \
-#     sleep 10 && \
-#     ollama pull qwen2.5:0.5b && \
-#     ollama ls && \
-#     echo "Listing /root/.ollama after qwen2.5:0.5b pull:" && \
-#     ls -lh /root/.ollama || true && \
-#     echo "Listing /root/.ollama/models after qwen2.5:0.5b pull:" && \
-#     ls -lh /root/.ollama/models || true && \
-#     pkill ollama
-
-# ---------------------------------------------------
-# 3) Final stage combining everything
-# ---------------------------------------------------
-
-FROM base
-
-# # 1. Copy Ollama binary
-# COPY --from=ollama /bin/ollama /usr/local/bin/ollama
-
-# # 2. Copy pre-downloaded models
-# COPY --from=ollama /root/.ollama /root/.ollama
-
-# RUN echo "Listing /root/.ollama in final stage:" && \
-#     ls -lh /root/.ollama || true && \
-#     echo "Listing /root/.ollama/models in final stage:" && \
-#     ls -lh /root/.ollama/models || true
-
-# Set environment variables for Whisper
+# 18. Set environment variables for Whisper
 ENV WHISPER_FORCE_CPU=1
 ENV WHISPER_NO_GPU=1
 
-# 3. Create content directory first
+# 19. Create content directory first
 RUN mkdir -p /usr/src/app/content
 
-# 4. Set proper permissions for the entire app directory including content
+# 20. Set proper permissions for the entire app directory including content
 RUN chown -R node:node /usr/src/app \
  && chmod -R 755 /usr/src/app \
  && chmod 777 /usr/src/app/content
-#  && chown -R node:node /root/.ollama \
-#  && chmod -R 755 /root/.ollama
 
-# Switch to non-root user
+# 21. Switch to non-root user
 USER node
 
+# 22. Expose port 3000
 EXPOSE 3000
+
+# 23. Set the entrypoint and default command
 ENTRYPOINT ["/usr/src/app/docker-entrypoint.sh"]
 CMD ["serve"]

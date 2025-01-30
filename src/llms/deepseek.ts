@@ -8,8 +8,8 @@
 import { env } from 'node:process'
 import { OpenAI } from 'openai'
 import { err } from '../utils/logging'
-import { logLLMCost } from '../utils/llm-utils'
-import { DEEPSEEK_MODELS } from '../utils/llm-utils'
+import { logLLMCost } from '../utils/step-utils/llm-utils'
+import { DEEPSEEK_MODELS } from '../utils/step-utils/llm-utils'
 import type { DeepSeekModelType } from '../utils/types/llms'
 
 /**

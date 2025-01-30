@@ -2,7 +2,7 @@
 
 import { processVideo } from '../../process-commands/video'
 import { processFile } from '../../process-commands/file'
-import { validateRequest, validateServerProcessAction } from '../utils/validation'
+import { validateRequest, validateServerProcessAction } from '../../utils/validate-option'
 import { l, err } from '../../../src/utils/logging'
 import type { FastifyRequest, FastifyReply } from 'fastify'
 import type { ProcessRequestBody } from '../../utils/types/process'

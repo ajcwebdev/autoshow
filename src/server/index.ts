@@ -7,7 +7,7 @@ import { handleProcessRequest } from './routes/process'
 import { getShowNotes } from './routes/show-notes'
 import { getShowNote } from './routes/show-note'
 import { l } from '../../src/utils/logging'
-import { envVarsServerMap } from '../utils/llm-utils'
+import { envVarsServerMap } from '../utils/step-utils/llm-utils'
 import type { RequestBody } from '../utils/types/process'
 
 // Set server port from environment variable or default to 3000

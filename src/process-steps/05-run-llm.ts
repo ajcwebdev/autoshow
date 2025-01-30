@@ -9,8 +9,8 @@
 import { writeFile, readFile } from 'node:fs/promises'
 import { insertShowNote } from '../server/db'
 import { l, err, logInitialFunctionCall } from '../utils/logging'
-import { retryLLMCall } from '../utils/retry'
-import { LLM_FUNCTIONS } from '../utils/llm-utils'
+import { retryLLMCall } from '../utils/step-utils/retry'
+import { LLM_FUNCTIONS } from '../utils/step-utils/llm-utils'
 import type { ProcessingOptions, EpisodeMetadata } from '../utils/types/process'
 import type { LLMServices } from '../utils/types/llms'
 
@@ -66,7 +66,8 @@ export async function runLLM(
 
       await retryLLMCall(
         async () => {
-          showNotes = await llmFunction(prompt, transcript, options[llmServices])
+          const llmOptions = options[llmServices] ?? '';
+          showNotes = await llmFunction(prompt, transcript, llmOptions)
         },
         5,
         5000

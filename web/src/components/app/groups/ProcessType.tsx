@@ -1,8 +1,12 @@
 // web/src/components/app/groups/ProcessType.tsx
 
 import React from 'react'
-import { PROCESS_TYPES } from '@/site-config'
 import type { ProcessTypeEnum } from '../../../types'
+
+const PROCESS_TYPES = [
+  { value: 'video', label: 'Video' },
+  { value: 'file', label: 'File' },
+] as const
 
 /**
  * The ProcessType component encapsulates the selection of process type

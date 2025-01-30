@@ -1,10 +1,10 @@
 // src/llms/groq.ts
 
 import { env } from 'node:process'
-import { GROQ_MODELS } from '../utils/llm-utils'
+import { GROQ_MODELS } from '../utils/step-utils/llm-utils'
 import { err } from '../utils/logging'
-import { logLLMCost } from '../utils/llm-utils'
-import type { GroqModelType, GroqChatCompletionResponse } from '../utils/types/llms'
+import { logLLMCost } from '../utils/step-utils/llm-utils'
+import type { GroqModelType } from '../utils/types/llms'
 
 /**
  * Function to call the Groq chat completion API.
@@ -53,7 +53,7 @@ export const callGroq = async (
       throw new Error(`Groq API error: ${response.status} ${response.statusText} - ${errorText}`)
     }
 
-    const data = await response.json() as GroqChatCompletionResponse
+    const data = await response.json()
     const content = data.choices[0]?.message?.content
     if (!content) {
       throw new Error('No content generated from the Groq API')

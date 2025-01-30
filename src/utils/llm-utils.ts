@@ -308,6 +308,12 @@ export const LLM_FUNCTIONS = {
  * @type {ModelConfig<OllamaModelType>}
  */
 export const OLLAMA_MODELS: ModelConfig<OllamaModelType> = {
+  DEEPSEEK_R1_1_5B: {
+    name: 'DEEPSEEK R1 1.5B',
+    modelId: 'deepseek-r1:1.5b',
+    inputCostPer1M: 0.00,
+    outputCostPer1M: 0.00
+  },
   LLAMA_3_2_1B: {
     name: 'LLAMA 3 2 1B',
     modelId: 'llama3.2:1b',

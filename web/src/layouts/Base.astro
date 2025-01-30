@@ -1,10 +1,9 @@
 ---
 // web/src/layouts/Base.astro
 
-import type { SiteMeta } from "@/types"
 import BaseHead from "@/components/BaseHead.astro"
 import { siteConfig } from "@/site-config"
-import Navigation from "@/components/Navigation.astro"
+import type { SiteMeta } from "@/types"
 
 interface Props {
 	meta: SiteMeta
@@ -15,6 +14,7 @@ const {
 } = Astro.props
 
 const year = new Date().getFullYear()
+const url = new URL(Astro.request.url)
 ---
 
 <html color-mode="user" lang={siteConfig.lang}>
@@ -22,7 +22,11 @@ const year = new Date().getFullYear()
 		<BaseHead articleDate={articleDate} description={description} ogImage={ogImage} title={title} />
 	</head>
 	<body>
-		<Navigation />
+		<header id="main-header">
+          <div>
+            <a aria-current={url.pathname === "/" ? "page" : false} href="/">Autoshow.sh</a>
+          </div>
+       </header>
 		<main id="main">
 			<slot />
 		</main>

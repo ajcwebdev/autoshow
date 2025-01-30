@@ -2,43 +2,50 @@
 // web/src/pages/index.astro
 
 import PageLayout from "@/layouts/Base.astro"
-import { Icon } from "astro-icon/components"
-
-const socialLinks: {
-	friendlyName: string;
-	link: string;
-	name: string;
-}[] = [
-	{
-		friendlyName: "Github",
-		link: "https://github.com/ajcwebdev/autoshow",
-		name: "mdi:github",
-	},
-];
+import App from "@/components/app/App"
 ---
 
 <PageLayout meta={{ title: "Home" }}>
-	<section>
-		<h1>Autoshow Website Generator</h1>
-		<p>This uses Autoshow and Astro to generate individual web pages with show notes based on video and audio content of any kind.</p>
-		<div>
-			<p>Social Links:</p>
-			<ul>
-				{
-					socialLinks.map(({ friendlyName, link, name }) => (
-						<li>
-							<a
-								href={link}
-								rel={`noopener noreferrer me authn"}`}
-								target="_blank"
-							>
-								<Icon aria-hidden="true" focusable="false" name={name} />
-								<span>{friendlyName}</span>
-							</a>
-						</li>
-					))
-				}
-			</ul>
-		</div>
-	</section>
+  <section class="p-6 max-w-6xl mx-auto">
+    <h1 class="text-4xl font-bold text-emerald-400 mb-8">Generate Show Notes</h1>
+	<p>This app uses <a href="https://github.com/ajcwebdev/autoshow" target="_blank">Autoshow</a> and Astro to generate show notes based on video and audio content of any kind.</p>
+    <h2 class="text-3xl font-bold mb-6">Instructions</h2>
+    <p>
+      1. Choose the type of content you want to use 
+      (<a href="#examples" class="text-emerald-400 underline">examples</a>)
+    </p>
+    <p>2. Select the Process Type and paste the link to the type of content you've chosen into Link</p>
+    <p>3. Select Transcript Service</p>
+    <p>4. Select Whisper Model</p>
+    <p>5. Select LLM Model</p>
+    <p>6. Select Prompts</p>
+    <h3 id="examples" class="text-3xl font-bold mb-6">Examples</h3>
+    <div class="overflow-x-auto mb-8">
+      <table class="w-full table-fixed border-collapse" style="table-layout: fixed;">
+        <thead>
+          <tr class="bg-gray-800">
+            <!-- Inline width styles to force fixed sizing -->
+            <th class="p-4 text-left border-b border-gray-700" style="width: 5rem; white-space: nowrap;">Type</th>
+            <th class="p-4 text-left border-b border-gray-700" style="width: 20rem;">Link</th>
+            <th class="p-4 text-left border-b border-gray-700">Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="border-b border-gray-700 hover:bg-gray-800">
+            <td class="p-4" style="width: 5rem; white-space: nowrap;">Video</td>
+            <td class="p-4 break-words">https://www.youtube.com/watch?v=MORMZXEaONk</td>
+            <td class="p-4">Single video content for show notes reference</td>
+          </tr>
+          <tr class="border-b border-gray-700 hover:bg-gray-800">
+            <td class="p-4" style="width: 5rem; white-space: nowrap;">File</td>
+            <td class="p-4 break-words">content/audio.mp3</td>
+            <td class="p-4">Audio file attachment for the show notes</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <ul class="show-notes-list">
+      <App client:only="react" />
+    </ul>
+  </section>
 </PageLayout>

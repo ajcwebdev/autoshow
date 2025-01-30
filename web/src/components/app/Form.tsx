@@ -1,97 +1,48 @@
 // web/src/components/app/Form.tsx
 
 import '../../styles/global.css'
-import React, { useState, useEffect } from 'react'
-import {
-  PROMPT_CHOICES,
-  TRANSCRIPTION_SERVICES,
-  WHISPER_MODELS,
-  LLM_SERVICES,
-  LLM_MODELS,
-  PROCESS_TYPES
-} from '@/site-config'
+import React, { useState } from 'react'
 import type {
-  AlertProps,
-  LlmServiceKey,
-  ResultType,
-  ShowNoteType,
-  InputsProps,
-  ProcessType
-} from '../../utils/types.ts'
+  AlertProps, ResultType, FormProps, ProcessTypeEnum
+} from '../../types.ts'
+import { ProcessType } from './groups/ProcessType.tsx'
+import { TranscriptionService } from './groups/TranscriptionService.tsx'
+import { LLMService } from './groups/LLMService.tsx'
+import { Prompts } from './groups/Prompts.tsx'
 
-// Alert component to display error messages
+/**
+ * Displays a styled alert message based on a variant type.
+ *
+ * @param {AlertProps} props - The properties for the alert, including a message and variant
+ * @returns {JSX.Element} An alert element
+ */
 const Alert: React.FC<AlertProps> = ({ message, variant }) => (
   <div className={`alert ${variant}`}>
     <p>{message}</p>
   </div>
 )
 
-// Export ShowNote component to be used in [id].astro
-export const ShowNote: React.FC = () => {
-  const [showNote, setShowNote] = useState<ShowNoteType | null>(null)
-
-  useEffect(() => {
-    // Get ID from URL path
-    const id = window.location.pathname.split('/').pop()
-
-    // Fetch the show note from the backend
-    fetch(`http://localhost:3000/show-notes/${id}`)
-      .then((response) => response.json())
-      .then((data) => {
-        setShowNote(data.showNote)
-      })
-      .catch((error) => {
-        console.error('Error fetching show note:', error)
-      })
-  }, [])
-
-  if (!showNote) {
-    return <div>Loading...</div>
-  }
-
-  // Format content by adding line breaks
-  const formatContent = (text: string) => {
-    return text.split('\n').map((line: string, index: number) => (
-      <React.Fragment key={index}>
-        {line}
-        <br />
-      </React.Fragment>
-    ))
-  }
-
-  return (
-    <div className="show-note">
-      <h2>{showNote.title}</h2>
-      {/* Use publishDate instead of date */}
-      <p>Date: {showNote.publishDate}</p>
-
-      {/* Use transcript (or other fields) instead of content */}
-      <div>{showNote.transcript ? formatContent(showNote.transcript) : 'No transcript available.'}</div>
-
-      <h3>Front Matter</h3>
-         {showNote.frontmatter && formatContent(showNote.frontmatter)}
-
-         <h3>Prompt</h3>
-         {showNote.prompt && formatContent(showNote.prompt)}
-    </div>
-  )
-}
-
-// Inputs component for the form
-const Inputs: React.FC<InputsProps> = ({ onNewShowNote }) => {
-  const [processType, setProcessType] = useState<ProcessType>('video')
-  const [url, setUrl] = useState<string>('')
-  const [filePath, setFilePath] = useState<string>('')
+/**
+ * The Form component handles form input fields for selecting and submitting process types,
+ * transcription services, LLM services, models, and prompts. It then sends the user’s choices
+ * to the backend for processing and displays the returned results.
+ *
+ * @param {FormProps} props - The component props, including an onNewShowNote callback
+ * @returns {JSX.Element} A form rendering various input controls and submission logic
+ */
+const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
+  const [processType, setProcessType] = useState<ProcessTypeEnum>('video')
+  const [url, setUrl] = useState<string>('https://www.youtube.com/watch?v=MORMZXEaONk')
+  const [filePath, setFilePath] = useState<string>('content/audio.mp3')
   const [transcriptionService, setTranscriptionService] = useState<string>('whisper')
   const [whisperModel, setWhisperModel] = useState<string>('base')
-  const [llmService, setLlmService] = useState<string>('')
+  const [llmService, setLlmService] = useState<string>('ollama')
   const [llmModel, setLlmModel] = useState<string>('')
   const [selectedPrompts, setSelectedPrompts] = useState<string[]>(['summary'])
   const [result, setResult] = useState<ResultType | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
-  // Handle form submission
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setIsLoading(true)
@@ -105,7 +56,6 @@ const Inputs: React.FC<InputsProps> = ({ onNewShowNote }) => {
     }
 
     try {
-      // Base request body with common fields
       const requestBody: any = {
         type: processType,
         transcriptServices: transcriptionService,
@@ -113,15 +63,9 @@ const Inputs: React.FC<InputsProps> = ({ onNewShowNote }) => {
         prompt: selectedPrompts,
       }
 
-      // Add type-specific fields
-      if (
-        processType === 'video' ||
-        processType === 'playlist' ||
-        processType === 'channel' ||
-        processType === 'rss'
-      ) {
+      if (processType === 'video') {
         requestBody.url = url
-      } else if (processType === 'file' || processType === 'urls') {
+      } else if (processType === 'file') {
         requestBody.filePath = filePath
       }
 
@@ -133,7 +77,6 @@ const Inputs: React.FC<InputsProps> = ({ onNewShowNote }) => {
         requestBody.llmModel = llmModel
       }
 
-      // Send POST request to the backend
       const response = await fetch('http://localhost:3000/process', {
         method: 'POST',
         headers: {
@@ -149,7 +92,6 @@ const Inputs: React.FC<InputsProps> = ({ onNewShowNote }) => {
       const data = (await response.json()) as ResultType
       setResult(data)
 
-      // Trigger a refresh of the show notes list
       onNewShowNote()
     } catch (err: unknown) {
       if (err instanceof Error) {
@@ -162,7 +104,6 @@ const Inputs: React.FC<InputsProps> = ({ onNewShowNote }) => {
     }
   }
 
-  // Format content by adding line breaks
   const formatContent = (text: string) => {
     return text.split('\n').map((line: string, index: number) => (
       <React.Fragment key={index}>
@@ -175,151 +116,34 @@ const Inputs: React.FC<InputsProps> = ({ onNewShowNote }) => {
   return (
     <>
       <form onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label htmlFor="processType">Process Type</label>
-          <select
-            id="processType"
-            value={processType}
-            onChange={(e) => setProcessType(e.target.value as ProcessType)}
-          >
-            {PROCESS_TYPES.map((type) => (
-              <option key={type.value} value={type.value}>
-                {type.label}
-              </option>
-            ))}
-          </select>
-        </div>
 
-        {(processType === 'video' ||
-          processType === 'playlist' ||
-          processType === 'channel' ||
-          processType === 'rss') && (
-          <div className="form-group">
-            <label htmlFor="url">
-              {processType === 'video'
-                ? 'YouTube URL'
-                : processType === 'playlist'
-                ? 'Playlist URL'
-                : processType === 'channel'
-                ? 'Channel URL'
-                : 'RSS URL'}
-            </label>
-            <input
-              type="text"
-              id="url"
-              value={url}
-              onChange={(e) => setUrl(e.target.value)}
-              required
-            />
-          </div>
-        )}
+        <ProcessType
+          processType={processType}
+          setProcessType={setProcessType}
+          url={url}
+          setUrl={setUrl}
+          filePath={filePath}
+          setFilePath={setFilePath}
+        />
 
-        {(processType === 'file' || processType === 'urls') && (
-          <div className="form-group">
-            <label htmlFor="filePath">File Path</label>
-            <input
-              type="text"
-              id="filePath"
-              value={filePath}
-              onChange={(e) => setFilePath(e.target.value)}
-              required
-            />
-          </div>
-        )}
+        <TranscriptionService
+          transcriptionService={transcriptionService}
+          setTranscriptionService={setTranscriptionService}
+          whisperModel={whisperModel}
+          setWhisperModel={setWhisperModel}
+        />
 
-        <div className="form-group">
-          <label htmlFor="transcriptionService">Transcription Service</label>
-          <select
-            id="transcriptionService"
-            value={transcriptionService}
-            onChange={(e) => setTranscriptionService(e.target.value)}
-          >
-            {TRANSCRIPTION_SERVICES.map((service) => (
-              <option key={service.value} value={service.value}>
-                {service.label}
-              </option>
-            ))}
-          </select>
-        </div>
+        <LLMService
+          llmService={llmService}
+          setLlmService={setLlmService}
+          llmModel={llmModel}
+          setLlmModel={setLlmModel}
+        />
 
-        {transcriptionService.startsWith('whisper') && (
-          <div className="form-group">
-            <label htmlFor="whisperModel">Whisper Model</label>
-            <select
-              id="whisperModel"
-              value={whisperModel}
-              onChange={(e) => setWhisperModel(e.target.value)}
-            >
-              {WHISPER_MODELS.map((model) => (
-                <option key={model.value} value={model.value}>
-                  {model.label}
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
-
-        <div className="form-group">
-          <label htmlFor="llmService">LLM Service</label>
-          <select
-            id="llmService"
-            value={llmService}
-            onChange={(e) => {
-              setLlmService(e.target.value)
-              // Reset the LLM model when the service changes
-              setLlmModel('')
-            }}
-          >
-            <option value="">None</option>
-            {LLM_SERVICES.map((service) => (
-              <option key={service.value} value={service.value}>
-                {service.label}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* Only show LLM Models if llmService is a valid key of LLM_MODELS */}
-        {llmService && llmService in LLM_MODELS && (
-          <div className="form-group">
-            <label htmlFor="llmModel">LLM Model</label>
-            <select
-              id="llmModel"
-              value={llmModel}
-              onChange={(e) => setLlmModel(e.target.value)}
-            >
-              {LLM_MODELS[llmService as LlmServiceKey].map((model) => (
-                <option key={model.value} value={model.value}>
-                  {model.label}
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
-
-        <div className="form-group">
-          <label>Prompts</label>
-          <div className="checkbox-group">
-            {PROMPT_CHOICES.map((prompt) => (
-              <div key={prompt.value}>
-                <input
-                  type="checkbox"
-                  id={`prompt-${prompt.value}`}
-                  value={prompt.value}
-                  checked={selectedPrompts.includes(prompt.value)}
-                  onChange={(e) => {
-                    if (e.target.checked) {
-                      setSelectedPrompts([...selectedPrompts, prompt.value])
-                    } else {
-                      setSelectedPrompts(selectedPrompts.filter((p) => p !== prompt.value))
-                    }
-                  }}
-                />
-                <label htmlFor={`prompt-${prompt.value}`}>{prompt.name}</label>
-              </div>
-            ))}
-          </div>
-        </div>
+        <Prompts
+          selectedPrompts={selectedPrompts}
+          setSelectedPrompts={setSelectedPrompts}
+        />
 
         <button type="submit" disabled={isLoading}>
           {isLoading ? 'Processing...' : 'Submit'}
@@ -330,12 +154,10 @@ const Inputs: React.FC<InputsProps> = ({ onNewShowNote }) => {
 
       {result && (
         <div className="result">
-          <h2>Result:</h2>
-          {/* Display relevant fields instead of `result.content` or `result.message` */}
-          {result.transcript && (
+          {result.llmOutput && (
             <>
-              <h3>Transcript</h3>
-              <div>{formatContent(result.transcript)}</div>
+              <h3>LLM Output</h3>
+              <div>{formatContent(result.llmOutput)}</div>
             </>
           )}
           {result.frontMatter && (
@@ -350,50 +172,15 @@ const Inputs: React.FC<InputsProps> = ({ onNewShowNote }) => {
               <div>{formatContent(result.prompt)}</div>
             </>
           )}
-          {result.llmOutput && (
+          {result.transcript && (
             <>
-              <h3>LLM Output</h3>
-              <div>{formatContent(result.llmOutput)}</div>
+              <h3>Transcript</h3>
+              <div>{formatContent(result.transcript)}</div>
             </>
           )}
         </div>
       )}
     </>
-  )
-}
-
-const Form: React.FC = () => {
-  const [showNotes, setShowNotes] = useState<ShowNoteType[]>([])
-
-  // Fetch show notes function
-  const fetchShowNotes = () => {
-    fetch('http://localhost:3000/show-notes')
-      .then((response) => response.json())
-      .then((data) => {
-        setShowNotes(data.showNotes)
-      })
-      .catch((error) => {
-        console.error('Error fetching show notes:', error)
-      })
-  }
-
-  useEffect(() => {
-    fetchShowNotes()
-  }, [])
-
-  return (
-    <div className="container">
-      <Inputs onNewShowNote={fetchShowNotes} />
-      <ul className="show-notes-list">
-        <h1>Show Notes</h1>
-        {showNotes.map((note) => (
-          <li key={note.id}>
-            {/* Use publishDate instead of date */}
-            <a href={`/show-notes/${note.id}`}>{note.title}</a> - {note.publishDate}
-          </li>
-        ))}
-      </ul>
-    </div>
   )
 }
 

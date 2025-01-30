@@ -92,7 +92,7 @@ export type GrokModelType = 'GROK_2_LATEST'
 /**
  * Local model with Ollama.
  */
-export type OllamaModelType = 'LLAMA_3_2_1B' | 'LLAMA_3_2_3B' | 'GEMMA_2_2B' | 'PHI_3_5' | 'QWEN_2_5_0B' | 'QWEN_2_5_1B' | 'QWEN_2_5_3B'
+export type OllamaModelType = 'DEEPSEEK_R1_1_5B' | 'LLAMA_3_2_1B' | 'LLAMA_3_2_3B' | 'GEMMA_2_2B' | 'PHI_3_5' | 'QWEN_2_5_0B' | 'QWEN_2_5_1B' | 'QWEN_2_5_3B'
 
 /**
  * @typedef DeepSeekModelType

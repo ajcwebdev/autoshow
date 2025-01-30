@@ -1,3 +1,7 @@
+// web/src/types.ts
+
+import { LLM_MODELS } from '@/site-config'
+
 export interface SiteConfig {
 	author: string;
 	title: string;
@@ -24,25 +28,41 @@ export interface SiteMeta {
 	articleDate?: string | undefined;
 }
 
-export interface Author {
-	type: string;
-	name: string;
-	photo: string;
-	url: string;
+// Define types for the Alert component props
+export interface AlertProps {
+  message: string
+  variant: string
 }
 
-export interface Content {
-	"content-type": string;
-	value: string;
-	html: string;
-	text: string;
+// Define the allowed LLM service keys from LLM_MODELS
+export type LlmServiceKey = keyof typeof LLM_MODELS
+
+// Define props for the Form component
+export interface FormProps {
+  onNewShowNote: () => void
 }
 
-export interface Rels {
-	canonical: string;
+// Define type for the result object returned by the server
+export interface ResultType {
+  transcript: string
+  frontMatter: string
+  prompt: string
+  llmOutput: string
+  content?: string
+  message?: string
 }
 
-export interface Summary {
-	"content-type": string;
-	value: string;
+// Define types for show notes
+export interface ShowNoteType {
+  title: string
+  publishDate: string
+  content: string
+  transcript: string
+  frontmatter: string
+  prompt: string
+  llmOutput?: string
+  id?: number
 }
+
+// Define type for different process options
+export type ProcessTypeEnum = 'video' | 'file'

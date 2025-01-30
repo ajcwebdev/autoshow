@@ -56,38 +56,6 @@ const requests = [
     endpoint: '/process',
     outputFiles: ['05-video-whisper-tiny-prompts.md'],
   },
-  // Playlist Endpoint Requests
-  {
-    data: {
-      type: 'playlist',
-      url: 'https://www.youtube.com/playlist?list=PLCVnrVv4KhXPz0SoAVu8Rc1emAdGPbSbr',
-      prompts: ['titles', 'summary'],
-      whisperModel: 'tiny',
-    },
-    endpoint: '/process',
-    outputFiles: ['06-playlist-default.md', '07-playlist-default.md'],
-  },
-  // URLs Endpoint Requests
-  {
-    data: {
-      type: 'urls',
-      filePath: 'content/example-urls.md',
-      prompts: ['titles', 'summary'],
-      whisperModel: 'tiny',
-    },
-    endpoint: '/process',
-    outputFiles: ['08-urls-whisper-tiny-prompts.md', '09-urls-whisper-tiny-prompts.md'],
-  },
-  // RSS Endpoint Requests
-  {
-    data: {
-      type: 'rss',
-      url: 'https://ajcwebdev.substack.com/feed/',
-      whisperModel: 'tiny',
-    },
-    endpoint: '/process',
-    outputFiles: ['10-rss-whisper-tiny.md'],
-  },
 ]
 
 const fetchRequest = async (request: any, index: number) => {

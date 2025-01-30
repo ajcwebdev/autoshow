@@ -1,15 +1,14 @@
 // web/src/components/app/Form.tsx
 
 import '../../styles/global.css'
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import {
   PROMPT_CHOICES, TRANSCRIPTION_SERVICES, WHISPER_MODELS, LLM_SERVICES, LLM_MODELS, PROCESS_TYPES
 } from '@/site-config'
 import type {
-  AlertProps, LlmServiceKey, ResultType, ShowNoteType, InputsProps, ProcessType
-} from '../../utils/types.ts'
+  AlertProps, LlmServiceKey, ResultType, FormProps, ProcessType
+} from '../../types.ts'
 
-// Alert component to display error messages
 /**
  * Displays a styled alert message based on a variant type.
  *
@@ -23,17 +22,17 @@ const Alert: React.FC<AlertProps> = ({ message, variant }) => (
 )
 
 /**
- * The Inputs component handles form input fields for selecting and submitting process types,
+ * The Form component handles form input fields for selecting and submitting process types,
  * transcription services, LLM services, models, and prompts. It then sends the user’s choices
  * to the backend for processing and displays the returned results.
  *
- * @param {InputsProps} props - The component props, including an onNewShowNote callback
+ * @param {FormProps} props - The component props, including an onNewShowNote callback
  * @returns {JSX.Element} A form rendering various input controls and submission logic
  */
-const Inputs: React.FC<InputsProps> = ({ onNewShowNote }) => {
+const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
   const [processType, setProcessType] = useState<ProcessType>('video')
-  const [url, setUrl] = useState<string>('')
-  const [filePath, setFilePath] = useState<string>('')
+  const [url, setUrl] = useState<string>('https://www.youtube.com/watch?v=MORMZXEaONk')
+  const [filePath, setFilePath] = useState<string>('content/audio.mp3')
   const [transcriptionService, setTranscriptionService] = useState<string>('whisper')
   const [whisperModel, setWhisperModel] = useState<string>('base')
   const [llmService, setLlmService] = useState<string>('ollama')
@@ -229,7 +228,7 @@ const Inputs: React.FC<InputsProps> = ({ onNewShowNote }) => {
         )}
 
         <div className="form-group">
-          <h3>Prompts</h3>
+          <label>Prompts</label>
           <div className="checkbox-group">
             {PROMPT_CHOICES.map((prompt) => (
               <div key={prompt.value}>
@@ -288,47 +287,6 @@ const Inputs: React.FC<InputsProps> = ({ onNewShowNote }) => {
         </div>
       )}
     </>
-  )
-}
-
-/**
- * The Form component displays the Inputs component and a list of existing show notes.
- * Once show notes are fetched from the backend, each note is listed for navigation
- * to a detailed view.
- *
- * @returns {JSX.Element} A container wrapping input fields and a list of show notes
- */
-const Form: React.FC = () => {
-  const [showNotes, setShowNotes] = useState<ShowNoteType[]>([])
-
-  // Fetch show notes function
-  const fetchShowNotes = () => {
-    fetch('http://localhost:3000/show-notes')
-      .then((response) => response.json())
-      .then((data) => {
-        setShowNotes(data.showNotes)
-      })
-      .catch((error) => {
-        console.error('Error fetching show notes:', error)
-      })
-  }
-
-  useEffect(() => {
-    fetchShowNotes()
-  }, [])
-
-  return (
-    <div className="container">
-      <Inputs onNewShowNote={fetchShowNotes} />
-      <ul className="show-notes-list">
-        <h1>Show Notes</h1>
-        {showNotes.map((note) => (
-          <li key={note.id}>
-            <a href={`/show-notes/${note.id}`}>{note.title}</a> - {note.publishDate}
-          </li>
-        ))}
-      </ul>
-    </div>
   )
 }
 

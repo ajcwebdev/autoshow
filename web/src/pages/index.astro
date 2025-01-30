@@ -2,7 +2,7 @@
 // web/src/pages/index.astro
 
 import PageLayout from "@/layouts/Base.astro"
-import Form from "@/components/app/Form"
+import App from "@/components/app/App"
 ---
 
 <PageLayout meta={{ title: "Home" }}>
@@ -45,7 +45,7 @@ import Form from "@/components/app/Form"
       </table>
     </div>
     <ul class="show-notes-list">
-      <Form client:only="react" />
+      <App client:only="react" />
     </ul>
   </section>
 </PageLayout>

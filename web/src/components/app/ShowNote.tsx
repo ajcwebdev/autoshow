@@ -1,7 +1,7 @@
 // web/src/components/app/ShowNote.tsx
 
 import React, { useState, useEffect } from 'react'
-import type { ShowNoteType } from '../../utils/types'
+import type { ShowNoteType } from '../../types'
 
 /**
  * A React component that fetches and displays a single show note from a backend API.

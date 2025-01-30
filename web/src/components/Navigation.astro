@@ -1,8 +1,6 @@
 ---
 // web/src/components/Navigation.astro
 
-import { menuLinks } from "@/site-config"
-
 const url = new URL(Astro.request.url)
 ---
 
@@ -11,20 +9,5 @@ const url = new URL(Astro.request.url)
       <a aria-current={url.pathname === "/" ? "page" : false} href="/">
         Autoshow.sh
       </a>
-      <nav aria-label="Main menu" id="navigation-menu">
-        <ul>
-          <!-- {
-            menuLinks.map((link) => (
-              <li>
-                <a aria-current={url.pathname === link.path ? "page" : false} data-astro-prefetch href={link.path}>
-                  {link.title}
-                </a>
-              </li>
-            ))
-          } -->
-          <a href="/">Home</a>
-            <a href="/app">App</a>
-        </ul>
-      </nav>
     </div>
 </header>

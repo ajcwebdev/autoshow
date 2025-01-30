@@ -1,15 +1,5 @@
 // src/utils/validate-option.ts
 
-/**
- * @file Provides functions for validating user-supplied CLI options and filtering items for both RSS feeds and channels.
- * 
- * @remarks
- * This refactoring unifies aspects of RSS and channel processing by splitting option validation
- * (which checks flags like `--last` or `--skip`) from item filtering (which requires actual RSS or channel data).
- * 
- * @packageDocumentation
- */
-
 import { unlink, writeFile } from 'node:fs/promises'
 import { exec, execFile } from 'node:child_process'
 import { promisify } from 'node:util'

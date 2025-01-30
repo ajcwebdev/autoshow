@@ -1,10 +1,5 @@
 // src/llms/grok.ts
 
-/**
- * @file Provides integration with the Grok LLM via xAI's REST API endpoint.
- * @packageDocumentation
- */
-
 import { env } from 'node:process'
 import { OpenAI } from 'openai'
 import { err } from '../utils/logging'
@@ -14,9 +9,7 @@ import type { GrokModelType } from '../utils/types/llms'
 /**
  * Calls the Grok API to generate a response to a prompt and transcript.
  * Uses the xAI-compatible OpenAI interface with a custom baseURL.
- * 
- * @async
- * @function callGrok
+ *
  * @param {string} prompt - The prompt or instructions for Grok
  * @param {string} transcript - The transcript or additional context to process
  * @param {GrokModelType | string | { modelId: string } | boolean} [model='GROK_2_LATEST'] - The Grok model to use (defaults to GROK_2_LATEST).

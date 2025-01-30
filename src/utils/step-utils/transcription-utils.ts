@@ -1,20 +1,5 @@
 // src/utils/transcription-utils.ts
 
-/**
- * @file Defines Deepgram and Assembly transcription model configurations,
- * including name, modelId, and cost per minute. Also provides functions
- * for formatting transcripts from different services.
- * 
- * @remarks
- * This refactoring removes the duplicated user-facing constants such as
- * the transcription service array and user Whisper models. The single source
- * of truth for those is now in `shared/constants.ts`. The code here remains
- * responsible for model cost lookups, .bin filename checks, and transcript
- * formatting for each provider.
- * 
- * @packageDocumentation
- */
-
 import { existsSync } from 'node:fs'
 import { execPromise } from '../validate-option'
 import { l, err } from '../logging'

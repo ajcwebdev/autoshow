@@ -1,12 +1,12 @@
 {
-  "$schema": "https://typedoc.org/schema.json",
   "entryPoints": ["src/**/*.ts"],
   "out": "out",
-  "tsconfig": "tsconfig.json",
+  "plugin": ["typedoc-plugin-markdown"],
   "excludePrivate": true,
   "excludeProtected": true,
-  "includeVersion": true,
-  "categorizeByGroup": false,
-  "theme": "default",
-  "disableSources": false
+  "entryPointStrategy": "expand",
+  "hideGenerator": true,
+  "hideBreadcrumbs": true,
+  "disableSources": true,
+  "hidePageTitle": true
 }

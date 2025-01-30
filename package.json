@@ -50,7 +50,7 @@
     "deno": "deno run --allow-sys --allow-read --allow-run --allow-write --allow-env --unstable-sloppy-imports src/commander.ts"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "0.33.1",
+    "@anthropic-ai/sdk": "^0.34.0-alpha.0",
     "@deepgram/sdk": "3.9.0",
     "@fastify/cors": "10.0.2",
     "@google/generative-ai": "0.21.0",
@@ -71,8 +71,10 @@
   "devDependencies": {
     "@types/js-yaml": "4.0.9",
     "@types/node": "22.10.7",
+    "concat-md": "^0.5.1",
     "tsx": "4.19.2",
     "typedoc": "0.27.6",
+    "typedoc-plugin-markdown": "^4.4.1",
     "typescript": "5.7.3"
   }
 }

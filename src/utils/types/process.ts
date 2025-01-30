@@ -75,11 +75,6 @@ export interface EpisodeMetadata {
   coverImage?: string | undefined
 }
 
-/**
- * @description Pre-handler to override environment variables from request body if provided.
- * This ensures that API keys can be passed in the request and used for the session,
- * even if they're not set in the .env file.
- */
 export interface RequestBody {
   openaiApiKey?: string
   anthropicApiKey?: string

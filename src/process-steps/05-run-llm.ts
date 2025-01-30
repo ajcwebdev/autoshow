@@ -1,11 +1,5 @@
 // src/process-steps/05-run-llm.ts
 
-/**
- * @file Orchestrator for running Language Model (LLM) processing on transcripts.
- * Handles prompt generation, LLM processing, file management for multiple LLM services.
- * @packageDocumentation
- */
-
 import { writeFile, readFile } from 'node:fs/promises'
 import { insertShowNote } from '../server/db'
 import { l, err, logInitialFunctionCall } from '../utils/logging'

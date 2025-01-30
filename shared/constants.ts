@@ -1,18 +1,11 @@
 // shared/constants.ts
 
 /**
- * @file Provides a single source of truth for shared constants used by both
- * the backend (Node.js) and frontend (Astro) of the Autoshow project. This includes
- * the available transcription services, LLM services, Whisper model options, and
- * prompt choices. By exporting these from one place, we avoid duplicating these
- * constants across different parts of the codebase.
- *
  * @remarks
  * The Whisper model definitions include a `bin` property for the backend to reference
  * the required `.bin` files, while the frontend can simply use the `value` and `label`
  * for display and selection purposes.
  *
- * @packageDocumentation
  */
 
 import type { AssemblyModelType, DeepgramModelType } from '../src/utils/types/transcription'

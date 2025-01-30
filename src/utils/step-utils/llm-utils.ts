@@ -245,15 +245,6 @@ export const LLM_OPTIONS: LLMServices[] = Object.values(LLM_SERVICES)
   .map((service) => service.value)
   .filter((value): value is LLMServices => value !== null)
 
-/* ------------------------------------------------------------------
- * Environment Variable Maps
- * ------------------------------------------------------------------ */
-
-/**
- * @description Override environment variables from CLI if the user has provided them.
- * This ensures that if keys are not in the .env file, they can be specified
- * via CLI arguments instead.
- */
 export const envVarsMap: Record<string, string> = {
   openaiApiKey: 'OPENAI_API_KEY',
   anthropicApiKey: 'ANTHROPIC_API_KEY',

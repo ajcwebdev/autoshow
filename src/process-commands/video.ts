@@ -1,10 +1,5 @@
 // src/process-commands/video.ts
 
-/**
- * @file Process a single video from YouTube or other supported platforms.
- * @packageDocumentation
- */
-
 import { generateMarkdown } from '../process-steps/01-generate-markdown'
 import { downloadAudio } from '../process-steps/02-download-audio'
 import { runTranscription } from '../process-steps/03-run-transcription'

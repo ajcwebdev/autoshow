@@ -1,10 +1,5 @@
 // src/process-commands/playlist.ts
 
-/**
- * @file Processes all videos from a YouTube playlist, handling metadata extraction and individual video processing.
- * @packageDocumentation
- */
-
 import { processVideo } from './video'
 import { saveInfo, execFilePromise } from '../utils/validate-option'
 import { l, err, logSeparator, logInitialFunctionCall } from '../utils/logging'

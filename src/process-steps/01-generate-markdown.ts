@@ -1,11 +1,5 @@
 // src/process-steps/01-generate-markdown.ts
 
-/**
- * @file Utility for generating markdown content with front matter for different content types.
- * Supports YouTube videos, playlists, local files, and RSS feed items.
- * @packageDocumentation
- */
-
 import { basename, extname } from 'node:path'
 import { sanitizeTitle, buildFrontMatter, execFilePromise } from '../utils/validate-option'
 import { l, err, logInitialFunctionCall } from '../utils/logging'

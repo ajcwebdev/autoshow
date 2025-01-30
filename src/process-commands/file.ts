@@ -1,10 +1,5 @@
 // src/process-commands/file.ts
 
-/**
- * @file Process a local audio or video file for transcription and analysis.
- * @packageDocumentation
- */
-
 import { generateMarkdown } from '../process-steps/01-generate-markdown'
 import { downloadAudio } from '../process-steps/02-download-audio'
 import { runTranscription } from '../process-steps/03-run-transcription'

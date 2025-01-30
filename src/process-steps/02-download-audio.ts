@@ -1,13 +1,5 @@
 // src/process-steps/02-download-audio.ts
 
-/**
- * @file Utility for downloading and processing audio from various sources.
- * Handles both online content (via yt-dlp) and local files (via ffmpeg),
- * converting them to a standardized WAV format suitable for transcription.
- * Includes retry logic for `yt-dlp` to handle transient errors.
- * @packageDocumentation
- */
-
 import { readFile, access } from 'node:fs/promises'
 import { fileTypeFromBuffer } from 'file-type'
 import { l, err, logInitialFunctionCall } from '../utils/logging'

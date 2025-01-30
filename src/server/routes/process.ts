@@ -40,6 +40,11 @@ export const handleProcessRequest = async (
     // Map request data to processing options
     const { options, llmServices, transcriptServices } = validateRequest(requestData)
 
+    // Ensure the user-selected LLM model is passed through to the options object
+    if (llmServices && requestData['llmModel']) {
+      options[llmServices] = requestData['llmModel']
+    }
+
     // Process based on type
     switch (type) {
       case 'video': {

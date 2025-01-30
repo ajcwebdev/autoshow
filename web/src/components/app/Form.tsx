@@ -2,12 +2,13 @@
 
 import '../../styles/global.css'
 import React, { useState } from 'react'
-import {
-  PROMPT_CHOICES, TRANSCRIPTION_SERVICES, WHISPER_MODELS, LLM_SERVICES, LLM_MODELS, PROCESS_TYPES
-} from '@/site-config'
 import type {
-  AlertProps, LlmServiceKey, ResultType, FormProps, ProcessType
+  AlertProps, ResultType, FormProps, ProcessTypeEnum
 } from '../../types.ts'
+import { ProcessType } from './groups/ProcessType.tsx'
+import { TranscriptionService } from './groups/TranscriptionService.tsx'
+import { LLMService } from './groups/LLMService.tsx'
+import { Prompts } from './groups/Prompts.tsx'
 
 /**
  * Displays a styled alert message based on a variant type.
@@ -30,7 +31,7 @@ const Alert: React.FC<AlertProps> = ({ message, variant }) => (
  * @returns {JSX.Element} A form rendering various input controls and submission logic
  */
 const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
-  const [processType, setProcessType] = useState<ProcessType>('video')
+  const [processType, setProcessType] = useState<ProcessTypeEnum>('video')
   const [url, setUrl] = useState<string>('https://www.youtube.com/watch?v=MORMZXEaONk')
   const [filePath, setFilePath] = useState<string>('content/audio.mp3')
   const [transcriptionService, setTranscriptionService] = useState<string>('whisper')
@@ -115,141 +116,34 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
   return (
     <>
       <form onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label htmlFor="processType">Process Type</label>
-          <select
-            id="processType"
-            value={processType}
-            onChange={(e) => setProcessType(e.target.value as ProcessType)}
-          >
-            {PROCESS_TYPES.map((type) => (
-              <option key={type.value} value={type.value}>
-                {type.label}
-              </option>
-            ))}
-          </select>
-        </div>
 
-        {(processType === 'video') && (
-          <div className="form-group">
-            <label htmlFor="url">
-              {processType === 'video'}
-              YouTube URL
-            </label>
-            <input
-              type="text"
-              id="url"
-              value={url}
-              onChange={(e) => setUrl(e.target.value)}
-              required
-            />
-          </div>
-        )}
+        <ProcessType
+          processType={processType}
+          setProcessType={setProcessType}
+          url={url}
+          setUrl={setUrl}
+          filePath={filePath}
+          setFilePath={setFilePath}
+        />
 
-        {(processType === 'file') && (
-          <div className="form-group">
-            <label htmlFor="filePath">File Path</label>
-            <input
-              type="text"
-              id="filePath"
-              value={filePath}
-              onChange={(e) => setFilePath(e.target.value)}
-              required
-            />
-          </div>
-        )}
+        <TranscriptionService
+          transcriptionService={transcriptionService}
+          setTranscriptionService={setTranscriptionService}
+          whisperModel={whisperModel}
+          setWhisperModel={setWhisperModel}
+        />
 
-        <div className="form-group">
-          <label htmlFor="transcriptionService">Transcription Service</label>
-          <select
-            id="transcriptionService"
-            value={transcriptionService}
-            onChange={(e) => setTranscriptionService(e.target.value)}
-          >
-            {TRANSCRIPTION_SERVICES.map((service) => (
-              <option key={service.value} value={service.value}>
-                {service.label}
-              </option>
-            ))}
-          </select>
-        </div>
+        <LLMService
+          llmService={llmService}
+          setLlmService={setLlmService}
+          llmModel={llmModel}
+          setLlmModel={setLlmModel}
+        />
 
-        {transcriptionService.startsWith('whisper') && (
-          <div className="form-group">
-            <label htmlFor="whisperModel">Whisper Model</label>
-            <select
-              id="whisperModel"
-              value={whisperModel}
-              onChange={(e) => setWhisperModel(e.target.value)}
-            >
-              {WHISPER_MODELS.map((model) => (
-                <option key={model.value} value={model.value}>
-                  {model.label}
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
-
-        <div className="form-group">
-          <label htmlFor="llmService">LLM Service</label>
-          <select
-            id="llmService"
-            value={llmService}
-            onChange={(e) => {
-              setLlmService(e.target.value)
-              setLlmModel('')
-            }}
-          >
-            <option value="">None</option>
-            {LLM_SERVICES.map((service) => (
-              <option key={service.value} value={service.value}>
-                {service.label}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {llmService && llmService in LLM_MODELS && (
-          <div className="form-group">
-            <label htmlFor="llmModel">LLM Model</label>
-            <select
-              id="llmModel"
-              value={llmModel}
-              onChange={(e) => setLlmModel(e.target.value)}
-            >
-              {LLM_MODELS[llmService as LlmServiceKey].map((model) => (
-                <option key={model.value} value={model.value}>
-                  {model.label}
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
-
-        <div className="form-group">
-          <label>Prompts</label>
-          <div className="checkbox-group">
-            {PROMPT_CHOICES.map((prompt) => (
-              <div key={prompt.value}>
-                <input
-                  type="checkbox"
-                  id={`prompt-${prompt.value}`}
-                  value={prompt.value}
-                  checked={selectedPrompts.includes(prompt.value)}
-                  onChange={(e) => {
-                    if (e.target.checked) {
-                      setSelectedPrompts([...selectedPrompts, prompt.value])
-                    } else {
-                      setSelectedPrompts(selectedPrompts.filter((p) => p !== prompt.value))
-                    }
-                  }}
-                />
-                <label htmlFor={`prompt-${prompt.value}`}>{prompt.name}</label>
-              </div>
-            ))}
-          </div>
-        </div>
+        <Prompts
+          selectedPrompts={selectedPrompts}
+          setSelectedPrompts={setSelectedPrompts}
+        />
 
         <button type="submit" disabled={isLoading}>
           {isLoading ? 'Processing...' : 'Submit'}

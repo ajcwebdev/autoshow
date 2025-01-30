@@ -65,4 +65,4 @@ export interface ShowNoteType {
 }
 
 // Define type for different process options
-export type ProcessType = 'video' | 'file'
+export type ProcessTypeEnum = 'video' | 'file'

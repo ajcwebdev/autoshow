@@ -1,7 +1,7 @@
 // src/llms/claude.ts
 
 import { env } from 'node:process'
-import { Anthropic } from '@anthropic-ai/sdk'
+import Anthropic from '@anthropic-ai/sdk'
 import { CLAUDE_MODELS } from '../utils/step-utils/llm-utils'
 import { err } from '../utils/logging'
 import { logLLMCost } from '../utils/step-utils/llm-utils'
@@ -21,7 +21,6 @@ interface ContentBlock {
  * Main function to call Claude API.
  * @param {string} prompt - The prompt or instructions to process.
  * @param {string} transcript - The transcript text.
- * @param {string} tempPath - (unused) The temporary file path (no longer used).
  * @param {string} [model] - The Claude model to use.
  * @returns {Promise<string>} A Promise that resolves with the generated text.
  * @throws {Error} If an error occurs during the API call.

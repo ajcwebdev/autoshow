@@ -1,19 +1,5 @@
 // src/process-commands/rss.ts
 
-/**
- * @file Process podcast episodes and other media content from RSS feeds with robust error handling and filtering options.
- * 
- * @remarks
- * This refactoring aligns RSS processing with the structure used for channel processing:
- * 1. Validate flags up front (see {@link validateRSSOptions}).
- * 2. Fetch and parse feed items in a selection function (`selectRSSItemsToProcess`).
- * 3. Filter items (see {@link filterRSSItems}).
- * 4. If `--info` is set, save info and skip further processing.
- * 5. Otherwise, process items in a loop, similar to channel videos.
- * 
- * @packageDocumentation
- */
-
 import { generateMarkdown } from '../process-steps/01-generate-markdown'
 import { downloadAudio } from '../process-steps/02-download-audio'
 import { runTranscription } from '../process-steps/03-run-transcription'

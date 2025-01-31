@@ -180,7 +180,7 @@ else
   echo "Downloading whisper models..."
   bash ./whisper.cpp/models/download-ggml-model.sh tiny
   bash ./whisper.cpp/models/download-ggml-model.sh base
-  bash ./whisper.cpp/models/download-ggml-model.sh large-v3-turbo
+  # bash ./whisper.cpp/models/download-ggml-model.sh large-v3-turbo
   
   echo "Compiling whisper.cpp..."
   cmake -B whisper.cpp/build -S whisper.cpp

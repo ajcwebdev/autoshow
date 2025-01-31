@@ -11,7 +11,6 @@ import type { CohereModelType } from '../utils/types/llms'
  * Main function to call Cohere API.
  * @param {string} prompt - The prompt or instructions to process.
  * @param {string} transcript - The transcript text.
- * @param {string} tempPath - (unused) The temporary file path (no longer used).
  * @param {string} [model] - The Cohere model to use.
  * @returns {Promise<string>} A Promise that resolves when the API call is complete.
  * @throws {Error} If an error occurs during the API call.

@@ -1,19 +1,5 @@
 // src/process-commands/channel.ts
 
-/**
- * @file Processes an entire YouTube channel, handling metadata extraction and individual video processing.
- * 
- * @remarks
- * This refactoring makes channel processing structurally similar to RSS processing:
- * 1. Validate top-level flags with {@link validateChannelOptions}.
- * 2. Fetch and parse channel data with yt-dlp.
- * 3. Select and sort items using {@link selectVideos} (analogous to {@link filterRSSItems}).
- * 4. If `--info` is specified, save info and skip.
- * 5. Otherwise, process videos in a loop.
- * 
- * @packageDocumentation
- */
-
 import { processVideo } from './video'
 import { saveInfo, execFilePromise } from '../utils/validate-option'
 import { l, err, logSeparator, logInitialFunctionCall } from '../utils/logging'

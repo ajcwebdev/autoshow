@@ -1,8 +1,8 @@
-// src/server/tests/fetch-local.ts
+// test/fetch-local.ts
 
-import fs from 'fs/promises'
-import path from 'path'
-import { l, err } from '../../utils/logging'
+import fs from 'node:fs/promises'
+import path from 'node:path'
+import { l, err } from '../src/utils/logging'
 
 const BASE_URL = 'http://localhost:3000'
 const OUTPUT_DIR = 'content'

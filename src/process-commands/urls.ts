@@ -1,10 +1,5 @@
 // src/process-commands/urls.ts
 
-/**
- * @file Processes multiple YouTube videos from a list of URLs stored in a file.
- * @packageDocumentation
- */
-
 import { readFile } from 'node:fs/promises'
 import { processVideo } from './video'
 import { saveInfo } from '../utils/validate-option'

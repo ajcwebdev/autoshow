@@ -1,8 +1,8 @@
-// src/server/fetch-all.ts
+// test/fetch-all.ts
 
-import fs from 'fs/promises'
-import path from 'path'
-import { l, err } from '../../utils/logging'
+import fs from 'node:fs/promises'
+import path from 'node:path'
+import { l, err } from '../src/utils/logging'
 
 const BASE_URL = 'http://localhost:3000'
 const OUTPUT_DIR = 'content'

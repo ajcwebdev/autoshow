@@ -1,10 +1,5 @@
 // src/llms/deepseek.ts
 
-/**
- * @file Provides integration with the DeepSeek API, compatible with the OpenAI Node.js SDK.
- * @packageDocumentation
- */
-
 import { env } from 'node:process'
 import { OpenAI } from 'openai'
 import { err } from '../utils/logging'

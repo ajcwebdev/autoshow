@@ -1,0 +1,1019 @@
+[
+  {
+    "showLink": "https://www.youtube.com/watch?v=E5amN0_1XyE",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "Building JavaScript Framework Client Performance Tier List",
+    "description": "",
+    "publishDate": "2025-01-28",
+    "coverImage": "https://i.ytimg.com/vi/E5amN0_1XyE/sddefault.jpg"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=kkUuaqDBSqA",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "Fine-Grained Rendering in Depth",
+    "description": "",
+    "publishDate": "2025-01-25",
+    "coverImage": "https://i.ytimg.com/vi/kkUuaqDBSqA/sddefault.jpg?v=6792d47e"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=D1XN8j77Ntk",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "JavaScript Frameworks - Heading into 2025",
+    "description": "",
+    "publishDate": "2025-01-11",
+    "coverImage": "https://i.ytimg.com/vi/D1XN8j77Ntk/sddefault.jpg?v=67806e8f"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=zKXfcE7oTRY",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "Server Signals w/ Dev Agrawal",
+    "description": "",
+    "publishDate": "2024-12-14",
+    "coverImage": "https://i.ytimg.com/vi/zKXfcE7oTRY/maxresdefault.jpg"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=jfZdl3QckMM",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "Mutable Signals - Reactivity's Missing Link",
+    "description": "",
+    "publishDate": "2024-11-09",
+    "coverImage": "https://i.ytimg.com/vi/jfZdl3QckMM/maxresdefault.jpg"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=ja4LIaxxUeA",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "Are There Actually That Many Different Ways to Build Web Apps?",
+    "description": "",
+    "publishDate": "2024-10-19",
+    "coverImage": "https://i.ytimg.com/vi/ja4LIaxxUeA/maxresdefault.jpg"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=0F9t_WeJ5p4",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "We Should Probably Talk about Web Components",
+    "description": "",
+    "publishDate": "2024-10-12",
+    "coverImage": "https://i.ytimg.com/vi/0F9t_WeJ5p4/maxresdefault.jpg"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=_EkUCF4HzWg",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "What the head?",
+    "description": "",
+    "publishDate": "2024-09-21",
+    "coverImage": "https://i.ytimg.com/vi/_EkUCF4HzWg/maxresdefault.jpg"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=776vUMP16Fo",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "What's up with those Hydration IDs?",
+    "description": "",
+    "publishDate": "2024-09-07",
+    "coverImage": "https://i.ytimg.com/vi/776vUMP16Fo/maxresdefault.jpg"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=4TdOEe6liSE",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "Revisiting SolidScript: Reactive Compilation",
+    "description": "",
+    "publishDate": "2024-08-17",
+    "coverImage": "https://i.ytimg.com/vi/4TdOEe6liSE/sddefault.jpg?v=66be2a3e"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=oOhfZtUm-pE",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "The Nature of Hydration",
+    "description": "",
+    "publishDate": "2024-08-10",
+    "coverImage": "https://i.ytimg.com/vi/oOhfZtUm-pE/maxresdefault.jpg"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=SkJiaRclTjM",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "Server Islands w/ Matthew Phillips",
+    "description": "",
+    "publishDate": "2024-07-26",
+    "coverImage": "https://i.ytimg.com/vi/SkJiaRclTjM/maxresdefault.jpg"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=kz-p_017Usc",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "Exploring Reactivity: Fine-Grained Derivation & Incremental Computation",
+    "description": "",
+    "publishDate": "2024-07-13",
+    "coverImage": "https://i.ytimg.com/vi/kz-p_017Usc/sddefault.jpg?v=66916d93"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=k3RU0ayAdW4",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "The Art of Suspense",
+    "description": "",
+    "publishDate": "2024-06-29",
+    "coverImage": "https://i.ytimg.com/vi/k3RU0ayAdW4/maxresdefault.jpg"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=VdDJbrh23zo",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "We Are So Back",
+    "description": "",
+    "publishDate": "2024-05-25",
+    "coverImage": "https://i.ytimg.com/vi/VdDJbrh23zo/maxresdefault.jpg"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=NDRV14_WDYA",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "Ride the LightningJS w/ Chris Lorenzo",
+    "description": "",
+    "publishDate": "2024-04-20",
+    "coverImage": "https://i.ytimg.com/vi/NDRV14_WDYA/maxresdefault.jpg"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=qzOzyUA9kbg",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "Wiz: Behind the Curtain w/ Jatin Ramanathan",
+    "description": "",
+    "publishDate": "2024-04-12",
+    "coverImage": "https://i.ytimg.com/vi/qzOzyUA9kbg/maxresdefault.jpg"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=sMbICJUGJj4",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "Designing Signals 2.0",
+    "description": "",
+    "publishDate": "2024-03-23",
+    "coverImage": "https://i.ytimg.com/vi/sMbICJUGJj4/maxresdefault.jpg"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=zaSvA6lorCA",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "Dive Into AstroDB w/ Fred K Schott",
+    "description": "",
+    "publishDate": "2024-03-16",
+    "coverImage": "https://i.ytimg.com/vi/zaSvA6lorCA/maxresdefault.jpg"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=hiYQC4XaUu4",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "Don't Go Chasing Waterfalls",
+    "description": "",
+    "publishDate": "2024-02-17",
+    "coverImage": "https://i.ytimg.com/vi/hiYQC4XaUu4/sddefault.jpg?v=65ce8567"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=gfKrdN1RzoI",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "What Comes After GraphQL?",
+    "description": "",
+    "publishDate": "2024-02-10",
+    "coverImage": "https://i.ytimg.com/vi/gfKrdN1RzoI/maxresdefault.jpg"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=aA7Xeh7WG4E",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "Front-End's Existential Crisis",
+    "description": "",
+    "publishDate": "2024-01-27",
+    "coverImage": "https://i.ytimg.com/vi/aA7Xeh7WG4E/maxresdefault.jpg"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=N-QwFFqI8aQ",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "Musing on HTML Partials",
+    "description": "",
+    "publishDate": "2024-01-20",
+    "coverImage": "https://i.ytimg.com/vi/N-QwFFqI8aQ/maxresdefault.jpg"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=82dzMKZzHrY",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "JavaScript Frameworks - Heading into 2024",
+    "description": "",
+    "publishDate": "2024-01-13",
+    "coverImage": "https://i.ytimg.com/vi/82dzMKZzHrY/maxresdefault.jpg"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=ZdGPsEFT8AQ",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "SolidJS 30k Stars",
+    "description": "",
+    "publishDate": "2024-01-09",
+    "coverImage": "https://i.ytimg.com/vi/ZdGPsEFT8AQ/maxresdefault.jpg"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=kHsTiFWz3sY",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "JavaScript vs JavaScript - CSR  & SSR",
+    "description": "",
+    "publishDate": "2023-12-20",
+    "coverImage": "https://i.ytimg.com/vi/kHsTiFWz3sY/maxresdefault.jpg"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=RzL4N3ZavxU",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "SolidStart: The Shape of Frameworks to Come",
+    "description": "",
+    "publishDate": "2023-12-16",
+    "coverImage": "https://i.ytimg.com/vi/RzL4N3ZavxU/maxresdefault.jpg"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=veKm9MDVVg8",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "Server Functions & Server Actions",
+    "description": "",
+    "publishDate": "2023-12-02",
+    "coverImage": "https://i.ytimg.com/vi/veKm9MDVVg8/maxresdefault.jpg"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=lrejTB07FOM",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "The Future of Routing w/ Tanner Linsley",
+    "description": "",
+    "publishDate": "2023-11-18",
+    "coverImage": "https://i.ytimg.com/vi/lrejTB07FOM/maxresdefault.jpg"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=j0s8w34Xh9o",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "Dive into NativeScript w/Nathan Walker & Ammar Ahmed",
+    "description": "",
+    "publishDate": "2023-11-04",
+    "coverImage": "https://i.ytimg.com/vi/j0s8w34Xh9o/maxresdefault.jpg"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=yLjqh6dKdBc",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "Dive into Solid + Tauri w/Atila Fassina",
+    "description": "",
+    "publishDate": "2023-10-28",
+    "coverImage": "https://i.ytimg.com/vi/yLjqh6dKdBc/maxresdefault.jpg"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=n3YtxzHRjI0",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "Exploring the World of Marko w/ Michael Rawlings",
+    "description": "",
+    "publishDate": "2023-10-21",
+    "coverImage": "https://i.ytimg.com/vi/n3YtxzHRjI0/maxresdefault.jpg"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=N54FZtNvk_A",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "Reactivity, Runes & Revolution w/ Dominic Gannaway",
+    "description": "",
+    "publishDate": "2023-10-14",
+    "coverImage": "https://i.ytimg.com/vi/N54FZtNvk_A/maxresdefault.jpg"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=87D15Gu1d6w",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "Building SolidJS v1.8",
+    "description": "",
+    "publishDate": "2023-10-06",
+    "coverImage": "https://i.ytimg.com/vi/87D15Gu1d6w/maxresdefault.jpg"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=WBH7Ewa--Qg",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "Introducing Vinxi w/ Nikhil Saraf",
+    "description": "",
+    "publishDate": "2023-09-23",
+    "coverImage": "https://i.ytimg.com/vi/WBH7Ewa--Qg/maxresdefault.jpg"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=8ObxzMSIqKA",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "Evolving Isomorphic Data-Fetching",
+    "description": "",
+    "publishDate": "2023-09-16",
+    "coverImage": "https://i.ytimg.com/vi/8ObxzMSIqKA/maxresdefault.jpg"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=seLSN1i8zRw",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "Piecing it Together w/ Pooya Parsa",
+    "description": "",
+    "publishDate": "2023-09-09",
+    "coverImage": "https://i.ytimg.com/vi/seLSN1i8zRw/maxresdefault.jpg"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=2zhYwg_nBqQ",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "Building Astro 3 w/ Matthew Phillips",
+    "description": "",
+    "publishDate": "2023-08-25",
+    "coverImage": "https://i.ytimg.com/vi/2zhYwg_nBqQ/maxresdefault.jpg"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=-8UeTHXoySc",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "A First Look at RedwoodJS w/ Anthony Campolo",
+    "description": "",
+    "publishDate": "2023-08-18",
+    "coverImage": "https://i.ytimg.com/vi/-8UeTHXoySc/sddefault.jpg?v=64de7500"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=iOqPj-CjoV0",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "MPAs vs SPAs",
+    "description": "",
+    "publishDate": "2023-08-12",
+    "coverImage": "https://i.ytimg.com/vi/iOqPj-CjoV0/sddefault.jpg?v=64d414da"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=7hpUcRGgxq8",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "First Look at Analog w/ Brandon Roberts",
+    "description": "",
+    "publishDate": "2023-07-22",
+    "coverImage": "https://i.ytimg.com/vi/7hpUcRGgxq8/maxresdefault.jpg"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=JBRgUs9Kp64",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "Exploring Million.js with Aiden Bai",
+    "description": "",
+    "publishDate": "2023-07-15",
+    "coverImage": "https://i.ytimg.com/vi/JBRgUs9Kp64/maxresdefault.jpg"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=ZI-BfelG6z4",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "This Week in J̶a̶v̶a̶S̶c̶r̶i̶p̶t̶ ...Milk?",
+    "description": "",
+    "publishDate": "2023-07-07",
+    "coverImage": "https://i.ytimg.com/vi/ZI-BfelG6z4/maxresdefault.jpg"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=KMGJk2VtQ3I",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "This Week in JavaScript... Conferences",
+    "description": "",
+    "publishDate": "2023-05-19",
+    "coverImage": "https://i.ytimg.com/vi/KMGJk2VtQ3I/maxresdefault.jpg"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=jwppKc4avIk",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "Going \"Fully React\" w/ Nikhil Saraf",
+    "description": "",
+    "publishDate": "2023-04-21",
+    "coverImage": "https://i.ytimg.com/vi/jwppKc4avIk/sddefault.jpg?v=6441636b"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=nY7k3ql5mss",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "Bringing the Bling w/ Tanner Linsley",
+    "description": "",
+    "publishDate": "2023-04-15",
+    "coverImage": "https://i.ytimg.com/vi/nY7k3ql5mss/sddefault.jpg?v=64382ae2"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=2bkuEIa3Nwk",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "Strict Mode in SolidJS?!",
+    "description": "",
+    "publishDate": "2023-04-01",
+    "coverImage": "https://i.ytimg.com/vi/2bkuEIa3Nwk/maxresdefault.jpg"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=2fW6JaJHoCE",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "Signals in TypeScript: The Road to Solid v1.7",
+    "description": "",
+    "publishDate": "2023-03-25",
+    "coverImage": "https://i.ytimg.com/vi/2fW6JaJHoCE/maxresdefault.jpg"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=E3jYGTB50LE",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "SolidJS - The Hard Parts w/ Dan Jutan",
+    "description": "",
+    "publishDate": "2023-03-18",
+    "coverImage": "https://i.ytimg.com/vi/E3jYGTB50LE/sddefault.jpg?v=6414ae11"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=QS9yAsv1czg",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "Into the Depths with Server Components and Functions",
+    "description": "",
+    "publishDate": "2023-03-11",
+    "coverImage": "https://i.ytimg.com/vi/QS9yAsv1czg/maxresdefault.jpg"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=g584AIL1HtI",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "This Week in J̶a̶v̶a̶S̶c̶r̶i̶p̶t̶ Signals",
+    "description": "",
+    "publishDate": "2023-03-04",
+    "coverImage": "https://i.ytimg.com/vi/g584AIL1HtI/sddefault.jpg?v=6402482e"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=HstDoVQeP9g",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "Signals in Angular w/ Pawel and Alex",
+    "description": "",
+    "publishDate": "2023-02-25",
+    "coverImage": "https://i.ytimg.com/vi/HstDoVQeP9g/maxresdefault.jpg"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=A2TiLvCDKSg",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "The Future of Fine-Grained Reactivity w/ Milo",
+    "description": "",
+    "publishDate": "2023-02-18",
+    "coverImage": "https://i.ytimg.com/vi/A2TiLvCDKSg/sddefault.jpg?v=63eef14c"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=-CWarVQDtEg",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "First Look at Create T3 App w/ Christopher Ehrlich",
+    "description": "",
+    "publishDate": "2023-02-04",
+    "coverImage": "https://i.ytimg.com/vi/-CWarVQDtEg/maxresdefault.jpg"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=5du6jBlryIc",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "Demystifying SolidJS' JSX",
+    "description": "",
+    "publishDate": "2023-01-28",
+    "coverImage": "https://i.ytimg.com/vi/5du6jBlryIc/maxresdefault.jpg"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=p9pwHyM5Z98",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "SolidJS in React? Reconciling Disparate Worlds",
+    "description": "",
+    "publishDate": "2023-01-21",
+    "coverImage": "https://i.ytimg.com/vi/p9pwHyM5Z98/maxresdefault.jpg"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=S0a-1lriNl4",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "First Look at LiveViewJS w/ Donnie Flood",
+    "description": "",
+    "publishDate": "2023-01-14",
+    "coverImage": "https://i.ytimg.com/vi/S0a-1lriNl4/maxresdefault.jpg"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=6RIPfwxj24s",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "JavaScript Frameworks in 2023",
+    "description": "",
+    "publishDate": "2023-01-07",
+    "coverImage": "https://i.ytimg.com/vi/6RIPfwxj24s/sddefault.jpg?v=63b71818"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=R5AcOtxIdMk",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "Reactivity & Rendering",
+    "description": "",
+    "publishDate": "2022-12-19",
+    "coverImage": "https://i.ytimg.com/vi/R5AcOtxIdMk/maxresdefault.jpg"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=tfxxeknwsi8",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "Learning Angular w/ Minko Gechev",
+    "description": "",
+    "publishDate": "2022-12-17",
+    "coverImage": "https://i.ytimg.com/vi/tfxxeknwsi8/maxresdefault.jpg"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=yAUlw5GL7jw",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "SolidJS NYC Meetup Dec 2022",
+    "description": "",
+    "publishDate": "2022-12-14",
+    "coverImage": "https://i.ytimg.com/vi/yAUlw5GL7jw/maxresdefault.jpg"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=qyQNFstxlzY",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "Exploring the App Directory in Next 13",
+    "description": "",
+    "publishDate": "2022-12-10",
+    "coverImage": "https://i.ytimg.com/vi/qyQNFstxlzY/maxresdefault.jpg"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=zgY7ql1xwW4",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "Building Web UI's in Rust w/ Greg Johnston",
+    "description": "",
+    "publishDate": "2022-12-03",
+    "coverImage": "https://i.ytimg.com/vi/zgY7ql1xwW4/sddefault.jpg?v=6387ffbc"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=ijKULkvSaAU",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "This Month in JavaScript",
+    "description": "",
+    "publishDate": "2022-11-23",
+    "coverImage": "https://i.ytimg.com/vi/ijKULkvSaAU/maxresdefault.jpg"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=Fp9duJd6Txc",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "Creating a VDOM-less Renderer with Preact Signals",
+    "description": "",
+    "publishDate": "2022-10-29",
+    "coverImage": "https://i.ytimg.com/vi/Fp9duJd6Txc/maxresdefault.jpg"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=adXqweWZcNA",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "Server Components? Building SolidJS v1.6",
+    "description": "",
+    "publishDate": "2022-10-22",
+    "coverImage": "https://i.ytimg.com/vi/adXqweWZcNA/maxresdefault.jpg"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=QRtrS_SvR4w",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "AGGrid: High-Performance DOM Updates w/ Niall Crosby",
+    "description": "",
+    "publishDate": "2022-10-08",
+    "coverImage": "https://i.ytimg.com/vi/QRtrS_SvR4w/sddefault.jpg?v=633de746"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=0cmj4S8K_6c",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "Corset: A Novel Approach to Declarative Data-Binding w/ Matthew Phillips",
+    "description": "",
+    "publishDate": "2022-09-30",
+    "coverImage": "https://i.ytimg.com/vi/0cmj4S8K_6c/maxresdefault.jpg"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=Vcq2DvkMz3k",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "Making the World's Fastest Website and Other Mistakes w/ Taylor Hunt",
+    "description": "",
+    "publishDate": "2022-09-24",
+    "coverImage": "https://i.ytimg.com/vi/Vcq2DvkMz3k/sddefault.jpg?v=632b9d50"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=W9wfkP21c80",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "Building a UI Language w/ Dylan Piercey",
+    "description": "",
+    "publishDate": "2022-09-10",
+    "coverImage": "https://i.ytimg.com/vi/W9wfkP21c80/maxresdefault.jpg"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=I6L29qSTaFA",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "Components Are Pure Overhead",
+    "description": "",
+    "publishDate": "2022-09-08",
+    "coverImage": "https://i.ytimg.com/vi/I6L29qSTaFA/maxresdefault.jpg"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=BBWA7PGJcts",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "React: The Most Prolific JavaScript Framework",
+    "description": "",
+    "publishDate": "2022-09-03",
+    "coverImage": "https://i.ytimg.com/vi/BBWA7PGJcts/maxresdefault.jpg"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=jHDzGYHY2ew",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "Building SolidJS 1.5",
+    "description": "",
+    "publishDate": "2022-08-26",
+    "coverImage": "https://i.ytimg.com/vi/jHDzGYHY2ew/sddefault.jpg?v=6306bb41"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=iuwqOkH6jKY",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "Exploring 11ty with Zach Leatherman",
+    "description": "",
+    "publishDate": "2022-08-19",
+    "coverImage": "https://i.ytimg.com/vi/iuwqOkH6jKY/sddefault.jpg?v=62fd39f4"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=eAwuPvRXNdY",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "Introducing SolidStart w/ Nikhil Saraf",
+    "description": "",
+    "publishDate": "2022-08-05",
+    "coverImage": "https://i.ytimg.com/vi/eAwuPvRXNdY/sddefault.jpg?v=62eaa4d2"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=s4Rd2snXSr0",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "Looking at Nuxt3",
+    "description": "",
+    "publishDate": "2022-07-29",
+    "coverImage": "https://i.ytimg.com/vi/s4Rd2snXSr0/maxresdefault.jpg"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=XoeJisRJjlo",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "Exploring Qwik City w/ Adam Bradley & Manu Martínez-Almeida",
+    "description": "",
+    "publishDate": "2022-07-22",
+    "coverImage": "https://i.ytimg.com/vi/XoeJisRJjlo/maxresdefault.jpg"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=-TeXU9UZ_4w",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "Nested Routing, Parallelized Data Fetching, and SolidJS  w/ Ryan Turnquist",
+    "description": "",
+    "publishDate": "2022-07-15",
+    "coverImage": "https://i.ytimg.com/vi/-TeXU9UZ_4w/hqdefault.jpg?v=62d0967b"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=jfT7aEoeaGE",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "A First Look at Fresh",
+    "description": "",
+    "publishDate": "2022-07-08",
+    "coverImage": "https://i.ytimg.com/vi/jfT7aEoeaGE/maxresdefault.jpg"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=dOgnQ9SuKYk",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "SolidJS: Past, Present, Future",
+    "description": "",
+    "publishDate": "2022-06-03",
+    "coverImage": "https://i.ytimg.com/vi/dOgnQ9SuKYk/maxresdefault.jpg"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=bvWCyGsKOXY",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "Hydrogen & React Server Components w/ Bret Little",
+    "description": "",
+    "publishDate": "2022-05-27",
+    "coverImage": "https://i.ytimg.com/vi/bvWCyGsKOXY/maxresdefault.jpg"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=2UPX0HZxXEQ",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "Building SolidJS 1.4",
+    "description": "",
+    "publishDate": "2022-05-07",
+    "coverImage": "https://i.ytimg.com/vi/2UPX0HZxXEQ/maxresdefault.jpg"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=iR5T2HefqKk",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "Breaking Down Hydration w/Dan Jutan",
+    "description": "",
+    "publishDate": "2022-04-30",
+    "coverImage": "https://i.ytimg.com/vi/iR5T2HefqKk/maxresdefault.jpg"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=REXtIuAJ3dE",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "Breaking Down the Web /w Dan Jutan",
+    "description": "",
+    "publishDate": "2022-04-23",
+    "coverImage": "https://i.ytimg.com/vi/REXtIuAJ3dE/maxresdefault.jpg"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=m-Gl_Cc8xOg",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "A First Look at Next.js",
+    "description": "",
+    "publishDate": "2022-04-16",
+    "coverImage": "https://i.ytimg.com/vi/m-Gl_Cc8xOg/maxresdefault.jpg"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=2ZEMb_H-LYE",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "Astro SSR w/ Fred K. Schott",
+    "description": "",
+    "publishDate": "2022-04-09",
+    "coverImage": "https://i.ytimg.com/vi/2ZEMb_H-LYE/maxresdefault.jpg"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=Ywv8cGOVNMg",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "A First Look At SolidHack Submissions",
+    "description": "",
+    "publishDate": "2022-04-02",
+    "coverImage": "https://i.ytimg.com/vi/Ywv8cGOVNMg/maxresdefault.jpg"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=BEWkLXU1Wlc",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "Let's look at Web Components",
+    "description": "",
+    "publishDate": "2022-03-26",
+    "coverImage": "https://i.ytimg.com/vi/BEWkLXU1Wlc/maxresdefault.jpg"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=ZVKHxm1-g3E",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "SolidScript?! Using Compilation for Syntax",
+    "description": "",
+    "publishDate": "2022-03-19",
+    "coverImage": "https://i.ytimg.com/vi/ZVKHxm1-g3E/sddefault.jpg?v=623434dd"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=DYwI1eWkMcI",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "Looking at SvelteKit",
+    "description": "",
+    "publishDate": "2022-03-12",
+    "coverImage": "https://i.ytimg.com/vi/DYwI1eWkMcI/maxresdefault.jpg"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=Y22xf8EjioE",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "Building Marko 6 w/ Dylan Piercey, and Michael Rawlings",
+    "description": "",
+    "publishDate": "2022-03-05",
+    "coverImage": "https://i.ytimg.com/vi/Y22xf8EjioE/maxresdefault.jpg"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=lY6e7Hw4uVo",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "Building Qwik w/ Misko Hevery",
+    "description": "",
+    "publishDate": "2022-02-19",
+    "coverImage": "https://i.ytimg.com/vi/lY6e7Hw4uVo/sddefault.jpg?v=620fedfa"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=gT5NWKZZPQM",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "Exploring Qwik, the Resumable Framework",
+    "description": "",
+    "publishDate": "2022-02-12",
+    "coverImage": "https://i.ytimg.com/vi/gT5NWKZZPQM/sddefault.jpg?v=6206bbcf"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=8_YiKUb6DW8",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "Let's do an AMA",
+    "description": "",
+    "publishDate": "2022-02-05",
+    "coverImage": "https://i.ytimg.com/vi/8_YiKUb6DW8/sddefault.jpg?v=61fd77a9"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=lsWXyyEsw7E",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "Solid Three, Custom Renderers, and SolidStart w/  Nikhil Saraf",
+    "description": "",
+    "publishDate": "2022-01-29",
+    "coverImage": "https://i.ytimg.com/vi/lsWXyyEsw7E/sddefault.jpg?v=61f47ab6"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=dnuh-jKuDpk",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "React SSR and React Server Components",
+    "description": "",
+    "publishDate": "2022-01-22",
+    "coverImage": "https://i.ytimg.com/vi/dnuh-jKuDpk/maxresdefault.jpg"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=VanpBTKLFNM",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "Marko - The Most Underrated JS Framework?",
+    "description": "",
+    "publishDate": "2022-01-15",
+    "coverImage": "https://i.ytimg.com/vi/VanpBTKLFNM/maxresdefault.jpg"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=tcwe85p7M9c",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "Petite Solid?! Let's build a Micro View Library",
+    "description": "",
+    "publishDate": "2022-01-08",
+    "coverImage": "https://i.ytimg.com/vi/tcwe85p7M9c/sddefault.jpg?v=61d88837"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=vHy7GRpTpm8",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "JSConf India - The Future is Reactive",
+    "description": "",
+    "publishDate": "2021-12-29",
+    "coverImage": "https://i.ytimg.com/vi/vHy7GRpTpm8/maxresdefault.jpg"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=8hlo9uPrpr4",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "Streaming HTML, Solid 1.3, and More",
+    "description": "",
+    "publishDate": "2021-12-18",
+    "coverImage": "https://i.ytimg.com/vi/8hlo9uPrpr4/hqdefault.jpg?v=61bce73e"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=FB_kBYO_vIw",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "Compilation in JavaScript Frameworks",
+    "description": "",
+    "publishDate": "2021-12-11",
+    "coverImage": "https://i.ytimg.com/vi/FB_kBYO_vIw/sddefault.jpg?v=61b38de9"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=CQm52h3Ukng",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "A First Look at Remix",
+    "description": "",
+    "publishDate": "2021-12-04",
+    "coverImage": "https://i.ytimg.com/vi/CQm52h3Ukng/sddefault.jpg?v=61aa5dcc"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=Hdc5QqPfFH8",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "Streaming SolidJS: Concurrent Rendering without a Virtual DOM",
+    "description": "",
+    "publishDate": "2021-11-20",
+    "coverImage": "https://i.ytimg.com/vi/Hdc5QqPfFH8/sddefault.jpg?v=619818b5"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=O2kFXlNSdn0",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "Netlify and Vercel and Cloudflare, Oh My!",
+    "description": "",
+    "publishDate": "2021-11-13",
+    "coverImage": "https://i.ytimg.com/vi/O2kFXlNSdn0/hqdefault.jpg?v=618ea61c"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=C83XD19-1jg",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "2-way Binding and REPL Diving",
+    "description": "",
+    "publishDate": "2021-10-30",
+    "coverImage": "https://i.ytimg.com/vi/C83XD19-1jg/maxresdefault.jpg"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=Yi_MJ8cVCCs",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "Streaming SolidJS - Benchmarking and Custom Renderers",
+    "description": "",
+    "publishDate": "2021-10-23",
+    "coverImage": "https://i.ytimg.com/vi/Yi_MJ8cVCCs/sddefault.jpg?v=6172edbd"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=Q0mXYbA86Qo",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "Islands, Partial Hydration, & JavaScript Frameworks",
+    "description": "",
+    "publishDate": "2021-10-16",
+    "coverImage": "https://i.ytimg.com/vi/Q0mXYbA86Qo/sddefault.jpg?v=6169b8a0"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=YxroH_MXuhw",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "Streaming SolidJS: Routing",
+    "description": "",
+    "publishDate": "2021-10-09",
+    "coverImage": "https://i.ytimg.com/vi/YxroH_MXuhw/sddefault.jpg?v=6160aebc"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=UPhx3OxUH0w",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "Streaming SolidJS - First look at Astro",
+    "description": "",
+    "publishDate": "2021-10-02",
+    "coverImage": "https://i.ytimg.com/vi/UPhx3OxUH0w/hqdefault.jpg?v=615732c7"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=0zadjVUV7zM",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "Streaming SolidJS - Server Rendering",
+    "description": "",
+    "publishDate": "2021-09-25",
+    "coverImage": "https://i.ytimg.com/vi/0zadjVUV7zM/sddefault.jpg?v=614e0353"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=8Ou6domKfU4",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "Streaming SolidJS - Context, Async, & Suspense",
+    "description": "",
+    "publishDate": "2021-09-18",
+    "coverImage": "https://i.ytimg.com/vi/8Ou6domKfU4/sddefault.jpg?v=61453cfd"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=b9e7VXs_A4s",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "Streaming SolidJS: Fine-Grained Reactivity",
+    "description": "",
+    "publishDate": "2021-09-11",
+    "coverImage": "https://i.ytimg.com/vi/b9e7VXs_A4s/hqdefault.jpg?v=613bfece"
+  },
+  {
+    "showLink": "https://www.youtube.com/watch?v=jnZmG4hyNas",
+    "channel": "Ryan Carniato",
+    "channelURL": "https://www.youtube.com/@ryansolid",
+    "title": "First look at DOM Expressions",
+    "description": "",
+    "publishDate": "2021-09-04",
+    "coverImage": "https://i.ytimg.com/vi/jnZmG4hyNas/maxresdefault.jpg"
+  }
+]

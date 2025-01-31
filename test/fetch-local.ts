@@ -1,7 +1,7 @@
 // test/fetch-local.ts
 
-import fs from 'fs/promises'
-import path from 'path'
+import fs from 'node:fs/promises'
+import path from 'node:path'
 import { l, err } from '../src/utils/logging'
 
 const BASE_URL = 'http://localhost:3000'

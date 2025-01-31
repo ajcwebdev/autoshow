@@ -19,11 +19,15 @@ import { envVarsServerMap } from '../../utils/step-utils/llm-utils'
 import { validateRequest, validateServerProcessAction } from '../../utils/validate-option'
 import type { ProcessRequestBody } from '../../utils/types/process'
 
+// Drizzle references
+import { db } from '../../db/index'
+import { showNotes } from '../../db/schema'
+
 export async function POST(event: APIEvent): Promise<Response> {
   l('\nEntered handleProcessRequest')
 
   try {
-    const requestData = await event.request.json() as ProcessRequestBody
+    const requestData = (await event.request.json()) as ProcessRequestBody
     l('\nParsed request body:', requestData)
 
     const { type } = requestData
@@ -37,10 +41,12 @@ export async function POST(event: APIEvent): Promise<Response> {
 
     const { options, llmServices, transcriptServices } = validateRequest(requestData)
 
+    // If user selected a custom LLM
     if (llmServices && requestData['llmModel']) {
       options[llmServices] = requestData['llmModel']
     }
 
+    // Apply any environment mappings
     if (requestData) {
       Object.entries(envVarsServerMap).forEach(([bodyKey, envKey]) => {
         const value = (requestData as Record<string, string | undefined>)[bodyKey]
@@ -50,6 +56,7 @@ export async function POST(event: APIEvent): Promise<Response> {
       })
     }
 
+    // Process based on type
     switch (type) {
       case 'video': {
         const { url } = requestData
@@ -58,6 +65,23 @@ export async function POST(event: APIEvent): Promise<Response> {
         }
         options.video = url
         const result = await processVideo(options, url, llmServices, transcriptServices)
+
+        // Insert new record if needed:
+        // Adapt these fields to match your "result" object
+        db.insert(showNotes).values({
+          showLink: url,
+          channel: result.frontMatter.channel ?? null,
+          channelURL: result.frontMatter.channelURL ?? null,
+          title: result.frontMatter.title ?? 'Untitled',
+          description: result.frontMatter.description ?? null,
+          publishDate: result.frontMatter.publishDate ?? new Date().toISOString(),
+          coverImage: result.frontMatter.coverImage ?? null,
+          frontmatter: JSON.stringify(result.frontMatter),
+          prompt: result.prompt ?? null,
+          transcript: result.transcript ?? null,
+          llmOutput: result.llmOutput ?? null,
+        }).run()
+
         return new Response(JSON.stringify({
           frontMatter: result.frontMatter,
           prompt: result.prompt,
@@ -65,7 +89,7 @@ export async function POST(event: APIEvent): Promise<Response> {
           transcript: result.transcript,
         }), {
           status: 200,
-          headers: { 'Content-Type': 'application/json' }
+          headers: { 'Content-Type': 'application/json' },
         })
       }
 
@@ -76,6 +100,22 @@ export async function POST(event: APIEvent): Promise<Response> {
         }
         options.file = filePath
         const result = await processFile(options, filePath, llmServices, transcriptServices)
+
+        // Insert new record if needed:
+        // db.insert(showNotes).values({
+        //   showLink: filePath,
+        //   channel: result.frontMatter.channel ?? null,
+        //   channelURL: result.frontMatter.channelURL ?? null,
+        //   title: result.frontMatter.title ?? 'Untitled',
+        //   description: result.frontMatter.description ?? null,
+        //   publishDate: result.frontMatter.publishDate ?? new Date().toISOString(),
+        //   coverImage: result.frontMatter.coverImage ?? null,
+        //   frontmatter: JSON.stringify(result.frontMatter),
+        //   prompt: result.prompt ?? null,
+        //   transcript: result.transcript ?? null,
+        //   llmOutput: result.llmOutput ?? null,
+        // }).run()
+
         return new Response(JSON.stringify({
           frontMatter: result.frontMatter,
           prompt: result.prompt,
@@ -83,7 +123,7 @@ export async function POST(event: APIEvent): Promise<Response> {
           transcript: result.transcript,
         }), {
           status: 200,
-          headers: { 'Content-Type': 'application/json' }
+          headers: { 'Content-Type': 'application/json' },
         })
       }
     }

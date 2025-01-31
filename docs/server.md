@@ -35,7 +35,7 @@ Once the server is running, send a `POST` request to `http://localhost:3000/proc
 curl --json '{
   "type": "video",
   "url": "https://www.youtube.com/watch?v=MORMZXEaONk"
-}' http://localhost:3000/process
+}' http://localhost:3000/api/process
 ```
 
 Use LLM.

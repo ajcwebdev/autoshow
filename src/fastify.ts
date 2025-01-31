@@ -1,4 +1,4 @@
-// src/server/index.ts
+// src/fastify.ts
 
 import { DatabaseSync } from 'node:sqlite'
 import { env } from 'node:process'

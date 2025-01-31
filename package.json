@@ -28,8 +28,10 @@
     "file": "npm run as -- --file",
     "rss": "npm run as -- --rss",
     "info": "npm run as -- --info",
-    "fastify": "npm run tsx:base -- --watch --experimental-sqlite src/fastify.ts",
-    "serve": "npx solid-start dev",
+    "serve": "npm run tsx:base -- --watch --experimental-sqlite src/fastify.ts",
+    "dev": "vinxi dev",
+    "build": "vinxi build",
+    "start": "vinxi start",
     "clean": "npm run tsx:base scripts/cleanContent.ts",
     "ta": "tsx --test test/all.test.ts",
     "test-all": "tsx --test test/all.test.ts",
@@ -68,9 +70,11 @@
     "ollama": "0.5.12",
     "openai": "4.81.0",
     "solid-start-node": "^0.3.11",
-    "sqlite-vec": "0.1.7-alpha.2"
+    "sqlite-vec": "0.1.7-alpha.2",
+    "vinxi": "^0.4.3"
   },
   "devDependencies": {
+    "@types/better-sqlite3": "^7.6.12",
     "@types/node": "22.12.0",
     "tsx": "4.19.2",
     "typedoc": "0.27.6",

@@ -27,7 +27,7 @@ Version 20 enters its maintenance period in October 2024 and end-of-life in Apri
 
 ## Process Endpoint
 
-Once the server is running, send a `POST` request to `http://localhost:3000/process` containing a JSON object:
+Once the server is running, send a `POST` request to `http://localhost:3000/api/process` containing a JSON object:
 
 ### Video Type
 
@@ -35,7 +35,7 @@ Once the server is running, send a `POST` request to `http://localhost:3000/proc
 curl --json '{
   "type": "video",
   "url": "https://www.youtube.com/watch?v=MORMZXEaONk"
-}' http://localhost:3000/process
+}' http://localhost:3000/api/process
 ```
 
 Use LLM.
@@ -46,7 +46,7 @@ curl --json '{
   "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "whisperModel": "tiny",
   "llm": "ollama"
-}' http://localhost:3000/process
+}' http://localhost:3000/api/process
 ```
 
 ```bash
@@ -56,7 +56,7 @@ curl --json '{
   "whisperModel": "tiny",
   "llm": "ollama",
   "llmModel": "DEEPSEEK_R1_1_5B"
-}' http://localhost:3000/process
+}' http://localhost:3000/api/process
 ```
 
 ### File Type
@@ -65,7 +65,7 @@ curl --json '{
 curl --json '{
   "type": "file",
   "filePath": "content/audio.mp3"
-}' http://localhost:3000/process
+}' http://localhost:3000/api/process
 ```
 
 ```bash
@@ -74,7 +74,7 @@ curl --json '{
   "filePath": "content/audio.mp3",
   "whisperModel": "tiny",
   "llm": "ollama"
-}' http://localhost:3000/process
+}' http://localhost:3000/api/process
 ```
 
 ```bash
@@ -84,7 +84,7 @@ curl --json '{
   "prompts": ["titles"],
   "whisperModel": "tiny",
   "llm": "ollama"
-}' http://localhost:3000/process
+}' http://localhost:3000/api/process
 ```
 
 ## Language Model (LLM) Options
@@ -96,7 +96,7 @@ curl --json '{
   "type": "video",
   "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "llm": "chatgpt"
-}' http://localhost:3000/process
+}' http://localhost:3000/api/process
 ```
 
 ```bash
@@ -105,7 +105,7 @@ curl --json '{
   "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "llm": "chatgpt",
   "llmModel": "GPT_4o_MINI"
-}' http://localhost:3000/process
+}' http://localhost:3000/api/process
 ```
 
 ### Claude
@@ -115,7 +115,7 @@ curl --json '{
   "type": "video",
   "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "llm": "claude"
-}' http://localhost:3000/process
+}' http://localhost:3000/api/process
 ```
 
 ```bash
@@ -124,7 +124,7 @@ curl --json '{
   "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "llm": "claude",
   "llmModel": "CLAUDE_3_SONNET"
-}' http://localhost:3000/process
+}' http://localhost:3000/api/process
 ```
 
 ### Gemini
@@ -134,7 +134,7 @@ curl --json '{
   "type": "video",
   "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "llm": "gemini"
-}' http://localhost:3000/process
+}' http://localhost:3000/api/process
 ```
 
 ```bash
@@ -143,7 +143,7 @@ curl --json '{
   "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "llm": "gemini",
   "llmModel": "GEMINI_1_5_FLASH"
-}' http://localhost:3000/process
+}' http://localhost:3000/api/process
 ```
 
 ### Cohere
@@ -153,7 +153,7 @@ curl --json '{
   "type": "video",
   "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "llm": "cohere"
-}' http://localhost:3000/process
+}' http://localhost:3000/api/process
 ```
 
 ```bash
@@ -162,7 +162,7 @@ curl --json '{
   "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "llm": "cohere",
   "llmModel": "COMMAND_R_PLUS"
-}' http://localhost:3000/process
+}' http://localhost:3000/api/process
 ```
 
 ### Mistral
@@ -172,7 +172,7 @@ curl --json '{
   "type": "video",
   "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "llm": "mistral"
-}' http://localhost:3000/process
+}' http://localhost:3000/api/process
 ```
 
 ```bash
@@ -181,7 +181,7 @@ curl --json '{
   "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "llm": "mistral",
   "llmModel": "MIXTRAL_8x7b"
-}' http://localhost:3000/process
+}' http://localhost:3000/api/process
 ```
 
 ## Transcription Options
@@ -193,7 +193,7 @@ curl --json '{
   "type": "video",
   "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "whisperModel": "tiny"
-}' http://localhost:3000/process
+}' http://localhost:3000/api/process
 ```
 
 ### Deepgram
@@ -203,7 +203,7 @@ curl --json '{
   "type": "video",
   "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "transcriptServices": "deepgram"
-}' http://localhost:3000/process
+}' http://localhost:3000/api/process
 ```
 
 ```bash
@@ -212,7 +212,7 @@ curl --json '{
   "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "transcriptServices": "deepgram",
   "llm": "ollama"
-}' http://localhost:3000/process
+}' http://localhost:3000/api/process
 ```
 
 ### Assembly
@@ -222,7 +222,7 @@ curl --json '{
   "type": "video",
   "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "transcriptServices": "assembly"
-}' http://localhost:3000/process
+}' http://localhost:3000/api/process
 ```
 
 ```bash
@@ -231,7 +231,7 @@ curl --json '{
   "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "transcriptServices": "assembly",
   "llm": "ollama"
-}' http://localhost:3000/process
+}' http://localhost:3000/api/process
 ```
 
 ```bash
@@ -240,7 +240,7 @@ curl --json '{
   "url": "https://ajc.pics/audio/fsjam-short.mp3",
   "transcriptServices": "assembly",
   "speakerLabels": true
-}' http://localhost:3000/process
+}' http://localhost:3000/api/process
 ```
 
 ```bash
@@ -250,7 +250,7 @@ curl --json '{
   "transcriptServices": "assembly",
   "speakerLabels": true,
   "llm": "ollama"
-}' http://localhost:3000/process
+}' http://localhost:3000/api/process
 ```
 
 ## Prompt Options
@@ -260,7 +260,7 @@ curl --json '{
   "type": "video",
   "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "prompts": ["titles", "mediumChapters"]
-}' http://localhost:3000/process
+}' http://localhost:3000/api/process
 ```
 
 ```bash
@@ -268,7 +268,7 @@ curl --json '{
   "type": "video",
   "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "prompts": ["titles", "summary", "shortChapters", "takeaways", "questions"]
-}' http://localhost:3000/process
+}' http://localhost:3000/api/process
 ```
 
 ```bash
@@ -278,7 +278,7 @@ curl --json '{
   "prompts": ["titles", "summary", "shortChapters", "takeaways", "questions"],
   "whisperModel": "tiny",
   "llm": "ollama"
-}' http://localhost:3000/process
+}' http://localhost:3000/api/process
 ```
 
 ## Test Requests

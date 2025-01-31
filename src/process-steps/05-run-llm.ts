@@ -1,7 +1,7 @@
 // src/process-steps/05-run-llm.ts
 
 import { writeFile, readFile } from 'node:fs/promises'
-import { insertShowNote } from '../server/db'
+import { insertShowNote } from '../server'
 import { l, err, logInitialFunctionCall } from '../utils/logging'
 import { retryLLMCall } from '../utils/step-utils/retry'
 import { LLM_FUNCTIONS } from '../utils/step-utils/llm-utils'
@@ -78,19 +78,19 @@ export async function runLLM(
       await writeFile(noLLMFile, `${frontMatter}\n${prompt}\n## Transcript\n\n${transcript}`)
     }
 
-    insertShowNote(
-      metadata.showLink ?? '',
-      metadata.channel ?? '',
-      metadata.channelURL ?? '',
-      metadata.title ?? '',
-      metadata.description ?? '',
-      metadata.publishDate ?? '',
-      metadata.coverImage ?? '',
-      frontMatter,
+    insertShowNote({
+      showLink: metadata.showLink ?? '',
+      channel: metadata.channel ?? '',
+      channelURL: metadata.channelURL ?? '',
+      title: metadata.title ?? '',
+      description: metadata.description ?? '',
+      publishDate: metadata.publishDate ?? '',
+      coverImage: metadata.coverImage ?? '',
+      frontmatter: frontMatter,
       prompt,
       transcript,
-      showNotesResult
-    )
+      llmOutput: showNotesResult
+    })
 
     return showNotesResult
   } catch (error) {

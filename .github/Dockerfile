@@ -1,13 +1,11 @@
 # .github/Dockerfile
 
 # 1. Use Node 22-slim as base image
-FROM node:22-slim AS base
+FROM node:22-alpine AS base
 
 # 2. Install system dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    ffmpeg git wget ca-certificates cmake python3 build-essential \
- && rm -rf /var/lib/apt/lists/* \
- && apt-get clean \
+RUN apk add --no-cache \
+    ffmpeg git wget ca-certificates cmake python3 build-base \
  && update-ca-certificates
 
 # 3. Set working directory to /usr/src/app

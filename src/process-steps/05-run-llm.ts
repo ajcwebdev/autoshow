@@ -206,7 +206,7 @@ export async function runLLMFromPromptFile(
   filePath: string,
   options: ProcessingOptions,
   llmServices: LLMServices,
-): Promise<void> {
+) {
   try {
     const fileContent = await readFile(filePath, 'utf8')
     const { frontMatter, prompt, transcript, metadata } = parsePromptFile(fileContent)

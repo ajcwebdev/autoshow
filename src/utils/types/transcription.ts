@@ -5,12 +5,6 @@
  */
 export type TranscriptServices = 'whisper' | 'deepgram' | 'assembly'
 
-export type TranscriptServiceConfig = {
-  name: string
-  value: TranscriptServices
-  isWhisper?: boolean
-}
-
 /**
  * Describes parameters needed for logging transcription cost details.
  */

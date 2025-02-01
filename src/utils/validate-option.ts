@@ -31,7 +31,7 @@ export const execFilePromise = promisify(execFile)
  * @returns The valid process type as a `ValidAction` if validation passes
  * @throws Error if the type is not valid or is missing
  */
-export function validateServerProcessAction(type: string): ValidAction {
+export function validateServerProcessAction(type: string) {
   if (!['video', 'urls', 'rss', 'playlist', 'file', 'channel'].includes(type)) {
     throw new Error('Invalid or missing process type')
   }
@@ -113,7 +113,7 @@ export const parser = new XMLParser({
 /**
  * Maps action names to their corresponding handler function.
  */
-export const PROCESS_HANDLERS: Record<ValidAction, HandlerFunction> = {
+export const PROCESS_HANDLERS = {
   video: processVideo,
   playlist: processPlaylist,
   channel: processChannel,
@@ -201,7 +201,7 @@ export function validateInputCLI(options: ProcessingOptions): {
  * @returns The validated LLM service
  * @throws An error if the LLM service is invalid or not provided
  */
-export function validateLLM(options: ProcessingOptions): LLMServices | undefined {
+export function validateLLM(options: ProcessingOptions) {
   const llmKeys = LLM_OPTIONS as string[]
   const llmKey = validateOption(llmKeys, options, 'LLM option')
 
@@ -219,7 +219,7 @@ export function validateLLM(options: ProcessingOptions): LLMServices | undefined
  * @throws An error if the transcription service is invalid or not provided
  */
 // Fix the validation logic for transcription services to ensure that the flag value is correctly passed.
-export function validateTranscription(options: ProcessingOptions): TranscriptServices | undefined {
+export function validateTranscription(options: ProcessingOptions) {
   // Check if any transcription service is provided in the options
   if (options.deepgram) {
     return 'deepgram'
@@ -248,8 +248,8 @@ export async function processAction(
   options: ProcessingOptions,
   llmServices?: LLMServices,
   transcriptServices?: TranscriptServices
-): Promise<void> {
-  const handler = PROCESS_HANDLERS[action]
+) {
+  const handler = PROCESS_HANDLERS[action] as HandlerFunction
 
   // If user selected RSS, run specialized validation and logic
   if (action === 'rss') {
@@ -280,7 +280,7 @@ export function validateOption(
   optionKeys: string[],
   options: ProcessingOptions,
   errorMessage: string
-): string | undefined {
+) {
   const selectedOptions = optionKeys.filter((opt) => {
     const value = options[opt as keyof ProcessingOptions]
     if (Array.isArray(value)) {
@@ -359,7 +359,7 @@ export async function saveAudio(id: string, ensureFolders?: boolean) {
  * @example
  * sanitizeTitle('My Video Title! (2024)') // returns 'my-video-title-2024'
  */
-export function sanitizeTitle(title: string): string {
+export function sanitizeTitle(title: string) {
   return title
     .replace(/[^\w\s-]/g, '')      // Remove all non-word characters except spaces and hyphens
     .trim()                        // Remove leading and trailing whitespace
@@ -390,7 +390,7 @@ export function buildFrontMatter(metadata: {
   description: string
   publishDate: string
   coverImage: string
-}): string[] {
+}) {
   return [
     '---',
     `showLink: "${metadata.showLink}"`,
@@ -420,7 +420,7 @@ export async function saveInfo(
   type: 'playlist' | 'urls' | 'channel' | 'rss',
   data: string[] | VideoInfo[] | RSSItem[],
   title?: string
-): Promise<void> {
+) {
   // Handle RSS items (no metadata extraction needed, just save as-is)
   if (type === 'rss') {
     const items = data as RSSItem[]

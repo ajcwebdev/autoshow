@@ -70,7 +70,7 @@ export async function downloadAudio(
   options: ProcessingOptions,
   input: string,
   filename: string
-): Promise<string> {
+) {
   l.step(`\nStep 2 - Download Audio\n`)
   logInitialFunctionCall('downloadAudio', { options, input, filename })
 

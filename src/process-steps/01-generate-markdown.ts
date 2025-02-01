@@ -3,7 +3,7 @@
 import { basename, extname } from 'node:path'
 import { sanitizeTitle, buildFrontMatter, execFilePromise } from '../utils/validate-option'
 import { l, err, logInitialFunctionCall } from '../utils/logging'
-import type { MarkdownData, ProcessingOptions, RSSItem } from '../utils/types/step-types'
+import type { ProcessingOptions, RSSItem } from '../utils/types/step-types'
 
 /**
  * Generates markdown content with front matter based on the provided options and input.
@@ -20,11 +20,6 @@ import type { MarkdownData, ProcessingOptions, RSSItem } from '../utils/types/st
  *                                   - For video/playlist/urls: A URL string
  *                                   - For file: A file path string
  *                                   - For RSS: An RSSItem object containing feed item details
- * @returns {Promise<MarkdownData>} A promise that resolves to an object containing:
- *                                 - frontMatter: The generated front matter content as a string
- *                                 - finalPath: The path (base name) derived for the content
- *                                 - filename: The sanitized filename
- *                                 - metadata: An object containing all metadata fields
  * @throws {Error} If invalid options are provided or if metadata extraction fails.
  * 
  * @example
@@ -51,7 +46,7 @@ import type { MarkdownData, ProcessingOptions, RSSItem } from '../utils/types/st
 export async function generateMarkdown(
   options: ProcessingOptions,
   input: string | RSSItem
-): Promise<MarkdownData> {
+) {
   l.step(`\nStep 1 - Generate Markdown\n`)
   logInitialFunctionCall('generateMarkdown', { options, input })
 

@@ -17,7 +17,7 @@ export const execFilePromise = promisify(execFile)
  * @param options - The command-line options provided by the user
  * @throws Exits the process if any flag is invalid
  */
-export function validateRSSOptions(options: ProcessingOptions): void {
+export function validateRSSOptions(options: ProcessingOptions) {
   if (options.last !== undefined) {
     if (!Number.isInteger(options.last) || options.last < 1) {
       err('Error: The --last option must be a positive integer.')
@@ -91,7 +91,7 @@ export async function filterRSSItems(
   channelTitle?: string,
   channelLink?: string,
   channelImage?: string
-): Promise<RSSItem[]> {
+) {
   const defaultDate = new Date().toISOString().substring(0, 10)
   const unfilteredItems: RSSItem[] = (feedItemsArray || [])
     .filter((item: any) => {
@@ -167,7 +167,7 @@ export async function validateRSSAction(
   handler: HandlerFunction,
   llmServices?: LLMServices,
   transcriptServices?: TranscriptServices
-): Promise<void> {
+) {
   if (options.item && !Array.isArray(options.item)) {
     options.item = [options.item]
   }
@@ -198,7 +198,7 @@ export function logRSSProcessingStatus(
   total: number,
   processing: number,
   options: ProcessingOptions
-): void {
+) {
   if (options.item && options.item.length > 0) {
     l.dim(`\n  - Found ${total} items in the RSS feed.`)
     l.dim(`  - Processing ${processing} specified items.`)

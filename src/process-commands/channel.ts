@@ -20,7 +20,7 @@ import type { LLMServices } from '../utils/types/llms'
 export async function selectVideos(
   stdout: string,
   options: ProcessingOptions
-): Promise<{ allVideos: VideoInfo[], videosToProcess: VideoInfo[] }> {
+) {
   const videoUrls = stdout.trim().split('\n').filter(Boolean)
   l.opts(`\nFetching detailed information for ${videoUrls.length} videos...`)
 

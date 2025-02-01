@@ -17,14 +17,13 @@ import { processFile } from '../../process-commands/file'
 import { l, err } from '../../utils/logging'
 import { envVarsServerMap } from '../../utils/step-utils/llm-utils'
 import { validateRequest, validateServerProcessAction } from '../../utils/validate-option'
-import type { ProcessRequestBody } from '../../utils/types/step-types'
 import { json } from '@solidjs/router'
 
 export async function POST(event: APIEvent) {
   l('\nEntered handleProcessRequest')
 
   try {
-    const requestData = await event.request.json() as ProcessRequestBody
+    const requestData = await event.request.json()
     l('\nParsed request body:', requestData)
 
     const { type } = requestData

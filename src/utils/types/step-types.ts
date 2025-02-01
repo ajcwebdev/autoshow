@@ -3,6 +3,16 @@
 import type { TranscriptServices, WhisperModelType } from './transcription'
 import type { LLMServices } from './llms'
 
+// Parse the JSON output
+export interface PlaylistEntry {
+  id: string;
+}
+
+export interface PlaylistData {
+  title: string;
+  entries: PlaylistEntry[];
+}
+
 export type ShowNote = {
   showLink: string;      // Link to the show or audio/video file
   channel: string;       // Name of the channel or show
@@ -35,28 +45,6 @@ export interface EpisodeMetadata {
   description?: string | undefined
   publishDate?: string | undefined
   coverImage?: string | undefined
-}
-
-export interface RequestBody {
-  openaiApiKey?: string
-  anthropicApiKey?: string
-  deepgramApiKey?: string
-  assemblyApiKey?: string
-  geminiApiKey?: string
-  cohereApiKey?: string
-  mistralApiKey?: string
-  grokApiKey?: string
-  togetherApiKey?: string
-  fireworksApiKey?: string
-  groqApiKey?: string
-}
-
-// Define types for the request body
-export interface ProcessRequestBody {
-  type: 'video' | 'urls' | 'rss' | 'playlist' | 'file' | 'channel'
-  url?: string
-  filePath?: string
-  [key: string]: any // Allow for additional properties from validateRequest
 }
 
 // Define valid action types for processing
@@ -177,30 +165,7 @@ export type HandlerFunction = (
   input: string,
   llmServices?: LLMServices,
   transcriptServices?: TranscriptServices
-) => Promise<void> | Promise<Object> | Promise<string>
-
-// Content Types
-/**
- * Data structure for markdown generation.
- */
-export type MarkdownData = {
-  /** The front matter content for the markdown file. */
-  frontMatter: string
-  /** The base file path (without extension) for the markdown file. */
-  finalPath: string
-  /** The sanitized filename used for the markdown file. */
-  filename: string
-  /** The metadata used in the frontmatter saved to a JSON object. */
-  metadata: {
-    showLink: string
-    channel: string
-    channelURL: string
-    title: string
-    description: string
-    publishDate: string
-    coverImage: string
-  }
-}
+) => Promise<void>
 
 /**
  * Metadata extracted from a YouTube video.
@@ -260,39 +225,6 @@ export type RSSItem = {
 }
 
 /**
- * Options for RSS feed processing.
- */
-export type RSSOptions = {
-  /** The order to process items ('newest' or 'oldest'). */
-  order?: string
-  /** The number of items to skip. */
-  skip?: number
-}
-
-// Audio Processing Types
-/**
- * Options for downloading audio files.
- */
-export type DownloadAudioOptions = {
-  /** The desired output audio format (e.g., 'wav'). */
-  outputFormat?: string
-  /** The sample rate for the audio file (e.g., 16000). */
-  sampleRate?: number
-  /** The number of audio channels (e.g., 1 for mono). */
-  channels?: number
-}
-
-/**
  * Supported file types for audio and video processing.
  */
 export type SupportedFileType = 'wav' | 'mp3' | 'm4a' | 'aac' | 'ogg' | 'flac' | 'mp4' | 'mkv' | 'avi' | 'mov' | 'webm'
-
-/**
- * Object containing different prompts, their instructions to the LLM, and expected example output.
- */
-export type PromptSection = {
-  /** The instructions for the section. */
-  instruction: string
-  /** An example output for the section. */
-  example: string
-}

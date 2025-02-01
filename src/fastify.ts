@@ -10,7 +10,7 @@ import { l, err } from './utils/logging'
 import { envVarsServerMap } from './utils/step-utils/llm-utils'
 import { validateRequest, validateServerProcessAction } from './utils/validate-option'
 
-import type { RequestBody, ProcessRequestBody, ShowNote } from './utils/types/step-types'
+import type { ShowNote } from './utils/types/step-types'
 import type { FastifyRequest, FastifyReply } from 'fastify'
 
 // Set server port from environment variable or default to 3000
@@ -77,7 +77,7 @@ export const handleProcessRequest = async (
 
   try {
     // Access parsed request body
-    const requestData = request.body as ProcessRequestBody
+    const requestData = request.body as any
     l('\nParsed request body:', requestData)
 
     const { type } = requestData
@@ -182,7 +182,7 @@ async function start() {
   })
 
   fastify.addHook('preHandler', async (request) => {
-    const body = request.body as RequestBody
+    const body = request.body
     if (body) {
       Object.entries(envVarsServerMap).forEach(([bodyKey, envKey]) => {
         const value = (body as Record<string, string | undefined>)[bodyKey]

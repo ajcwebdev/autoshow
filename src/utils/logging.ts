@@ -33,7 +33,7 @@ export function logInitialFunctionCall(functionName: string, details: Record<str
  *
  * @param params - An object describing the context and values needed to log the separator.
  */
-export function logSeparator(params: SeparatorParams): void {
+export function logSeparator(params: SeparatorParams) {
   switch (params.type) {
     case 'channel':
     case 'playlist':

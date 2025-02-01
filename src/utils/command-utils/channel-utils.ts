@@ -11,7 +11,7 @@ import type { ProcessingOptions } from '../types/step-types'
  * @param options - Configuration options to validate
  * @throws Will exit the process if validation fails
  */
-export function validateChannelOptions(options: ProcessingOptions): void {
+export function validateChannelOptions(options: ProcessingOptions) {
   if (options.last !== undefined) {
     if (!Number.isInteger(options.last) || options.last < 1) {
       err('Error: The --last option must be a positive integer.')
@@ -51,7 +51,7 @@ export function logChannelProcessingStatus(
   total: number,
   processing: number,
   options: ProcessingOptions
-): void {
+) {
   if (options.last) {
     l.dim(`\n  - Found ${total} videos in the channel.`)
     l.dim(`  - Processing the last ${processing} videos.`)

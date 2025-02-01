@@ -17,25 +17,9 @@ import { callGroq } from '../../llms/groq'
 import chalk from 'chalk'
 import { l, err } from '../logging'
 
-import type {
-  ModelConfig,
-  ChatGPTModelType,
-  ClaudeModelType,
-  CohereModelType,
-  GeminiModelType,
-  MistralModelType,
-  DeepSeekModelType,
-  GrokModelType,
-  TogetherModelType,
-  FireworksModelType,
-  GroqModelType,
-  LLMServiceConfig,
-  LLMServices,
-  ModelConfigValue,
-  OllamaTagsResponse
-} from '../types/llms'
+import type { LLMServices, OllamaTagsResponse } from '../types/llms'
 import type { LogLLMCost } from '../types/logging'
-import type { RequestBody, ProcessingOptions } from '../types/step-types'
+import type { ProcessingOptions } from '../types/step-types'
 
 /**
  * Finds the model configuration based on the model key
@@ -44,7 +28,7 @@ import type { RequestBody, ProcessingOptions } from '../types/step-types'
  */
 function findModelConfig(modelKey: string) {
   // First try to find the model directly in our combined models
-  const model = ALL_MODELS[modelKey]
+  const model = ALL_MODELS[modelKey as keyof typeof ALL_MODELS]
   if (model) return model
 
   // If not found by key, try matching by model ID as a fallback
@@ -58,7 +42,7 @@ function findModelConfig(modelKey: string) {
  * @param cost - The cost value to format
  * @returns Formatted cost string
  */
-function formatCost(cost: number | undefined): string {
+function formatCost(cost: number | undefined) {
   if (cost === undefined) return 'N/A'
   if (cost === 0) return '$0.0000'
   return `$${cost.toFixed(4)}`
@@ -69,7 +53,7 @@ function formatCost(cost: number | undefined): string {
  * Includes token usage and cost calculations.
  * @param info - Object containing model info, stop reason, and token usage
  */
-export function logLLMCost(info: LogLLMCost): void {
+export function logLLMCost(info: LogLLMCost) {
   const { modelName, stopReason, tokenUsage } = info
   
   // Get model display name if available, otherwise use the provided name
@@ -145,7 +129,7 @@ export function logLLMCost(info: LogLLMCost): void {
  * @param text - The text for which we need an approximate token count
  * @returns Approximate token count
  */
-function approximateTokens(text: string): number {
+function approximateTokens(text: string) {
   const words = text.trim().split(/\s+/)
   // This is a naive approximation of tokens
   return Math.max(1, words.length)
@@ -167,7 +151,7 @@ function approximateTokens(text: string): number {
 export async function estimateLLMCost(
   options: ProcessingOptions,
   llmService: LLMServices
-): Promise<void> {
+) {
   const filePath = options.llmCost
   if (!filePath) {
     throw new Error('No file path provided to estimate LLM cost.')
@@ -222,7 +206,7 @@ export async function estimateLLMCost(
  * A value of `null` indicates an option to skip LLM processing.
  * 
  */
-export const LLM_SERVICES: Record<string, LLMServiceConfig> = {
+export const LLM_SERVICES = {
   SKIP: { name: 'Skip LLM Processing', value: null },
   OLLAMA: { name: 'Ollama (local inference)', value: 'ollama' },
   CHATGPT: { name: 'OpenAI ChatGPT', value: 'chatgpt' },
@@ -245,7 +229,7 @@ export const LLM_OPTIONS: LLMServices[] = Object.values(LLM_SERVICES)
   .map((service) => service.value)
   .filter((value): value is LLMServices => value !== null)
 
-export const envVarsMap: Record<string, string> = {
+export const envVarsMap = {
   openaiApiKey: 'OPENAI_API_KEY',
   anthropicApiKey: 'ANTHROPIC_API_KEY',
   deepgramApiKey: 'DEEPGRAM_API_KEY',
@@ -263,7 +247,7 @@ export const envVarsMap: Record<string, string> = {
  * Maps server-side request body keys to corresponding environment variables.
  * 
  */
-export const envVarsServerMap: Record<keyof RequestBody, string> = {
+export const envVarsServerMap = {
   openaiApiKey: 'OPENAI_API_KEY',
   anthropicApiKey: 'ANTHROPIC_API_KEY',
   deepgramApiKey: 'DEEPGRAM_API_KEY',
@@ -295,9 +279,8 @@ export const LLM_FUNCTIONS = {
 /**
  * Configuration for ChatGPT models, mapping model types to their display names and identifiers.
  * Includes various GPT-4 models with different capabilities and performance characteristics.
- * @type {ModelConfig<ChatGPTModelType>}
  */
-export const GPT_MODELS: ModelConfig<ChatGPTModelType> = {
+export const GPT_MODELS = {
   GPT_4o_MINI: { 
     name: 'GPT 4 o MINI', 
     modelId: 'gpt-4o-mini',
@@ -321,9 +304,8 @@ export const GPT_MODELS: ModelConfig<ChatGPTModelType> = {
 /**
  * Configuration for Claude models, mapping model types to their display names and identifiers.
  * Includes Anthropic's Claude 3 family of models with varying capabilities and performance profiles.
- * @type {ModelConfig<ClaudeModelType>}
  */
-export const CLAUDE_MODELS: ModelConfig<ClaudeModelType> = {
+export const CLAUDE_MODELS = {
   CLAUDE_3_5_SONNET: { 
     name: 'Claude 3.5 Sonnet', 
     modelId: 'claude-3-5-sonnet-latest',
@@ -359,9 +341,8 @@ export const CLAUDE_MODELS: ModelConfig<ClaudeModelType> = {
 /**
  * Configuration for Google Gemini models, mapping model types to their display names and identifiers.
  * Includes Gemini 1.0 and 1.5 models optimized for different use cases.
- * @type {ModelConfig<GeminiModelType>}
  */
-export const GEMINI_MODELS: ModelConfig<GeminiModelType> = {
+export const GEMINI_MODELS = {
   GEMINI_1_5_FLASH_8B: {
     name: 'Gemini 1.5 Flash-8B',
     modelId: 'gemini-1.5-flash-8b',
@@ -385,9 +366,8 @@ export const GEMINI_MODELS: ModelConfig<GeminiModelType> = {
 /**
  * Configuration for Cohere models, mapping model types to their display names and identifiers.
  * Features Command models specialized for different tasks and performance levels.
- * @type {ModelConfig<CohereModelType>}
  */
-export const COHERE_MODELS: ModelConfig<CohereModelType> = {
+export const COHERE_MODELS = {
   COMMAND_R: { 
     name: 'Command R', 
     modelId: 'command-r',
@@ -405,9 +385,8 @@ export const COHERE_MODELS: ModelConfig<CohereModelType> = {
 /**
  * Configuration for Mistral AI models, mapping model types to their display names and identifiers.
  * Includes Mixtral, Mistral, and Ministral models with various parameter sizes and capabilities.
- * @type {ModelConfig<MistralModelType>}
  */
-export const MISTRAL_MODELS: ModelConfig<MistralModelType> = {
+export const MISTRAL_MODELS = {
   MIXTRAL_8x7B: { 
     name: 'Mixtral 8x7B', 
     modelId: 'open-mixtral-8x7b',
@@ -461,9 +440,8 @@ export const MISTRAL_MODELS: ModelConfig<MistralModelType> = {
 /**
  * Configuration for Fireworks AI models, mapping model types to their display names and identifiers.
  * Features various LLaMA and Qwen models optimized for different use cases.
- * @type {ModelConfig<FireworksModelType>}
  */
-export const FIREWORKS_MODELS: ModelConfig<FireworksModelType> = {
+export const FIREWORKS_MODELS = {
   LLAMA_3_1_405B: { 
     name: 'LLAMA 3 1 405B', 
     modelId: 'accounts/fireworks/models/llama-v3p1-405b-instruct',
@@ -499,9 +477,8 @@ export const FIREWORKS_MODELS: ModelConfig<FireworksModelType> = {
 /**
  * Configuration for Together AI models, mapping model types to their display names and identifiers.
  * Includes a diverse range of LLaMA, Gemma, and Qwen models with different parameter counts.
- * @type {ModelConfig<TogetherModelType>}
  */
-export const TOGETHER_MODELS: ModelConfig<TogetherModelType> = {
+export const TOGETHER_MODELS = {
   LLAMA_3_2_3B: { 
     name: 'LLAMA 3 2 3B', 
     modelId: 'meta-llama/Llama-3.2-3B-Instruct-Turbo',
@@ -555,9 +532,8 @@ export const TOGETHER_MODELS: ModelConfig<TogetherModelType> = {
 /**
  * Configuration for Groq models, mapping model types to their display names and identifiers.
  * Features optimized versions of LLaMA, Mixtral, and Gemma models for high-performance inference.
- * @type {ModelConfig<GroqModelType>}
  */
-export const GROQ_MODELS: ModelConfig<GroqModelType> = {
+export const GROQ_MODELS = {
   LLAMA_3_2_1B_PREVIEW: { 
     name: 'Llama 3.2 1B (Preview) 8k', 
     modelId: 'llama-3.2-1b-preview',
@@ -593,9 +569,8 @@ export const GROQ_MODELS: ModelConfig<GroqModelType> = {
 /**
  * Configuration for Grok models, mapping model types to their display names and identifiers.
  * Pricing is hypothetical or as provided by xAI docs
- * @type {ModelConfig<GrokModelType>}
  */
-export const GROK_MODELS: ModelConfig<GrokModelType> = {
+export const GROK_MODELS = {
   GROK_2_LATEST: {
     name: 'Grok 2 Latest',
     modelId: 'grok-2-latest',
@@ -607,9 +582,8 @@ export const GROK_MODELS: ModelConfig<GrokModelType> = {
 /**
  * Configuration for DeepSeek models, mapping model types to their display names and identifiers.
  * Pricing is based on publicly listed rates for DeepSeek. 
- * @type {ModelConfig<DeepSeekModelType>}
  */
-export const DEEPSEEK_MODELS: ModelConfig<DeepSeekModelType> = {
+export const DEEPSEEK_MODELS = {
   DEEPSEEK_CHAT: {
     name: 'DeepSeek Chat',
     modelId: 'deepseek-chat',
@@ -627,7 +601,7 @@ export const DEEPSEEK_MODELS: ModelConfig<DeepSeekModelType> = {
 /**
  * All available model configurations combined
  */
-export const ALL_MODELS: { [key: string]: ModelConfigValue } = {
+export const ALL_MODELS = {
   ...GPT_MODELS,
   ...CLAUDE_MODELS,
   ...GEMINI_MODELS,
@@ -655,7 +629,7 @@ export async function checkOllamaServerAndModel(
   ollamaHost: string,
   ollamaPort: string,
   ollamaModelName: string
-): Promise<void> {
+) {
   // Helper to check if the Ollama server responds
   async function checkServer(): Promise<boolean> {
     try {

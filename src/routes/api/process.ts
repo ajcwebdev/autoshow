@@ -17,7 +17,7 @@ import { processFile } from '../../process-commands/file'
 import { l, err } from '../../utils/logging'
 import { envVarsServerMap } from '../../utils/step-utils/llm-utils'
 import { validateRequest, validateServerProcessAction } from '../../utils/validate-option'
-import type { ProcessRequestBody } from '../../utils/types/process'
+import type { ProcessRequestBody } from '../../utils/types/step-types'
 
 export async function POST(event: APIEvent): Promise<Response> {
   l('\nEntered handleProcessRequest')

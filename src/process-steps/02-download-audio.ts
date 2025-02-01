@@ -5,7 +5,7 @@ import { fileTypeFromBuffer } from 'file-type'
 import { l, err, logInitialFunctionCall } from '../utils/logging'
 import { executeWithRetry } from '../utils/step-utils/retry'
 import { execPromise } from '../utils/validate-option'
-import type { SupportedFileType, ProcessingOptions } from '../utils/types/process'
+import type { SupportedFileType, ProcessingOptions } from '../utils/types/step-types'
 
 /**
  * Downloads or processes audio content from various sources and converts it to a standardized WAV format.

@@ -10,7 +10,7 @@ import { l, err, logSeparator, logInitialFunctionCall } from '../utils/logging'
 import { logRSSProcessingStatus, filterRSSItems } from '../utils/command-utils/rss-utils'
 import { retryRSSFetch } from '../utils/step-utils/retry'
 
-import type { ProcessingOptions, RSSItem } from '../utils/types/process'
+import type { ProcessingOptions, RSSItem } from '../utils/types/step-types'
 import type { TranscriptServices } from '../utils/types/transcription'
 import type { LLMServices } from '../utils/types/llms'
 

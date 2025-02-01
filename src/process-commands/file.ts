@@ -7,7 +7,7 @@ import { selectPrompts } from '../process-steps/04-select-prompt'
 import { runLLM } from '../process-steps/05-run-llm'
 import { saveAudio } from '../utils/validate-option'
 import { l, err, logInitialFunctionCall } from '../utils/logging'
-import type { ProcessingOptions } from '../utils/types/process'
+import type { ProcessingOptions } from '../utils/types/step-types'
 import type { TranscriptServices } from '../utils/types/transcription'
 import type { LLMServices } from '../utils/types/llms'
 

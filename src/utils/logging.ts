@@ -2,8 +2,7 @@
 
 import chalk from 'chalk'
 
-import type { ChainableLogger } from './types/logging'
-import type { SeparatorParams } from './types/process'
+import type { ChainableLogger, SeparatorParams } from './types/logging'
 
 /**
  * Logs the first step of a top-level function call with its relevant options or parameters.

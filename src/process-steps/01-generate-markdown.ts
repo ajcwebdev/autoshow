@@ -3,7 +3,7 @@
 import { basename, extname } from 'node:path'
 import { sanitizeTitle, buildFrontMatter, execFilePromise } from '../utils/validate-option'
 import { l, err, logInitialFunctionCall } from '../utils/logging'
-import type { MarkdownData, ProcessingOptions, RSSItem } from '../utils/types/process'
+import type { MarkdownData, ProcessingOptions, RSSItem } from '../utils/types/step-types'
 
 /**
  * Generates markdown content with front matter based on the provided options and input.

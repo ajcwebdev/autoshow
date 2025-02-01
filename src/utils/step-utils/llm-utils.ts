@@ -35,7 +35,7 @@ import type {
   OllamaTagsResponse
 } from '../types/llms'
 import type { LogLLMCost } from '../types/logging'
-import type { RequestBody, ProcessingOptions } from '../types/process'
+import type { RequestBody, ProcessingOptions } from '../types/step-types'
 
 /**
  * Finds the model configuration based on the model key

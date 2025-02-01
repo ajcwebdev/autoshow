@@ -5,7 +5,7 @@ import { saveInfo, execFilePromise } from '../utils/validate-option'
 import { l, err, logSeparator, logInitialFunctionCall } from '../utils/logging'
 import { validateChannelOptions, logChannelProcessingStatus } from '../utils/command-utils/channel-utils'
 
-import type { ProcessingOptions, VideoInfo } from '../utils/types/process'
+import type { ProcessingOptions, VideoInfo } from '../utils/types/step-types'
 import type { TranscriptServices } from '../utils/types/transcription'
 import type { LLMServices } from '../utils/types/llms'
 

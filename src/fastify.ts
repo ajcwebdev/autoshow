@@ -10,7 +10,7 @@ import { l, err } from './utils/logging'
 import { envVarsServerMap } from './utils/step-utils/llm-utils'
 import { validateRequest, validateServerProcessAction } from './utils/validate-option'
 
-import type { RequestBody, ProcessRequestBody, ShowNote } from './utils/types/process'
+import type { RequestBody, ProcessRequestBody, ShowNote } from './utils/types/step-types'
 import type { FastifyRequest, FastifyReply } from 'fastify'
 
 // Set server port from environment variable or default to 3000

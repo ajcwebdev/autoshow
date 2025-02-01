@@ -14,7 +14,7 @@ const requests = [
       type: 'file',
       filePath: 'content/audio.mp3',
     },
-    endpoint: '/process',
+    endpoint: '/api/process',
     outputFiles: ['FILE_01.md'],
   },
   {
@@ -23,7 +23,7 @@ const requests = [
       filePath: 'content/audio.mp3',
       whisperModel: 'tiny',
     },
-    endpoint: '/process',
+    endpoint: '/api/process',
     outputFiles: ['FILE_02.md'],
   },
   {
@@ -33,7 +33,7 @@ const requests = [
       whisperModel: 'tiny',
       llm: 'ollama',
     },
-    endpoint: '/process',
+    endpoint: '/api/process',
     outputFiles: ['FILE_03.md'],
   },
   {
@@ -44,7 +44,7 @@ const requests = [
       whisperModel: 'tiny',
       llm: 'ollama',
     },
-    endpoint: '/process',
+    endpoint: '/api/process',
     outputFiles: ['FILE_04.md'],
   },
   // Video Endpoint Requests
@@ -53,7 +53,7 @@ const requests = [
       type: 'video',
       url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
     },
-    endpoint: '/process',
+    endpoint: '/api/process',
     outputFiles: ['FILE_05.md'],
   },
   {
@@ -63,7 +63,7 @@ const requests = [
       whisperModel: 'tiny',
       llm: 'ollama',
     },
-    endpoint: '/process',
+    endpoint: '/api/process',
     outputFiles: ['FILE_06.md'],
   },
   {
@@ -72,7 +72,7 @@ const requests = [
       url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
       llm: 'chatgpt',
     },
-    endpoint: '/process',
+    endpoint: '/api/process',
     outputFiles: ['FILE_07.md'],
   },
   {
@@ -82,7 +82,7 @@ const requests = [
       llm: 'chatgpt',
       llmModel: 'GPT_4o_MINI',
     },
-    endpoint: '/process',
+    endpoint: '/api/process',
     outputFiles: ['FILE_08.md'],
   },
   {
@@ -91,7 +91,7 @@ const requests = [
       url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
       llm: 'claude',
     },
-    endpoint: '/process',
+    endpoint: '/api/process',
     outputFiles: ['FILE_09.md'],
   },
   {
@@ -101,7 +101,7 @@ const requests = [
       llm: 'claude',
       llmModel: 'CLAUDE_3_SONNET',
     },
-    endpoint: '/process',
+    endpoint: '/api/process',
     outputFiles: ['FILE_10.md'],
   },
   {
@@ -110,7 +110,7 @@ const requests = [
       url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
       llm: 'gemini',
     },
-    endpoint: '/process',
+    endpoint: '/api/process',
     outputFiles: ['FILE_11.md'],
   },
   {
@@ -120,7 +120,7 @@ const requests = [
       llm: 'gemini',
       llmModel: 'GEMINI_1_5_FLASH',
     },
-    endpoint: '/process',
+    endpoint: '/api/process',
     outputFiles: ['FILE_12.md'],
   },
   {
@@ -129,7 +129,7 @@ const requests = [
       url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
       llm: 'cohere',
     },
-    endpoint: '/process',
+    endpoint: '/api/process',
     outputFiles: ['FILE_13.md'],
   },
   {
@@ -139,7 +139,7 @@ const requests = [
       llm: 'cohere',
       llmModel: 'COMMAND_R_PLUS',
     },
-    endpoint: '/process',
+    endpoint: '/api/process',
     outputFiles: ['FILE_14.md'],
   },
   {
@@ -148,7 +148,7 @@ const requests = [
       url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
       llm: 'mistral',
     },
-    endpoint: '/process',
+    endpoint: '/api/process',
     outputFiles: ['FILE_15.md'],
   },
   {
@@ -158,7 +158,7 @@ const requests = [
       llm: 'mistral',
       llmModel: 'MIXTRAL_8x7b',
     },
-    endpoint: '/process',
+    endpoint: '/api/process',
     outputFiles: ['FILE_16.md'],
   },
   {
@@ -167,7 +167,7 @@ const requests = [
       url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
       llm: 'deepseek',
     },
-    endpoint: '/process',
+    endpoint: '/api/process',
     outputFiles: ['FILE_17.md'],
   },
   {
@@ -176,7 +176,7 @@ const requests = [
       url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
       llm: 'grok',
     },
-    endpoint: '/process',
+    endpoint: '/api/process',
     outputFiles: ['FILE_18.md'],
   },
   {
@@ -185,7 +185,7 @@ const requests = [
       url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
       whisperModel: 'tiny',
     },
-    endpoint: '/process',
+    endpoint: '/api/process',
     outputFiles: ['FILE_19.md'],
   },
   {
@@ -194,7 +194,7 @@ const requests = [
       url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
       transcriptServices: 'deepgram',
     },
-    endpoint: '/process',
+    endpoint: '/api/process',
     outputFiles: ['FILE_20.md'],
   },
   {
@@ -204,7 +204,7 @@ const requests = [
       transcriptServices: 'deepgram',
       llm: 'ollama',
     },
-    endpoint: '/process',
+    endpoint: '/api/process',
     outputFiles: ['FILE_21.md'],
   },
   {
@@ -213,7 +213,7 @@ const requests = [
       url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
       transcriptServices: 'assembly',
     },
-    endpoint: '/process',
+    endpoint: '/api/process',
     outputFiles: ['FILE_22.md'],
   },
   {
@@ -223,7 +223,7 @@ const requests = [
       transcriptServices: 'assembly',
       llm: 'ollama',
     },
-    endpoint: '/process',
+    endpoint: '/api/process',
     outputFiles: ['FILE_23.md'],
   },
   {
@@ -233,7 +233,7 @@ const requests = [
       transcriptServices: 'assembly',
       speakerLabels: true,
     },
-    endpoint: '/process',
+    endpoint: '/api/process',
     outputFiles: ['FILE_24.md'],
   },
   {
@@ -244,7 +244,7 @@ const requests = [
       speakerLabels: true,
       llm: 'ollama',
     },
-    endpoint: '/process',
+    endpoint: '/api/process',
     outputFiles: ['FILE_25.md'],
   },
   {
@@ -253,7 +253,7 @@ const requests = [
       url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
       prompts: ['titles', 'mediumChapters'],
     },
-    endpoint: '/process',
+    endpoint: '/api/process',
     outputFiles: ['FILE_26.md'],
   },
   {
@@ -262,7 +262,7 @@ const requests = [
       url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
       prompts: ['titles', 'summary', 'shortChapters', 'takeaways', 'questions'],
     },
-    endpoint: '/process',
+    endpoint: '/api/process',
     outputFiles: ['FILE_27.md'],
   },
   {
@@ -273,7 +273,7 @@ const requests = [
       whisperModel: 'tiny',
       llm: 'ollama',
     },
-    endpoint: '/process',
+    endpoint: '/api/process',
     outputFiles: ['FILE_28.md'],
   },
 ]

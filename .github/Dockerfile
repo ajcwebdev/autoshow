@@ -52,11 +52,13 @@ RUN whisper.cpp/models/download-ggml-model.sh base && \
 ENV WHISPER_BASE_MODEL=/usr/src/app/whisper.cpp/models/ggml-base.bin
 ENV WHISPER_TINY_MODEL=/usr/src/app/whisper.cpp/models/ggml-tiny.bin
 
-# 13. Copy package.json and package-lock.json
+# 13. Copy package.json, package-lock.json, and .npmrc
 COPY package*.json ./
+COPY .npmrc ./
+COPY app.config.ts ./
 
 # 14. Install Node deps
-RUN npm ci --production --legacy-peer-deps && npm cache clean --force
+RUN npm ci --omit=dev && npm cache clean --force
 
 # 15. Copy source code
 COPY src ./src

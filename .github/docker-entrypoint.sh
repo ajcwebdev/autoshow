@@ -17,22 +17,11 @@ log_error() {
     exit 1
 }
 
-# echo "Debug: (docker-entrypoint.sh) Checking /root/.ollama before starting Ollama..."
-# ls -lR /root/.ollama || true
-
-# # Start Ollama server in the background
-# echo "Starting Ollama server..."
-# ollama serve &
-
-# # Wait for Ollama server to start
-# sleep 5
-
-# If first argument is "serve", then start the server.
-if [ "$1" = "serve" ]; then
+# If first argument is "dev", then start the development server with SolidStart.
+if [ "$1" = "dev" ]; then
     echo "Starting Autoshow server..."
-    # Remove first arg ("serve") so we don't pass that to the server script.
     shift
-    tsx --no-warnings --experimental-sqlite src/fastify.ts "$@" || log_error "Server failed to start"
+    npm run dev "$@" || log_error "Server failed to start"
 fi
 
 # Otherwise, run the CLI by default.

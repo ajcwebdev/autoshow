@@ -16,7 +16,7 @@ export async function executeWithRetry(
   command: string,
   args: string[],
   retries: number
-): Promise<void> {
+) {
   for (let attempt = 1; attempt <= retries; attempt++) {
     try {
       // Attempt to execute the command
@@ -55,7 +55,7 @@ export async function retryLLMCall(
   fn: () => Promise<void>,
   maxRetries: number,
   delayBetweenRetries: number
-): Promise<void> {
+) {
   let attempt = 0
 
   while (attempt < maxRetries) {
@@ -89,7 +89,7 @@ export async function retryTranscriptionCall(
   fn: () => Promise<string>,
   maxRetries: number,
   delayBetweenRetries: number
-): Promise<string> {
+) {
   let attempt = 0
 
   while (attempt < maxRetries) {
@@ -125,7 +125,7 @@ export async function retryRSSFetch(
   fn: () => Promise<Response>,
   maxRetries: number,
   delayBetweenRetries: number
-): Promise<Response> {
+) {
   let attempt = 0
 
   while (attempt < maxRetries) {

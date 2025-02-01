@@ -18,7 +18,7 @@ import { XMLParser } from 'fast-xml-parser'
 
 import type { TranscriptServices } from './types/transcription'
 import type { LLMServices } from './types/llms'
-import type { ProcessingOptions, VideoMetadata, VideoInfo, RSSItem, ValidAction, HandlerFunction } from './types/process'
+import type { ProcessingOptions, VideoMetadata, VideoInfo, RSSItem, ValidAction, HandlerFunction } from './types/step-types'
 
 export const execPromise = promisify(exec)
 export const execFilePromise = promisify(execFile)
@@ -31,7 +31,7 @@ export const execFilePromise = promisify(execFile)
  * @returns The valid process type as a `ValidAction` if validation passes
  * @throws Error if the type is not valid or is missing
  */
-export function validateServerProcessAction(type: string): ValidAction {
+export function validateServerProcessAction(type: string) {
   if (!['video', 'urls', 'rss', 'playlist', 'file', 'channel'].includes(type)) {
     throw new Error('Invalid or missing process type')
   }
@@ -111,10 +111,9 @@ export const parser = new XMLParser({
 })
 
 /**
- * Map each action to its corresponding handler function
- * 
+ * Maps action names to their corresponding handler function.
  */
-export const PROCESS_HANDLERS: Record<ValidAction, HandlerFunction> = {
+export const PROCESS_HANDLERS = {
   video: processVideo,
   playlist: processPlaylist,
   channel: processChannel,
@@ -123,121 +122,50 @@ export const PROCESS_HANDLERS: Record<ValidAction, HandlerFunction> = {
   rss: processRSS,
 }
 
-// Removed the duplicated `PROMPT_CHOICES` definition. Now imported from '../../../shared/constants'.
-
 /**
- * Available action options for content processing with additional metadata.
- * 
+ * Action options for content processing. Maps available actions to descriptions, validation messages, and input validation.
  */
-export const ACTION_OPTIONS: Array<{
-  name: string
-  description: string
-  message: string
-  validate: (input: string) => boolean | string
-}> = [
+export const ACTION_OPTIONS = [
   {
     name: 'video',
     description: 'Single YouTube Video',
     message: 'Enter the YouTube video URL:',
-    validate: (input: string) => (input ? true : 'Please enter a valid URL.'),
+    validate: (input: string) => input ? true : 'Please enter a valid URL.',
   },
   {
     name: 'playlist',
     description: 'YouTube Playlist',
     message: 'Enter the YouTube playlist URL:',
-    validate: (input: string) => (input ? true : 'Please enter a valid URL.'),
+    validate: (input: string) => input ? true : 'Please enter a valid URL.',
   },
   {
     name: 'channel',
     description: 'YouTube Channel',
     message: 'Enter the YouTube channel URL:',
-    validate: (input: string) => (input ? true : 'Please enter a valid URL.'),
+    validate: (input: string) => input ? true : 'Please enter a valid URL.',
   },
   {
     name: 'urls',
     description: 'List of URLs from File',
     message: 'Enter the file path containing URLs:',
-    validate: (input: string) =>
-      (input ? true : 'Please enter a valid file path.'),
+    validate: (input: string) => input ? true : 'Please enter a valid file path.',
   },
   {
     name: 'file',
     description: 'Local Audio/Video File',
     message: 'Enter the local audio/video file path:',
-    validate: (input: string) =>
-      (input ? true : 'Please enter a valid file path.'),
+    validate: (input: string) => input ? true : 'Please enter a valid file path.',
   },
   {
     name: 'rss',
     description: 'Podcast RSS Feed',
     message: 'Enter the podcast RSS feed URL:',
-    validate: (input: string) => (input ? true : 'Please enter a valid URL.'),
+    validate: (input: string) => input ? true : 'Please enter a valid URL.',
   },
 ]
 
 /**
- * Validates CLI options by ensuring that only one of each set of conflicting options is provided,
- * and returning the validated action, chosen LLM services, and chosen transcription services.
- * 
- * @param options - The command-line options provided by the user
- * @returns An object containing the validated `action`, `llmServices`, and `transcriptServices`
- * @throws An error (and exits) if invalid or missing action, or multiple conflicting options
- */
-export function validateCLIOptions(options: ProcessingOptions): {
-  action: ValidAction
-  llmServices: LLMServices | undefined
-  transcriptServices: TranscriptServices
-} {
-  /**
-   * Helper function to validate that only one option from a list is provided.
-   * Prevents users from specifying multiple conflicting options simultaneously.
-   *
-   * @param optionKeys - The list of option keys to check
-   * @param errorMessage - The prefix of the error message
-   * @returns The selected option or undefined
-   */
-  function checkSingleOption(optionKeys: string[], errorMessage: string): string | undefined {
-    const selectedOptions = optionKeys.filter((opt) => {
-      const value = options[opt as keyof ProcessingOptions]
-      if (Array.isArray(value)) {
-        return value.length > 0
-      }
-      return value !== undefined && value !== null && value !== false
-    })
-
-    if (selectedOptions.length > 1) {
-      err(
-        `Error: Multiple ${errorMessage} provided (${selectedOptions.join(', ')}). Please specify only one.`
-      )
-      exit(1)
-    }
-
-    return selectedOptions[0] as string | undefined
-  }
-
-  const actionValues = ACTION_OPTIONS.map((opt) => opt.name)
-  const selectedAction = checkSingleOption(actionValues, 'input option')
-  if (!selectedAction || !(selectedAction in PROCESS_HANDLERS)) {
-    err(`Invalid or missing action`)
-    exit(1)
-  }
-
-  const action = selectedAction as ValidAction
-  const llmKey = checkSingleOption(LLM_OPTIONS as string[], 'LLM option') as LLMServices | undefined
-  const llmServices = llmKey
-
-  const transcriptKey = checkSingleOption(TRANSCRIPTION_SERVICES.map(service => service.toString()), 'transcription option')
-  const transcriptServices = (transcriptKey as TranscriptServices) || 'whisper'
-  if (transcriptServices === 'whisper' && !options.whisper) {
-    options.whisper = 'base'
-  }
-
-  return { action, llmServices, transcriptServices }
-}
-
-/**
- * Combines the validation logic for action, LLM, and transcription selection from the CLI options,
- * returning an object containing the validated action, chosen LLM services, and chosen transcription services.
+ * Combines the validation logic for action, LLM, and transcription selection from the CLI options.
  *
  * @param options - The command-line options provided by the user
  * @returns An object containing the validated `action`, `llmServices`, and `transcriptServices`
@@ -246,7 +174,7 @@ export function validateCLIOptions(options: ProcessingOptions): {
 export function validateInputCLI(options: ProcessingOptions): {
   action: ValidAction
   llmServices: LLMServices | undefined
-  transcriptServices: TranscriptServices
+  transcriptServices: TranscriptServices | undefined
 } {
   // Validate which action was chosen
   const actionValues = ACTION_OPTIONS.map((opt) => opt.name)
@@ -258,22 +186,55 @@ export function validateInputCLI(options: ProcessingOptions): {
   const action = selectedAction as ValidAction
 
   // Validate LLM
-  const llmKey = validateOption(LLM_OPTIONS as string[], options, 'LLM option') as LLMServices | undefined
-  const llmServices = llmKey
+  const llmServices = validateLLM(options)
 
   // Validate transcription
-  const transcriptKey = validateOption(TRANSCRIPTION_SERVICES.map(service => service.toString()), options, 'transcription option')
-  const transcriptServices = (transcriptKey as TranscriptServices) || 'whisper'
-  if (transcriptServices === 'whisper' && !options.whisper) {
-    options.whisper = 'base'
-  }
+  const transcriptServices = validateTranscription(options)
 
   return { action, llmServices, transcriptServices }
 }
 
 /**
- * Routes the specified action to the appropriate handler or validation logic,
- * providing a single entry point for executing the user's command-line choices.
+ * Validates the LLM services chosen by the user.
+ *
+ * @param options - The command-line options provided by the user
+ * @returns The validated LLM service
+ * @throws An error if the LLM service is invalid or not provided
+ */
+export function validateLLM(options: ProcessingOptions) {
+  const llmKeys = LLM_OPTIONS as string[]
+  const llmKey = validateOption(llmKeys, options, 'LLM option')
+
+  if (!llmKey) {
+    return undefined
+  }
+  return llmKey as LLMServices
+}
+
+/**
+ * Validates the transcription services chosen by the user.
+ *
+ * @param options - The command-line options provided by the user
+ * @returns The validated transcription service
+ * @throws An error if the transcription service is invalid or not provided
+ */
+// Fix the validation logic for transcription services to ensure that the flag value is correctly passed.
+export function validateTranscription(options: ProcessingOptions) {
+  // Check if any transcription service is provided in the options
+  if (options.deepgram) {
+    return 'deepgram'
+  } else if (options.assembly) {
+    return 'assembly'
+  } else if (options.whisper) {
+    return 'whisper'
+  }
+
+  // If no valid transcription service is found, return undefined
+  return undefined
+}
+
+/**
+ * Routes the specified action to the appropriate handler or validation logic.
  *
  * @param action - The validated action user wants to run (e.g., "video", "rss", etc.)
  * @param options - The ProcessingOptions containing user inputs and flags
@@ -287,8 +248,8 @@ export async function processAction(
   options: ProcessingOptions,
   llmServices?: LLMServices,
   transcriptServices?: TranscriptServices
-): Promise<void> {
-  const handler = PROCESS_HANDLERS[action]
+) {
+  const handler = PROCESS_HANDLERS[action] as HandlerFunction
 
   // If user selected RSS, run specialized validation and logic
   if (action === 'rss') {
@@ -319,23 +280,17 @@ export function validateOption(
   optionKeys: string[],
   options: ProcessingOptions,
   errorMessage: string
-): string | undefined {
-  // Filter out which options from the provided list are actually set
+) {
   const selectedOptions = optionKeys.filter((opt) => {
     const value = options[opt as keyof ProcessingOptions]
     if (Array.isArray(value)) {
-      // For array options like 'rss', consider it provided only if the array is non-empty
       return value.length > 0
     }
-    // Exclude undefined, null, and false values
     return value !== undefined && value !== null && value !== false
   })
 
-  // If more than one option is selected, throw an error
   if (selectedOptions.length > 1) {
-    err(
-      `Error: Multiple ${errorMessage} provided (${selectedOptions.join(', ')}). Please specify only one.`
-    )
+    err(`Error: Multiple ${errorMessage} provided (${selectedOptions.join(', ')}). Please specify only one.`)
     exit(1)
   }
   return selectedOptions[0] as string | undefined
@@ -404,7 +359,7 @@ export async function saveAudio(id: string, ensureFolders?: boolean) {
  * @example
  * sanitizeTitle('My Video Title! (2024)') // returns 'my-video-title-2024'
  */
-export function sanitizeTitle(title: string): string {
+export function sanitizeTitle(title: string) {
   return title
     .replace(/[^\w\s-]/g, '')      // Remove all non-word characters except spaces and hyphens
     .trim()                        // Remove leading and trailing whitespace
@@ -435,7 +390,7 @@ export function buildFrontMatter(metadata: {
   description: string
   publishDate: string
   coverImage: string
-}): string[] {
+}) {
   return [
     '---',
     `showLink: "${metadata.showLink}"`,
@@ -465,7 +420,7 @@ export async function saveInfo(
   type: 'playlist' | 'urls' | 'channel' | 'rss',
   data: string[] | VideoInfo[] | RSSItem[],
   title?: string
-): Promise<void> {
+) {
   // Handle RSS items (no metadata extraction needed, just save as-is)
   if (type === 'rss') {
     const items = data as RSSItem[]

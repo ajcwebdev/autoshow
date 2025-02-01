@@ -4,7 +4,7 @@ import { existsSync } from 'node:fs'
 import { execPromise } from '../validate-option'
 import { l, err } from '../logging'
 import { DEEPGRAM_MODELS, ASSEMBLY_MODELS } from '../../../shared/constants'
-import type { ProcessingOptions } from '../types/process'
+import type { ProcessingOptions } from '../types/step-types'
 import type { TranscriptServices, TranscriptionCostInfo, DeepgramModelType, AssemblyModelType } from '../types/transcription'
 
 /**
@@ -16,7 +16,7 @@ import type { TranscriptServices, TranscriptionCostInfo, DeepgramModelType, Asse
  * @param words - The array of word objects from Deepgram (each contains a 'word' and 'start' time)
  * @returns A formatted transcript string with timestamps and newlines
  */
-export function formatDeepgramTranscript(words: Array<{ word: string; start: number }>): string {
+export function formatDeepgramTranscript(words: Array<{ word: string; start: number }>) {
   return words.reduce((acc, { word, start }, i, arr) => {
     const addTimestamp = (i % 30 === 0 || /^[A-Z]/.test(word))
     let timestamp = ''
@@ -46,7 +46,7 @@ export function formatDeepgramTranscript(words: Array<{ word: string; start: num
  * @returns The fully formatted transcript as a string
  * @throws If words are expected but not found (no content to format)
  */
-export function formatAssemblyTranscript(transcript: any, speakerLabels: boolean): string {
+export function formatAssemblyTranscript(transcript: any, speakerLabels: boolean) {
   // Helper inline formatting function for timestamps (AssemblyAI returns ms)
   const inlineFormatTime = (timestamp: number): string => {
     const totalSeconds = Math.floor(timestamp / 1000)
@@ -105,7 +105,7 @@ export function formatAssemblyTranscript(transcript: any, speakerLabels: boolean
  * @param lrcContent - The content of the LRC file as a string
  * @returns The converted text content with simple timestamps
  */
-export function formatWhisperTranscript(lrcContent: string): string {
+export function formatWhisperTranscript(lrcContent: string) {
   // 1) Remove lines like `[by:whisper.cpp]`, convert "[MM:SS.xx]" to "[MM:SS]"
   const rawLines = lrcContent
     .split('\n')
@@ -191,7 +191,7 @@ export function formatWhisperTranscript(lrcContent: string): string {
  * @param info - Object containing the model name, cost per minute, and path to the audio file.
  * @throws {Error} If ffprobe fails or returns invalid data.
  */
-export async function logTranscriptionCost(info: TranscriptionCostInfo): Promise<void> {
+export async function logTranscriptionCost(info: TranscriptionCostInfo) {
   const cmd = `ffprobe -v error -show_entries format=duration -of csv=p=0 "${info.filePath}"`
   const { stdout } = await execPromise(cmd)
   const seconds = parseFloat(stdout.trim())
@@ -218,7 +218,7 @@ export async function logTranscriptionCost(info: TranscriptionCostInfo): Promise
 export async function estimateTranscriptCost(
   options: ProcessingOptions,
   transcriptServices: TranscriptServices
-): Promise<void> {
+) {
   const filePath = options.transcriptCost
   if (!filePath) {
     throw new Error('No file path provided to estimate transcription cost.')
@@ -264,7 +264,7 @@ export async function estimateTranscriptCost(
 export async function checkWhisperDirAndModel(
   whisperModel: string,
   modelGGMLName: string
-): Promise<void> {
+) {
   if (whisperModel === 'turbo') {
     whisperModel = 'large-v3-turbo'
   }

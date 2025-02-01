@@ -10,7 +10,7 @@ import { checkWhisperDirAndModel } from '../utils/step-utils/transcription-utils
 import { WHISPER_MODELS } from '../../shared/constants'
 import { execPromise } from '../utils/validate-option'
 import { l, err } from '../utils/logging'
-import type { ProcessingOptions } from '../utils/types/process'
+import type { ProcessingOptions } from '../utils/types/step-types'
 
 /**
  * Main function to handle transcription using local Whisper.cpp.

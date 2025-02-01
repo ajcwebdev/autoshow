@@ -1,10 +1,7 @@
 // src/utils/prompts.ts
 
-import type { PromptSection } from '../types/process'
-
 /**
  * Define the structure for different sections of the prompt
- * @type {Record<string, PromptSection>}
  */
 export const sections = {
   // Section for generating titles
@@ -231,4 +228,4 @@ export const sections = {
     
     Lyrics to the song.\n`
   },
-} satisfies Record<string, PromptSection>
+}

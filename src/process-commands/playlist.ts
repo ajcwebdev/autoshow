@@ -3,19 +3,9 @@
 import { processVideo } from './video'
 import { saveInfo, execFilePromise } from '../utils/validate-option'
 import { l, err, logSeparator, logInitialFunctionCall } from '../utils/logging'
-import type { ProcessingOptions } from '../utils/types/process'
+import type { ProcessingOptions, PlaylistData } from '../utils/types/step-types'
 import type { TranscriptServices } from '../utils/types/transcription'
 import type { LLMServices } from '../utils/types/llms'
-
-// Parse the JSON output
-interface PlaylistEntry {
-  id: string;
-}
-
-interface PlaylistData {
-  title: string;
-  entries: PlaylistEntry[];
-}
 
 /**
  * Processes an entire YouTube playlist by:
@@ -57,9 +47,9 @@ export async function processPlaylist(
 
     const playlistData: PlaylistData = JSON.parse(stdout);
     const playlistTitle = playlistData.title;
-    const entries: PlaylistEntry[] = playlistData.entries;
+    const entries = playlistData.entries;
 
-    const urls: string[] = entries.map((entry: PlaylistEntry) => `https://www.youtube.com/watch?v=${entry.id}`);
+    const urls: string[] = entries.map((entry) => `https://www.youtube.com/watch?v=${entry.id}`);
 
     // Exit if no videos were found in the playlist
     if (urls.length === 0) {

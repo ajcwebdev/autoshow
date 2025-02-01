@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 // src/commander.ts
 
 /**
@@ -15,13 +13,13 @@ import { argv, exit } from 'node:process'
 import { fileURLToPath } from 'node:url'
 import { Command } from 'commander'
 import { selectPrompts } from './process-steps/04-select-prompt'
-import { processAction, validateCLIOptions } from './utils/validate-option'
+import { processAction, validateInputCLI, validateLLM, validateTranscription } from './utils/validate-option'
 import { l, err, logSeparator } from './utils/logging'
 import { envVarsMap, estimateLLMCost } from './utils/step-utils/llm-utils'
 import { estimateTranscriptCost } from './utils/step-utils/transcription-utils'
 import { runLLMFromPromptFile } from './process-steps/05-run-llm'
 
-import type { ProcessingOptions } from './utils/types/process'
+import type { ProcessingOptions } from './utils/types/step-types'
 
 /**
  * Defines the command-line interface options and descriptions.
@@ -117,15 +115,7 @@ program.action(async (options: ProcessingOptions) => {
 
   // Handle transcript cost estimation
   if (options.transcriptCost) {
-    let transcriptServices: 'deepgram' | 'assembly' | 'whisper' | undefined = undefined
-
-    if (typeof options.deepgram !== 'undefined') {
-      transcriptServices = 'deepgram'
-    } else if (typeof options.assembly !== 'undefined') {
-      transcriptServices = 'assembly'
-    } else if (typeof options.whisper !== 'undefined') {
-      transcriptServices = 'whisper'
-    }
+    const transcriptServices = validateTranscription(options)
 
     if (!transcriptServices) {
       err('Please specify which transcription service to use (e.g., --deepgram, --assembly, --whisper).')
@@ -138,31 +128,7 @@ program.action(async (options: ProcessingOptions) => {
 
   // Handle LLM cost estimation
   if (options.llmCost) {
-    let llmService: 'ollama' | 'chatgpt' | 'claude' | 'gemini' | 'cohere' | 'mistral' | 'deepseek' | 'grok' | 'fireworks' | 'together' | 'groq' | undefined = undefined
-
-    if (typeof options.ollama !== 'undefined') {
-      llmService = 'ollama'
-    } else if (typeof options.chatgpt !== 'undefined') {
-      llmService = 'chatgpt'
-    } else if (typeof options.claude !== 'undefined') {
-      llmService = 'claude'
-    } else if (typeof options.gemini !== 'undefined') {
-      llmService = 'gemini'
-    } else if (typeof options.cohere !== 'undefined') {
-      llmService = 'cohere'
-    } else if (typeof options.mistral !== 'undefined') {
-      llmService = 'mistral'
-    } else if (typeof options.deepseek !== 'undefined') {
-      llmService = 'deepseek'
-    } else if (typeof options.grok !== 'undefined') {
-      llmService = 'grok'
-    } else if (typeof options.fireworks !== 'undefined') {
-      llmService = 'fireworks'
-    } else if (typeof options.together !== 'undefined') {
-      llmService = 'together'
-    } else if (typeof options.groq !== 'undefined') {
-      llmService = 'groq'
-    }
+    const llmService = validateLLM(options)
 
     if (!llmService) {
       err('Please specify which LLM service to use (e.g., --chatgpt, --claude, --ollama, etc.).')
@@ -180,31 +146,7 @@ program.action(async (options: ProcessingOptions) => {
    * npm run as -- --runLLM "content/audio-prompt.md" --chatgpt
    */
   if (options.runLLM) {
-    let llmService: 'ollama' | 'chatgpt' | 'claude' | 'gemini' | 'cohere' | 'mistral' | 'deepseek' | 'grok' | 'fireworks' | 'together' | 'groq' | undefined = undefined
-
-    if (typeof options.ollama !== 'undefined') {
-      llmService = 'ollama'
-    } else if (typeof options.chatgpt !== 'undefined') {
-      llmService = 'chatgpt'
-    } else if (typeof options.claude !== 'undefined') {
-      llmService = 'claude'
-    } else if (typeof options.gemini !== 'undefined') {
-      llmService = 'gemini'
-    } else if (typeof options.cohere !== 'undefined') {
-      llmService = 'cohere'
-    } else if (typeof options.mistral !== 'undefined') {
-      llmService = 'mistral'
-    } else if (typeof options.deepseek !== 'undefined') {
-      llmService = 'deepseek'
-    } else if (typeof options.grok !== 'undefined') {
-      llmService = 'grok'
-    } else if (typeof options.fireworks !== 'undefined') {
-      llmService = 'fireworks'
-    } else if (typeof options.together !== 'undefined') {
-      llmService = 'together'
-    } else if (typeof options.groq !== 'undefined') {
-      llmService = 'groq'
-    }
+    const llmService = validateLLM(options)
 
     if (!llmService) {
       err('Please specify which LLM service to use (e.g., --chatgpt, --claude, --ollama, etc.).')
@@ -216,7 +158,7 @@ program.action(async (options: ProcessingOptions) => {
   }
 
   // Validate action, LLM, and transcription inputs
-  const { action, llmServices, transcriptServices } = validateCLIOptions(options)
+  const { action, llmServices, transcriptServices } = validateInputCLI(options)
 
   try {
     // Helper to handle all action processing logic. If successful, log and exit.

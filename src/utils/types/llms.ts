@@ -1,53 +1,14 @@
 // src/types/llms.ts
 
 /**
- * Generic type for model configurations that maps model types to their configurations
- * @template T The specific model type (e.g., ChatGPTModelType, ClaudeModelType, etc.)
- */
-export type ModelConfig<T extends string> = {
-  [K in T]: ModelConfigValue
-}
-
-export type ModelConfigValue = {
-  name: string
-  modelId: string
-  inputCostPer1M: number  // Cost per 1M input tokens
-  outputCostPer1M: number // Cost per 1M output tokens
-}
-
-/**
  * Options for Language Models (LLMs) that can be used in the application.
  */
 export type LLMServices = 'chatgpt' | 'claude' | 'cohere' | 'mistral' | 'ollama' | 'gemini' | 'deepseek' | 'fireworks' | 'together' | 'groq' | 'grok'
 
-export type LLMServiceConfig = {
-  name: string
-  value: LLMServices | null
-}
-
-/**
- * Options for LLM processing.
- */
-export type LLMOptions = {
-  /** The sections to include in the prompt (e.g., ['titles', 'summary']). */
-  promptSections?: string[]
-
-  /** The specific LLM model to use. */
-  model?: string
-
-  /** The temperature parameter for text generation. */
-  temperature?: number
-
-  /** The maximum number of tokens to generate. */
-  maxTokens?: number
-}
-
-// LLM Model Types
 /**
  * Available GPT models.
  */
 export type ChatGPTModelType = 'GPT_4o_MINI' | 'GPT_4o' | 'GPT_o1_MINI'
-// export type ChatGPTModelType = 'GPT_4o_MINI' | 'GPT_4o' | 'GPT_o1' | 'GPT_o1_MINI'
 
 /**
  * Available Claude models.

@@ -2,8 +2,7 @@
 
 import chalk from 'chalk'
 
-import type { ChainableLogger } from './types/logging'
-import type { SeparatorParams } from './types/process'
+import type { ChainableLogger, SeparatorParams } from './types/logging'
 
 /**
  * Logs the first step of a top-level function call with its relevant options or parameters.
@@ -34,7 +33,7 @@ export function logInitialFunctionCall(functionName: string, details: Record<str
  *
  * @param params - An object describing the context and values needed to log the separator.
  */
-export function logSeparator(params: SeparatorParams): void {
+export function logSeparator(params: SeparatorParams) {
   switch (params.type) {
     case 'channel':
     case 'playlist':

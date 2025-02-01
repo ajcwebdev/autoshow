@@ -5,7 +5,7 @@ import { insertShowNote } from '../db'
 import { l, err, logInitialFunctionCall } from '../utils/logging'
 import { retryLLMCall } from '../utils/step-utils/retry'
 import { LLM_FUNCTIONS } from '../utils/step-utils/llm-utils'
-import type { ProcessingOptions, EpisodeMetadata } from '../utils/types/process'
+import type { ProcessingOptions, EpisodeMetadata } from '../utils/types/step-types'
 import type { LLMServices } from '../utils/types/llms'
 
 /**
@@ -206,7 +206,7 @@ export async function runLLMFromPromptFile(
   filePath: string,
   options: ProcessingOptions,
   llmServices: LLMServices,
-): Promise<void> {
+) {
   try {
     const fileContent = await readFile(filePath, 'utf8')
     const { frontMatter, prompt, transcript, metadata } = parsePromptFile(fileContent)

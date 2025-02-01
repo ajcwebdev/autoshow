@@ -47,54 +47,64 @@ const commands = [
     newName: '09-docker-all-prompts.md'
   },
   {
-    cmd: 'npm run docker-cli -- --file "content/audio.mp3" --prompt titles summary shortChapters --whisper base --chatgpt',
+    cmd: 'npm run docker-cli -- --file "content/audio.mp3" --prompt summary shortChapters --whisper base --chatgpt',
     expectedFile: 'audio-chatgpt-shownotes.md',
-    newName: '10-docker-three-prompts-chatgpt-shownotes.md'
+    newName: '10-docker-chatgpt-shownotes.md'
   },
   {
-    cmd: 'npm run docker-cli -- --file "content/audio.mp3" --prompt titles summary shortChapters --whisper base --claude',
+    cmd: 'npm run docker-cli -- --file "content/audio.mp3" --prompt summary shortChapters --whisper base --claude',
     expectedFile: 'audio-claude-shownotes.md',
-    newName: '11-docker-three-prompts-claude-shownotes.md'
+    newName: '11-docker-claude-shownotes.md'
   },
   {
-    cmd: 'npm run docker-cli -- --file "content/audio.mp3" --prompt titles summary shortChapters --whisper base --cohere',
+    cmd: 'npm run docker-cli -- --file "content/audio.mp3" --prompt summary shortChapters --whisper base --cohere',
     expectedFile: 'audio-cohere-shownotes.md',
-    newName: '12-docker-three-prompts-cohere-shownotes.md'
+    newName: '12-docker-cohere-shownotes.md'
   },
   {
-    cmd: 'npm run docker-cli -- --file "content/audio.mp3" --prompt titles summary shortChapters --whisper base --gemini',
+    cmd: 'npm run docker-cli -- --file "content/audio.mp3" --prompt summary shortChapters --whisper base --gemini',
     expectedFile: 'audio-gemini-shownotes.md',
-    newName: '13-docker-three-prompts-gemini-shownotes.md'
+    newName: '13-docker-gemini-shownotes.md'
   },
   {
-    cmd: 'npm run docker-cli -- --file "content/audio.mp3" --prompt titles summary shortChapters --whisper base --mistral',
+    cmd: 'npm run docker-cli -- --file "content/audio.mp3" --prompt summary shortChapters --whisper base --mistral',
     expectedFile: 'audio-mistral-shownotes.md',
-    newName: '14-docker-three-prompts-mistral-shownotes.md'
+    newName: '14-docker-mistral-shownotes.md'
   },
   {
-    cmd: 'npm run docker-cli -- --file "content/audio.mp3" --prompt titles summary shortChapters --whisper base --deepseek',
+    cmd: 'npm run docker-cli -- --file "content/audio.mp3" --prompt summary shortChapters --whisper base --deepseek',
     expectedFile: 'audio-deepseek-shownotes.md',
-    newName: '15-docker-three-prompts-grok-shownotes.md'
+    newName: '15-docker-grok-shownotes.md'
   },
   {
-    cmd: 'npm run docker-cli -- --file "content/audio.mp3" --prompt titles summary shortChapters --whisper base --grok',
+    cmd: 'npm run docker-cli -- --file "content/audio.mp3" --prompt summary shortChapters --whisper base --grok',
     expectedFile: 'audio-grok-shownotes.md',
-    newName: '15-docker-three-prompts-grok-shownotes.md'
+    newName: '15-docker-grok-shownotes.md'
   },
   {
-    cmd: 'npm run docker-cli -- --file "content/audio.mp3" --prompt titles summary shortChapters --whisper base --fireworks',
+    cmd: 'npm run docker-cli -- --file "content/audio.mp3" --prompt summary shortChapters --whisper base --fireworks',
     expectedFile: 'audio-fireworks-shownotes.md',
-    newName: '16-docker-three-prompts-fireworks-shownotes.md'
+    newName: '16-docker-fireworks-shownotes.md'
   },
   {
-    cmd: 'npm run docker-cli -- --file "content/audio.mp3" --prompt titles summary shortChapters --whisper base --together',
+    cmd: 'npm run docker-cli -- --file "content/audio.mp3" --prompt summary shortChapters --whisper base --together',
     expectedFile: 'audio-together-shownotes.md',
-    newName: '17-docker-three-prompts-together-shownotes.md'
+    newName: '17-docker-together-shownotes.md'
   },
   {
-    cmd: 'npm run docker-cli -- --file "content/audio.mp3" --prompt titles summary shortChapters --whisper base --groq',
+    cmd: 'npm run docker-cli -- --file "content/audio.mp3" --prompt summary shortChapters --whisper base --groq',
     expectedFile: 'audio-groq-shownotes.md',
-    newName: '18-docker-three-prompts-groq-shownotes.md'
+    newName: '18-docker-groq-shownotes.md'
+  },
+  {
+    cmd: 'npm run docker-cli -- --file "content/audio.mp3" --prompt summary shortChapters --deepgram',
+    expectedFile: 'audio-prompt.md',
+    newName: '19-docker-deepgram-prompt.md'
+  },
+  {
+    cmd: 'npm run docker-cli -- --file "content/audio.mp3" --prompt summary shortChapters --assembly',
+    expectedFile: 'audio-prompt.md',
+    newName: '20-docker-assembly-prompt.md'
   },
 ]
 

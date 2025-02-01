@@ -9,7 +9,7 @@
  */
 
 import { DatabaseSync } from 'node:sqlite'
-import type { ShowNote } from './utils/types/process'
+import type { ShowNote } from './utils/types/step-types'
 
 /**
  * Initialize the database connection.

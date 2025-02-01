@@ -6,7 +6,7 @@
  * and calls the appropriate process handler based on the provided process type.
  *
  * @param event - APIEvent object containing the incoming request
- * @returns A Promise that resolves to a Response
+ * @returns A Promise that resolves to a JSON response
  */
 
 'use server'
@@ -17,13 +17,13 @@ import { processFile } from '../../process-commands/file'
 import { l, err } from '../../utils/logging'
 import { envVarsServerMap } from '../../utils/step-utils/llm-utils'
 import { validateRequest, validateServerProcessAction } from '../../utils/validate-option'
-import type { ProcessRequestBody } from '../../utils/types/process'
+import { json } from '@solidjs/router'
 
-export async function POST(event: APIEvent): Promise<Response> {
+export async function POST(event: APIEvent) {
   l('\nEntered handleProcessRequest')
 
   try {
-    const requestData = await event.request.json() as ProcessRequestBody
+    const requestData = await event.request.json()
     l('\nParsed request body:', requestData)
 
     const { type } = requestData
@@ -32,7 +32,7 @@ export async function POST(event: APIEvent): Promise<Response> {
       validateServerProcessAction(type)
     } catch {
       l('Invalid or missing process type, returning 400')
-      return new Response(JSON.stringify({ error: 'Valid process type is required' }), { status: 400 })
+      return json({ error: 'Valid process type is required' }, { status: 400 })
     }
 
     const { options, llmServices, transcriptServices } = validateRequest(requestData)
@@ -54,44 +54,38 @@ export async function POST(event: APIEvent): Promise<Response> {
       case 'video': {
         const { url } = requestData
         if (!url) {
-          return new Response(JSON.stringify({ error: 'YouTube URL is required' }), { status: 400 })
+          return json({ error: 'YouTube URL is required' }, { status: 400 })
         }
         options.video = url
         const result = await processVideo(options, url, llmServices, transcriptServices)
-        return new Response(JSON.stringify({
+        return json({
           frontMatter: result.frontMatter,
           prompt: result.prompt,
           llmOutput: result.llmOutput,
           transcript: result.transcript,
-        }), {
-          status: 200,
-          headers: { 'Content-Type': 'application/json' }
         })
       }
 
       case 'file': {
         const { filePath } = requestData
         if (!filePath) {
-          return new Response(JSON.stringify({ error: 'File path is required' }), { status: 400 })
+          return json({ error: 'File path is required' }, { status: 400 })
         }
         options.file = filePath
         const result = await processFile(options, filePath, llmServices, transcriptServices)
-        return new Response(JSON.stringify({
+        return json({
           frontMatter: result.frontMatter,
           prompt: result.prompt,
           llmOutput: result.llmOutput,
           transcript: result.transcript,
-        }), {
-          status: 200,
-          headers: { 'Content-Type': 'application/json' }
         })
       }
     }
 
     l('\nProcess completed successfully')
-    return new Response(JSON.stringify({ success: true }), { status: 200 })
+    return json({ success: true })
   } catch (error) {
     err('Error processing request:', error)
-    return new Response(JSON.stringify({ error: 'An error occurred while processing the request' }), { status: 500 })
+    return json({ error: 'An error occurred while processing the request' }, { status: 500 })
   }
 }

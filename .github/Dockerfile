@@ -5,7 +5,7 @@ FROM node:22-alpine AS base
 
 # 2. Install system dependencies
 RUN apk add --no-cache \
-    ffmpeg git wget ca-certificates cmake python3 build-base \
+    ffmpeg git wget curl ca-certificates cmake python3 build-base \
  && update-ca-certificates
 
 # 3. Set working directory to /usr/src/app
@@ -56,7 +56,7 @@ ENV WHISPER_TINY_MODEL=/usr/src/app/whisper.cpp/models/ggml-tiny.bin
 COPY package*.json ./
 
 # 14. Install Node deps
-RUN npm ci --production && npm cache clean --force
+RUN npm ci --production --legacy-peer-deps && npm cache clean --force
 
 # 15. Copy source code
 COPY src ./src
@@ -88,4 +88,4 @@ EXPOSE 3000
 
 # 23. Set the entrypoint and default command
 ENTRYPOINT ["/usr/src/app/docker-entrypoint.sh"]
-CMD ["serve"]
+CMD ["dev"]

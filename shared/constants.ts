@@ -11,24 +11,6 @@
 import type { AssemblyModelType, DeepgramModelType } from '../src/utils/types/transcription'
 
 /**
- * A general interface for user-facing options containing a `value` and `label`.
- * Typically used for populating dropdowns or other selection UIs.
- */
-export interface OptionItem {
-  value: string
-  label: string
-}
-
-/**
- * Extends `OptionItem` to include a `bin` property, referencing the binary
- * filename for whisper.cpp. This is particularly relevant on the backend, but
- * is harmless for frontend usage.
- */
-export interface WhisperModelItem extends OptionItem {
-  bin: string
-}
-
-/**
  * All user-facing prompt choices, unified for both backend and frontend usage.
  */
 export const PROMPT_CHOICES: Array<{ name: string; value: string }> = [
@@ -53,7 +35,7 @@ export const PROMPT_CHOICES: Array<{ name: string; value: string }> = [
 /**
  * All user-facing transcription services, unified for both backend and frontend usage.
  */
-export const TRANSCRIPTION_SERVICES: Array<OptionItem> = [
+export const TRANSCRIPTION_SERVICES: Array<{ value: string; label: string }> = [
   { value: 'whisper', label: 'Whisper.cpp' },
   { value: 'deepgram', label: 'Deepgram' },
   { value: 'assembly', label: 'AssemblyAI' },
@@ -64,7 +46,7 @@ export const TRANSCRIPTION_SERVICES: Array<OptionItem> = [
  * whisper.cpp usage. The `label` is used on the frontend UI, while the `bin`
  * path is crucial on the backend.
  */
-export const WHISPER_MODELS: Array<WhisperModelItem> = [
+export const WHISPER_MODELS: Array<{ value: string; label: string; bin: string }> = [
   { value: 'tiny', label: 'tiny', bin: 'ggml-tiny.bin' },
   { value: 'tiny.en', label: 'tiny.en', bin: 'ggml-tiny.en.bin' },
   { value: 'base', label: 'base', bin: 'ggml-base.bin' },
@@ -82,7 +64,7 @@ export const WHISPER_MODELS: Array<WhisperModelItem> = [
 /**
  * All user-facing LLM services, unified for both backend and frontend usage.
  */
-export const LLM_SERVICES: Array<OptionItem> = [
+export const LLM_SERVICES: Array<{ value: string; label: string }> = [
   { value: 'ollama', label: 'Ollama' },
   { value: 'chatgpt', label: 'ChatGPT' },
   { value: 'claude', label: 'Claude' },

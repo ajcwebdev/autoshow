@@ -32,7 +32,7 @@ if [ "$1" = "serve" ]; then
     echo "Starting Autoshow server..."
     # Remove first arg ("serve") so we don't pass that to the server script.
     shift
-    tsx --no-warnings --experimental-sqlite src/server/index.ts "$@" || log_error "Server failed to start"
+    tsx --no-warnings --experimental-sqlite src/fastify.ts "$@" || log_error "Server failed to start"
 fi
 
 # Otherwise, run the CLI by default.

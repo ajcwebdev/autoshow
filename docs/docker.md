@@ -13,8 +13,7 @@ You can run any of the `as` CLI commands by passing arguments to the container v
 ```bash
 npm run docker-cli -- \
   --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
-  --whisper base \
-  --ollama
+  --whisper base 
 ```
 
 ### Run the Server with Docker
@@ -75,19 +74,6 @@ curl -X POST http://localhost:3000/process \
   -d '{
     "type": "video",
     "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
-    "transcriptServices": "whisper",
-    "whisperModel": "base"
-  }'
-```
-
-```bash
-curl -X POST http://localhost:3000/process \
-  -H "Content-Type: application/json" \
-  -d '{
-    "type": "video",
-    "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
-    "llm": "ollama",
-    "llmModel": "LLAMA_3_2_3B",
     "transcriptServices": "whisper",
     "whisperModel": "base"
   }'

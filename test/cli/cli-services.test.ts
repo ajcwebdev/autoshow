@@ -1,4 +1,4 @@
-// test/services.test.ts
+// test/cli/cli-services.test.ts
 
 import test from 'node:test'
 import { strictEqual } from 'node:assert/strict'

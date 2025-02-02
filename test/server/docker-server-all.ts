@@ -1,11 +1,16 @@
-// test/fetch-all.ts
+// test/server/docker-server-all.ts
 
 import fs from 'node:fs/promises'
 import path from 'node:path'
-import { l, err } from '../src/utils/logging'
+import { l, err } from '../../src/utils/logging'
 
 const BASE_URL = 'http://localhost:3000'
 const OUTPUT_DIR = 'content'
+
+const {
+  DEEPGRAM_API_KEY, ASSEMBLY_API_KEY, OPENAI_API_KEY, ANTHROPIC_API_KEY, GEMINI_API_KEY, COHERE_API_KEY, MISTRAL_API_KEY, GROK_API_KEY, DEEPSEEK_API_KEY,
+  // TOGETHER_API_KEY, FIREWORKS_API_KEY, GROQ_API_KEY
+} = process.env
 
 const requests = [
   // File Endpoint Requests
@@ -30,8 +35,7 @@ const requests = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      whisperModel: 'tiny',
-      llm: 'ollama',
+      transcriptionService: 'whisper',
     },
     endpoint: '/api/process',
     outputFiles: ['FILE_03.md'],
@@ -42,7 +46,6 @@ const requests = [
       filePath: 'content/audio.mp3',
       prompts: ['titles'],
       whisperModel: 'tiny',
-      llm: 'ollama',
     },
     endpoint: '/api/process',
     outputFiles: ['FILE_04.md'],
@@ -61,7 +64,6 @@ const requests = [
       type: 'video',
       url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
       whisperModel: 'tiny',
-      llm: 'ollama',
     },
     endpoint: '/api/process',
     outputFiles: ['FILE_06.md'],
@@ -71,6 +73,7 @@ const requests = [
       type: 'video',
       url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
       llm: 'chatgpt',
+      openaiApiKey: OPENAI_API_KEY,
     },
     endpoint: '/api/process',
     outputFiles: ['FILE_07.md'],
@@ -81,6 +84,7 @@ const requests = [
       url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
       llm: 'chatgpt',
       llmModel: 'GPT_4o_MINI',
+      openaiApiKey: OPENAI_API_KEY,
     },
     endpoint: '/api/process',
     outputFiles: ['FILE_08.md'],
@@ -90,6 +94,7 @@ const requests = [
       type: 'video',
       url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
       llm: 'claude',
+      anthropicApiKey: ANTHROPIC_API_KEY,
     },
     endpoint: '/api/process',
     outputFiles: ['FILE_09.md'],
@@ -100,6 +105,7 @@ const requests = [
       url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
       llm: 'claude',
       llmModel: 'CLAUDE_3_SONNET',
+      anthropicApiKey: ANTHROPIC_API_KEY,
     },
     endpoint: '/api/process',
     outputFiles: ['FILE_10.md'],
@@ -109,6 +115,7 @@ const requests = [
       type: 'video',
       url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
       llm: 'gemini',
+      geminiApiKey: GEMINI_API_KEY,
     },
     endpoint: '/api/process',
     outputFiles: ['FILE_11.md'],
@@ -119,6 +126,7 @@ const requests = [
       url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
       llm: 'gemini',
       llmModel: 'GEMINI_1_5_FLASH',
+      geminiApiKey: GEMINI_API_KEY,
     },
     endpoint: '/api/process',
     outputFiles: ['FILE_12.md'],
@@ -128,6 +136,7 @@ const requests = [
       type: 'video',
       url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
       llm: 'cohere',
+      cohereApiKey: COHERE_API_KEY,
     },
     endpoint: '/api/process',
     outputFiles: ['FILE_13.md'],
@@ -138,6 +147,7 @@ const requests = [
       url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
       llm: 'cohere',
       llmModel: 'COMMAND_R_PLUS',
+      cohereApiKey: COHERE_API_KEY,
     },
     endpoint: '/api/process',
     outputFiles: ['FILE_14.md'],
@@ -147,6 +157,7 @@ const requests = [
       type: 'video',
       url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
       llm: 'mistral',
+      mistralApiKey: MISTRAL_API_KEY,
     },
     endpoint: '/api/process',
     outputFiles: ['FILE_15.md'],
@@ -157,6 +168,7 @@ const requests = [
       url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
       llm: 'mistral',
       llmModel: 'MIXTRAL_8x7b',
+      mistralApiKey: MISTRAL_API_KEY,
     },
     endpoint: '/api/process',
     outputFiles: ['FILE_16.md'],
@@ -166,6 +178,7 @@ const requests = [
       type: 'video',
       url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
       llm: 'deepseek',
+      deepseekApiKey: DEEPSEEK_API_KEY,
     },
     endpoint: '/api/process',
     outputFiles: ['FILE_17.md'],
@@ -175,6 +188,7 @@ const requests = [
       type: 'video',
       url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
       llm: 'grok',
+      grokApiKey: GROK_API_KEY,
     },
     endpoint: '/api/process',
     outputFiles: ['FILE_18.md'],
@@ -193,6 +207,7 @@ const requests = [
       type: 'video',
       url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
       transcriptServices: 'deepgram',
+      deepgramApiKey: DEEPGRAM_API_KEY,
     },
     endpoint: '/api/process',
     outputFiles: ['FILE_20.md'],
@@ -202,7 +217,8 @@ const requests = [
       type: 'video',
       url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
       transcriptServices: 'deepgram',
-      llm: 'ollama',
+      deepgramApiKey: DEEPGRAM_API_KEY,
+    //   transcriptModel: '',
     },
     endpoint: '/api/process',
     outputFiles: ['FILE_21.md'],
@@ -212,6 +228,7 @@ const requests = [
       type: 'video',
       url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
       transcriptServices: 'assembly',
+      assemblyApiKey: ASSEMBLY_API_KEY,
     },
     endpoint: '/api/process',
     outputFiles: ['FILE_22.md'],
@@ -221,7 +238,8 @@ const requests = [
       type: 'video',
       url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
       transcriptServices: 'assembly',
-      llm: 'ollama',
+      assemblyApiKey: ASSEMBLY_API_KEY,
+      //   transcriptModel: '',
     },
     endpoint: '/api/process',
     outputFiles: ['FILE_23.md'],
@@ -232,6 +250,7 @@ const requests = [
       url: 'https://ajc.pics/audio/fsjam-short.mp3',
       transcriptServices: 'assembly',
       speakerLabels: true,
+      assemblyApiKey: ASSEMBLY_API_KEY,
     },
     endpoint: '/api/process',
     outputFiles: ['FILE_24.md'],
@@ -239,42 +258,11 @@ const requests = [
   {
     data: {
       type: 'video',
-      url: 'https://ajc.pics/audio/fsjam-short.mp3',
-      transcriptServices: 'assembly',
-      speakerLabels: true,
-      llm: 'ollama',
+      url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
+      prompts: ['titles', 'summary', 'shortChapters', 'takeaways', 'questions'],
     },
     endpoint: '/api/process',
     outputFiles: ['FILE_25.md'],
-  },
-  {
-    data: {
-      type: 'video',
-      url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
-      prompts: ['titles', 'mediumChapters'],
-    },
-    endpoint: '/api/process',
-    outputFiles: ['FILE_26.md'],
-  },
-  {
-    data: {
-      type: 'video',
-      url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
-      prompts: ['titles', 'summary', 'shortChapters', 'takeaways', 'questions'],
-    },
-    endpoint: '/api/process',
-    outputFiles: ['FILE_27.md'],
-  },
-  {
-    data: {
-      type: 'video',
-      url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
-      prompts: ['titles', 'summary', 'shortChapters', 'takeaways', 'questions'],
-      whisperModel: 'tiny',
-      llm: 'ollama',
-    },
-    endpoint: '/api/process',
-    outputFiles: ['FILE_28.md'],
   },
 ]
 

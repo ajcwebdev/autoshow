@@ -142,6 +142,8 @@ export type ProcessingOptions = {
   cohereApiKey?: string
   /** Provide override for Mistral API key. */
   mistralApiKey?: string
+  /** Provide override for Deepseek API key. */
+  deepseekApiKey?: string
   /** Provide override for GROK API key. */
   grokApiKey?: string
   /** Provide override for Together API key. */

@@ -77,7 +77,7 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
         requestBody.llmModel = llmModel
       }
 
-      const response = await fetch('http://localhost:3000/process', {
+      const response = await fetch('http://localhost:3000/api/process', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

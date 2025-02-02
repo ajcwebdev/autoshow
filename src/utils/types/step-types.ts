@@ -1,6 +1,6 @@
 // src/types/process.ts
 
-import type { TranscriptServices, WhisperModelType } from './transcription'
+import type { TranscriptServices } from './transcription'
 import type { LLMServices } from './llms'
 
 // Parse the JSON output
@@ -73,7 +73,7 @@ export type ProcessingOptions = {
   /** Flag to indicate whether to keep temporary audio WAV file after processing. */
   saveAudio?: boolean
   /** The Whisper model to use (e.g., 'tiny', 'base'). */
-  whisper?: WhisperModelType
+  whisper?: boolean
   /** Flag to use Deepgram for transcription. */
   deepgram?: boolean
   /** Flag to use AssemblyAI for transcription. */

@@ -5,7 +5,78 @@ import { execPromise } from '../validate-option'
 import { l, err } from '../logging'
 import { DEEPGRAM_MODELS, ASSEMBLY_MODELS } from '../../../shared/constants'
 import type { ProcessingOptions } from '../types/step-types'
-import type { TranscriptServices, TranscriptionCostInfo, DeepgramModelType, AssemblyModelType } from '../types/transcription'
+import type { TranscriptServices, TranscriptionCostInfo, DeepgramModelType, AssemblyModelType, WhisperOutput } from '../types/transcription'
+
+
+/**
+ * Asynchronously logs the estimated transcription cost based on audio duration and per-minute cost.
+ * Internally calculates the audio file duration using ffprobe.
+ * @param info - Object containing the model name, cost per minute, and path to the audio file.
+ * @throws {Error} If ffprobe fails or returns invalid data.
+ */
+export async function logTranscriptionCost(info: TranscriptionCostInfo) {
+  const cmd = `ffprobe -v error -show_entries format=duration -of csv=p=0 "${info.filePath}"`
+  const { stdout } = await execPromise(cmd)
+  const seconds = parseFloat(stdout.trim())
+  if (isNaN(seconds)) {
+    throw new Error(`Could not parse audio duration for file: ${info.filePath}`)
+  }
+  const minutes = seconds / 60
+  const cost = info.costPerMinute * minutes
+
+  l.dim(
+    `  - Estimated Transcription Cost for ${info.modelName}:\n` +
+    `    - Audio Length: ${minutes.toFixed(2)} minutes\n` +
+    `    - Cost: $${cost.toFixed(4)}`
+  )
+}
+
+/**
+ * Estimates transcription cost for the provided file and chosen transcription service.
+ * 
+ * @param {ProcessingOptions} options - The command-line options (must include `transcriptCost` file path).
+ * @param {TranscriptServices} transcriptServices - The selected transcription service (e.g., "deepgram", "assembly", "whisper").
+ * @returns {Promise<void>} A promise that resolves when cost estimation is complete.
+ */
+export async function estimateTranscriptCost(
+  options: ProcessingOptions,
+  transcriptServices: TranscriptServices
+) {
+  const filePath = options.transcriptCost
+  if (!filePath) {
+    throw new Error('No file path provided to estimate transcription cost.')
+  }
+
+  switch (transcriptServices) {
+    case 'deepgram': {
+      const deepgramModel = typeof options.deepgram === 'string' ? options.deepgram : 'NOVA_2'
+      const modelInfo = DEEPGRAM_MODELS[deepgramModel as DeepgramModelType] || DEEPGRAM_MODELS.NOVA_2
+      await logTranscriptionCost({
+        modelName: modelInfo.name,
+        costPerMinute: modelInfo.costPerMinute,
+        filePath
+      })
+      break
+    }
+    case 'assembly': {
+      const assemblyModel = typeof options.assembly === 'string' ? options.assembly : 'NANO'
+      const modelInfo = ASSEMBLY_MODELS[assemblyModel as AssemblyModelType] || ASSEMBLY_MODELS.NANO
+      await logTranscriptionCost({
+        modelName: modelInfo.name,
+        costPerMinute: modelInfo.costPerMinute,
+        filePath
+      })
+      break
+    }
+    case 'whisper': {
+      l.wait('\nNo cost data available for Whisper.\n')
+      break
+    }
+    default: {
+      throw new Error(`Unsupported transcription service for cost estimation: ${transcriptServices}`)
+    }
+  }
+}
 
 /**
  * Formats the Deepgram transcript by adding timestamps and newlines based on conditions.
@@ -94,165 +165,30 @@ export function formatAssemblyTranscript(transcript: any, speakerLabels: boolean
   return txtContent
 }
 
-/**
- * Converts LRC content (common lyrics file format) to plain text with timestamps.
- * - Strips out lines that contain certain metadata (like [by:whisper.cpp]).
- * - Converts original timestamps [MM:SS.xx] to a simplified [MM:SS] format.
- * - Properly extracts all timestamps in each line, then merges them into
- *   chunks of up to 15 words, adopting the newest timestamp as soon
- *   as it appears.
- *
- * @param lrcContent - The content of the LRC file as a string
- * @returns The converted text content with simple timestamps
- */
-export function formatWhisperTranscript(lrcContent: string) {
-  // 1) Remove lines like `[by:whisper.cpp]`, convert "[MM:SS.xx]" to "[MM:SS]"
-  const rawLines = lrcContent
-    .split('\n')
-    .filter(line => !line.startsWith('[by:whisper.cpp]'))
-    .map(line =>
-      line.replace(
-        /\[(\d{1,3}):(\d{2})(\.\d+)?\]/g,
-        (_, minutes, seconds) => `[${minutes}:${seconds}]`
-      )
-    )
-
-  type Segment = {
-    timestamp: string | undefined
-    words: string[]
-  }
-
-  function parseLineIntoSegments(line: string): Segment[] {
-    const segments: Segment[] = []
-    const pattern = /\[(\d{1,3}:\d{2})\]/g
-
-    let lastIndex = 0
-    let match: RegExpExecArray | null
-    let currentTimestamp: string | undefined = undefined
-
-    while ((match = pattern.exec(line)) !== null) {
-      const textBeforeThisTimestamp = line.slice(lastIndex, match.index).trim()
-      if (textBeforeThisTimestamp) {
-        segments.push({
-          timestamp: currentTimestamp,
-          words: textBeforeThisTimestamp.split(/\s+/).filter(Boolean),
-        })
-      }
-      currentTimestamp = match[1]
-      lastIndex = pattern.lastIndex
-    }
-
-    const trailing = line.slice(lastIndex).trim()
-    if (trailing) {
-      segments.push({
-        timestamp: currentTimestamp,
-        words: trailing.split(/\s+/).filter(Boolean),
-      })
-    }
-
-    return segments
-  }
-
-  const allSegments: Segment[] = rawLines.flatMap(line => parseLineIntoSegments(line))
-
-  const finalLines: string[] = []
-  let currentTimestamp: string | undefined = undefined
-  let currentWords: string[] = []
-
-  function finalizeChunk() {
-    if (currentWords.length > 0) {
-      const tsToUse = currentTimestamp ?? '00:00'
-      finalLines.push(`[${tsToUse}] ${currentWords.join(' ')}`)
-      currentWords = []
-    }
-  }
-
-  for (const segment of allSegments) {
-    if (segment.timestamp !== undefined) {
-      finalizeChunk()
-      currentTimestamp = segment.timestamp
-    }
-
-    for (const word of segment.words) {
-      currentWords.push(word)
-      if (currentWords.length === 15) {
-        finalizeChunk()
-      }
-    }
-  }
-
-  finalizeChunk()
-  return finalLines.join('\n')
+export function formatTimestamp(timestamp: string) {
+  const [timeWithoutMs] = timestamp.split(',') as [string]
+  return timeWithoutMs
 }
 
-/**
- * Asynchronously logs the estimated transcription cost based on audio duration and per-minute cost.
- * Internally calculates the audio file duration using ffprobe.
- * @param info - Object containing the model name, cost per minute, and path to the audio file.
- * @throws {Error} If ffprobe fails or returns invalid data.
- */
-export async function logTranscriptionCost(info: TranscriptionCostInfo) {
-  const cmd = `ffprobe -v error -show_entries format=duration -of csv=p=0 "${info.filePath}"`
-  const { stdout } = await execPromise(cmd)
-  const seconds = parseFloat(stdout.trim())
-  if (isNaN(seconds)) {
-    throw new Error(`Could not parse audio duration for file: ${info.filePath}`)
-  }
-  const minutes = seconds / 60
-  const cost = info.costPerMinute * minutes
+export function formatWhisperTranscript(jsonData: WhisperOutput) {
+  const transcripts = jsonData.transcription
+  const chunks = []
 
-  l.dim(
-    `  - Estimated Transcription Cost for ${info.modelName}:\n` +
-    `    - Audio Length: ${minutes.toFixed(2)} minutes\n` +
-    `    - Cost: $${cost.toFixed(4)}`
-  )
-}
-
-/**
- * Estimates transcription cost for the provided file and chosen transcription service.
- * 
- * @param {ProcessingOptions} options - The command-line options (must include `transcriptCost` file path).
- * @param {TranscriptServices} transcriptServices - The selected transcription service (e.g., "deepgram", "assembly", "whisper").
- * @returns {Promise<void>} A promise that resolves when cost estimation is complete.
- */
-export async function estimateTranscriptCost(
-  options: ProcessingOptions,
-  transcriptServices: TranscriptServices
-) {
-  const filePath = options.transcriptCost
-  if (!filePath) {
-    throw new Error('No file path provided to estimate transcription cost.')
+  // Process in chunks of 10
+  for (let i = 0; i < transcripts.length; i += 35) {
+    const chunk = transcripts.slice(i, i + 35)
+    const firstChunk = chunk[0]!
+    const combinedText = chunk.map(item => item.text).join('')
+    chunks.push({
+      timestamp: formatTimestamp(firstChunk.timestamps.from),
+      text: combinedText
+    })
   }
 
-  switch (transcriptServices) {
-    case 'deepgram': {
-      const deepgramModel = typeof options.deepgram === 'string' ? options.deepgram : 'NOVA_2'
-      const modelInfo = DEEPGRAM_MODELS[deepgramModel as DeepgramModelType] || DEEPGRAM_MODELS.NOVA_2
-      await logTranscriptionCost({
-        modelName: modelInfo.name,
-        costPerMinute: modelInfo.costPerMinute,
-        filePath
-      })
-      break
-    }
-    case 'assembly': {
-      const assemblyModel = typeof options.assembly === 'string' ? options.assembly : 'NANO'
-      const modelInfo = ASSEMBLY_MODELS[assemblyModel as AssemblyModelType] || ASSEMBLY_MODELS.NANO
-      await logTranscriptionCost({
-        modelName: modelInfo.name,
-        costPerMinute: modelInfo.costPerMinute,
-        filePath
-      })
-      break
-    }
-    case 'whisper': {
-      l.wait('\nNo cost data available for Whisper.\n')
-      break
-    }
-    default: {
-      throw new Error(`Unsupported transcription service for cost estimation: ${transcriptServices}`)
-    }
-  }
+  // Generate the output text
+  return chunks
+    .map(chunk => `[${chunk.timestamp}] ${chunk.text}`)
+    .join('\n')
 }
 
 /**

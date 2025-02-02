@@ -6,11 +6,12 @@
  */
 
 import { readFile, unlink } from 'node:fs/promises'
-import { checkWhisperDirAndModel } from '../utils/step-utils/transcription-utils'
+import { checkWhisperDirAndModel, formatWhisperTranscript } from '../utils/step-utils/transcription-utils'
 import { WHISPER_MODELS } from '../../shared/constants'
 import { execPromise } from '../utils/validate-option'
 import { l, err } from '../utils/logging'
 import type { ProcessingOptions } from '../utils/types/step-types'
+import type { WhisperOutput } from '../utils/types/transcription'
 
 /**
  * Main function to handle transcription using local Whisper.cpp.
@@ -33,36 +34,36 @@ export async function callWhisper(
         ? 'base'
         : (() => { throw new Error('Invalid whisper option') })()
 
-    // Lookup the model entry from the shared constants array
-    const whisperModelEntry = WHISPER_MODELS.find(m => m.value === whisperModel)
-    if (!whisperModelEntry) {
-      throw new Error(`Unknown model type: ${whisperModel}`)
-    }
+    // Destructure label and value directly from the found model
+    const { label, value } = WHISPER_MODELS.find(m => m.label === whisperModel) ?? 
+      (() => { throw new Error(`Unknown model type: ${whisperModel}`) })()
 
     l.dim(`\n  Whisper model information:\n\n    - whisperModel: ${whisperModel}`)
-    l.dim(`    - modelGGMLName: ${whisperModelEntry.bin}`)
+    l.dim(`    - modelGGMLName: ${value}`)
 
-    await checkWhisperDirAndModel(whisperModelEntry.value, whisperModelEntry.bin)
+    await checkWhisperDirAndModel(label, value)
 
     // Run whisper.cpp on the WAV file
     l.dim(`  Invoking whisper.cpp on file:\n    - ${finalPath}.wav`)
     try {
       await execPromise(
         `./whisper.cpp/build/bin/whisper-cli --no-gpu ` +
-        `-m "whisper.cpp/models/${whisperModelEntry.bin}" ` +
+        `-m "whisper.cpp/models/${value}" ` +
         `-f "${finalPath}.wav" ` +
         `-of "${finalPath}" ` +
-        `--output-lrc`
+        `-ml 1 ` +
+        `--output-json`
       )
     } catch (whisperError) {
       err(`Error running whisper.cpp: ${(whisperError as Error).message}`)
       throw whisperError
     }
 
-    l.dim(`\n  Transcript LRC file successfully created, reading file for txt conversion:\n    - ${finalPath}.lrc\n`)
-    const lrcContent = await readFile(`${finalPath}.lrc`, 'utf8')
-    const txtContent = `${lrcContent}`
-    await unlink(`${finalPath}.lrc`)
+    l.dim(`\n  Transcript JSON file successfully created, reading file for txt conversion:\n    - ${finalPath}.json\n`)
+    const jsonContent = await readFile(`${finalPath}.json`, 'utf8')
+    const parsedJson = JSON.parse(jsonContent) as WhisperOutput
+    const txtContent = formatWhisperTranscript(parsedJson)
+    await unlink(`${finalPath}.json`)
 
     // Return the transcript text
     return txtContent

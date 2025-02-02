@@ -14,7 +14,7 @@ const requests = [
       type: 'file',
       filePath: 'content/audio.mp3',
     },
-    endpoint: '/process',
+    endpoint: '/api/process',
     outputFiles: ['01-file-default.md'],
   },
   {
@@ -23,7 +23,7 @@ const requests = [
       filePath: 'content/audio.mp3',
       whisperModel: 'tiny',
     },
-    endpoint: '/process',
+    endpoint: '/api/process',
     outputFiles: ['02-file-whisper-tiny.md'],
   },
   {
@@ -34,7 +34,7 @@ const requests = [
       whisperModel: 'tiny',
       llm: 'ollama',
     },
-    endpoint: '/process',
+    endpoint: '/api/process',
     outputFiles: ['03-file-ollama-shownotes.md'],
   },
   // Video Endpoint Requests
@@ -43,7 +43,7 @@ const requests = [
       type: 'video',
       url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
     },
-    endpoint: '/process',
+    endpoint: '/api/process',
     outputFiles: ['04-video-default.md'],
   },
   {
@@ -53,7 +53,7 @@ const requests = [
       prompts: ['titles', 'summary'],
       whisperModel: 'tiny',
     },
-    endpoint: '/process',
+    endpoint: '/api/process',
     outputFiles: ['05-video-whisper-tiny-prompts.md'],
   },
 ]

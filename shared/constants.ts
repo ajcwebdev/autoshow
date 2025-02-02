@@ -46,19 +46,19 @@ export const TRANSCRIPTION_SERVICES: Array<{ value: string; label: string }> = [
  * whisper.cpp usage. The `label` is used on the frontend UI, while the `bin`
  * path is crucial on the backend.
  */
-export const WHISPER_MODELS: Array<{ value: string; label: string; bin: string }> = [
-  { value: 'tiny', label: 'tiny', bin: 'ggml-tiny.bin' },
-  { value: 'tiny.en', label: 'tiny.en', bin: 'ggml-tiny.en.bin' },
-  { value: 'base', label: 'base', bin: 'ggml-base.bin' },
-  { value: 'base.en', label: 'base.en', bin: 'ggml-base.en.bin' },
-  { value: 'small', label: 'small', bin: 'ggml-small.bin' },
-  { value: 'small.en', label: 'small.en', bin: 'ggml-small.en.bin' },
-  { value: 'medium', label: 'medium', bin: 'ggml-medium.bin' },
-  { value: 'medium.en', label: 'medium.en', bin: 'ggml-medium.en.bin' },
-  { value: 'large-v1', label: 'large-v1', bin: 'ggml-large-v1.bin' },
-  { value: 'large-v2', label: 'large-v2', bin: 'ggml-large-v2.bin' },
-  { value: 'large-v3-turbo', label: 'large-v3-turbo', bin: 'ggml-large-v3-turbo.bin' },
-  { value: 'turbo', label: 'turbo', bin: 'ggml-large-v3-turbo.bin' },
+export const WHISPER_MODELS: Array<{ value: string; label: string; }> = [
+  { value: 'ggml-tiny.bin', label: 'tiny' },
+  { value: 'ggml-tiny.en.bin', label: 'tiny.en' },
+  { value: 'ggml-base.bin', label: 'base' },
+  { value: 'ggml-base.en.bin', label: 'base.en' },
+  { value: 'ggml-small.bin', label: 'small' },
+  { value: 'ggml-small.en.bin', label: 'small.en' },
+  { value: 'ggml-medium.bin', label: 'medium' },
+  { value: 'ggml-medium.en.bin', label: 'medium.en' },
+  { value: 'ggml-large-v1.bin', label: 'large-v1' },
+  { value: 'ggml-large-v2.bin', label: 'large-v2' },
+  { value: 'ggml-large-v3-turbo.bin', label: 'large-v3-turbo' },
+  { value: 'ggml-large-v3-turbo.bin', label: 'turbo' },
 ]
 
 /**

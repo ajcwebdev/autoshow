@@ -88,4 +88,4 @@ EXPOSE 3000
 
 # 23. Set the entrypoint and default command
 ENTRYPOINT ["/usr/src/app/docker-entrypoint.sh"]
-CMD ["dev"]
+CMD ["serve"]

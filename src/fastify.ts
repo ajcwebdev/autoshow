@@ -193,7 +193,7 @@ async function start() {
     }
   })
 
-  fastify.post('/process', handleProcessRequest)   // POST endpoint for processing
+  fastify.post('/api/process', handleProcessRequest)   // POST endpoint for processing
   fastify.get('/show-notes', getShowNotes)         // GET endpoint for all show notes
   fastify.get('/show-notes/:id', getShowNote)      // GET endpoint for specific show note
 

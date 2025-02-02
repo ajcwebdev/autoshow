@@ -25,6 +25,48 @@ export type TranscriptionCostInfo = {
   filePath: string
 }
 
-export type WhisperModelType = 'tiny' | 'tiny.en' | 'base' | 'base.en' | 'small' | 'small.en' | 'medium' | 'medium.en' | 'large-v1' | 'large-v2' | 'large-v3-turbo' | 'turbo'
 export type DeepgramModelType = 'NOVA_2' | 'NOVA' | 'ENHANCED' | 'BASE'
+
 export type AssemblyModelType = 'BEST' | 'NANO'
+
+export type WhisperOutput = {
+  systeminfo: string
+  model: {
+    type: string
+    multilingual: boolean
+    vocab: number
+    audio: {
+      ctx: number
+      state: number
+      head: number
+      layer: number
+    }
+    text: {
+      ctx: number
+      state: number
+      head: number
+      layer: number
+    }
+    mels: number
+    ftype: number
+  }
+  params: {
+    model: string
+    language: string
+    translate: boolean
+  }
+  result: {
+    language: string
+  }
+  transcription: Array<{
+    timestamps: {
+      from: string
+      to: string
+    }
+    offsets: {
+      from: number
+      to: number
+    }
+    text: string
+  }>
+}

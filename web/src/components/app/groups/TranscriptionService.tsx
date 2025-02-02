@@ -53,8 +53,8 @@ export const TranscriptionService: React.FC<{
             onChange={(e) => setWhisperModel(e.target.value)}
           >
             {WHISPER_MODELS.map((model) => (
-              <option key={model.value} value={model.value}>
-                {model.label}
+              <option key={model.label} value={model.label}>
+                {model.value}
               </option>
             ))}
           </select>

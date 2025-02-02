@@ -1,4 +1,4 @@
-// test/solid-all.ts
+// test/fetch-all.ts
 
 import fs from 'node:fs/promises'
 import path from 'node:path'

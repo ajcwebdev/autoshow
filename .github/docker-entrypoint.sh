@@ -17,11 +17,12 @@ log_error() {
     exit 1
 }
 
-# If first argument is "dev", then start the development server with SolidStart.
-if [ "$1" = "dev" ]; then
+# If first argument is "serve", then start the server.
+if [ "$1" = "serve" ]; then
     echo "Starting Autoshow server..."
+    # Remove first arg ("serve") so we don't pass that to the server script.
     shift
-    npm run dev "$@" || log_error "Server failed to start"
+    tsx --no-warnings --experimental-sqlite src/fastify.ts "$@" || log_error "Server failed to start"
 fi
 
 # Otherwise, run the CLI by default.

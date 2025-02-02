@@ -8,10 +8,35 @@
 import { readFile, unlink } from 'node:fs/promises'
 import { checkWhisperDirAndModel, formatWhisperTranscript } from '../utils/step-utils/transcription-utils'
 import { WHISPER_MODELS } from '../../shared/constants'
-import { execPromise } from '../utils/validate-option'
+import { spawn } from 'node:child_process'
 import { l, err } from '../utils/logging'
 import type { ProcessingOptions } from '../utils/types/step-types'
 import type { WhisperOutput } from '../utils/types/transcription'
+
+/**
+ * Executes a command using spawn and returns a promise that resolves on successful completion.
+ * @param {string} command - The executable command to run
+ * @param {string[]} args - The list of arguments passed to the command
+ * @returns {Promise<void>} - Resolves if the command completes with code 0, rejects otherwise
+ */
+async function spawnPromise(command: string, args: string[]): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const child = spawn(command, args, { stdio: ['ignore', 'pipe', 'pipe'] })
+    let errorData = ''
+
+    child.stderr.on('data', data => {
+      errorData += data
+    })
+
+    child.on('close', code => {
+      if (code !== 0) {
+        reject(new Error(`Command failed with exit code ${code}: ${errorData}`))
+      } else {
+        resolve()
+      }
+    })
+  })
+}
 
 /**
  * Main function to handle transcription using local Whisper.cpp.
@@ -46,13 +71,16 @@ export async function callWhisper(
     // Run whisper.cpp on the WAV file
     l.dim(`  Invoking whisper.cpp on file:\n    - ${finalPath}.wav`)
     try {
-      await execPromise(
-        `./whisper.cpp/build/bin/whisper-cli --no-gpu ` +
-        `-m "whisper.cpp/models/${value}" ` +
-        `-f "${finalPath}.wav" ` +
-        `-of "${finalPath}" ` +
-        `-ml 1 ` +
-        `--output-json`
+      await spawnPromise(
+        './whisper.cpp/build/bin/whisper-cli',
+        [
+          '--no-gpu',
+          '-m', `whisper.cpp/models/${value}`,
+          '-f', `${finalPath}.wav`,
+          '-of', `${finalPath}`,
+          '-ml', '1',
+          '--output-json'
+        ]
       )
     } catch (whisperError) {
       err(`Error running whisper.cpp: ${(whisperError as Error).message}`)

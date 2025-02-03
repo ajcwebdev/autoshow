@@ -1,8 +1,8 @@
-// test/solid-local.ts
+// test/server/server-local.ts
 
 import fs from 'node:fs/promises'
 import path from 'node:path'
-import { l, err } from '../src/utils/logging'
+import { l, err } from '../../src/utils/logging'
 
 const BASE_URL = 'http://localhost:3000'
 const OUTPUT_DIR = 'content'
@@ -32,10 +32,10 @@ const requests = [
       filePath: 'content/audio.mp3',
       prompts: ['titles', 'summary'],
       whisperModel: 'tiny',
-      llm: 'chatgpt',
+      llm: 'ollama',
     },
     endpoint: '/api/process',
-    outputFiles: ['03-file-chatgpt-shownotes.md'],
+    outputFiles: ['03-file-ollama-shownotes.md'],
   },
   // Video Endpoint Requests
   {

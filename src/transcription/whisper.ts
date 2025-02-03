@@ -52,7 +52,8 @@ export async function callWhisper(
         `-f "${finalPath}.wav" ` +
         `-of "${finalPath}" ` +
         `-ml 1 ` +
-        `--output-json`
+        `--output-json`,
+        { maxBuffer: 10000 * 1024 }
       )
     } catch (whisperError) {
       err(`Error running whisper.cpp: ${(whisperError as Error).message}`)

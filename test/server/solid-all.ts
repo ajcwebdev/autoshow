@@ -1,8 +1,8 @@
-// test/solid-all.ts
+// test/server/solid-all.ts
 
 import fs from 'node:fs/promises'
 import path from 'node:path'
-import { l, err } from '../src/utils/logging'
+import { l, err } from '../../src/utils/logging'
 
 const BASE_URL = 'http://localhost:3000'
 const OUTPUT_DIR = 'content'

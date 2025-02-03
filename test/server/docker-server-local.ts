@@ -1,8 +1,8 @@
-// test/fetch-local.ts
+// test/server/docker-server-local.ts
 
 import fs from 'node:fs/promises'
 import path from 'node:path'
-import { l, err } from '../src/utils/logging'
+import { l, err } from '../../src/utils/logging'
 
 const BASE_URL = 'http://localhost:3000'
 const OUTPUT_DIR = 'content'
@@ -30,12 +30,11 @@ const requests = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
+      transcriptionService: 'whisper',
       prompts: ['titles', 'summary'],
-      whisperModel: 'tiny',
-      llm: 'ollama',
     },
     endpoint: '/api/process',
-    outputFiles: ['03-file-ollama-shownotes.md'],
+    outputFiles: ['03-file-prompts.md'],
   },
   // Video Endpoint Requests
   {

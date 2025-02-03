@@ -119,7 +119,8 @@ export async function downloadAudio(
       }
       l.dim(`    - Running ffmpeg command for ${input} -> ${outputPath}\n`)
       await execPromise(
-        `ffmpeg -i "${input}" -ar 16000 -ac 1 -c:a pcm_s16le "${outputPath}"`
+        `ffmpeg -i "${input}" -ar 16000 -ac 1 -c:a pcm_s16le "${outputPath}"`,
+        { maxBuffer: 10000 * 1024 }
       )
       l.dim(`  File converted to WAV format successfully:\n    - ${outputPath}`)
     } catch (error) {

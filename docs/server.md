@@ -25,6 +25,36 @@ Version 20 enters its maintenance period in October 2024 and end-of-life in Apri
 
 </details>
 
+## Test Railway
+
+```bash
+curl --json '{
+  "type": "video",
+  "url": "https://www.youtube.com/watch?v=MORMZXEaONk"
+}' -o "content/2024-09-24-ep0-fsjam-podcast-prompt.json" \
+https://autodaily.show/api/process
+```
+
+```bash
+curl --json '{
+  "type": "video",
+  "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
+  "llm": "chatgpt",
+  "openaiApiKey": ""
+}' -o "content/2024-09-24-ep0-fsjam-podcast-chatgpt.json" \
+https://autodaily.show/api/process
+```
+
+```bash
+curl --json '{
+  "type": "video",
+  "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
+  "transcriptServices": "deepgram",
+  "deepgramApiKey": ""
+}' -o "content/2024-09-24-ep0-fsjam-podcast-prompt.json" \
+https://autodaily.show/api/process
+```
+
 ## Process Endpoint
 
 Once the server is running, send a `POST` request to `http://localhost:3000/api/process` containing a JSON object:

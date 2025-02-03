@@ -246,7 +246,10 @@ export async function checkWhisperDirAndModel(
   if (!existsSync(modelPath)) {
     l.dim(`\n  Model not found locally, attempting download...\n    - ${whisperModel}\n`)
     try {
-      await execPromise(`bash ./whisper.cpp/models/download-ggml-model.sh ${whisperModel}`)
+      await execPromise(
+        `bash ./whisper.cpp/models/download-ggml-model.sh ${whisperModel}`,
+        { maxBuffer: 10000 * 1024 }
+      )
       l.dim('    - Model download completed.\n')
     } catch (modelError) {
       err(`Error downloading model: ${(modelError as Error).message}`)

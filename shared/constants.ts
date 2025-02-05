@@ -157,20 +157,15 @@ export const DEEPGRAM_MODELS: Record<
     modelId: 'nova-2',
     costPerMinute: 0.0043,
   },
-  NOVA: {
-    name: 'Nova',
-    modelId: 'nova',
-    costPerMinute: 0.0043,
+  BASE: {
+    name: 'Base',
+    modelId: 'base',
+    costPerMinute: 0.0125,
   },
   ENHANCED: {
     name: 'Enhanced',
     modelId: 'enhanced',
     costPerMinute: 0.0145,
-  },
-  BASE: {
-    name: 'Base',
-    modelId: 'base',
-    costPerMinute: 0.0125,
   },
 }
 

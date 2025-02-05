@@ -52,6 +52,8 @@ export async function callWhisper(
         `-f "${finalPath}.wav" ` +
         `-of "${finalPath}" ` +
         `-ml 1 ` +
+        `--threads 6 ` +
+        `--processors 2 ` +
         `--output-json`,
         { maxBuffer: 10000 * 1024 }
       )

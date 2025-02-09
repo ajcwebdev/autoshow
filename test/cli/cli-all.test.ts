@@ -63,16 +63,16 @@ const commands = [
     // Process playlist videos with titles and longChapters prompts, tiny Whisper model, and Ollama for LLM processing.
     cmd: 'npm run as -- --playlist "https://www.youtube.com/playlist?list=PLCVnrVv4KhXPz0SoAVu8Rc1emAdGPbSbr" --prompt titles longChapters --whisper tiny --ollama qwen2.5:0.5b',
     expectedFiles: [
-      { file: '2024-09-24-ep1-fsjam-podcast-ollama-shownotes.md', newName: '11-prompt-whisper-ollama-shownotes.md' },
-      { file: '2024-09-24-ep0-fsjam-podcast-ollama-shownotes.md', newName: '12-prompt-whisper-ollama-shownotes.md' }
+      { file: '2024-09-24-ep1-fsjam-podcast-ollama-shownotes.md', newName: '11-playlist-prompts-whisper-ollama-shownotes-ep1.md' },
+      { file: '2024-09-24-ep0-fsjam-podcast-ollama-shownotes.md', newName: '12-playlist-prompts-whisper-ollama-shownotes-ep0.md' }
     ]
   },
   {
     // Process multiple YouTube videos from URLs with title prompts, Whisper 'tiny' model, and Ollama.
     cmd: 'npm run as -- --urls "content/example-urls.md" --prompt titles --whisper tiny --ollama qwen2.5:0.5b',
     expectedFiles: [
-      { file: '2024-09-24-ep1-fsjam-podcast-ollama-shownotes.md', newName: '13-prompt-whisper-ollama-shownotes.md' },
-      { file: '2024-09-24-ep0-fsjam-podcast-ollama-shownotes.md', newName: '14-prompt-whisper-ollama-shownotes.md' }
+      { file: '2024-09-24-ep1-fsjam-podcast-ollama-shownotes.md', newName: '13-urls-prompts-whisper-ollama-shownotes-ep1.md' },
+      { file: '2024-09-24-ep0-fsjam-podcast-ollama-shownotes.md', newName: '14-urls-prompts-whisper-ollama-shownotes-ep0.md' }
     ]
   },
   {
@@ -111,170 +111,165 @@ const commands = [
     expectedFile: 'audio-prompt.md',
     newName: '22-docker-file-default.md'
   },
-  // {
-  //   cmd: 'npm run docker-cli -- --file "content/audio.mp3" --prompt titles --whisper tiny --ollama qwen2.5:0.5b',
-  //   expectedFile: 'audio-ollama-shownotes.md',
-  //   newName: '23-docker-titles-prompt-whisper-tiny-ollama-shownotes.md'
-  // },
   {
     cmd: 'npm run docker-cli -- --file "content/audio.mp3" --whisper tiny',
     expectedFile: 'audio-prompt.md',
-    newName: '24-docker-whisper-tiny.md'
+    newName: '23-docker-whisper-tiny.md'
   },
   {
     cmd: 'npm run docker-cli -- --file "content/audio.mp3" --whisper base --prompt titles summary mediumChapters takeaways questions',
     expectedFile: 'audio-prompt.md',
-    newName: '25-docker-all-prompts.md'
+    newName: '24-docker-all-prompts.md'
   },
   {
     cmd: 'npm run docker-cli -- --playlist "https://www.youtube.com/playlist?list=PLCVnrVv4KhXPz0SoAVu8Rc1emAdGPbSbr" --prompt titles --whisper tiny --chatgpt',
     expectedFiles: [
-      { file: '2024-09-24-ep1-fsjam-podcast-chatgpt-shownotes.md', newName: '26-docker-prompt-whisper-chatgpt-shownotes.md' },
-      { file: '2024-09-24-ep0-fsjam-podcast-chatgpt-shownotes.md', newName: '27-docker-prompt-whisper-chatgpt-shownotes.md' }
+      { file: '2024-09-24-ep1-fsjam-podcast-chatgpt-shownotes.md', newName: '25-docker-prompt-whisper-chatgpt-shownotes.md' },
+      { file: '2024-09-24-ep0-fsjam-podcast-chatgpt-shownotes.md', newName: '26-docker-prompt-whisper-chatgpt-shownotes.md' }
     ]
   },
   {
     cmd: 'npm run docker-cli -- --urls "content/example-urls.md" --prompt titles --whisper tiny --claude',
     expectedFiles: [
-      { file: '2024-09-24-ep1-fsjam-podcast-claude-shownotes.md', newName: '28-docker-prompt-whisper-claude-shownotes.md' },
-      { file: '2024-09-24-ep0-fsjam-podcast-claude-shownotes.md', newName: '29-docker-prompt-whisper-claude-shownotes.md' }
+      { file: '2024-09-24-ep1-fsjam-podcast-claude-shownotes.md', newName: '27-docker-prompt-whisper-claude-shownotes.md' },
+      { file: '2024-09-24-ep0-fsjam-podcast-claude-shownotes.md', newName: '28-docker-prompt-whisper-claude-shownotes.md' }
     ]
   },
   {
     cmd: 'npm run docker-cli -- --rss "https://ajcwebdev.substack.com/feed" --whisper base',
     expectedFile: '2021-05-10-thoughts-on-lambda-school-layoffs-prompt.md',
-    newName: '30-docker-rss-default.md'
+    newName: '29-docker-rss-default.md'
   },
   {
     cmd: 'npm run docker-cli -- --rss "https://ajcwebdev.substack.com/feed" --info',
     expectedFile: 'ajcwebdev_info.json',
-    newName: '31-docker-ajcwebdev-rss-info.json',
+    newName: '30-docker-ajcwebdev-rss-info.json',
   },
   {
     // Process local audio file with Dockerized Whisper 'base' model.
     cmd: 'npm run as -- --file "content/audio.mp3" --whisper base',
     expectedFile: 'audio-prompt.md',
-    newName: '32-docker-whisper-docker-base.md'
+    newName: '31-docker-whisper-docker-base.md'
   },
   {
     // process file using ChatGPT for LLM operations.
     cmd: 'npm run as -- --file "content/audio.mp3" --chatgpt',
     expectedFile: 'audio-chatgpt-shownotes.md',
-    newName: '33-chatgpt-default.md'
+    newName: '32-chatgpt-default.md'
   },
   {
     // Process file with ChatGPT using GPT_4o_MINI model.
     cmd: 'npm run as -- --file "content/audio.mp3" --chatgpt GPT_4o_MINI',
     expectedFile: 'audio-chatgpt-shownotes.md',
-    newName: '34-chatgpt-gpt-4o-mini.md'
+    newName: '33-chatgpt-gpt-4o-mini.md'
   },
   {
     // process file using Claude for LLM operations.
     cmd: 'npm run as -- --file "content/audio.mp3" --claude',
     expectedFile: 'audio-claude-shownotes.md',
-    newName: '35-claude-default.md'
+    newName: '34-claude-default.md'
   },
   {
     // Process file with Claude using CLAUDE_3_5_HAIKU model.
     cmd: 'npm run as -- --file "content/audio.mp3" --claude CLAUDE_3_5_HAIKU',
     expectedFile: 'audio-claude-shownotes.md',
-    newName: '36-claude-shownotes.md'
+    newName: '35-claude-shownotes.md'
   },
   {
     // process file using Gemini for LLM operations.
     cmd: 'npm run as -- --file "content/audio.mp3" --gemini',
     expectedFile: 'audio-gemini-shownotes.md',
-    newName: '37-gemini-shownotes.md'
+    newName: '36-gemini-shownotes.md'
   },
   {
     // Process file with Gemini using GEMINI_1_5_FLASH model.
     cmd: 'npm run as -- --file "content/audio.mp3" --gemini GEMINI_1_5_FLASH',
     expectedFile: 'audio-gemini-shownotes.md',
-    newName: '38-gemini-shownotes.md'
+    newName: '37-gemini-shownotes.md'
   },
   {
     // process file using Cohere for LLM operations
     cmd: 'npm run as -- --file "content/audio.mp3" --cohere',
     expectedFile: 'audio-cohere-shownotes.md',
-    newName: '39-cohere-shownotes.md'
+    newName: '38-cohere-shownotes.md'
   },
   {
     // Process file with Cohere using COMMAND_R model.
     cmd: 'npm run as -- --file "content/audio.mp3" --cohere COMMAND_R',
     expectedFile: 'audio-cohere-shownotes.md',
-    newName: '40-cohere-shownotes.md'
+    newName: '39-cohere-shownotes.md'
   },
   {
     // process file using Mistral for LLM operations
     cmd: 'npm run as -- --file "content/audio.mp3" --mistral',
     expectedFile: 'audio-mistral-shownotes.md',
-    newName: '41-mistral-shownotes.md'
+    newName: '40-mistral-shownotes.md'
   },
   {
     // Process file with Mistral using MINISTRAL_3B model.
     cmd: 'npm run as -- --file "content/audio.mp3" --mistral MINISTRAL_3B',
     expectedFile: 'audio-mistral-shownotes.md',
-    newName: '42-mistral-shownotes.md'
+    newName: '41-mistral-shownotes.md'
   },
   {
     // process file using DeepSeek for LLM operations
     cmd: 'npm run as -- --file "content/audio.mp3" --deepseek',
     expectedFile: 'audio-deepseek-shownotes.md',
-    newName: '41-deepsek-shownotes.md'
+    newName: '42-deepsek-shownotes.md'
   },
   {
     // process file using Grok for LLM operations
     cmd: 'npm run as -- --file "content/audio.mp3" --grok',
     expectedFile: 'audio-grok-shownotes.md',
-    newName: '41-grok-shownotes.md'
+    newName: '43-grok-shownotes.md'
   },
   {
     // process file using Fireworks for LLM operations
     cmd: 'npm run as -- --file "content/audio.mp3" --fireworks',
     expectedFile: 'audio-fireworks-shownotes.md',
-    newName: '43-fireworks-shownotes.md'
+    newName: '44-fireworks-shownotes.md'
   },
   {
     // process file using Together for LLM operations
     cmd: 'npm run as -- --file "content/audio.mp3" --together',
     expectedFile: 'audio-together-shownotes.md',
-    newName: '44-together-shownotes.md'
+    newName: '45-together-shownotes.md'
   },
   {
     // process file using Groq for LLM operations
     cmd: 'npm run as -- --file "content/audio.mp3" --groq',
     expectedFile: 'audio-groq-shownotes.md',
-    newName: '45-groq-shownotes.md'
+    newName: '46-groq-shownotes.md'
   },
   {
     // process file using Deepgram for transcription
     cmd: 'npm run as -- --file "content/audio.mp3" --deepgram',
     expectedFile: 'audio-prompt.md',
-    newName: '46-deepgram-prompt.md'
+    newName: '47-deepgram-prompt.md'
   },
   {
     // Process file using Deepgram and Mistral's Ministral 3B model.
     cmd: 'npm run as -- --file "content/audio.mp3" --deepgram --mistral MINISTRAL_3B',
     expectedFile: 'audio-mistral-shownotes.md',
-    newName: '47-deepgram-mistral-shownotes.md'
+    newName: '48-deepgram-mistral-shownotes.md'
   },
   {
     // process file using AssemblyAI for transcription
     cmd: 'npm run as -- --file "content/audio.mp3" --assembly',
     expectedFile: 'audio-prompt.md',
-    newName: '48-assembly-prompt.md'
+    newName: '49-assembly-prompt.md'
   },
   {
     // Process file using AssemblyAI and Mistral's Ministral 3B model.
     cmd: 'npm run as -- --file "content/audio.mp3" --assembly --mistral MINISTRAL_3B',
     expectedFile: 'audio-mistral-shownotes.md',
-    newName: '49-assembly-mistral-shownotes.md'
+    newName: '50-assembly-mistral-shownotes.md'
   },
   {
     // Process an audio file using AssemblyAI with speaker labels
     cmd: 'npm run as -- --video "https://ajc.pics/audio/fsjam-short.mp3" --assembly --speakerLabels',
     expectedFile: '2024-05-08-fsjam-short-prompt.md',
-    newName: '50-assembly-speaker-labels-prompt.md'
+    newName: '51-assembly-speaker-labels-prompt.md'
   }
 ]
 

@@ -50,20 +50,20 @@ export async function estimateTranscriptCost(
   switch (transcriptServices) {
     case 'deepgram': {
       const deepgramModel = typeof options.deepgram === 'string' ? options.deepgram : 'NOVA_2'
-      const modelInfo = DEEPGRAM_MODELS[deepgramModel as DeepgramModelType] || DEEPGRAM_MODELS.NOVA_2
+      const { name, costPerMinute } = DEEPGRAM_MODELS[deepgramModel as DeepgramModelType] || DEEPGRAM_MODELS.NOVA_2
       await logTranscriptionCost({
-        modelName: modelInfo.name,
-        costPerMinute: modelInfo.costPerMinute,
+        modelName: name,
+        costPerMinute,
         filePath
       })
       break
     }
     case 'assembly': {
       const assemblyModel = typeof options.assembly === 'string' ? options.assembly : 'NANO'
-      const modelInfo = ASSEMBLY_MODELS[assemblyModel as AssemblyModelType] || ASSEMBLY_MODELS.NANO
+      const { name, costPerMinute } = ASSEMBLY_MODELS[assemblyModel as AssemblyModelType] || ASSEMBLY_MODELS.NANO
       await logTranscriptionCost({
-        modelName: modelInfo.name,
-        costPerMinute: modelInfo.costPerMinute,
+        modelName: name,
+        costPerMinute,
         filePath
       })
       break

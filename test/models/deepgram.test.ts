@@ -16,28 +16,22 @@ const commands = [
     ]
   },
   {
+    // Process audio with Deepgram using NOVA_2 model.
+    cmd: 'npm run as -- --file "content/audio.mp3" --deepgram NOVA_2',
+    expectedFile: 'audio-prompt.md',
+    newName: '03-deepgram-nova-2.md'
+  },
+  {
     // Process audio with Deepgram using BASE model.
     cmd: 'npm run as -- --file "content/audio.mp3" --deepgram BASE',
     expectedFile: 'audio-prompt.md',
-    newName: '03-deepgram-base.md'
+    newName: '04-deepgram-base.md'
   },
   {
     // Process audio with Deepgram using ENHANCED model.
     cmd: 'npm run as -- --file "content/audio.mp3" --deepgram ENHANCED',
     expectedFile: 'audio-prompt.md',
-    newName: '04-deepgram-enhanced.md'
-  },
-  {
-    // Process audio with Deepgram using NOVA model.
-    cmd: 'npm run as -- --file "content/audio.mp3" --deepgram NOVA',
-    expectedFile: 'audio-prompt.md',
-    newName: '05-deepgram-nova.md'
-  },
-  {
-    // Process audio with Deepgram using NOVA_2 model.
-    cmd: 'npm run as -- --file "content/audio.mp3" --deepgram NOVA_2',
-    expectedFile: 'audio-prompt.md',
-    newName: '06-deepgram-nova-2.md'
+    newName: '05-deepgram-enhanced.md'
   },
 ]
 

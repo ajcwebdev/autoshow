@@ -25,9 +25,9 @@ export type TranscriptionCostInfo = {
   filePath: string
 }
 
-export type DeepgramModelType = 'NOVA_2' | 'NOVA' | 'ENHANCED' | 'BASE'
+export type DeepgramModelType = 'NOVA_2' | 'BASE' | 'ENHANCED'
 
-export type AssemblyModelType = 'BEST' | 'NANO'
+export type AssemblyModelType = 'NANO' | 'BEST'
 
 export type WhisperOutput = {
   systeminfo: string

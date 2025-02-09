@@ -44,9 +44,11 @@ export async function callDeepgram(
       throw new Error(`Model information for model ${model} is not defined.`)
     }
 
+    const { name, costPerMinute } = modelInfo
+
     await logTranscriptionCost({
-      modelName: modelInfo.name,
-      costPerMinute: modelInfo.costPerMinute,
+      modelName: name,
+      costPerMinute,
       filePath: `${finalPath}.wav`
     })
 

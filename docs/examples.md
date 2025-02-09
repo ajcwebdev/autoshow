@@ -305,7 +305,6 @@ Select model:
 ```bash
 npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --deepgram BASE
 npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --deepgram ENHANCED
-npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --deepgram NOVA
 npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --deepgram NOVA_2
 ```
 

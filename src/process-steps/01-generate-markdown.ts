@@ -1,7 +1,8 @@
 // src/process-steps/01-generate-markdown.ts
 
 import { basename, extname } from 'node:path'
-import { sanitizeTitle, buildFrontMatter, execFilePromise } from '../utils/validate-option'
+import { execFilePromise } from '../../shared/constants'
+import { sanitizeTitle, buildFrontMatter } from '../utils/step-utils/markdown-utils'
 import { l, err, logInitialFunctionCall } from '../utils/logging'
 import type { ProcessingOptions, RSSItem } from '../utils/types/step-types'
 

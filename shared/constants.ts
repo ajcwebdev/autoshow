@@ -8,7 +8,13 @@
  *
  */
 
+import { exec, execFile } from 'node:child_process'
+import { promisify } from 'node:util'
+
 import type { AssemblyModelType, DeepgramModelType } from '../src/utils/types/transcription'
+
+export const execPromise = promisify(exec)
+export const execFilePromise = promisify(execFile)
 
 /**
  * All user-facing prompt choices, unified for both backend and frontend usage.
@@ -148,10 +154,7 @@ export const LLM_MODELS = {
 /**
  * Deepgram models with their per-minute cost.
  */
-export const DEEPGRAM_MODELS: Record<
-  DeepgramModelType,
-  { name: string; modelId: string; costPerMinute: number }
-> = {
+export const DEEPGRAM_MODELS: Record<DeepgramModelType, { name: string; modelId: string; costPerMinute: number }> = {
   NOVA_2: {
     name: 'Nova-2',
     modelId: 'nova-2',
@@ -172,10 +175,7 @@ export const DEEPGRAM_MODELS: Record<
 /**
  * AssemblyAI models with their per-minute cost.
  */
-export const ASSEMBLY_MODELS: Record<
-  AssemblyModelType,
-  { name: string; modelId: string; costPerMinute: number }
-> = {
+export const ASSEMBLY_MODELS: Record<AssemblyModelType, { name: string; modelId: string; costPerMinute: number }> = {
   BEST: {
     name: 'Best',
     modelId: 'best',

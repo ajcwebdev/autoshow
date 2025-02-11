@@ -1,15 +1,10 @@
 // src/utils/rss-utils.ts
 
-import { exec, execFile } from 'node:child_process'
-import { promisify } from 'node:util'
 import { l, err } from '../../utils/logging'
 
 import type { TranscriptServices } from '../types/transcription'
 import type { LLMServices } from '../types/llms'
 import type { ProcessingOptions, RSSItem, HandlerFunction } from '../types/step-types'
-
-export const execPromise = promisify(exec)
-export const execFilePromise = promisify(execFile)
 
 /**
  * Validates RSS flags (e.g., --last, --skip, --order, --date, --lastDays) without requiring feed data.

@@ -1,7 +1,7 @@
 // src/utils/retry.ts
 
 import { l, err } from '../logging'
-import { execFilePromise } from '../validate-option'
+import { execFilePromise } from '../../../shared/constants'
 
 /**
  * Executes a command with retry logic to recover from transient failures.

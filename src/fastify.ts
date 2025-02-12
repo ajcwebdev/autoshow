@@ -1,6 +1,6 @@
 // src/fastify.ts
 
-import { DatabaseSync } from 'node:sqlite'
+import Database from 'better-sqlite3'
 import { env } from 'node:process'
 import Fastify from 'fastify'
 import cors from '@fastify/cors'
@@ -9,6 +9,7 @@ import { processFile } from './process-commands/file'
 import { l, err } from './utils/logging'
 import { validateRequest, validateServerProcessAction, envVarsServerMap } from './utils/validate-req'
 
+import type { Database as DatabaseType } from 'better-sqlite3'
 import type { FastifyRequest, FastifyReply } from 'fastify'
 
 type ShowNote = {
@@ -29,7 +30,7 @@ type ShowNote = {
 const port = Number(env['PORT']) || 3000
 
 // Initialize the database connection
-export const db = new DatabaseSync('show_notes.db', { open: true })
+export const db: DatabaseType = new Database('show_notes.db')
 
 // Create the show_notes table if it doesn't exist
 db.exec(`

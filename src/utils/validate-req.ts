@@ -3,9 +3,7 @@
 import { TRANSCRIPTION_SERVICES, LLM_OPTIONS } from '../../shared/constants'
 import { XMLParser } from 'fast-xml-parser'
 
-import type { TranscriptServices } from './types/transcription'
-import type { LLMServices } from './types/llms'
-import type { ProcessingOptions, ValidAction } from './types/step-types'
+import type { ProcessingOptions } from './types/step-types'
 
 /**
  * Maps server-side request body keys to corresponding environment variables.
@@ -27,40 +25,40 @@ export const envVarsServerMap = {
  * process type supported by the application. Throws an error if the type is invalid.
  *
  * @param type - The process type string from the request body
- * @returns The valid process type as a `ValidAction` if validation passes
+ * @returns The valid process type as a `ValidCLIAction` if validation passes
  * @throws Error if the type is not valid or is missing
  */
 export function validateServerProcessAction(type: string) {
-  if (!['video', 'urls', 'rss', 'playlist', 'file', 'channel'].includes(type)) {
+  if (!['video', 'file', 'transcriptCost', 'llmCost', 'runLLM'].includes(type)) {
     throw new Error('Invalid or missing process type')
   }
-  return type as ValidAction
+  return type
 }
 
 // Function to map request data to processing options
 export function validateRequest(requestData: any): {
   options: ProcessingOptions
-  llmServices?: LLMServices
-  transcriptServices?: TranscriptServices
+  llmServices?: string
+  transcriptServices?: string
 } {
   // Initialize options object
   const options: ProcessingOptions = {}
 
   // Variables to hold selected services
-  let llmServices: LLMServices | undefined
-  let transcriptServices: TranscriptServices | undefined
+  let llmServices: string | undefined
+  let transcriptServices: string | undefined
 
   // Check if a valid LLM service is provided
   if (requestData.llm && LLM_OPTIONS.includes(requestData.llm)) {
     // Set the LLM service
-    llmServices = requestData.llm as LLMServices
+    llmServices = requestData.llm as string
     // Set the LLM model or default to true
     options[llmServices] = requestData.llmModel || true
   }
 
   const validTranscriptValues = TRANSCRIPTION_SERVICES.map(s => s.value)
   transcriptServices = validTranscriptValues.includes(requestData.transcriptServices)
-    ? (requestData.transcriptServices as TranscriptServices)
+    ? (requestData.transcriptServices)
     : 'whisper'
 
   if (transcriptServices === 'whisper') {

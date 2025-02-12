@@ -8,22 +8,12 @@ import { logLLMCost } from '../utils/step-utils/llm-utils'
 import type { ClaudeModelType } from '../utils/types/llms'
 
 /**
- * Extracts text content from the API response
- * @param content - The content returned by the API
- * @returns The extracted text content, or null if no text content is found
- */
-interface ContentBlock {
-  type: string;
-  text?: string;
-}
-
-/**
- * Main function to call Claude API.
+ * Main function to call Claude API and extract text content from the response.
  * @param {string} prompt - The prompt or instructions to process.
  * @param {string} transcript - The transcript text.
  * @param {string} [model] - The Claude model to use.
  * @returns {Promise<string>} A Promise that resolves with the generated text.
- * @throws {Error} If an error occurs during the API call.
+ * @throws {Error} If an error occurs during the API call or no text content is found.
  */
 export const callClaude = async (
   prompt: string,
@@ -46,9 +36,8 @@ export const callClaude = async (
       messages: [{ role: 'user', content: combinedPrompt }]
     })
 
-    const textContent = extractTextContent(response.content)
-
-    if (!textContent) {
+    const firstBlock = response.content[0]
+    if (!firstBlock || firstBlock.type !== 'text') {
       throw new Error('No text content generated from the API')
     }
 
@@ -56,26 +45,15 @@ export const callClaude = async (
       modelName: actualModel,
       stopReason: response.stop_reason ?? 'unknown',
       tokenUsage: {
-        input: response.usage.input_tokens,
-        output: response.usage.output_tokens,
-        total: response.usage.input_tokens + response.usage.output_tokens
+        input: response.usage?.input_tokens,
+        output: response.usage?.output_tokens,
+        total: response.usage?.input_tokens + response.usage?.output_tokens
       }
     })
 
-    return textContent
+    return firstBlock.text
   } catch (error) {
     err(`Error in callClaude: ${(error as Error).message}`)
     throw error
   }
-}
-
-function extractTextContent(content: ContentBlock[]): string | null {
-  for (const block of content) {
-    if (typeof block === 'object' && block !== null && 'type' in block) {
-      if (block.type === 'text' && 'text' in block) {
-        return block.text ?? null;
-      }
-    }
-  }
-  return null;
 }

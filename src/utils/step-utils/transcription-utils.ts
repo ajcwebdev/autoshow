@@ -6,8 +6,7 @@ import { DEEPGRAM_MODELS, ASSEMBLY_MODELS } from '../../../shared/constants'
 import { execPromise } from '../../utils/validate-cli'
 
 import type { ProcessingOptions } from '../types/step-types'
-import type { TranscriptServices, TranscriptionCostInfo, DeepgramModelType, AssemblyModelType, WhisperOutput } from '../types/transcription'
-
+import type { TranscriptionCostInfo, DeepgramModelType, AssemblyModelType, WhisperOutput } from '../types/transcription'
 
 /**
  * Asynchronously logs the estimated transcription cost based on audio duration and per-minute cost.
@@ -36,12 +35,12 @@ export async function logTranscriptionCost(info: TranscriptionCostInfo) {
  * Estimates transcription cost for the provided file and chosen transcription service.
  * 
  * @param {ProcessingOptions} options - The command-line options (must include `transcriptCost` file path).
- * @param {TranscriptServices} transcriptServices - The selected transcription service (e.g., "deepgram", "assembly", "whisper").
+ * @param {string} transcriptServices - The selected transcription service (e.g., "deepgram", "assembly", "whisper").
  * @returns {Promise<void>} A promise that resolves when cost estimation is complete.
  */
 export async function estimateTranscriptCost(
   options: ProcessingOptions,
-  transcriptServices: TranscriptServices
+  transcriptServices: string
 ) {
   const filePath = options.transcriptCost
   if (!filePath) {

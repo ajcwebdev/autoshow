@@ -1,11 +1,6 @@
 // src/types/llms.ts
 
 /**
- * Options for Language Models (LLMs) that can be used in the application.
- */
-export type LLMServices = 'chatgpt' | 'claude' | 'ollama' | 'gemini' | 'deepseek' | 'fireworks' | 'together'
-
-/**
  * Available GPT models.
  */
 export type ChatGPTModelType = 'GPT_4o_MINI' | 'GPT_4o' | 'GPT_o1_MINI'

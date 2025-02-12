@@ -2,8 +2,6 @@
 
 import { l, err } from '../../utils/logging'
 
-import type { TranscriptServices } from '../types/transcription'
-import type { LLMServices } from '../types/llms'
 import type { ProcessingOptions, RSSItem, HandlerFunction } from '../types/step-types'
 
 /**
@@ -160,8 +158,8 @@ export async function filterRSSItems(
 export async function validateRSSAction(
   options: ProcessingOptions,
   handler: HandlerFunction,
-  llmServices?: LLMServices,
-  transcriptServices?: TranscriptServices
+  llmServices?: string,
+  transcriptServices?: string
 ) {
   if (options.item && !Array.isArray(options.item)) {
     options.item = [options.item]

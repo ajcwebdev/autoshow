@@ -13,9 +13,6 @@ import { logRSSProcessingStatus, filterRSSItems } from '../utils/command-utils/r
 import { retryRSSFetch } from '../utils/step-utils/retry'
 
 import type { ProcessingOptions } from '../utils/types/step-types'
-import type { TranscriptServices } from '../utils/types/transcription'
-import type { LLMServices } from '../utils/types/llms'
-
 
 /**
  * Fetches and parses an RSS feed, then applies filtering via {@link filterRSSItems}.
@@ -96,8 +93,8 @@ export async function selectRSSItemsToProcess(
 export async function processRSS(
   options: ProcessingOptions,
   rssUrl: string,
-  llmServices?: LLMServices,
-  transcriptServices?: TranscriptServices
+  llmServices?: string,
+  transcriptServices?: string
 ) {
   logInitialFunctionCall('processRSS', { llmServices, transcriptServices })
 

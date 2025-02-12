@@ -14,7 +14,7 @@ import chalk from 'chalk'
 import { l, err } from '../logging'
 import { ALL_MODELS } from '../../../shared/constants'
 
-import type { LLMServices, OllamaTagsResponse } from '../types/llms'
+import type { OllamaTagsResponse } from '../types/llms'
 import type { LogLLMCost } from '../types/logging'
 import type { ProcessingOptions } from '../types/step-types'
 
@@ -142,12 +142,12 @@ function approximateTokens(text: string) {
  * 4. Logging the estimated cost to the console
  *
  * @param {ProcessingOptions} options - The command-line options (must include `llmCost` file path)
- * @param {LLMServices} llmService - The selected LLM service (e.g., 'chatgpt', 'ollama', 'claude', etc.)
+ * @param {string} llmService - The selected LLM service (e.g., 'chatgpt', 'ollama', 'claude', etc.)
  * @returns {Promise<void>} A promise that resolves when cost estimation is complete
  */
 export async function estimateLLMCost(
   options: ProcessingOptions,
-  llmService: LLMServices
+  llmService: string
 ) {
   const filePath = options.llmCost
   if (!filePath) {

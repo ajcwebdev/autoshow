@@ -6,8 +6,12 @@ import cors from '@fastify/cors'
 import { db } from './db'
 import { processVideo } from './process-commands/video'
 import { processFile } from './process-commands/file'
+import { runLLMFromPromptFile } from './process-steps/05-run-llm'
 import { l, err } from './utils/logging'
 import { validateRequest, validateServerProcessAction, envVarsServerMap } from './utils/validate-req'
+import { estimateTranscriptCost } from './utils/step-utils/transcription-utils'
+import { estimateLLMCost } from './utils/step-utils/llm-utils'
+
 import type { FastifyRequest, FastifyReply } from 'fastify'
 
 // Set server port from environment variable or default to 3000
@@ -48,7 +52,9 @@ export const handleProcessRequest = async (
 
     // Ensure the user-selected LLM model is passed through to the options object
     if (llmServices && requestData['llmModel']) {
-      options[llmServices] = requestData['llmModel']
+      if (typeof llmServices === 'string' && llmServices in options) {
+        options[llmServices] = requestData['llmModel']
+      }
     }
 
     // Process based on type
@@ -84,6 +90,66 @@ export const handleProcessRequest = async (
           llmOutput: result.llmOutput,
           transcript: result.transcript,
         })
+        break
+      }
+
+      /**
+       * Handles transcript cost estimates for the server
+       * Accepts "filePath" and "transcriptServices" from the request body
+       */
+      case 'transcriptCost': {
+        const { filePath } = requestData
+        if (!filePath) {
+          reply.status(400).send({ error: 'File path is required' })
+          return
+        }
+        if (!transcriptServices) {
+          reply.status(400).send({ error: 'Please specify a transcription service' })
+          return
+        }
+        options.transcriptCost = filePath
+        await estimateTranscriptCost(options, transcriptServices)
+        reply.send({ message: 'Transcript cost estimated successfully' })
+        break
+      }
+
+      /**
+       * Handles LLM cost estimation
+       * Accepts "filePath" (combined prompt+transcript) and "llm"
+       */
+      case 'llmCost': {
+        const { filePath } = requestData
+        if (!filePath) {
+          reply.status(400).send({ error: 'File path is required' })
+          return
+        }
+        if (!llmServices) {
+          reply.status(400).send({ error: 'Please specify an LLM service' })
+          return
+        }
+        options.llmCost = filePath
+        await estimateLLMCost(options, llmServices)
+        reply.send({ message: 'LLM cost estimated successfully' })
+        break
+      }
+
+      /**
+       * Skips steps 1-4 and runs an LLM directly on a file with a transcript and prompt
+       * Accepts "filePath" and "llm"
+       */
+      case 'runLLM': {
+        const { filePath } = requestData
+        if (!filePath) {
+          reply.status(400).send({ error: 'File path is required' })
+          return
+        }
+        if (!llmServices) {
+          reply.status(400).send({ error: 'Please specify an LLM service' })
+          return
+        }
+        options.runLLM = filePath
+        await runLLMFromPromptFile(filePath, options, llmServices)
+        reply.send({ message: 'LLM run completed successfully' })
         break
       }
     }

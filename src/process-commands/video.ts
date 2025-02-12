@@ -7,9 +7,8 @@ import { selectPrompts } from '../process-steps/04-select-prompt'
 import { runLLM } from '../process-steps/05-run-llm'
 import { saveAudio } from '../utils/command-utils/save-audio'
 import { err, logInitialFunctionCall } from '../utils/logging'
+
 import type { ProcessingOptions } from '../utils/types/step-types'
-import type { TranscriptServices } from '../utils/types/transcription'
-import type { LLMServices } from '../utils/types/llms'
 
 /**
  * Processes a single video by executing a series of operations:
@@ -30,8 +29,8 @@ import type { LLMServices } from '../utils/types/llms'
 export async function processVideo(
   options: ProcessingOptions,
   url: string,
-  llmServices?: LLMServices,
-  transcriptServices?: TranscriptServices
+  llmServices?: string,
+  transcriptServices?: string
 ) {
   // Log the processing parameters for debugging purposes
   logInitialFunctionCall('processVideo', { url, llmServices, transcriptServices })

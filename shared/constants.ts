@@ -12,6 +12,7 @@ import { exec, execFile } from 'node:child_process'
 import { promisify } from 'node:util'
 
 import type { AssemblyModelType, DeepgramModelType } from '../src/utils/types/transcription'
+import type { LLMServices } from '../src/utils/types/llms'
 
 export const execPromise = promisify(exec)
 export const execFilePromise = promisify(execFile)
@@ -68,19 +69,40 @@ export const WHISPER_MODELS: Array<{ value: string; label: string; }> = [
 ]
 
 /**
+ * Mapping of available LLM providers and their configuration.
+ * A value of `null` indicates an option to skip LLM processing.
+ * 
+ */
+export const LLM_SERVICE_OPTIONS = {
+  SKIP: { name: 'Skip LLM Processing', value: null },
+  OLLAMA: { name: 'Ollama (local inference)', value: 'ollama' },
+  CHATGPT: { name: 'OpenAI ChatGPT', value: 'chatgpt' },
+  CLAUDE: { name: 'Anthropic Claude', value: 'claude' },
+  GEMINI: { name: 'Google Gemini', value: 'gemini' },
+  DEEPSEEK: { name: 'DeepSeek', value: 'deepseek' },
+  FIREWORKS: { name: 'Fireworks AI', value: 'fireworks' },
+  TOGETHER: { name: 'Together AI', value: 'together' },
+} as const
+
+/**
+ * Array of valid LLM service values (excluding the "SKIP" option).
+ * 
+ */
+export const LLM_OPTIONS: LLMServices[] = Object.values(LLM_SERVICE_OPTIONS)
+  .map((service) => service.value)
+  .filter((value): value is LLMServices => value !== null)
+
+/**
  * All user-facing LLM services, unified for both backend and frontend usage.
  */
 export const LLM_SERVICES: Array<{ value: string; label: string }> = [
   { value: 'ollama', label: 'Ollama' },
   { value: 'chatgpt', label: 'ChatGPT' },
   { value: 'claude', label: 'Claude' },
-  { value: 'cohere', label: 'Cohere' },
-  { value: 'mistral', label: 'Mistral' },
   { value: 'deepseek', label: 'Deepseek' },
   { value: 'gemini', label: 'Gemini' },
   { value: 'fireworks', label: 'Fireworks' },
   { value: 'together', label: 'Together AI' },
-  { value: 'groq', label: 'Groq' },
 ]
 
 /**
@@ -110,16 +132,6 @@ export const LLM_MODELS = {
     { value: 'claude-3-sonnet-20240229', label: 'Claude 3 Sonnet' },
     { value: 'claude-3-haiku-20240307', label: 'Claude 3 Haiku' },
   ],
-  cohere: [
-    { value: 'command-r', label: 'Command R' },
-    { value: 'command-r-plus', label: 'Command R Plus' },
-  ],
-  mistral: [
-    { value: 'open-mixtral-8x7b', label: 'Mixtral 8x7b' },
-    { value: 'open-mixtral-8x22b', label: 'Mixtral 8x22b' },
-    { value: 'mistral-large-latest', label: 'Mistral Large' },
-    { value: 'open-mistral-nemo', label: 'Mistral Nemo' },
-  ],
   gemini: [
     { value: 'gemini-1.5-flash', label: 'Gemini 1.5 Flash' },
     { value: 'gemini-1.5-pro-exp-0827', label: 'Gemini 1.5 Pro' },
@@ -142,14 +154,217 @@ export const LLM_MODELS = {
     { value: 'Qwen/Qwen2.5-72B-Instruct-Turbo', label: 'QWEN 2.5 72B' },
     { value: 'Qwen/Qwen2.5-7B-Instruct-Turbo', label: 'QWEN 2.5 7B' },
   ],
-  groq: [
-    { value: 'llama-3.1-70b-versatile', label: 'LLAMA 3.1 70B Versatile' },
-    { value: 'llama-3.1-8b-instant', label: 'LLAMA 3.1 8B Instant' },
-    { value: 'llama-3.2-1b-preview', label: 'LLAMA 3.2 1B Preview' },
-    { value: 'llama-3.2-3b-preview', label: 'LLAMA 3.2 3B Preview' },
-    { value: 'mixtral-8x7b-32768', label: 'Mixtral 8x7b 32768' },
-  ],
 } as const
+
+/**
+ * Configuration for ChatGPT models, mapping model types to their display names and identifiers.
+ * Includes various GPT-4 models with different capabilities and performance characteristics.
+ */
+export const GPT_MODELS = {
+  GPT_4o_MINI: { 
+    name: 'GPT 4 o MINI', 
+    modelId: 'gpt-4o-mini',
+    inputCostPer1M: 0.15,
+    outputCostPer1M: 0.60
+  },
+  GPT_4o: { 
+    name: 'GPT 4 o', 
+    modelId: 'gpt-4o',
+    inputCostPer1M: 2.50,
+    outputCostPer1M: 10.00
+  },
+  GPT_o1_MINI: { 
+    name: 'GPT o1 MINI', 
+    modelId: 'o1-mini',
+    inputCostPer1M: 3.00,
+    outputCostPer1M: 12.00
+  }
+}
+
+/**
+ * Configuration for Claude models, mapping model types to their display names and identifiers.
+ * Includes Anthropic's Claude 3 family of models with varying capabilities and performance profiles.
+ */
+export const CLAUDE_MODELS = {
+  CLAUDE_3_5_SONNET: { 
+    name: 'Claude 3.5 Sonnet', 
+    modelId: 'claude-3-5-sonnet-latest',
+    inputCostPer1M: 3.00,
+    outputCostPer1M: 15.00
+  },
+  CLAUDE_3_5_HAIKU: { 
+    name: 'Claude 3.5 Haiku', 
+    modelId: 'claude-3-5-haiku-latest',
+    inputCostPer1M: 0.80,
+    outputCostPer1M: 4.00
+  },
+  CLAUDE_3_OPUS: { 
+    name: 'Claude 3 Opus', 
+    modelId: 'claude-3-opus-latest',
+    inputCostPer1M: 15.00,
+    outputCostPer1M: 75.00
+  },
+  CLAUDE_3_SONNET: { 
+    name: 'Claude 3 Sonnet', 
+    modelId: 'claude-3-sonnet-20240229',
+    inputCostPer1M: 3.00,
+    outputCostPer1M: 15.00
+  },
+  CLAUDE_3_HAIKU: { 
+    name: 'Claude 3 Haiku', 
+    modelId: 'claude-3-haiku-20240307',
+    inputCostPer1M: 0.25,
+    outputCostPer1M: 1.25
+  },
+}
+
+/**
+ * Configuration for Google Gemini models, mapping model types to their display names and identifiers.
+ * Includes Gemini 1.0 and 1.5 models optimized for different use cases.
+ */
+export const GEMINI_MODELS = {
+  GEMINI_1_5_FLASH_8B: {
+    name: 'Gemini 1.5 Flash-8B',
+    modelId: 'gemini-1.5-flash-8b',
+    inputCostPer1M: 0.075,
+    outputCostPer1M: 0.30
+  },
+  GEMINI_1_5_FLASH: {
+    name: 'Gemini 1.5 Flash',
+    modelId: 'gemini-1.5-flash',
+    inputCostPer1M: 0.15,
+    outputCostPer1M: 0.60
+  },
+  GEMINI_1_5_PRO: {
+    name: 'Gemini 1.5 Pro',
+    modelId: 'gemini-1.5-pro',
+    inputCostPer1M: 2.50,
+    outputCostPer1M: 10.00
+  },
+}
+
+/**
+ * Configuration for Fireworks AI models, mapping model types to their display names and identifiers.
+ * Features various LLaMA and Qwen models optimized for different use cases.
+ */
+export const FIREWORKS_MODELS = {
+  LLAMA_3_1_405B: { 
+    name: 'LLAMA 3 1 405B', 
+    modelId: 'accounts/fireworks/models/llama-v3p1-405b-instruct',
+    inputCostPer1M: 3.00,
+    outputCostPer1M: 3.00
+  },
+  LLAMA_3_1_70B: { 
+    name: 'LLAMA 3 1 70B', 
+    modelId: 'accounts/fireworks/models/llama-v3p1-70b-instruct',
+    inputCostPer1M: 0.90,
+    outputCostPer1M: 0.90
+  },
+  LLAMA_3_1_8B: { 
+    name: 'LLAMA 3 1 8B', 
+    modelId: 'accounts/fireworks/models/llama-v3p1-8b-instruct',
+    inputCostPer1M: 0.20,
+    outputCostPer1M: 0.20
+  },
+  LLAMA_3_2_3B: { 
+    name: 'LLAMA 3 2 3B', 
+    modelId: 'accounts/fireworks/models/llama-v3p2-3b-instruct',
+    inputCostPer1M: 0.10,
+    outputCostPer1M: 0.10
+  },
+  QWEN_2_5_72B: { 
+    name: 'QWEN 2 5 72B', 
+    modelId: 'accounts/fireworks/models/qwen2p5-72b-instruct',
+    inputCostPer1M: 0.90,
+    outputCostPer1M: 0.90
+  },
+}
+
+/**
+ * Configuration for Together AI models, mapping model types to their display names and identifiers.
+ * Includes a diverse range of LLaMA, Gemma, and Qwen models with different parameter counts.
+ */
+export const TOGETHER_MODELS = {
+  LLAMA_3_2_3B: { 
+    name: 'LLAMA 3 2 3B', 
+    modelId: 'meta-llama/Llama-3.2-3B-Instruct-Turbo',
+    inputCostPer1M: 0.06,
+    outputCostPer1M: 0.06
+  },
+  LLAMA_3_1_405B: { 
+    name: 'LLAMA 3 1 405B', 
+    modelId: 'meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo',
+    inputCostPer1M: 3.50,
+    outputCostPer1M: 3.50
+  },
+  LLAMA_3_1_70B: { 
+    name: 'LLAMA 3 1 70B', 
+    modelId: 'meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo',
+    inputCostPer1M: 0.88,
+    outputCostPer1M: 0.88
+  },
+  LLAMA_3_1_8B: { 
+    name: 'LLAMA 3 1 8B', 
+    modelId: 'meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo',
+    inputCostPer1M: 0.18,
+    outputCostPer1M: 0.18
+  },
+  GEMMA_2_27B: { 
+    name: 'Gemma 2 27B', 
+    modelId: 'google/gemma-2-27b-it',
+    inputCostPer1M: 0.80,
+    outputCostPer1M: 0.80
+  },
+  GEMMA_2_9B: { 
+    name: 'Gemma 2 9B', 
+    modelId: 'google/gemma-2-9b-it',
+    inputCostPer1M: 0.30,
+    outputCostPer1M: 0.30
+  },
+  QWEN_2_5_72B: { 
+    name: 'QWEN 2 5 72B', 
+    modelId: 'Qwen/Qwen2.5-72B-Instruct-Turbo',
+    inputCostPer1M: 1.20,
+    outputCostPer1M: 1.20
+  },
+  QWEN_2_5_7B: { 
+    name: 'QWEN 2 5 7B', 
+    modelId: 'Qwen/Qwen2.5-7B-Instruct-Turbo',
+    inputCostPer1M: 0.30,
+    outputCostPer1M: 0.30
+  },
+}
+
+/**
+ * Configuration for DeepSeek models, mapping model types to their display names and identifiers.
+ * Pricing is based on publicly listed rates for DeepSeek. 
+ */
+export const DEEPSEEK_MODELS = {
+  DEEPSEEK_CHAT: {
+    name: 'DeepSeek Chat',
+    modelId: 'deepseek-chat',
+    inputCostPer1M: 0.07,
+    outputCostPer1M: 1.10
+  },
+  DEEPSEEK_REASONER: {
+    name: 'DeepSeek Reasoner',
+    modelId: 'deepseek-reasoner',
+    inputCostPer1M: 0.14,
+    outputCostPer1M: 2.19
+  },
+}
+
+/**
+ * All available model configurations combined
+ */
+export const ALL_MODELS = {
+  ...GPT_MODELS,
+  ...CLAUDE_MODELS,
+  ...GEMINI_MODELS,
+  ...DEEPSEEK_MODELS,
+  ...FIREWORKS_MODELS,
+  ...TOGETHER_MODELS,
+}
 
 /**
  * Deepgram models with their per-minute cost.

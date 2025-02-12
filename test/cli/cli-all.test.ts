@@ -188,88 +188,52 @@ const commands = [
     newName: '37-gemini-shownotes.md'
   },
   {
-    // process file using Cohere for LLM operations
-    cmd: 'npm run as -- --file "content/audio.mp3" --cohere',
-    expectedFile: 'audio-cohere-shownotes.md',
-    newName: '38-cohere-shownotes.md'
-  },
-  {
-    // Process file with Cohere using COMMAND_R model.
-    cmd: 'npm run as -- --file "content/audio.mp3" --cohere COMMAND_R',
-    expectedFile: 'audio-cohere-shownotes.md',
-    newName: '39-cohere-shownotes.md'
-  },
-  {
-    // process file using Mistral for LLM operations
-    cmd: 'npm run as -- --file "content/audio.mp3" --mistral',
-    expectedFile: 'audio-mistral-shownotes.md',
-    newName: '40-mistral-shownotes.md'
-  },
-  {
-    // Process file with Mistral using MINISTRAL_3B model.
-    cmd: 'npm run as -- --file "content/audio.mp3" --mistral MINISTRAL_3B',
-    expectedFile: 'audio-mistral-shownotes.md',
-    newName: '41-mistral-shownotes.md'
-  },
-  {
     // process file using DeepSeek for LLM operations
     cmd: 'npm run as -- --file "content/audio.mp3" --deepseek',
     expectedFile: 'audio-deepseek-shownotes.md',
-    newName: '42-deepsek-shownotes.md'
-  },
-  {
-    // process file using Grok for LLM operations
-    cmd: 'npm run as -- --file "content/audio.mp3" --grok',
-    expectedFile: 'audio-grok-shownotes.md',
-    newName: '43-grok-shownotes.md'
+    newName: '38-deepseek-shownotes.md'
   },
   {
     // process file using Fireworks for LLM operations
     cmd: 'npm run as -- --file "content/audio.mp3" --fireworks',
     expectedFile: 'audio-fireworks-shownotes.md',
-    newName: '44-fireworks-shownotes.md'
+    newName: '39-fireworks-shownotes.md'
   },
   {
     // process file using Together for LLM operations
     cmd: 'npm run as -- --file "content/audio.mp3" --together',
     expectedFile: 'audio-together-shownotes.md',
-    newName: '45-together-shownotes.md'
-  },
-  {
-    // process file using Groq for LLM operations
-    cmd: 'npm run as -- --file "content/audio.mp3" --groq',
-    expectedFile: 'audio-groq-shownotes.md',
-    newName: '46-groq-shownotes.md'
+    newName: '40-together-shownotes.md'
   },
   {
     // process file using Deepgram for transcription
     cmd: 'npm run as -- --file "content/audio.mp3" --deepgram',
     expectedFile: 'audio-prompt.md',
-    newName: '47-deepgram-prompt.md'
+    newName: '41-deepgram-prompt.md'
   },
   {
-    // Process file using Deepgram and Mistral's Ministral 3B model.
-    cmd: 'npm run as -- --file "content/audio.mp3" --deepgram --mistral MINISTRAL_3B',
-    expectedFile: 'audio-mistral-shownotes.md',
-    newName: '48-deepgram-mistral-shownotes.md'
+    // Process file using Deepgram and ChatGPT.
+    cmd: 'npm run as -- --file "content/audio.mp3" --deepgram --chatgpt',
+    expectedFile: 'audio-chatgpt-shownotes.md',
+    newName: '42-deepgram-chatgpt-shownotes.md'
   },
   {
     // process file using AssemblyAI for transcription
     cmd: 'npm run as -- --file "content/audio.mp3" --assembly',
     expectedFile: 'audio-prompt.md',
-    newName: '49-assembly-prompt.md'
+    newName: '43-assembly-prompt.md'
   },
   {
-    // Process file using AssemblyAI and Mistral's Ministral 3B model.
-    cmd: 'npm run as -- --file "content/audio.mp3" --assembly --mistral MINISTRAL_3B',
-    expectedFile: 'audio-mistral-shownotes.md',
-    newName: '50-assembly-mistral-shownotes.md'
+    // Process file using AssemblyAI and ChatGPT.
+    cmd: 'npm run as -- --file "content/audio.mp3" --assembly --chatgpt',
+    expectedFile: 'audio-chatgpt-shownotes.md',
+    newName: '44-assembly-chatgpt-shownotes.md'
   },
   {
     // Process an audio file using AssemblyAI with speaker labels
     cmd: 'npm run as -- --video "https://ajc.pics/audio/fsjam-short.mp3" --assembly --speakerLabels',
     expectedFile: '2024-05-08-fsjam-short-prompt.md',
-    newName: '51-assembly-speaker-labels-prompt.md'
+    newName: '45-assembly-speaker-labels-prompt.md'
   }
 ]
 

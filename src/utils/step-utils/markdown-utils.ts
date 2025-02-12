@@ -49,9 +49,9 @@ export async function saveInfo(
     outputFilePath = `content/${sanitizedTitle}_info.json`
   } else if (type === 'urls') {
     urls = data as string[]
-    const date = new Date().toISOString().split('T')[0]
-    const uniqueId = Date.now()
-    outputFilePath = `content/urls_info_${date}_${uniqueId}.json`
+    // const date = new Date().toISOString().split('T')[0]
+    // const uniqueId = Date.now()
+    outputFilePath = `content/urls_info.json`
     successLogFunction = l.wait
   }
 

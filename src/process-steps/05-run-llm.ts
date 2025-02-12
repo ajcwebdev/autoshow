@@ -1,7 +1,7 @@
 // src/process-steps/05-run-llm.ts
 
 import { writeFile, readFile } from 'node:fs/promises'
-import { insertShowNote } from '../fastify'
+import { insertShowNote } from '../db'
 import { l, err, logInitialFunctionCall } from '../utils/logging'
 import { retryLLMCall } from '../utils/step-utils/retry'
 import { LLM_FUNCTIONS } from '../utils/step-utils/llm-utils'
@@ -60,7 +60,7 @@ export async function runLLM(
 
       await retryLLMCall(
         async () => {
-          const llmOptions = options[llmServices] ?? '';
+          const llmOptions = options[llmServices] ?? ''
           showNotes = await llmFunction(prompt, transcript, llmOptions)
         },
         5,
@@ -142,9 +142,7 @@ function parsePromptFile(fileContent: string) {
 
   for (const line of lines) {
     if (!frontMatterDone && line.trim() === '---') {
-      // Toggle front matter reading on/off
       readingFrontMatter = !readingFrontMatter
-
       frontMatter += `${line}\n`
       if (!readingFrontMatter) {
         frontMatterDone = true
@@ -153,10 +151,7 @@ function parsePromptFile(fileContent: string) {
     }
 
     if (!frontMatterDone && readingFrontMatter) {
-      // Inside front matter
       frontMatter += `${line}\n`
-
-      // Capture known metadata from lines like: key: "value"
       const match = line.match(/^(\w+):\s*"?([^"]+)"?/)
       if (match) {
         const key = match[1]

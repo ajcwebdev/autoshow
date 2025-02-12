@@ -13,9 +13,9 @@ import { argv, exit } from 'node:process'
 import { fileURLToPath } from 'node:url'
 import { Command } from 'commander'
 import { selectPrompts } from './process-steps/04-select-prompt'
-import { processAction, validateInputCLI, validateLLM, validateTranscription } from './utils/validate-cli'
+import { processAction, validateInputCLI, validateLLM, validateTranscription, envVarsMap } from './utils/validate-cli'
 import { l, err, logSeparator } from './utils/logging'
-import { envVarsMap, estimateLLMCost } from './utils/step-utils/llm-utils'
+import { estimateLLMCost } from './utils/step-utils/llm-utils'
 import { estimateTranscriptCost } from './utils/step-utils/transcription-utils'
 import { runLLMFromPromptFile } from './process-steps/05-run-llm'
 
@@ -61,13 +61,9 @@ program
   .option('--chatgpt [model]', 'Use ChatGPT for processing with optional model specification')
   .option('--claude [model]', 'Use Claude for processing with optional model specification')
   .option('--gemini [model]', 'Use Gemini for processing with optional model specification')
-  .option('--cohere [model]', 'Use Cohere for processing with optional model specification')
-  .option('--mistral [model]', 'Use Mistral for processing with optional model specification')
   .option('--deepseek [model]', 'Use DeepSeek for processing with optional model specification')
-  .option('--grok [model]', 'Use Grok for processing with optional model specification')
   .option('--fireworks [model]', 'Use Fireworks AI for processing with optional model specification')
   .option('--together [model]', 'Use Together AI for processing with optional model specification')
-  .option('--groq [model]', 'Use Groq for processing with optional model specification')
   // Utility options
   .option('--prompt <sections...>', 'Specify prompt sections to include')
   .option('--printPrompt <sections...>', 'Print the prompt sections without processing')
@@ -80,13 +76,9 @@ program
   .option('--deepgramApiKey <key>', 'Specify Deepgram API key (overrides .env variable)')
   .option('--assemblyApiKey <key>', 'Specify AssemblyAI API key (overrides .env variable)')
   .option('--geminiApiKey <key>', 'Specify Gemini API key (overrides .env variable)')
-  .option('--cohereApiKey <key>', 'Specify Cohere API key (overrides .env variable)')
-  .option('--mistralApiKey <key>', 'Specify Mistral API key (overrides .env variable)')
   .option('--deepseekApiKey <key>', 'Specify DeepSeek API key (overrides .env variable)')
-  .option('--grokApiKey <key>', 'Specify GROK API key (overrides .env variable)')
   .option('--togetherApiKey <key>', 'Specify Together API key (overrides .env variable)')
   .option('--fireworksApiKey <key>', 'Specify Fireworks API key (overrides .env variable)')
-  .option('--groqApiKey <key>', 'Specify Groq API key (overrides .env variable)')
 
 /**
  * Main action for the program.

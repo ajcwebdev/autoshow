@@ -2,7 +2,7 @@
 
 import { env } from 'node:process'
 import { OpenAI } from 'openai'
-import { GPT_MODELS } from '../utils/step-utils/llm-utils'
+import { GPT_MODELS } from '../../shared/constants'
 import { err } from '../utils/logging'
 import { logLLMCost } from '../utils/step-utils/llm-utils'
 import type { ChatGPTModelType } from '../utils/types/llms'

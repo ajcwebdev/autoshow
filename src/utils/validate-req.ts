@@ -1,7 +1,6 @@
 // src/utils/validate-req.ts
 
-import { LLM_OPTIONS } from './step-utils/llm-utils'
-import { TRANSCRIPTION_SERVICES } from '../../shared/constants'
+import { TRANSCRIPTION_SERVICES, LLM_OPTIONS } from '../../shared/constants'
 import { XMLParser } from 'fast-xml-parser'
 
 import type { TranscriptServices } from './types/transcription'
@@ -18,13 +17,9 @@ export const envVarsServerMap = {
   deepgramApiKey: 'DEEPGRAM_API_KEY',
   assemblyApiKey: 'ASSEMBLY_API_KEY',
   geminiApiKey: 'GEMINI_API_KEY',
-  cohereApiKey: 'COHERE_API_KEY',
-  mistralApiKey: 'MISTRAL_API_KEY',
   deepseekApiKey: 'DEEPSEEK_API_KEY',
-  grokApiKey: 'GROK_API_KEY',
   togetherApiKey: 'TOGETHER_API_KEY',
   fireworksApiKey: 'FIREWORKS_API_KEY',
-  groqApiKey: 'GROQ_API_KEY',
 }
 
 /**

@@ -21,11 +21,8 @@
   - [OpenAI ChatGPT Models](#openai-chatgpt-models)
   - [Anthropic Claude Models](#anthropic-claude-models)
   - [Google Gemini Models](#google-gemini-models)
-  - [Cohere Command Models](#cohere-command-models)
-  - [Mistral Models](#mistral-models)
   - [Fireworks Open Source Models](#fireworks-open-source-models)
   - [Together Open Source Models](#together-open-source-models)
-  - [Groq Open Source Models](#groq-open-source-models)
 - [Prompt Options](#prompt-options)
 - [Test Suite](#test-suite)
 - [Skip Cleanup of Intermediate Files](#skip-cleanup-of-intermediate-files)
@@ -355,11 +352,8 @@ Create a `.env` file and set API key as demonstrated in `.env.example` for eithe
 - `OPENAI_API_KEY`
 - `ANTHROPIC_API_KEY`
 - `GEMINI_API_KEY`
-- `COHERE_API_KEY`
-- `MISTRAL_API_KEY`
 - `TOGETHER_API_KEY`
 - `FIREWORKS_API_KEY`
-- `GROQ_API_KEY`
 
 For each model available for each provider, I have collected the following details:
 
@@ -475,52 +469,6 @@ npm run as -- \
   --geminiApiKey ""
 ```
 
-### Cohere Command Models
-
-```bash
-npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --cohere
-```
-
-Select Cohere model:
-
-```bash
-npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --cohere COMMAND_R
-npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --cohere COMMAND_R_PLUS
-```
-
-Include Cohere API key directly in CLI command instead of in `.env` file:
-
-```bash
-npm run as -- \
-  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
-  --cohere \
-  --cohereApiKey ""
-```
-
-### Mistral Models
-
-```bash
-npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --mistral
-```
-
-Select Mistral model:
-
-```bash
-npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --mistral MIXTRAL_8x7b
-npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --mistral MIXTRAL_8x22b
-npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --mistral MISTRAL_LARGE
-npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --mistral MISTRAL_NEMO
-```
-
-Include Mistral API key directly in CLI command instead of in `.env` file:
-
-```bash
-npm run as -- \
-  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
-  --mistral \
-  --mistralApiKey ""
-```
-
 ### Fireworks Open Source Models
 
 ```bash
@@ -573,31 +521,6 @@ npm run as -- \
   --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
   --together \
   --togetherApiKey ""
-```
-
-### Groq Open Source Models
-
-```bash
-npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --groq
-```
-
-Select Groq model:
-
-```bash
-npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --groq LLAMA_3_1_70B_VERSATILE
-npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --groq LLAMA_3_1_8B_INSTANT
-npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --groq LLAMA_3_2_1B_PREVIEW
-npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --groq LLAMA_3_2_3B_PREVIEW
-npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --groq MIXTRAL_8X7B_32768
-```
-
-Include Groq API key directly in CLI command instead of in `.env` file:
-
-```bash
-npm run as -- \
-  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
-  --groq \
-  --groqApiKey ""
 ```
 
 ## Prompt Options
@@ -707,12 +630,9 @@ Test all available models for a certain LLM service.
 ```bash
 npx tsx --test test/models/chatgpt.test.ts
 npx tsx --test test/models/claude.test.ts
-npx tsx --test test/models/cohere.test.ts
 npx tsx --test test/models/gemini.test.ts
-npx tsx --test test/models/mistral.test.ts
 npx tsx --test test/models/fireworks.test.ts
 npx tsx --test test/models/together.test.ts
-npx tsx --test test/models/groq.test.ts
 ```
 
 Test all available models for a certain transcription service.

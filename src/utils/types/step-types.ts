@@ -76,24 +76,16 @@ export type ProcessingOptions = {
   chatgpt?: string
   /** Claude model to use (e.g., 'CLAUDE_3_SONNET'). */
   claude?: string
-  /** Cohere model to use (e.g., 'COMMAND_R_PLUS'). */
-  cohere?: string
-  /** Mistral model to use (e.g., 'MISTRAL_LARGE'). */
-  mistral?: string
   /** Fireworks model to use (e.g., ''). */
   fireworks?: string
   /** Together model to use (e.g., ''). */
   together?: string
-  /** Groq model to use (e.g., ''). */
-  groq?: string
   /** Ollama model to use for local inference (e.g., 'LLAMA_3_2_1B'). */
   ollama?: string
   /** Gemini model to use (e.g., 'GEMINI_1_5_FLASH'). */
   gemini?: string
   /** DeepSeek model to use (e.g., ''). */
   deepseek?: string
-  /** Grok model to use (e.g., ''). */
-  grok?: string
   /** Array of prompt sections to include (e.g., ['titles', 'summary']). */
   prompt?: string[]
   /** Print selected prompts to the terminal without running any process commands. */
@@ -124,20 +116,12 @@ export type ProcessingOptions = {
   assemblyApiKey?: string
   /** Provide override for Gemini API key. */
   geminiApiKey?: string
-  /** Provide override for Cohere API key. */
-  cohereApiKey?: string
-  /** Provide override for Mistral API key. */
-  mistralApiKey?: string
   /** Provide override for Deepseek API key. */
   deepseekApiKey?: string
-  /** Provide override for GROK API key. */
-  grokApiKey?: string
   /** Provide override for Together API key. */
   togetherApiKey?: string
   /** Provide override for Fireworks API key. */
   fireworksApiKey?: string
-  /** Provide override for Groq API key. */
-  groqApiKey?: string
 }
 
 /**

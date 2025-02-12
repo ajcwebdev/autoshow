@@ -8,8 +8,8 @@ const BASE_URL = 'http://localhost:3000'
 const OUTPUT_DIR = 'content'
 
 const {
-  DEEPGRAM_API_KEY, ASSEMBLY_API_KEY, OPENAI_API_KEY, ANTHROPIC_API_KEY, GEMINI_API_KEY, COHERE_API_KEY, MISTRAL_API_KEY, GROK_API_KEY, DEEPSEEK_API_KEY,
-  // TOGETHER_API_KEY, FIREWORKS_API_KEY, GROQ_API_KEY
+  DEEPGRAM_API_KEY, ASSEMBLY_API_KEY, OPENAI_API_KEY, ANTHROPIC_API_KEY, GEMINI_API_KEY, DEEPSEEK_API_KEY,
+  // TOGETHER_API_KEY, FIREWORKS_API_KEY
 } = process.env
 
 const requests = [
@@ -135,63 +135,11 @@ const requests = [
     data: {
       type: 'video',
       url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
-      llm: 'cohere',
-      cohereApiKey: COHERE_API_KEY,
-    },
-    endpoint: '/api/process',
-    outputFiles: ['FILE_13.md'],
-  },
-  {
-    data: {
-      type: 'video',
-      url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
-      llm: 'cohere',
-      llmModel: 'COMMAND_R_PLUS',
-      cohereApiKey: COHERE_API_KEY,
-    },
-    endpoint: '/api/process',
-    outputFiles: ['FILE_14.md'],
-  },
-  {
-    data: {
-      type: 'video',
-      url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
-      llm: 'mistral',
-      mistralApiKey: MISTRAL_API_KEY,
-    },
-    endpoint: '/api/process',
-    outputFiles: ['FILE_15.md'],
-  },
-  {
-    data: {
-      type: 'video',
-      url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
-      llm: 'mistral',
-      llmModel: 'MIXTRAL_8x7b',
-      mistralApiKey: MISTRAL_API_KEY,
-    },
-    endpoint: '/api/process',
-    outputFiles: ['FILE_16.md'],
-  },
-  {
-    data: {
-      type: 'video',
-      url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
       llm: 'deepseek',
       deepseekApiKey: DEEPSEEK_API_KEY,
     },
     endpoint: '/api/process',
     outputFiles: ['FILE_17.md'],
-  },
-  {
-    data: {
-      type: 'video',
-      url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
-      llm: 'grok',
-      grokApiKey: GROK_API_KEY,
-    },
-    endpoint: '/api/process',
-    outputFiles: ['FILE_18.md'],
   },
   {
     data: {

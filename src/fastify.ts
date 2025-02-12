@@ -1,64 +1,17 @@
 // src/fastify.ts
 
-import { DatabaseSync } from 'node:sqlite'
 import { env } from 'node:process'
 import Fastify from 'fastify'
 import cors from '@fastify/cors'
+import { db } from './db'
 import { processVideo } from './process-commands/video'
 import { processFile } from './process-commands/file'
 import { l, err } from './utils/logging'
-import { envVarsServerMap } from './utils/step-utils/llm-utils'
-import { validateRequest, validateServerProcessAction } from './utils/validate-req'
-
-import type { ShowNote } from './utils/types/step-types'
+import { validateRequest, validateServerProcessAction, envVarsServerMap } from './utils/validate-req'
 import type { FastifyRequest, FastifyReply } from 'fastify'
 
 // Set server port from environment variable or default to 3000
 const port = Number(env['PORT']) || 3000
-
-// Initialize the database connection
-export const db = new DatabaseSync('show_notes.db', { open: true })
-
-// Create the show_notes table if it doesn't exist
-db.exec(`
-  CREATE TABLE IF NOT EXISTS show_notes (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    showLink TEXT,
-    channel TEXT,
-    channelURL TEXT,
-    title TEXT NOT NULL,
-    description TEXT,
-    publishDate TEXT NOT NULL,
-    coverImage TEXT,
-    frontmatter TEXT,
-    prompt TEXT,
-    transcript TEXT,
-    llmOutput TEXT
-  )
-`)
-
-/**
- * Insert new show note row into database.
- * @param {ShowNote} showNote - The show note data to insert
- */
-export function insertShowNote(showNote: ShowNote): void {
-  l.dim('\n  Inserting show note into the database...')
-
-  const {
-    showLink, channel, channelURL, title, description, publishDate, coverImage, frontmatter, prompt, transcript, llmOutput
-  } = showNote
-  
-  db.prepare(`
-    INSERT INTO show_notes (
-      showLink, channel, channelURL, title, description, publishDate, coverImage, frontmatter, prompt, transcript, llmOutput
-    )
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `).run(
-    showLink, channel, channelURL, title, description, publishDate, coverImage, frontmatter, prompt, transcript, llmOutput
-  )
-  
-  l.dim('    - Show note inserted successfully.\n')
-}
 
 /**
  * Handler for the /process route.
@@ -72,7 +25,7 @@ export function insertShowNote(showNote: ShowNote): void {
 export const handleProcessRequest = async (
   request: FastifyRequest,
   reply: FastifyReply
-): Promise<void> => {
+) => {
   l('\nEntered handleProcessRequest')
 
   try {
@@ -193,9 +146,9 @@ async function start() {
     }
   })
 
-  fastify.post('/api/process', handleProcessRequest)   // POST endpoint for processing
-  fastify.get('/show-notes', getShowNotes)         // GET endpoint for all show notes
-  fastify.get('/show-notes/:id', getShowNote)      // GET endpoint for specific show note
+  fastify.post('/api/process', handleProcessRequest)
+  fastify.get('/show-notes', getShowNotes)
+  fastify.get('/show-notes/:id', getShowNote)
 
   try {
     await fastify.listen({ port, host: '0.0.0.0' })

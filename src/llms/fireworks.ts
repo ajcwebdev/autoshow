@@ -1,7 +1,7 @@
 // src/llms/fireworks.ts
 
 import { env } from 'node:process'
-import { FIREWORKS_MODELS } from '../utils/step-utils/llm-utils'
+import { FIREWORKS_MODELS } from '../../shared/constants'
 import { err } from '../utils/logging'
 import { logLLMCost } from '../utils/step-utils/llm-utils'
 import type { FireworksModelType } from '../utils/types/llms'

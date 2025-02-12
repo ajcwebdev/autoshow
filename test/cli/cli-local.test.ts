@@ -9,7 +9,7 @@ import { join } from 'node:path'
 const commands = [
   {
     // Process single local audio file.
-    cmd: 'npm run as -- --file "content/audio.mp3" --whisper base',
+    cmd: 'npm run as -- --file "content/audio.mp3"',
     expectedFile: 'audio-prompt.md',
     newName: '01-file-default.md'
   },
@@ -35,11 +35,11 @@ const commands = [
     // Process local audio file with multiple prompt sections, Whisper 'tiny' model, and Ollama.
     cmd: 'npm run as -- --file "content/audio.mp3" --prompt titles summary --whisper tiny --ollama',
     expectedFile: 'audio-ollama-shownotes.md',
-    newName: '05-file-all-prompts-ollama-shownotes.md'
+    newName: '05-file-prompts-ollama-shownotes.md'
   },
   {
     // Process single YouTube video using Autoshow's default settings.
-    cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --whisper tiny',
+    cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk"',
     expectedFile: '2024-09-24-ep0-fsjam-podcast-prompt.md',
     newName: '06-video-default.md'
   },
@@ -53,7 +53,7 @@ const commands = [
   },
   {
     // Process multiple YouTube videos from URLs listed in a file.
-    cmd: 'npm run as -- --urls "content/example-urls.md" --whisper tiny',
+    cmd: 'npm run as -- --urls "content/example-urls.md"',
     expectedFiles: [
       { file: '2024-09-24-ep1-fsjam-podcast-prompt.md', newName: '09-urls-default.md' },
       { file: '2024-09-24-ep0-fsjam-podcast-prompt.md', newName: '10-urls-default.md' }
@@ -67,17 +67,17 @@ const commands = [
       { file: '2024-09-24-ep0-fsjam-podcast-prompt.md', newName: '12-urls-whisper-tiny.md' }
     ]
   },
-  // {
-  //   // Download JSON file with metadata for each video in the URLs file.
-  //   cmd: 'npm run as -- --urls "content/example-urls.md" --info',
-  //   expectedFile: '',
-  //   newName: '13-',
-  // },
   {
     // Download JSON file with metadata for each item in the RSS feed.
-    cmd: 'npm run as -- --rss "https://ajcwebdev.substack.com/feed" --whisper tiny',
+    cmd: 'npm run as -- --rss "https://ajcwebdev.substack.com/feed"',
     expectedFile: '2021-05-10-thoughts-on-lambda-school-layoffs-prompt.md',
-    newName: '14-rss-default.md',
+    newName: '13-rss-default.md',
+  },
+  {
+    // Download JSON file with metadata for each video in the URLs file.
+    cmd: 'npm run as -- --urls "content/example-urls.md" --info',
+    expectedFile: 'urls_info.json',
+    newName: '14-urls-info.json',
   },
   {
     // Download JSON file with metadata for each item in the RSS feed.

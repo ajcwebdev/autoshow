@@ -52,40 +52,10 @@ const commands = [
     newName: '08-gemini-1-5-flash-shownotes.md'
   },
   {
-    // process video using Cohere for LLM operations
-    cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --cohere',
-    expectedFile: '2024-09-24-ep0-fsjam-podcast-cohere-shownotes.md',
-    newName: '09-cohere-default-shownotes.md'
-  },
-  {
-    // Process video with Cohere using COMMAND_R_PLUS model.
-    cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --cohere COMMAND_R_PLUS',
-    expectedFile: '2024-09-24-ep0-fsjam-podcast-cohere-shownotes.md',
-    newName: '10-cohere-command-r-plus-shownotes.md'
-  },
-  {
-    // process video using Mistral for LLM operations
-    cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --mistral',
-    expectedFile: '2024-09-24-ep0-fsjam-podcast-mistral-shownotes.md',
-    newName: '11-mistral-shownotes.md'
-  },
-  {
-    // Process video with Mistral using MIXTRAL_8x7b model.
-    cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --mistral MIXTRAL_8x7b',
-    expectedFile: '2024-09-24-ep0-fsjam-podcast-mistral-shownotes.md',
-    newName: '12-mistral-shownotes.md'
-  },
-  {
     // process video using DeepSeek for LLM operations
     cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --deepseek',
     expectedFile: '2024-09-24-ep0-fsjam-podcast-deepseek-shownotes.md',
     newName: '13-deepseek-shownotes.md'
-  },
-  {
-    // process video using Grok for LLM operations
-    cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --grok',
-    expectedFile: '2024-09-24-ep0-fsjam-podcast-grok-shownotes.md',
-    newName: '13-grok-shownotes.md'
   },
   {
     // process video using Fireworks for LLM operations
@@ -98,12 +68,6 @@ const commands = [
     cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --together',
     expectedFile: '2024-09-24-ep0-fsjam-podcast-together-shownotes.md',
     newName: '15-together-shownotes.md'
-  },
-  {
-    // process video using BLANK for LLM operations
-    cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --groq',
-    expectedFile: '2024-09-24-ep0-fsjam-podcast-groq-shownotes.md',
-    newName: '16-groq-shownotes.md'
   },
   {
     // process video using Deepgram for transcription

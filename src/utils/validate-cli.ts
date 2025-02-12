@@ -10,7 +10,7 @@ import { processChannel } from '../process-commands/channel'
 import { processURLs } from '../process-commands/urls'
 import { processFile } from '../process-commands/file'
 import { processRSS } from '../process-commands/rss'
-import { LLM_OPTIONS } from './step-utils/llm-utils'
+import { LLM_OPTIONS } from '../../shared/constants'
 import { validateRSSAction } from './command-utils/rss-utils'
 
 import type { TranscriptServices } from './types/transcription'
@@ -19,6 +19,17 @@ import type { ProcessingOptions, ValidAction, HandlerFunction } from './types/st
 
 export const execPromise = promisify(exec)
 export const execFilePromise = promisify(execFile)
+
+export const envVarsMap = {
+  openaiApiKey: 'OPENAI_API_KEY',
+  anthropicApiKey: 'ANTHROPIC_API_KEY',
+  deepgramApiKey: 'DEEPGRAM_API_KEY',
+  assemblyApiKey: 'ASSEMBLY_API_KEY',
+  geminiApiKey: 'GEMINI_API_KEY',
+  deepseekApiKey: 'DEEPSEEK_API_KEY',
+  togetherApiKey: 'TOGETHER_API_KEY',
+  fireworksApiKey: 'FIREWORKS_API_KEY',
+}
 
 /**
  * Maps action names to their corresponding handler function.

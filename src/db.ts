@@ -1,21 +1,37 @@
-// src/server/db.ts
+// src/db.ts
 
 /**
- * Database and ShowNote utilities for Autoshow.
- * Initializes a SQLite database and provides helper functions
- * for inserting and retrieving show note data.
+ * Contains the database initialization and show note insertion logic.
  *
- * @packageDocumentation
+ * @module db
  */
 
-import { DatabaseSync } from 'node:sqlite'
-import type { ShowNote } from './utils/types/step-types'
+import Database from 'better-sqlite3'
+import { l } from './utils/logging'
+
+import type { Database as DatabaseType } from 'better-sqlite3'
 
 /**
- * Initialize the database connection.
- * Creates the show_notes table if it doesn't exist.
+ * Represents a single show note record in the database
  */
-export const db = new DatabaseSync('show_notes.db', { open: true })
+export type ShowNote = {
+  showLink: string
+  channel: string
+  channelURL: string
+  title: string
+  description: string
+  publishDate: string
+  coverImage: string
+  frontmatter: string
+  prompt: string
+  transcript: string
+  llmOutput: string
+}
+
+/**
+ * A better-sqlite3 Database instance used to store show notes
+ */
+export const db: DatabaseType = new Database('show_notes.db')
 
 db.exec(`
   CREATE TABLE IF NOT EXISTS show_notes (
@@ -35,22 +51,23 @@ db.exec(`
 `)
 
 /**
- * Insert new show note row into database.
+ * Inserts a new show note row into the show_notes table
+ *
  * @param {ShowNote} showNote - The show note data to insert
  */
-export function insertShowNote(showNote: ShowNote): void {
+export function insertShowNote(showNote: ShowNote) {
+  l.dim('\n  Inserting show note into the database...')
+
   const {
     showLink, channel, channelURL, title, description, publishDate, coverImage, frontmatter, prompt, transcript, llmOutput
   } = showNote
 
-  const insert = db.prepare(`
+  db.prepare(`
     INSERT INTO show_notes (
       showLink, channel, channelURL, title, description, publishDate, coverImage, frontmatter, prompt, transcript, llmOutput
     )
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `)
-
-  insert.run(
+  `).run(
     showLink,
     channel,
     channelURL,
@@ -63,4 +80,6 @@ export function insertShowNote(showNote: ShowNote): void {
     transcript,
     llmOutput
   )
+
+  l.dim('    - Show note inserted successfully.\n')
 }

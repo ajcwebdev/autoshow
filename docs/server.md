@@ -176,44 +176,6 @@ curl --json '{
 }' http://localhost:3000/api/process
 ```
 
-### Cohere
-
-```bash
-curl --json '{
-  "type": "video",
-  "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
-  "llm": "cohere"
-}' http://localhost:3000/api/process
-```
-
-```bash
-curl --json '{
-  "type": "video",
-  "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
-  "llm": "cohere",
-  "llmModel": "COMMAND_R_PLUS"
-}' http://localhost:3000/api/process
-```
-
-### Mistral
-
-```bash
-curl --json '{
-  "type": "video",
-  "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
-  "llm": "mistral"
-}' http://localhost:3000/api/process
-```
-
-```bash
-curl --json '{
-  "type": "video",
-  "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
-  "llm": "mistral",
-  "llmModel": "MIXTRAL_8x7b"
-}' http://localhost:3000/api/process
-```
-
 ## Transcription Options
 
 ### Whisper.cpp
@@ -371,28 +333,6 @@ const TEST_REQ_25 = {
   "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "llm": "gemini",
   "llmModel": "GEMINI_1_5_FLASH"
-}
-
-const TEST_REQ_26 = {
-  "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
-  "llm": "cohere"
-}
-
-const TEST_REQ_27 = {
-  "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
-  "llm": "cohere",
-  "llmModel": "COMMAND_R_PLUS"
-}
-
-const TEST_REQ_28 = {
-  "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
-  "llm": "mistral"
-}
-
-const TEST_REQ_29 = {
-  "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
-  "llm": "mistral",
-  "llmModel": "MIXTRAL_8x7b"
 }
 
 const TEST_REQ_32 = {

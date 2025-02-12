@@ -127,7 +127,7 @@ const requests = [
     data: {
       type: 'video',
       url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
-      llm: 'cohere',
+      llm: 'deepseek',
     },
     endpoint: '/api/process',
     outputFiles: ['FILE_13.md'],
@@ -136,8 +136,7 @@ const requests = [
     data: {
       type: 'video',
       url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
-      llm: 'cohere',
-      llmModel: 'COMMAND_R_PLUS',
+      whisperModel: 'tiny',
     },
     endpoint: '/api/process',
     outputFiles: ['FILE_14.md'],
@@ -146,7 +145,7 @@ const requests = [
     data: {
       type: 'video',
       url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
-      llm: 'mistral',
+      transcriptServices: 'deepgram',
     },
     endpoint: '/api/process',
     outputFiles: ['FILE_15.md'],
@@ -155,8 +154,8 @@ const requests = [
     data: {
       type: 'video',
       url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
-      llm: 'mistral',
-      llmModel: 'MIXTRAL_8x7b',
+      transcriptServices: 'deepgram',
+      llm: 'ollama',
     },
     endpoint: '/api/process',
     outputFiles: ['FILE_16.md'],
@@ -165,7 +164,7 @@ const requests = [
     data: {
       type: 'video',
       url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
-      llm: 'deepseek',
+      transcriptServices: 'assembly',
     },
     endpoint: '/api/process',
     outputFiles: ['FILE_17.md'],
@@ -174,7 +173,8 @@ const requests = [
     data: {
       type: 'video',
       url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
-      llm: 'grok',
+      transcriptServices: 'assembly',
+      llm: 'ollama',
     },
     endpoint: '/api/process',
     outputFiles: ['FILE_18.md'],
@@ -182,8 +182,9 @@ const requests = [
   {
     data: {
       type: 'video',
-      url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
-      whisperModel: 'tiny',
+      url: 'https://ajc.pics/audio/fsjam-short.mp3',
+      transcriptServices: 'assembly',
+      speakerLabels: true,
     },
     endpoint: '/api/process',
     outputFiles: ['FILE_19.md'],
@@ -191,8 +192,10 @@ const requests = [
   {
     data: {
       type: 'video',
-      url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
-      transcriptServices: 'deepgram',
+      url: 'https://ajc.pics/audio/fsjam-short.mp3',
+      transcriptServices: 'assembly',
+      speakerLabels: true,
+      llm: 'ollama',
     },
     endpoint: '/api/process',
     outputFiles: ['FILE_20.md'],
@@ -201,8 +204,7 @@ const requests = [
     data: {
       type: 'video',
       url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
-      transcriptServices: 'deepgram',
-      llm: 'ollama',
+      prompts: ['titles', 'mediumChapters'],
     },
     endpoint: '/api/process',
     outputFiles: ['FILE_21.md'],
@@ -211,59 +213,10 @@ const requests = [
     data: {
       type: 'video',
       url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
-      transcriptServices: 'assembly',
-    },
-    endpoint: '/api/process',
-    outputFiles: ['FILE_22.md'],
-  },
-  {
-    data: {
-      type: 'video',
-      url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
-      transcriptServices: 'assembly',
-      llm: 'ollama',
-    },
-    endpoint: '/api/process',
-    outputFiles: ['FILE_23.md'],
-  },
-  {
-    data: {
-      type: 'video',
-      url: 'https://ajc.pics/audio/fsjam-short.mp3',
-      transcriptServices: 'assembly',
-      speakerLabels: true,
-    },
-    endpoint: '/api/process',
-    outputFiles: ['FILE_24.md'],
-  },
-  {
-    data: {
-      type: 'video',
-      url: 'https://ajc.pics/audio/fsjam-short.mp3',
-      transcriptServices: 'assembly',
-      speakerLabels: true,
-      llm: 'ollama',
-    },
-    endpoint: '/api/process',
-    outputFiles: ['FILE_25.md'],
-  },
-  {
-    data: {
-      type: 'video',
-      url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
-      prompts: ['titles', 'mediumChapters'],
-    },
-    endpoint: '/api/process',
-    outputFiles: ['FILE_26.md'],
-  },
-  {
-    data: {
-      type: 'video',
-      url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
       prompts: ['titles', 'summary', 'shortChapters', 'takeaways', 'questions'],
     },
     endpoint: '/api/process',
-    outputFiles: ['FILE_27.md'],
+    outputFiles: ['FILE_22.md'],
   },
   {
     data: {
@@ -274,7 +227,7 @@ const requests = [
       llm: 'ollama',
     },
     endpoint: '/api/process',
-    outputFiles: ['FILE_28.md'],
+    outputFiles: ['FILE_23.md'],
   },
 ]
 

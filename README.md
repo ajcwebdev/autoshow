@@ -28,7 +28,7 @@ The Autoshow workflow includes the following steps:
 
 - Support for multiple input types (YouTube links, RSS feeds, local video and audio files)
 - Integration with various:
-  - LLMs (ChatGPT, Claude, Gemini, Cohere, Mistral, Fireworks, Together, Groq)
+  - LLMs (ChatGPT, Claude, Gemini, Deepseek, Fireworks, Together)
   - Transcription services (Whisper.cpp, Deepgram, Assembly)
 - Local LLM support with Ollama
 - Customizable prompts for generating titles, summaries, chapter titles/descriptions, key takeaways, and questions to test comprehension
@@ -88,11 +88,8 @@ Use 3rd party LLM providers.
 npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --chatgpt GPT_4o_MINI
 npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --claude CLAUDE_3_5_SONNET
 npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --gemini GEMINI_1_5_PRO
-npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --cohere COMMAND_R_PLUS
-npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --mistral MISTRAL_LARGE
 npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --fireworks
 npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --together
-npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --groq
 ```
 
 Example commands for all available CLI options can be found in [`docs/examples.md`](/docs/examples.md).
@@ -127,11 +124,8 @@ Example commands for all available CLI options can be found in [`docs/examples.m
   - `chatgpt.ts`: Integrates OpenAI's GPT models
   - `claude.ts`: Integrates Anthropic's Claude models
   - `gemini.ts`: Integrates Google's Gemini models
-  - `cohere.ts`: Integrates Cohere's language models
-  - `mistral.ts`: Integrates Mistral AI's language models
   - `fireworks.ts`: Integrates Fireworks's open source models
   - `together.ts`: Integrates Together's open source models
-  - `groq.ts`: Integrates Groq's open source models
 
 - Utility Files (`src/utils`)
   - `logging.ts`: Reusable Chalk functions for logging colors

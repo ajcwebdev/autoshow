@@ -1,4 +1,4 @@
-// src/utils/validate-option.ts
+// src/utils/validate-req.ts
 
 import { LLM_OPTIONS } from './step-utils/llm-utils'
 import { TRANSCRIPTION_SERVICES } from '../../shared/constants'

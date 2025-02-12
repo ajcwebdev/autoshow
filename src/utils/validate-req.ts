@@ -9,6 +9,25 @@ import type { LLMServices } from './types/llms'
 import type { ProcessingOptions, ValidAction } from './types/step-types'
 
 /**
+ * Maps server-side request body keys to corresponding environment variables.
+ * 
+ */
+export const envVarsServerMap = {
+  openaiApiKey: 'OPENAI_API_KEY',
+  anthropicApiKey: 'ANTHROPIC_API_KEY',
+  deepgramApiKey: 'DEEPGRAM_API_KEY',
+  assemblyApiKey: 'ASSEMBLY_API_KEY',
+  geminiApiKey: 'GEMINI_API_KEY',
+  cohereApiKey: 'COHERE_API_KEY',
+  mistralApiKey: 'MISTRAL_API_KEY',
+  deepseekApiKey: 'DEEPSEEK_API_KEY',
+  grokApiKey: 'GROK_API_KEY',
+  togetherApiKey: 'TOGETHER_API_KEY',
+  fireworksApiKey: 'FIREWORKS_API_KEY',
+  groqApiKey: 'GROQ_API_KEY',
+}
+
+/**
  * Validates the process type from the request body to ensure that it is a recognized
  * process type supported by the application. Throws an error if the type is invalid.
  *

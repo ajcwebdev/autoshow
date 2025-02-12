@@ -1,7 +1,7 @@
 // src/process-steps/05-run-llm.ts
 
 import { writeFile, readFile } from 'node:fs/promises'
-import { insertShowNote } from '../db'
+import { insertShowNote } from '../fastify'
 import { l, err, logInitialFunctionCall } from '../utils/logging'
 import { retryLLMCall } from '../utils/step-utils/retry'
 import { LLM_FUNCTIONS } from '../utils/step-utils/llm-utils'

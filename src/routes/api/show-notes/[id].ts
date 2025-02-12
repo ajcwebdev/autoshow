@@ -11,7 +11,7 @@
 'use server'
 
 import type { APIEvent } from '@solidjs/start/server'
-import { db } from '../../../db'
+import { db } from '../../../fastify'
 
 export async function GET(event: APIEvent): Promise<Response> {
   try {

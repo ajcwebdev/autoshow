@@ -15,8 +15,7 @@ import type { APIEvent } from '@solidjs/start/server'
 import { processVideo } from '../../process-commands/video'
 import { processFile } from '../../process-commands/file'
 import { l, err } from '../../utils/logging'
-import { envVarsServerMap } from '../../utils/step-utils/llm-utils'
-import { validateRequest, validateServerProcessAction } from '../../utils/validate-req'
+import { validateRequest, validateServerProcessAction, envVarsServerMap } from '../../utils/validate-req'
 import { json } from '@solidjs/router'
 
 export async function POST(event: APIEvent) {

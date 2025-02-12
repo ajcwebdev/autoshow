@@ -197,10 +197,6 @@ export async function estimateLLMCost(
   }
 }
 
-/* ------------------------------------------------------------------
- * LLM Services & Model Configurations
- * ------------------------------------------------------------------ */
-
 /**
  * Mapping of available LLM providers and their configuration.
  * A value of `null` indicates an option to skip LLM processing.

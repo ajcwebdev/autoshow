@@ -8,7 +8,7 @@ import { processVideo } from './process-commands/video'
 import { processFile } from './process-commands/file'
 import { l, err } from './utils/logging'
 import { envVarsServerMap } from './utils/step-utils/llm-utils'
-import { validateRequest, validateServerProcessAction } from './utils/validate-option'
+import { validateRequest, validateServerProcessAction } from './utils/validate-req'
 
 import type { ShowNote } from './utils/types/step-types'
 import type { FastifyRequest, FastifyReply } from 'fastify'

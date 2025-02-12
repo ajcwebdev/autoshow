@@ -1,7 +1,8 @@
 // src/process-commands/channel.ts
 
 import { processVideo } from './video'
-import { saveInfo, execFilePromise } from '../utils/validate-option'
+import { execFilePromise } from '../../shared/constants'
+import { saveInfo } from '../utils/step-utils/markdown-utils'
 import { l, err, logSeparator, logInitialFunctionCall } from '../utils/logging'
 import { validateChannelOptions, logChannelProcessingStatus } from '../utils/command-utils/channel-utils'
 

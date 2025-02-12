@@ -8,20 +8,14 @@
       "dom.iterable"
     ],
     "paths": {
-      "@/assets/*": [
-        "src/assets/*"
-      ],
       "@/components/*": [
         "src/components/*"
-      ],
-      "@/data/*": [
-        "src/data/*"
       ],
       "@/layouts/*": [
         "src/layouts/*"
       ],
-      "@/utils": [
-        "src/utils/index.ts"
+      "@/styles": [
+        "src/styles/global.css"
       ],
       "@/types": [
         "src/types.ts"

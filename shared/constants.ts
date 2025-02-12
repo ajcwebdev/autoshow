@@ -8,14 +8,13 @@
  *
  */
 
-import { exec, execFile } from 'node:child_process'
-import { promisify } from 'node:util'
-
 import type { AssemblyModelType, DeepgramModelType } from '../src/utils/types/transcription'
 import type { LLMServices } from '../src/utils/types/llms'
 
-export const execPromise = promisify(exec)
-export const execFilePromise = promisify(execFile)
+export const PROCESS_TYPES = [
+  { value: 'video', label: 'Video' },
+  { value: 'file', label: 'File' },
+] as const
 
 /**
  * All user-facing prompt choices, unified for both backend and frontend usage.

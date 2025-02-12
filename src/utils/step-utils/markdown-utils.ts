@@ -1,7 +1,7 @@
 // src/utils/step-utils/markdown-utils.ts
 
 import { writeFile } from 'node:fs/promises'
-import { execFilePromise } from '../../../shared/constants'
+import { execFilePromise } from '../../utils/validate-cli'
 import { l, err } from '../logging'
 
 import type { VideoMetadata, VideoInfo, RSSItem } from '../types/step-types'

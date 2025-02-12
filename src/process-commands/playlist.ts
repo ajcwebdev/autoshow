@@ -1,7 +1,7 @@
 // src/process-commands/playlist.ts
 
 import { processVideo } from './video'
-import { execFilePromise } from '../../shared/constants'
+import { execFilePromise } from '../utils/validate-cli'
 import { saveInfo } from '../utils/step-utils/markdown-utils'
 import { l, err, logSeparator, logInitialFunctionCall } from '../utils/logging'
 import type { ProcessingOptions, PlaylistData } from '../utils/types/step-types'

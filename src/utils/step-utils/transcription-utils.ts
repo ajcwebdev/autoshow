@@ -2,7 +2,8 @@
 
 import { existsSync } from 'node:fs'
 import { l, err } from '../logging'
-import { DEEPGRAM_MODELS, ASSEMBLY_MODELS, execPromise } from '../../../shared/constants'
+import { DEEPGRAM_MODELS, ASSEMBLY_MODELS } from '../../../shared/constants'
+import { execPromise } from '../../utils/validate-cli'
 
 import type { ProcessingOptions } from '../types/step-types'
 import type { TranscriptServices, TranscriptionCostInfo, DeepgramModelType, AssemblyModelType, WhisperOutput } from '../types/transcription'

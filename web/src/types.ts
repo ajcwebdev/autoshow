@@ -1,6 +1,6 @@
 // web/src/types.ts
 
-import { LLM_MODELS } from '@/site-config'
+import { LLM_MODELS } from '../../shared/constants'
 
 export interface SiteConfig {
 	author: string;

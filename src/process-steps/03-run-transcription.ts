@@ -5,8 +5,8 @@ import { callDeepgram } from '../transcription/deepgram'
 import { callAssembly } from '../transcription/assembly'
 import { l, err, logInitialFunctionCall } from '../utils/logging'
 import { retryTranscriptionCall } from '../utils/step-utils/retry'
+
 import type { ProcessingOptions } from '../utils/types/step-types'
-import type { TranscriptServices } from '../utils/types/transcription'
 
 /**
  * Orchestrates the transcription process using the specified service.
@@ -15,13 +15,13 @@ import type { TranscriptServices } from '../utils/types/transcription'
  * 
  * @param {ProcessingOptions} options - Configuration options
  * @param {string} finalPath - Base path for input/output files
- * @param {TranscriptServices} [transcriptServices] - The transcription service to use
+ * @param {string} [transcriptServices] - The transcription service to use
  * @returns {Promise<string>} The complete transcript
  */
 export async function runTranscription(
   options: ProcessingOptions,
   finalPath: string,
-  transcriptServices?: TranscriptServices
+  transcriptServices?: string
 ) {
   l.step(`\nStep 3 - Run Transcription\n`)
   logInitialFunctionCall('runTranscription', { options, finalPath, transcriptServices })

@@ -4,8 +4,9 @@ import { readFile, access } from 'node:fs/promises'
 import { fileTypeFromBuffer } from 'file-type'
 import { l, err, logInitialFunctionCall } from '../utils/logging'
 import { executeWithRetry } from '../utils/step-utils/retry'
-import { execPromise } from '../../shared/constants'
-import type { SupportedFileType, ProcessingOptions } from '../utils/types/step-types'
+import { execPromise } from '../utils/validate-cli'
+
+import type { ProcessingOptions } from '../utils/types/step-types'
 
 /**
  * Downloads or processes audio content from various sources and converts it to a standardized WAV format.
@@ -98,7 +99,7 @@ export async function downloadAudio(
       throw error
     }
   } else if (options.file) {
-    const supportedFormats: Set<SupportedFileType> = new Set([
+    const supportedFormats = new Set([
       'wav', 'mp3', 'm4a', 'aac', 'ogg', 'flac',
       'mp4', 'mkv', 'avi', 'mov', 'webm',
     ])
@@ -112,7 +113,7 @@ export async function downloadAudio(
       const fileType = await fileTypeFromBuffer(buffer)
       l.dim(`    - File type detection result: ${fileType?.ext ?? 'unknown'}`)
 
-      if (!fileType || !supportedFormats.has(fileType.ext as SupportedFileType)) {
+      if (!fileType || !supportedFormats.has(fileType.ext)) {
         throw new Error(
           fileType ? `Unsupported file type: ${fileType.ext}` : 'Unable to determine file type'
         )

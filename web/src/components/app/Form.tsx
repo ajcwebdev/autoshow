@@ -1,14 +1,14 @@
 // web/src/components/app/Form.tsx
 
-import '../../styles/global.css'
 import React, { useState } from 'react'
+import { ProcessType } from '@/components/app/groups/ProcessType'
+import { TranscriptionService } from '@/components/app/groups/TranscriptionService'
+import { LLMService } from '@/components/app/groups/LLMService'
+import { Prompts } from '@/components/app/groups/Prompts'
+
 import type {
   AlertProps, ResultType, FormProps, ProcessTypeEnum
-} from '../../types.ts'
-import { ProcessType } from './groups/ProcessType.tsx'
-import { TranscriptionService } from './groups/TranscriptionService.tsx'
-import { LLMService } from './groups/LLMService.tsx'
-import { Prompts } from './groups/Prompts.tsx'
+} from "@/types"
 
 /**
  * Displays a styled alert message based on a variant type.

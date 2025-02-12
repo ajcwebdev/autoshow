@@ -24,13 +24,12 @@ export const callTogether = async (
   }
 
   try {
-    const modelKey = typeof model === 'string' ? model : 'LLAMA_3_2_3B'
-    const modelConfig = TOGETHER_MODELS[modelKey as TogetherModelType] || TOGETHER_MODELS.LLAMA_3_2_3B
-    const modelId = modelConfig.modelId
-
+    const actualModel = (TOGETHER_MODELS[model as TogetherModelType] || TOGETHER_MODELS.LLAMA_3_2_3B).modelId
     const combinedPrompt = `${prompt}\n${transcript}`
+
     const requestBody = {
-      model: modelId,
+      model: actualModel,
+      max_tokens: 4000,
       messages: [
         {
           role: 'user',
@@ -61,7 +60,7 @@ export const callTogether = async (
     }
 
     logLLMCost({
-      modelName: modelKey,
+      modelName: actualModel,
       stopReason: data.choices[0]?.finish_reason ?? 'unknown',
       tokenUsage: {
         input: data.usage.prompt_tokens,

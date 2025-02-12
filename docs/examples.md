@@ -272,22 +272,10 @@ npm run as -- --transcriptCost "content/audio.mp3" --assembly
 If neither the `--deepgram` or `--assembly` option is included for transcription, `autoshow` will default to running the largest Whisper.cpp model. To configure the size of the Whisper model, use the `--model` option and select one of the following:
 
 ```bash
-# tiny model
 npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --whisper tiny
-
-# base model
 npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --whisper base
-
-# small model
 npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --whisper small
-
-# medium model
 npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --whisper medium
-
-# large-v2 model
-npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --whisper large-v2
-
-# large-v3-turbo model
 npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --whisper large-v3-turbo
 ```
 
@@ -599,30 +587,19 @@ Integration test.
 - Mostly uses transcripts of videos around one minute long and cheaper models when possible, so the total cost of running this for any given service should be at most only a few cents.
 
 ```bash
-npm run test-services
+npm run test-cli-services
 ```
 
 Local services test, only uses Whisper for transcription and Ollama for LLM operations.
 
 ```bash
-npm run test-local
+npm run test-cli-local
 ```
 
-Docker test, also uses Whisper for transcription and Ollama for LLM operations but in Docker containers.
+Docker test, also uses Whisper for transcription but in a Docker container.
 
 ```bash
-npm run test-docker
-```
-
-Benchmark tests, each compare different size models for `whisper.cpp` and a Dockerized version.
-
-```bash
-npx tsx --test test/bench/tiny.test.ts
-npx tsx --test test/bench/base.test.ts
-npx tsx --test test/bench/small.test.ts
-npx tsx --test test/bench/medium.test.ts
-npx tsx --test test/bench/large.test.ts
-npx tsx --test test/bench/turbo.test.ts
+npm run test-docker-server-local
 ```
 
 Test all available models for a certain LLM service.

@@ -5,8 +5,8 @@ import { insertShowNote } from '../db'
 import { l, err, logInitialFunctionCall } from '../utils/logging'
 import { retryLLMCall } from '../utils/step-utils/retry'
 import { LLM_FUNCTIONS } from '../utils/step-utils/llm-utils'
+
 import type { ProcessingOptions, EpisodeMetadata } from '../utils/types/step-types'
-import type { LLMServices } from '../utils/types/llms'
 
 /**
  * Processes a transcript using a specified Language Model service.
@@ -32,7 +32,7 @@ import type { LLMServices } from '../utils/types/llms'
  * @param {string} prompt - Optional prompt or instructions to process
  * @param {string} transcript - The transcript content
  * @param {EpisodeMetadata} metadata - The metadata object from generateMarkdown
- * @param {LLMServices} [llmServices] - The LLM service to use
+ * @param {string} [llmServices] - The LLM service to use
  * @returns {Promise<string>} Resolves with the LLM output, or an empty string if no LLM is selected
  */
 export async function runLLM(
@@ -42,7 +42,7 @@ export async function runLLM(
   prompt: string,
   transcript: string,
   metadata: EpisodeMetadata,
-  llmServices?: LLMServices,
+  llmServices?: string,
 ) {
   l.step(`\nStep 5 - Run Language Model\n`)
   logInitialFunctionCall('runLLM', { llmServices, metadata })
@@ -51,7 +51,7 @@ export async function runLLM(
     let showNotesResult = ''
     if (llmServices) {
       l.dim(`\n  Preparing to process with '${llmServices}' Language Model...\n`)
-      const llmFunction = LLM_FUNCTIONS[llmServices]
+      const llmFunction = LLM_FUNCTIONS[llmServices as keyof typeof LLM_FUNCTIONS]
 
       if (!llmFunction) {
         throw new Error(`Invalid LLM option: ${llmServices}`)
@@ -194,13 +194,13 @@ function parsePromptFile(fileContent: string) {
  * 
  * @param {string} filePath - The path to the .md file containing front matter, prompt, and optional transcript
  * @param {ProcessingOptions} options - Configuration options (including any LLM model flags)
- * @param {LLMServices} llmServices - The chosen LLM service (e.g., 'chatgpt', 'claude', etc.)
+ * @param {string} llmServices - The chosen LLM service (e.g., 'chatgpt', 'claude', etc.)
  * @returns {Promise<void>} A promise that resolves when the LLM processing completes
  */
 export async function runLLMFromPromptFile(
   filePath: string,
   options: ProcessingOptions,
-  llmServices: LLMServices,
+  llmServices: string,
 ) {
   try {
     const fileContent = await readFile(filePath, 'utf8')

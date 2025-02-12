@@ -13,9 +13,7 @@ import { processRSS } from '../process-commands/rss'
 import { LLM_OPTIONS } from '../../shared/constants'
 import { validateRSSAction } from './command-utils/rss-utils'
 
-import type { TranscriptServices } from './types/transcription'
-import type { LLMServices } from './types/llms'
-import type { ProcessingOptions, ValidAction, HandlerFunction } from './types/step-types'
+import type { ProcessingOptions, ValidCLIAction, HandlerFunction } from './types/step-types'
 
 export const execPromise = promisify(exec)
 export const execFilePromise = promisify(execFile)
@@ -122,9 +120,9 @@ export function validateOption(
  * @throws An error (and exits) if the action is invalid or missing
  */
 export function validateInputCLI(options: ProcessingOptions): {
-  action: ValidAction
-  llmServices: LLMServices | undefined
-  transcriptServices: TranscriptServices | undefined
+  action: ValidCLIAction
+  llmServices: string | undefined
+  transcriptServices: string | undefined
 } {
   // Validate which action was chosen
   const actionValues = ACTION_OPTIONS.map((opt) => opt.name)
@@ -133,7 +131,7 @@ export function validateInputCLI(options: ProcessingOptions): {
     err(`Invalid or missing action`)
     exit(1)
   }
-  const action = selectedAction as ValidAction
+  const action = selectedAction as ValidCLIAction
 
   // Validate LLM
   const llmServices = validateLLM(options)
@@ -158,7 +156,7 @@ export function validateLLM(options: ProcessingOptions) {
   if (!llmKey) {
     return undefined
   }
-  return llmKey as LLMServices
+  return llmKey
 }
 
 /**
@@ -195,10 +193,10 @@ export function validateTranscription(options: ProcessingOptions) {
  * @throws {Error} If the action is invalid or the required input is missing
  */
 export async function processAction(
-  action: ValidAction,
+  action: ValidCLIAction,
   options: ProcessingOptions,
-  llmServices?: LLMServices,
-  transcriptServices?: TranscriptServices
+  llmServices?: string,
+  transcriptServices?: string
 ) {
   const handler = PROCESS_HANDLERS[action] as HandlerFunction
 

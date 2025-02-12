@@ -1,41 +1,5 @@
 // src/types/process.ts
 
-import type { TranscriptServices } from './transcription'
-import type { LLMServices } from './llms'
-
-// Parse the JSON output
-export interface PlaylistEntry {
-  id: string;
-}
-
-export interface PlaylistData {
-  title: string;
-  entries: PlaylistEntry[];
-}
-
-/**
- * @interface EpisodeMetadata
- * @property {string} [showLink]
- * @property {string} [channel]
- * @property {string} [channelURL]
- * @property {string} [title]
- * @property {string} [description]
- * @property {string} [publishDate]
- * @property {string} [coverImage]
- */
-export interface EpisodeMetadata {
-  showLink?: string | undefined
-  channel?: string | undefined
-  channelURL?: string | undefined
-  title?: string | undefined
-  description?: string | undefined
-  publishDate?: string | undefined
-  coverImage?: string | undefined
-}
-
-// Define valid action types for processing
-export type ValidAction = 'video' | 'playlist' | 'channel' | 'urls' | 'file' | 'rss'
-
 /**
  * Processing options passed through command-line arguments.
  */
@@ -93,9 +57,9 @@ export type ProcessingOptions = {
   /** Use a custom prompt saved in a markdown file */
   customPrompt?: string
   /** The selected LLM option. */
-  llmServices?: LLMServices
+  llmServices?: string
   /** The selected transcription option. */
-  transcriptServices?: TranscriptServices
+  transcriptServices?: string
   /** Number of items to skip in RSS feed processing. */
   skip?: number
   /** Order in which to process RSS feed items ('newest' or 'oldest'). */
@@ -122,22 +86,18 @@ export type ProcessingOptions = {
   togetherApiKey?: string
   /** Provide override for Fireworks API key. */
   fireworksApiKey?: string
+  [key: string]: any
 }
 
-/**
- * Handler function for processing different actions (e.g., video, playlist).
- * 
- * @param options - The options containing various inputs
- * @param input - The specific input (URL or file path)
- * @param llmServices - The selected LLM service (optional)
- * @param transcriptServices - The selected transcription service (optional)
- */
-export type HandlerFunction = (
-  options: ProcessingOptions,
-  input: string,
-  llmServices?: LLMServices,
-  transcriptServices?: TranscriptServices
-) => Promise<void>
+// Parse the JSON output
+export interface PlaylistEntry {
+  id: string;
+}
+
+export interface PlaylistData {
+  title: string;
+  entries: PlaylistEntry[];
+}
 
 /**
  * Metadata extracted from a YouTube video.
@@ -158,6 +118,44 @@ export type VideoMetadata = {
   /** The URL to the video's thumbnail image. */
   coverImage: string
 }
+
+/**
+ * @interface EpisodeMetadata
+ * @property {string} [showLink]
+ * @property {string} [channel]
+ * @property {string} [channelURL]
+ * @property {string} [title]
+ * @property {string} [description]
+ * @property {string} [publishDate]
+ * @property {string} [coverImage]
+ */
+export interface EpisodeMetadata {
+  showLink?: string | undefined
+  channel?: string | undefined
+  channelURL?: string | undefined
+  title?: string | undefined
+  description?: string | undefined
+  publishDate?: string | undefined
+  coverImage?: string | undefined
+}
+
+// Define valid action types for processing
+export type ValidCLIAction = 'video' | 'playlist' | 'channel' | 'urls' | 'file' | 'rss'
+
+/**
+ * Handler function for processing different actions (e.g., video, playlist).
+ * 
+ * @param options - The options containing various inputs
+ * @param input - The specific input (URL or file path)
+ * @param llmServices - The selected LLM service (optional)
+ * @param transcriptServices - The selected transcription service (optional)
+ */
+export type HandlerFunction = (
+  options: ProcessingOptions,
+  input: string,
+  llmServices?: string,
+  transcriptServices?: string
+) => Promise<void>
 
 /**
  * Video information including upload date, URL, and type.
@@ -195,8 +193,3 @@ export type RSSItem = {
   /** The URL to the audio file of the RSS item. */
   audioURL?: string
 }
-
-/**
- * Supported file types for audio and video processing.
- */
-export type SupportedFileType = 'wav' | 'mp3' | 'm4a' | 'aac' | 'ogg' | 'flac' | 'mp4' | 'mkv' | 'avi' | 'mov' | 'webm'

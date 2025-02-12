@@ -4,9 +4,8 @@ import { readFile } from 'node:fs/promises'
 import { processVideo } from './video'
 import { saveInfo } from '../utils/step-utils/markdown-utils'
 import { l, err, logSeparator, logInitialFunctionCall } from '../utils/logging'
+
 import type { ProcessingOptions } from '../utils/types/step-types'
-import type { TranscriptServices } from '../utils/types/transcription'
-import type { LLMServices } from '../utils/types/llms'
 
 /**
  * Processes multiple YouTube videos from a file containing URLs by:
@@ -26,8 +25,8 @@ import type { LLMServices } from '../utils/types/llms'
 export async function processURLs(
   options: ProcessingOptions,
   filePath: string,
-  llmServices?: LLMServices,
-  transcriptServices?: TranscriptServices
+  llmServices?: string,
+  transcriptServices?: string
 ) {
   // Log the processing parameters for debugging purposes
   logInitialFunctionCall('processURLs', { llmServices, transcriptServices })

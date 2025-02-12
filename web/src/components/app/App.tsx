@@ -1,10 +1,9 @@
 // web/src/components/app/App.tsx
 
 import React, { useState } from 'react'
-import Form from './Form.tsx'
-import '../../styles/global.css'
-
-import { ShowNotes } from './ShowNotes.tsx'
+import Form from '@/components/app/Form'
+import { ShowNotes } from '@/components/app/ShowNotes'
+import '@/styles'
 
 /**
  * The App component renders the Form component and the ShowNotes component.

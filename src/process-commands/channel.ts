@@ -1,14 +1,12 @@
 // src/process-commands/channel.ts
 
 import { processVideo } from './video'
-import { execFilePromise } from '../../shared/constants'
+import { execFilePromise } from '../utils/validate-cli'
 import { saveInfo } from '../utils/step-utils/markdown-utils'
 import { l, err, logSeparator, logInitialFunctionCall } from '../utils/logging'
 import { validateChannelOptions, logChannelProcessingStatus } from '../utils/command-utils/channel-utils'
 
-import type { ProcessingOptions, VideoInfo } from '../utils/types/step-types'
-import type { TranscriptServices } from '../utils/types/transcription'
-import type { LLMServices } from '../utils/types/llms'
+import type { ProcessingOptions } from '../utils/types/step-types'
 
 /**
  * Fetches, sorts, and selects which videos to process based on provided options, 
@@ -58,7 +56,7 @@ export async function selectVideos(
   })
 
   const videoDetailsResults = await Promise.all(videoDetailsPromises)
-  const allVideos = videoDetailsResults.filter((video): video is VideoInfo => video !== null)
+  const allVideos = videoDetailsResults.filter((video) => video !== null)
 
   if (allVideos.length === 0) {
     err('Error: No videos found in the channel.')
@@ -73,7 +71,7 @@ export async function selectVideos(
 
   l.opts(`\nFound ${allVideos.length} videos in the channel...`)
 
-  let videosToProcess: VideoInfo[]
+  let videosToProcess
   if (options.last) {
     videosToProcess = allVideos.slice(0, options.last)
   } else {
@@ -101,8 +99,8 @@ export async function selectVideos(
 export async function processChannel(
   options: ProcessingOptions,
   channelUrl: string,
-  llmServices?: LLMServices,
-  transcriptServices?: TranscriptServices
+  llmServices?: string,
+  transcriptServices?: string
 ) {
   logInitialFunctionCall('processChannel', { llmServices, transcriptServices })
   try {

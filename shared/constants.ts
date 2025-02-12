@@ -8,14 +8,12 @@
  *
  */
 
-import { exec, execFile } from 'node:child_process'
-import { promisify } from 'node:util'
-
 import type { AssemblyModelType, DeepgramModelType } from '../src/utils/types/transcription'
-import type { LLMServices } from '../src/utils/types/llms'
 
-export const execPromise = promisify(exec)
-export const execFilePromise = promisify(execFile)
+export const PROCESS_TYPES = [
+  { value: 'video', label: 'Video' },
+  { value: 'file', label: 'File' },
+] as const
 
 /**
  * All user-facing prompt choices, unified for both backend and frontend usage.
@@ -88,9 +86,9 @@ export const LLM_SERVICE_OPTIONS = {
  * Array of valid LLM service values (excluding the "SKIP" option).
  * 
  */
-export const LLM_OPTIONS: LLMServices[] = Object.values(LLM_SERVICE_OPTIONS)
+export const LLM_OPTIONS = Object.values(LLM_SERVICE_OPTIONS)
   .map((service) => service.value)
-  .filter((value): value is LLMServices => value !== null)
+  .filter((value) => value !== null)
 
 /**
  * All user-facing LLM services, unified for both backend and frontend usage.
@@ -112,7 +110,6 @@ export const LLM_SERVICES: Array<{ value: string; label: string }> = [
  */
 export const LLM_MODELS = {
   ollama: [
-    { value: 'deepseek-r1:1.5b', label: 'DEEPSEEK R1 1.5B' },
     { value: 'qwen2.5:0.5b', label: 'QWEN 2 5 0B' },
     { value: 'qwen2.5:1.5b', label: 'QWEN 2.5 1.5B' },
     { value: 'qwen2.5:3b', label: 'QWEN 2.5 3B' },
@@ -120,6 +117,7 @@ export const LLM_MODELS = {
     { value: 'llama3.2:3b', label: 'LLAMA 3.2 3B' },
     { value: 'gemma2:2b', label: 'GEMMA 2 2B' },
     { value: 'phi3.5:3.8b', label: 'PHI 3.5' },
+    { value: 'deepseek-r1:1.5b', label: 'DEEPSEEK R1 1.5B' },
   ],
   chatgpt: [
     { value: 'gpt-4o-mini', label: 'GPT 4o Mini' },

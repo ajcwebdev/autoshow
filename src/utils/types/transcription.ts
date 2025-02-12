@@ -1,11 +1,6 @@
 // src/types/transcription.ts
 
 /**
- * Transcription services that can be used in the application.
- */
-export type TranscriptServices = 'whisper' | 'deepgram' | 'assembly'
-
-/**
  * Describes parameters needed for logging transcription cost details.
  */
 export type TranscriptionCostInfo = {

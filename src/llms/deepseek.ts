@@ -5,7 +5,8 @@ import { OpenAI } from 'openai'
 import { err } from '../utils/logging'
 import { logLLMCost } from '../utils/step-utils/llm-utils'
 import { DEEPSEEK_MODELS } from '../../shared/constants'
-import type { DeepSeekModelType } from '../utils/types/llms'
+
+import type { DeepSeekModelType } from '../../shared/constants'
 
 /**
  * Main function to call DeepSeek API via an OpenAI-compatible SDK.

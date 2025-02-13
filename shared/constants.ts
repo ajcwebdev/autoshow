@@ -8,8 +8,6 @@
  *
  */
 
-import type { AssemblyModelType, DeepgramModelType } from '../src/utils/types/transcription'
-
 export const PROCESS_TYPES = [
   { value: 'video', label: 'Video' },
   { value: 'file', label: 'File' },
@@ -37,6 +35,15 @@ export const PROMPT_CHOICES: Array<{ name: string; value: string }> = [
   { name: 'Country Song', value: 'countrySong' },
 ]
 
+export type TranscriptionCostInfo = {
+  // The name of the model being used
+  modelName: string
+  // The cost (in USD) per minute for the model
+  costPerMinute: number
+  // The file path to the audio file
+  filePath: string
+}
+
 /**
  * All user-facing transcription services, unified for both backend and frontend usage.
  */
@@ -45,6 +52,48 @@ export const TRANSCRIPTION_SERVICES: Array<{ value: string; label: string }> = [
   { value: 'deepgram', label: 'Deepgram' },
   { value: 'assembly', label: 'AssemblyAI' },
 ]
+
+export type WhisperOutput = {
+  systeminfo: string
+  model: {
+    type: string
+    multilingual: boolean
+    vocab: number
+    audio: {
+      ctx: number
+      state: number
+      head: number
+      layer: number
+    }
+    text: {
+      ctx: number
+      state: number
+      head: number
+      layer: number
+    }
+    mels: number
+    ftype: number
+  }
+  params: {
+    model: string
+    language: string
+    translate: boolean
+  }
+  result: {
+    language: string
+  }
+  transcription: Array<{
+    timestamps: {
+      from: string
+      to: string
+    }
+    offsets: {
+      from: number
+      to: number
+    }
+    text: string
+  }>
+}
 
 /**
  * All user-facing Whisper models, mapping `value` to a specific `bin` file for
@@ -65,6 +114,25 @@ export const WHISPER_MODELS: Array<{ value: string; label: string; }> = [
   { value: 'ggml-large-v3-turbo.bin', label: 'large-v3-turbo' },
   { value: 'ggml-large-v3-turbo.bin', label: 'turbo' },
 ]
+
+/**
+ * Represents the complete LLM cost and usage details for logging
+ */
+export type LogLLMCost = {
+  // The name of the model used
+  modelName: string
+  // The reason why the model request stopped
+  stopReason: string
+  // Contains token usage details
+  tokenUsage: {
+    // Number of input tokens used
+    input: number | undefined
+    // Number of output tokens generated
+    output: number | undefined
+    // Total number of tokens involved in the request
+    total: number | undefined
+  }
+}
 
 /**
  * Mapping of available LLM providers and their configuration.
@@ -102,6 +170,37 @@ export const LLM_SERVICES: Array<{ value: string; label: string }> = [
   { value: 'fireworks', label: 'Fireworks' },
   { value: 'together', label: 'Together AI' },
 ]
+
+export type OllamaTagsResponse = {
+  /** Array of available models */
+  models: Array<{
+    /** Model name */
+    name: string
+    /** Base model identifier */
+    model: string
+    /** Last modification timestamp */
+    modified_at: string
+    /** Model size in bytes */
+    size: number
+    /** Model digest */
+    digest: string
+    /** Model details */
+    details: {
+      /** Parent model identifier */
+      parent_model: string
+      /** Model format */
+      format: string
+      /** Model family */
+      family: string
+      /** Array of model families */
+      families: string[]
+      /** Model parameter size */
+      parameter_size: string
+      /** Quantization level */
+      quantization_level: string
+    }
+  }>
+}
 
 /**
  * All user-facing model choices for each LLM service, unified for both backend
@@ -154,6 +253,8 @@ export const LLM_MODELS = {
   ],
 } as const
 
+export type ChatGPTModelType = 'GPT_4o_MINI' | 'GPT_4o' | 'GPT_o1_MINI'
+
 /**
  * Configuration for ChatGPT models, mapping model types to their display names and identifiers.
  * Includes various GPT-4 models with different capabilities and performance characteristics.
@@ -178,6 +279,8 @@ export const GPT_MODELS = {
     outputCostPer1M: 12.00
   }
 }
+
+export type ClaudeModelType = 'CLAUDE_3_5_SONNET' | 'CLAUDE_3_5_HAIKU' | 'CLAUDE_3_OPUS' | 'CLAUDE_3_SONNET' | 'CLAUDE_3_HAIKU'
 
 /**
  * Configuration for Claude models, mapping model types to their display names and identifiers.
@@ -216,6 +319,8 @@ export const CLAUDE_MODELS = {
   },
 }
 
+export type GeminiModelType = 'GEMINI_1_5_FLASH' | 'GEMINI_1_5_FLASH_8B' | 'GEMINI_1_5_PRO'
+
 /**
  * Configuration for Google Gemini models, mapping model types to their display names and identifiers.
  * Includes Gemini 1.0 and 1.5 models optimized for different use cases.
@@ -240,6 +345,8 @@ export const GEMINI_MODELS = {
     outputCostPer1M: 10.00
   },
 }
+
+export type FireworksModelType = 'LLAMA_3_1_405B' | 'LLAMA_3_1_70B' | 'LLAMA_3_1_8B' | 'LLAMA_3_2_3B' | 'QWEN_2_5_72B'
 
 /**
  * Configuration for Fireworks AI models, mapping model types to their display names and identifiers.
@@ -277,6 +384,8 @@ export const FIREWORKS_MODELS = {
     outputCostPer1M: 0.90
   },
 }
+
+export type TogetherModelType = 'LLAMA_3_2_3B' | 'LLAMA_3_1_405B' | 'LLAMA_3_1_70B' | 'LLAMA_3_1_8B' | 'GEMMA_2_27B' | 'GEMMA_2_9B' | 'QWEN_2_5_72B' | 'QWEN_2_5_7B'
 
 /**
  * Configuration for Together AI models, mapping model types to their display names and identifiers.
@@ -333,6 +442,8 @@ export const TOGETHER_MODELS = {
   },
 }
 
+export type DeepSeekModelType = 'DEEPSEEK_CHAT' | 'DEEPSEEK_REASONER'
+
 /**
  * Configuration for DeepSeek models, mapping model types to their display names and identifiers.
  * Pricing is based on publicly listed rates for DeepSeek. 
@@ -364,6 +475,8 @@ export const ALL_MODELS = {
   ...TOGETHER_MODELS,
 }
 
+export type DeepgramModelType = 'NOVA_2' | 'BASE' | 'ENHANCED'
+
 /**
  * Deepgram models with their per-minute cost.
  */
@@ -384,6 +497,8 @@ export const DEEPGRAM_MODELS: Record<DeepgramModelType, { name: string; modelId:
     costPerMinute: 0.0145,
   },
 }
+
+export type AssemblyModelType = 'NANO' | 'BEST'
 
 /**
  * AssemblyAI models with their per-minute cost.

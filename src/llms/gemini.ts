@@ -5,7 +5,8 @@ import { GoogleGenerativeAI } from "@google/generative-ai"
 import { GEMINI_MODELS } from '../../shared/constants'
 import { err } from '../utils/logging'
 import { logLLMCost } from '../utils/step-utils/llm-utils'
-import type { GeminiModelType } from '../utils/types/llms'
+
+import type { GeminiModelType } from '../../shared/constants'
 
 /**
  * Utility function to introduce a delay

@@ -3,7 +3,7 @@
 import { readFile } from 'fs/promises'
 import { sections } from '../utils/step-utils/prompts'
 import { err, l, logInitialFunctionCall } from '../utils/logging'
-import type { ProcessingOptions } from '../utils/types/step-types'
+import type { ProcessingOptions } from '../utils/types'
 
 /**
  * Generates a prompt by combining instructions and examples based on requested sections

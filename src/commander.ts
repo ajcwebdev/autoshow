@@ -13,13 +13,13 @@ import { argv, exit } from 'node:process'
 import { fileURLToPath } from 'node:url'
 import { Command } from 'commander'
 import { selectPrompts } from './process-steps/04-select-prompt'
-import { processAction, validateInputCLI, validateLLM, validateTranscription, envVarsMap } from './utils/validate-cli'
+import { processAction, validateInputCLI, validateLLM, validateTranscription, envVarsMap } from './utils/validation/cli'
 import { l, err, logSeparator } from './utils/logging'
 import { estimateLLMCost } from './utils/step-utils/llm-utils'
 import { estimateTranscriptCost } from './utils/step-utils/transcription-utils'
 import { runLLMFromPromptFile } from './process-steps/05-run-llm'
 
-import type { ProcessingOptions } from './utils/types/step-types'
+import type { ProcessingOptions } from './utils/types'
 
 /**
  * Defines the command-line interface options and descriptions.

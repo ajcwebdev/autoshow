@@ -1,5 +1,6 @@
 // src/utils/llm-utils.ts
 
+import chalk from 'chalk'
 import { spawn } from 'node:child_process'
 import { readFile } from 'node:fs/promises'
 import { callOllama } from '../../llms/ollama'
@@ -9,14 +10,11 @@ import { callGemini } from '../../llms/gemini'
 import { callDeepSeek } from '../../llms/deepseek'
 import { callFireworks } from '../../llms/fireworks'
 import { callTogether } from '../../llms/together'
-
-import chalk from 'chalk'
 import { l, err } from '../logging'
 import { ALL_MODELS } from '../../../shared/constants'
 
-import type { OllamaTagsResponse } from '../types/llms'
-import type { LogLLMCost } from '../types/logging'
-import type { ProcessingOptions } from '../types/step-types'
+import type { ProcessingOptions } from '../types'
+import type { OllamaTagsResponse, LogLLMCost } from '../../../shared/constants'
 
 /**
  * Finds the model configuration based on the model key

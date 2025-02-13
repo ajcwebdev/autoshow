@@ -4,9 +4,9 @@ import { callWhisper } from '../transcription/whisper'
 import { callDeepgram } from '../transcription/deepgram'
 import { callAssembly } from '../transcription/assembly'
 import { l, err, logInitialFunctionCall } from '../utils/logging'
-import { retryTranscriptionCall } from '../utils/step-utils/retry'
+import { retryTranscriptionCall } from '../utils/validation/retry'
 
-import type { ProcessingOptions } from '../utils/types/step-types'
+import type { ProcessingOptions } from '../utils/types'
 
 /**
  * Orchestrates the transcription process using the specified service.

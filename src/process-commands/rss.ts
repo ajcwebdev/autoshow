@@ -7,12 +7,12 @@ import { selectPrompts } from '../process-steps/04-select-prompt'
 import { runLLM } from '../process-steps/05-run-llm'
 import { saveAudio } from '../utils/command-utils/save-audio'
 import { saveInfo } from '../utils/step-utils/markdown-utils'
-import { parser } from '../utils/validate-req'
+import { parser } from '../utils/validation/validate-req'
 import { l, err, logSeparator, logInitialFunctionCall } from '../utils/logging'
 import { logRSSProcessingStatus, filterRSSItems } from '../utils/command-utils/rss-utils'
-import { retryRSSFetch } from '../utils/step-utils/retry'
+import { retryRSSFetch } from '../utils/validation/retry'
 
-import type { ProcessingOptions } from '../utils/types/step-types'
+import type { ProcessingOptions } from '../utils/types'
 
 /**
  * Fetches and parses an RSS feed, then applies filtering via {@link filterRSSItems}.

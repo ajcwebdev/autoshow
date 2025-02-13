@@ -3,10 +3,10 @@
 import { writeFile, readFile } from 'node:fs/promises'
 import { insertShowNote } from '../db'
 import { l, err, logInitialFunctionCall } from '../utils/logging'
-import { retryLLMCall } from '../utils/step-utils/retry'
+import { retryLLMCall } from '../utils/validation/retry'
 import { LLM_FUNCTIONS } from '../utils/step-utils/llm-utils'
 
-import type { ProcessingOptions, EpisodeMetadata } from '../utils/types/step-types'
+import type { ProcessingOptions, EpisodeMetadata } from '../utils/types'
 
 /**
  * Processes a transcript using a specified Language Model service.

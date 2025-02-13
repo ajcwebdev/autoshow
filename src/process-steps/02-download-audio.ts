@@ -3,10 +3,10 @@
 import { readFile, access } from 'node:fs/promises'
 import { fileTypeFromBuffer } from 'file-type'
 import { l, err, logInitialFunctionCall } from '../utils/logging'
-import { executeWithRetry } from '../utils/step-utils/retry'
-import { execPromise } from '../utils/validate-cli'
+import { executeWithRetry } from '../utils/validation/retry'
+import { execPromise } from '../utils/validation/cli'
 
-import type { ProcessingOptions } from '../utils/types/step-types'
+import type { ProcessingOptions } from '../utils/types'
 
 /**
  * Downloads or processes audio content from various sources and converts it to a standardized WAV format.

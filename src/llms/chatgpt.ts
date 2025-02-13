@@ -5,7 +5,8 @@ import { OpenAI } from 'openai'
 import { GPT_MODELS } from '../../shared/constants'
 import { err } from '../utils/logging'
 import { logLLMCost } from '../utils/step-utils/llm-utils'
-import type { ChatGPTModelType } from '../utils/types/llms'
+
+import type { ChatGPTModelType } from '../../shared/constants'
 
 /**
  * Main function to call ChatGPT API.

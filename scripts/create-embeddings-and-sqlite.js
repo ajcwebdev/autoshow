@@ -57,7 +57,7 @@ async function main() {
         },
         body: JSON.stringify({
           input: content,
-          model: 'text-embedding-3-small',
+          model: 'text-embedding-3-large',
           encoding_format: 'float'
         })
       })

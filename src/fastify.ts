@@ -8,7 +8,7 @@ import { processVideo } from './process-commands/video'
 import { processFile } from './process-commands/file'
 import { runLLMFromPromptFile } from './process-steps/05-run-llm'
 import { l, err } from './utils/logging'
-import { validateRequest, validateServerProcessAction, envVarsServerMap } from './utils/validate-req'
+import { validateRequest, validateServerProcessAction, envVarsServerMap } from './utils/validation/validate-req'
 import { estimateTranscriptCost } from './utils/step-utils/transcription-utils'
 import { estimateLLMCost } from './utils/step-utils/llm-utils'
 

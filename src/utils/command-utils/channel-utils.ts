@@ -2,7 +2,7 @@
 
 import { l, err } from '../logging'
 
-import type { ProcessingOptions } from '../types/step-types'
+import type { ProcessingOptions } from '../types'
 
 /**
  * Validates channel processing options for consistency and correct values.

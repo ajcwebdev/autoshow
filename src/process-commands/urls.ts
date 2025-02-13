@@ -5,7 +5,7 @@ import { processVideo } from './video'
 import { saveInfo } from '../utils/step-utils/markdown-utils'
 import { l, err, logSeparator, logInitialFunctionCall } from '../utils/logging'
 
-import type { ProcessingOptions } from '../utils/types/step-types'
+import type { ProcessingOptions } from '../utils/types'
 
 /**
  * Processes multiple YouTube videos from a file containing URLs by:

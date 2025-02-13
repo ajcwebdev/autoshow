@@ -29,26 +29,25 @@ const __dirname = path.dirname(__filename)
 const contentDir = path.resolve(__dirname, '..', 'content')
 const dbFile = 'embeddings.db'
 
-// Open the SQLite database
+// Open the SQLite database and load sqlite-vec extension
 const db = new Database(dbFile)
-// Load sqlite-vec extension
+
 sqliteVec.load(db)
 
-// Main async function
 async function main() {
   try {
     // Embed the user's question with OpenAI
     const queryEmbedding = new Float32Array(await embedText(question))
     // Convert the float32 array to a BLOB
     const queryBlob = new Uint8Array(queryEmbedding.buffer)
-    // SQL to get the top 3 similar files by cosine distance
+    // SQL to get the top 5 similar files by cosine distance
     const sql = `
       SELECT
         filename,
         vec_distance_cosine(vector, :query) AS distance
       FROM embeddings
       ORDER BY distance
-      LIMIT 3
+      LIMIT 5
     `
     // Execute the query
     const rows = db.prepare(sql).all({ query: queryBlob })
@@ -87,7 +86,7 @@ async function embedText(text) {
     },
     body: JSON.stringify({
       input: text,
-      model: 'text-embedding-3-small',
+      model: 'text-embedding-3-large',
       encoding_format: 'float'
     })
   })
@@ -101,12 +100,13 @@ async function embedText(text) {
 // Call the ChatCompletion API to get an answer
 async function callChatCompletion(userQuestion, fileContent) {
   const chatBody = {
-    model: 'gpt-3.5-turbo',
+    model: 'o1-preview',
+    // model: 'chatgpt-4o-latest',
     messages: [
-      {
-        role: 'system',
-        content: 'You are a helpful assistant that answers questions based on the provided text.'
-      },
+      // {
+      //   role: 'system',
+      //   content: 'You are a helpful assistant that answers questions based on the provided text.'
+      // },
       {
         role: 'user',
         content: `Context:\n${fileContent}\n\nQuestion: ${userQuestion}`
@@ -122,6 +122,7 @@ async function callChatCompletion(userQuestion, fileContent) {
     body: JSON.stringify(chatBody)
   })
   const chatJson = await chatRes.json()
+  console.log(`${chatJson, null, 2}`)
   if (!chatRes.ok) {
     throw new Error(`OpenAI Chat API error: ${JSON.stringify(chatJson)}`)
   }

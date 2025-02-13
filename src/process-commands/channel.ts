@@ -1,12 +1,12 @@
 // src/process-commands/channel.ts
 
 import { processVideo } from './video'
-import { execFilePromise } from '../utils/validate-cli'
+import { execFilePromise } from '../utils/validation/cli'
 import { saveInfo } from '../utils/step-utils/markdown-utils'
 import { l, err, logSeparator, logInitialFunctionCall } from '../utils/logging'
 import { validateChannelOptions, logChannelProcessingStatus } from '../utils/command-utils/channel-utils'
 
-import type { ProcessingOptions } from '../utils/types/step-types'
+import type { ProcessingOptions } from '../utils/types'
 
 /**
  * Fetches, sorts, and selects which videos to process based on provided options, 

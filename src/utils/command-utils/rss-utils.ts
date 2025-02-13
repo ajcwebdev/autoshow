@@ -2,7 +2,7 @@
 
 import { l, err } from '../../utils/logging'
 
-import type { ProcessingOptions, RSSItem, HandlerFunction } from '../types/step-types'
+import type { ProcessingOptions, RSSItem, HandlerFunction } from '../types'
 
 /**
  * Validates RSS flags (e.g., --last, --skip, --order, --date, --lastDays) without requiring feed data.

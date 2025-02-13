@@ -7,7 +7,7 @@ import { selectPrompts } from '../process-steps/04-select-prompt'
 import { runLLM } from '../process-steps/05-run-llm'
 import { saveAudio } from '../utils/command-utils/save-audio'
 import { l, err, logInitialFunctionCall } from '../utils/logging'
-import type { ProcessingOptions } from '../utils/types/step-types'
+import type { ProcessingOptions } from '../utils/types'
 
 /**
  * Processes a local audio or video file through a series of operations:

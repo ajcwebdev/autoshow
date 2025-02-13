@@ -1,9 +1,9 @@
 // src/utils/validate-req.ts
 
-import { TRANSCRIPTION_SERVICES, LLM_OPTIONS } from '../../shared/constants'
+import { TRANSCRIPTION_SERVICES, LLM_OPTIONS } from '../../../shared/constants'
 import { XMLParser } from 'fast-xml-parser'
 
-import type { ProcessingOptions } from './types/step-types'
+import type { ProcessingOptions } from '../types'
 
 /**
  * Maps server-side request body keys to corresponding environment variables.

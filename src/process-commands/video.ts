@@ -8,7 +8,7 @@ import { runLLM } from '../process-steps/05-run-llm'
 import { saveAudio } from '../utils/command-utils/save-audio'
 import { err, logInitialFunctionCall } from '../utils/logging'
 
-import type { ProcessingOptions } from '../utils/types/step-types'
+import type { ProcessingOptions } from '../utils/types'
 
 /**
  * Processes a single video by executing a series of operations:

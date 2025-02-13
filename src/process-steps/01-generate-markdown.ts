@@ -2,7 +2,7 @@
 
 import { basename, extname } from 'node:path'
 import { execFilePromise } from '../utils/validation/cli'
-import { sanitizeTitle, buildFrontMatter } from '../utils/step-utils/markdown-utils'
+import { sanitizeTitle, buildFrontMatter } from '../utils/step-utils/01-markdown-utils'
 import { l, err, logInitialFunctionCall } from '../utils/logging'
 import type { ProcessingOptions, RSSItem } from '../utils/types'
 

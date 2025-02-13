@@ -3,7 +3,7 @@
 import { env } from 'node:process'
 import { FIREWORKS_MODELS } from '../../shared/constants'
 import { err } from '../utils/logging'
-import { logLLMCost } from '../utils/step-utils/llm-utils'
+import { logLLMCost } from '../utils/step-utils/05-llm-utils'
 
 import type { FireworksModelType } from '../../shared/constants'
 

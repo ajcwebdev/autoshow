@@ -1,8 +1,9 @@
 // src/process-steps/04-select-prompt.ts
 
 import { readFile } from 'fs/promises'
-import { sections } from '../utils/step-utils/prompts'
+import { sections } from '../utils/step-utils/04-prompts'
 import { err, l, logInitialFunctionCall } from '../utils/logging'
+
 import type { ProcessingOptions } from '../utils/types'
 
 /**

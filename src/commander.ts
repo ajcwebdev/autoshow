@@ -1,4 +1,6 @@
 // src/commander.ts
+// We removed the logic handling printPrompt, transcriptCost, llmCost, and runLLM,
+// and replaced it with a single call to handleEarlyExitIfNeeded(options).
 
 /**
  * Autoshow CLI Application
@@ -12,12 +14,8 @@
 import { argv, exit } from 'node:process'
 import { fileURLToPath } from 'node:url'
 import { Command } from 'commander'
-import { selectPrompts } from './process-steps/04-select-prompt'
-import { processAction, validateInputCLI, validateLLM, validateTranscription, envVarsMap } from './utils/validation/cli'
+import { processAction, validateInputCLI, envVarsMap, handleEarlyExitIfNeeded } from './utils/validation/cli'
 import { l, err, logSeparator } from './utils/logging'
-import { estimateLLMCost } from './utils/step-utils/llm-utils'
-import { estimateTranscriptCost } from './utils/step-utils/transcription-utils'
-import { runLLMFromPromptFile } from './process-steps/05-run-llm'
 import { createEmbeddingsAndSQLite } from './utils/embeddings/create-embed'
 import { queryEmbeddings } from './utils/embeddings/query-embed'
 
@@ -103,56 +101,7 @@ program.action(async (options: ProcessingOptions) => {
   l.opts(JSON.stringify(options, null, 2))
   l.opts(``)
 
-  // If the user just wants to print prompts, do that and exit
-  if (options.printPrompt) {
-    const prompt = await selectPrompts({ printPrompt: options.printPrompt })
-    console.log(prompt)
-    exit(0)
-  }
-
-  // Handle transcript cost estimation
-  if (options.transcriptCost) {
-    const transcriptServices = validateTranscription(options)
-
-    if (!transcriptServices) {
-      err('Please specify which transcription service to use (e.g., --deepgram, --assembly, --whisper).')
-      exit(1)
-    }
-
-    await estimateTranscriptCost(options, transcriptServices)
-    exit(0)
-  }
-
-  // Handle LLM cost estimation
-  if (options.llmCost) {
-    const llmService = validateLLM(options)
-
-    if (!llmService) {
-      err('Please specify which LLM service to use (e.g., --chatgpt, --claude, --ollama, etc.).')
-      exit(1)
-    }
-
-    await estimateLLMCost(options, llmService)
-    exit(0)
-  }
-
-  /**
-   * Handle running Step 5 (LLM) directly with a prompt file
-   * 
-   * Example usage:
-   * npm run as -- --runLLM "content/audio-prompt.md" --chatgpt
-   */
-  if (options.runLLM) {
-    const llmService = validateLLM(options)
-
-    if (!llmService) {
-      err('Please specify which LLM service to use (e.g., --chatgpt, --claude, --ollama, etc.).')
-      exit(1)
-    }
-
-    await runLLMFromPromptFile(options.runLLM, options, llmService)
-    exit(0)
-  }
+  await handleEarlyExitIfNeeded(options)
 
   if (options['createEmbeddings']) {
     try {

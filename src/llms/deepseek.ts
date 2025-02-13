@@ -3,7 +3,7 @@
 import { env } from 'node:process'
 import { OpenAI } from 'openai'
 import { err } from '../utils/logging'
-import { logLLMCost } from '../utils/step-utils/llm-utils'
+import { logLLMCost } from '../utils/step-utils/05-llm-utils'
 import { DEEPSEEK_MODELS } from '../../shared/constants'
 
 import type { DeepSeekModelType } from '../../shared/constants'

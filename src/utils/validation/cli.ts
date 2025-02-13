@@ -1,17 +1,14 @@
-// src/utils/validate-cli.ts
+// src/utils/validation/cli.ts
 
 import { exec, execFile } from 'node:child_process'
 import { promisify } from 'node:util'
 import { exit } from 'node:process'
 import { err } from '../logging'
-import { processVideo } from '../../process-commands/video'
-import { processPlaylist } from '../../process-commands/playlist'
-import { processChannel } from '../../process-commands/channel'
-import { processURLs } from '../../process-commands/urls'
-import { processFile } from '../../process-commands/file'
-import { processRSS } from '../../process-commands/rss'
-import { LLM_OPTIONS } from '../../../shared/constants'
+import { LLM_OPTIONS, PROCESS_HANDLERS } from '../../../shared/constants'
 import { validateRSSAction } from '../command-utils/rss-utils'
+import { selectPrompts } from '../../process-steps/04-select-prompt'
+import { estimateTranscriptCost } from '../step-utils/03-transcription-utils'
+import { estimateLLMCost, runLLMFromPromptFile } from '../step-utils/05-llm-utils'
 
 import type { ProcessingOptions, ValidCLIAction, HandlerFunction } from '../types'
 
@@ -27,18 +24,6 @@ export const envVarsMap = {
   deepseekApiKey: 'DEEPSEEK_API_KEY',
   togetherApiKey: 'TOGETHER_API_KEY',
   fireworksApiKey: 'FIREWORKS_API_KEY',
-}
-
-/**
- * Maps action names to their corresponding handler function.
- */
-export const PROCESS_HANDLERS = {
-  video: processVideo,
-  playlist: processPlaylist,
-  channel: processChannel,
-  urls: processURLs,
-  file: processFile,
-  rss: processRSS,
 }
 
 /**
@@ -166,9 +151,7 @@ export function validateLLM(options: ProcessingOptions) {
  * @returns The validated transcription service
  * @throws An error if the transcription service is invalid or not provided
  */
-// Fix the validation logic for transcription services to ensure that the flag value is correctly passed.
 export function validateTranscription(options: ProcessingOptions) {
-  // Check if any transcription service is provided in the options
   if (options.deepgram) {
     return 'deepgram'
   } else if (options.assembly) {
@@ -176,8 +159,6 @@ export function validateTranscription(options: ProcessingOptions) {
   } else if (options.whisper) {
     return 'whisper'
   }
-
-  // If user didn’t specify any transcription flags, force a default to Whisper
   options.whisper = true
   return 'whisper'
 }
@@ -200,18 +181,70 @@ export async function processAction(
 ) {
   const handler = PROCESS_HANDLERS[action] as HandlerFunction
 
-  // If user selected RSS, run specialized validation and logic
   if (action === 'rss') {
     await validateRSSAction(options, handler, llmServices, transcriptServices)
     return
   }
 
-  // For other actions, ensure we have a valid input string
   const input = options[action]
   if (!input || typeof input !== 'string') {
     throw new Error(`No valid input provided for ${action} processing`)
   }
 
-  // Execute the handler directly
   await handler(options, input, llmServices, transcriptServices)
+}
+
+/**
+ * Checks for early exit flags (printPrompt, transcriptCost, llmCost, runLLM)
+ * and handles them if present, exiting the process after completion.
+ *
+ * @param options - The command-line options provided by the user
+ * @returns Promise<void> Resolves if no early exit flag is triggered, otherwise exits the process
+ */
+export async function handleEarlyExitIfNeeded(options: ProcessingOptions): Promise<void> {
+  // If the user just wants to print prompts, do that and exit
+  if (options.printPrompt) {
+    const prompt = await selectPrompts({ printPrompt: options.printPrompt })
+    console.log(prompt)
+    exit(0)
+  }
+
+  // Handle transcript cost estimation
+  if (options.transcriptCost) {
+    const transcriptServices = validateTranscription(options)
+
+    if (!transcriptServices) {
+      err('Please specify which transcription service to use (e.g., --deepgram, --assembly, --whisper).')
+      exit(1)
+    }
+
+    await estimateTranscriptCost(options, transcriptServices)
+    exit(0)
+  }
+
+  // Handle LLM cost estimation
+  if (options.llmCost) {
+    const llmService = validateLLM(options)
+
+    if (!llmService) {
+      err('Please specify which LLM service to use (e.g., --chatgpt, --claude, --ollama, etc.).')
+      exit(1)
+    }
+
+    await estimateLLMCost(options, llmService)
+    exit(0)
+  }
+
+  // Handle running Step 5 (LLM) directly with a prompt file
+  if (options.runLLM) {
+    const llmService = validateLLM(options)
+
+    if (!llmService) {
+      err('Please specify which LLM service to use (e.g., --chatgpt, --claude, --ollama, etc.).')
+      exit(1)
+    }
+
+    await runLLMFromPromptFile(options.runLLM, options, llmService)
+    exit(0)
+  }
 }

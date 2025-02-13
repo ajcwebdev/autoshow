@@ -629,17 +629,16 @@ npm run as -- \
   --saveAudio
 ```
 
-## Chat with Show Notes
+## Create Embeddings
 
-***Note: Very rough prototype for upcoming "chat with your show notes" feature using OpenAI and Claude embeddings.***
+If you have generated multiple markdown files in the `content` directory, you can create embeddings for all the files and query them with ChatGPT.
 
-*Not currently integrated into the CLI, backend server, or frontend and only supports OpenAI.*
+*Note: Does not support creating embeddings for nested directory structures and does not support other LLMs yet.*
 
 ```bash
-node create-embeddings-and-sqlite.js <directory> <outputJSON> [dbFile]
+npm run as -- --createEmbeddings
 ```
 
 ```bash
-OPENAI_API_KEY="" node scripts/create-embeddings-and-sqlite.js content embeddings.json embeddings.db
-OPENAI_API_KEY="" node scripts/read-and-query-embeddings.js "What's the deal with these show notes? Answer in the voice of Jerry Seinfeld."
+npm run as -- --queryEmbeddings "What's the deal with these show notes? Answer in the voice of Jerry Seinfeld."
 ```

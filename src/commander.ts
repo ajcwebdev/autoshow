@@ -18,6 +18,8 @@ import { l, err, logSeparator } from './utils/logging'
 import { estimateLLMCost } from './utils/step-utils/llm-utils'
 import { estimateTranscriptCost } from './utils/step-utils/transcription-utils'
 import { runLLMFromPromptFile } from './process-steps/05-run-llm'
+import { createEmbeddingsAndSQLite } from './utils/embeddings/create-embed'
+import { queryEmbeddings } from './utils/embeddings/query-embed'
 
 import type { ProcessingOptions } from './utils/types'
 
@@ -79,6 +81,9 @@ program
   .option('--deepseekApiKey <key>', 'Specify DeepSeek API key (overrides .env variable)')
   .option('--togetherApiKey <key>', 'Specify Together API key (overrides .env variable)')
   .option('--fireworksApiKey <key>', 'Specify Fireworks API key (overrides .env variable)')
+  // Create and query embeddings based on show notes
+  .option('--createEmbeddings', 'Create embeddings for .md content and store them in embeddings.db')
+  .option('--queryEmbeddings <question>', 'Query embeddings by question from embeddings.db')
 
 /**
  * Main action for the program.
@@ -146,6 +151,27 @@ program.action(async (options: ProcessingOptions) => {
     }
 
     await runLLMFromPromptFile(options.runLLM, options, llmService)
+    exit(0)
+  }
+
+  if (options['createEmbeddings']) {
+    try {
+      await createEmbeddingsAndSQLite()
+      console.log('Embeddings created successfully.')
+    } catch (error) {
+      err(`Error creating embeddings: ${(error as Error).message}`)
+      exit(1)
+    }
+    exit(0)
+  }
+
+  if (options['queryEmbeddings']) {
+    try {
+      await queryEmbeddings(options['queryEmbeddings'])
+    } catch (error) {
+      err(`Error querying embeddings: ${(error as Error).message}`)
+      exit(1)
+    }
     exit(0)
   }
 

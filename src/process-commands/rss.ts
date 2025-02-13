@@ -1,18 +1,24 @@
 // src/process-commands/rss.ts
 
+import { XMLParser } from 'fast-xml-parser'
 import { generateMarkdown } from '../process-steps/01-generate-markdown'
 import { downloadAudio } from '../process-steps/02-download-audio'
+import { saveAudio } from '../utils/step-utils/02-save-audio'
 import { runTranscription } from '../process-steps/03-run-transcription'
 import { selectPrompts } from '../process-steps/04-select-prompt'
 import { runLLM } from '../process-steps/05-run-llm'
-import { saveAudio } from '../utils/command-utils/save-audio'
 import { saveInfo } from '../utils/step-utils/01-markdown-utils'
-import { parser } from '../utils/validation/requests'
 import { l, err, logSeparator, logInitialFunctionCall } from '../utils/logging'
 import { logRSSProcessingStatus, filterRSSItems } from '../utils/command-utils/rss-utils'
 import { retryRSSFetch } from '../utils/validation/retry'
 
 import type { ProcessingOptions } from '../utils/types'
+
+export const parser = new XMLParser({
+  ignoreAttributes: false,
+  attributeNamePrefix: '',
+  allowBooleanAttributes: true,
+})
 
 /**
  * Fetches and parses an RSS feed, then applies filtering via {@link filterRSSItems}.

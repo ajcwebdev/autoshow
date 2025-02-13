@@ -1,4 +1,4 @@
-// src/utils/embeddings.ts
+// src/utils/embeddings/query-embed.ts
 
 import path from 'path'
 import { fileURLToPath } from 'url'
@@ -45,7 +45,7 @@ export async function queryEmbeddings(question: string): Promise<void> {
         vec_distance_cosine(vector, :query) AS distance
       FROM embeddings
       ORDER BY distance
-      LIMIT 50
+      LIMIT 5
     `
     const rows = db.prepare(sql).all({ query: queryBlob })
     console.log(`Top matches for: "${question}"`)
@@ -55,17 +55,19 @@ export async function queryEmbeddings(question: string): Promise<void> {
       return
     }
 
-    const topDoc = rows[0]
-    const topFilename = (topDoc as { filename: string }).filename
-    const contentPath = path.join(contentDir, topFilename)
-    let fileContent = ''
-    try {
-      fileContent = fs.readFileSync(contentPath, 'utf8')
-    } catch (err) {
-      console.error(`Error reading file for context: ${contentPath}`, err)
+    let combinedContent = ''
+    for (const row of rows) {
+      const filename = (row as { filename: string }).filename
+      const contentPath = path.join(contentDir, filename)
+      let fileContent = ''
+      try {
+        fileContent = fs.readFileSync(contentPath, 'utf8')
+      } catch (err) {
+        console.error(`Error reading file for context: ${contentPath}`, err)
+      }
+      combinedContent += `\n\n---\n**File: ${filename}**\n${fileContent}\n`
     }
-
-    const answer = await callChatCompletion(question, fileContent, OPENAI_API_KEY)
+    const answer = await callChatCompletion(question, combinedContent, OPENAI_API_KEY)
     console.log('Answer:\n', answer)
   } finally {
     db.close()

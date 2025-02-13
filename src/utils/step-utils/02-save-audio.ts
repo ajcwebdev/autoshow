@@ -1,7 +1,7 @@
 // src/utils/command-utils/save-audio.ts
 
 import { unlink } from 'node:fs/promises'
-import { l, err } from '../../utils/logging'
+import { l, err } from '../logging'
 
 /**
  * Removes temporary files generated during content processing.

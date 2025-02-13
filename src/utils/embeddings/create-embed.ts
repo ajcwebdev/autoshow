@@ -1,4 +1,4 @@
-// src/utils/embeddings.ts
+// src/utils/embeddings/create-embed.ts
 
 import path from 'path'
 import { fileURLToPath } from 'url'

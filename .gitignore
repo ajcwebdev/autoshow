@@ -5,13 +5,9 @@ whisper.cpp
 .env
 .idea
 build
-deno.lock
 out
 dist
-LLM.md
-tsconfig.tsbuildinfo
 show_notes.db
 ollama.log
 embeddings.db
 embeddings.json
-llm-txt

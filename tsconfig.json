@@ -36,7 +36,7 @@
     "allowUnreachableCode": false,                // Error on unreachable code
 
     // **Build and Performance**
-    "skipLibCheck": false,                        // Do not skip type checking of declaration files
+    "skipLibCheck": true,                         // Skip type checking of declaration files
     "incremental": true,                          // Enable incremental compilation for faster rebuilds
 
     // **Emit Configuration**

@@ -12,6 +12,7 @@
 
 import fs from 'fs'
 import { exec } from 'child_process'
+import path from 'path'
 
 // Check for correct number of arguments
 if (process.argv.length !== 4) {
@@ -46,6 +47,14 @@ for (const line of lines) {
 if (timestamps.length === 0) {
   console.error(`No chapters found in ${markdownFile}`)
   process.exit(1)
+}
+
+// Derive directory name from markdown file
+const baseName = path.basename(markdownFile, path.extname(markdownFile))
+const sanitizedBaseName = sanitizeTitle(baseName)
+const directoryPath = `content/${sanitizedBaseName}`
+if (!fs.existsSync(directoryPath)) {
+  fs.mkdirSync(directoryPath, { recursive: true })
 }
 
 /**
@@ -149,7 +158,7 @@ for (let i = 0; i < timestamps.length; i++) {
   )
 
   try {
-    const ffmpegCmd = `ffmpeg -y -ss ${startTime} -i "${videoFile}" -t ${durationSeconds} -c copy "content/${outputFile}"`
+    const ffmpegCmd = `ffmpeg -y -ss ${startTime} -i "${videoFile}" -t ${durationSeconds} -c copy "${directoryPath}/${outputFile}"`
     await execPromise(ffmpegCmd)
   } catch (err: any) {
     console.error(`Error running ffmpeg for clip "${title}": ${err.error?.message || err}`)

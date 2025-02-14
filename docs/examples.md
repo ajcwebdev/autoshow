@@ -197,6 +197,12 @@ npm run as -- \
   "https://feeds.transistor.fm/fsjam-podcast/"
 ```
 
+Process multiple RSS feeds listed in a `.md` file:
+
+```bash
+npm run as -- --rssURLs "content/example-rss-feeds.md" --whisper tiny --last 2
+```
+
 Download episodes from a specific date:
 
 ```bash

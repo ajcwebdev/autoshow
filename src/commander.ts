@@ -14,6 +14,7 @@ import { fileURLToPath } from 'node:url'
 import { Command } from 'commander'
 import { processAction, validateInputCLI, envVarsMap, handleEarlyExitIfNeeded } from './utils/validation/cli'
 import { l, err, logSeparator } from './utils/logging'
+import { parseAndAppendRssUrls } from './utils/command-utils/rss-utils'
 
 import type { ProcessingOptions } from './utils/types'
 
@@ -31,13 +32,14 @@ program
   .description('Automate processing of audio and video content from various sources.')
   .usage('[options]')
   // Input source options
-  .option('-v, --video <url>', 'Process a single YouTube video')
-  .option('-p, --playlist <playlistUrl>', 'Process all videos in a YouTube playlist')
-  .option('-c, --channel <channelUrl>', 'Process all videos in a YouTube channel')
-  .option('-u, --urls <filePath>', 'Process YouTube videos from a list of URLs in a file')
-  .option('-f, --file <filePath>', 'Process a local audio or video file')
-  .option('-r, --rss <rssURLs...>', 'Process one or more podcast RSS feeds')
+  .option('--video <url>', 'Process a single YouTube video')
+  .option('--playlist <playlistUrl>', 'Process all videos in a YouTube playlist')
+  .option('--channel <channelUrl>', 'Process all videos in a YouTube channel')
+  .option('--urls <filePath>', 'Process YouTube videos from a list of URLs in a file')
+  .option('--file <filePath>', 'Process a local audio or video file')
+  .option('--rss <rssURLs...>', 'Process one or more podcast RSS feeds')
   // RSS feed specific options
+  .option('--rssURLs <filePath>', 'Process multiple podcast RSS feeds from a file')
   .option('--item <itemUrls...>', 'Process specific items in the RSS feed by providing their audio URLs')
   .option('--order <order>', 'Specify the order for RSS feed processing (newest or oldest)')
   .option('--skip <number>', 'Number of items to skip when processing RSS feed', parseInt)
@@ -98,6 +100,9 @@ program.action(async (options: ProcessingOptions) => {
   l.opts(``)
 
   await handleEarlyExitIfNeeded(options)
+
+  // Extract RSS URLs from file if needed
+  await parseAndAppendRssUrls(options)
 
   // Validate action, LLM, and transcription inputs
   const { action, llmServices, transcriptServices } = validateInputCLI(options)

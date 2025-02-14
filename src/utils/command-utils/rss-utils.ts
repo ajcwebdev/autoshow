@@ -5,6 +5,36 @@ import { l, err } from '../../utils/logging'
 import type { ProcessingOptions, RSSItem, HandlerFunction } from '../types'
 
 /**
+ * Reads the file specified in --rssURLs, parses RSS feed URLs from each line, and appends them to options.rss.
+ *
+ * @param {ProcessingOptions} options - The command-line options
+ * @returns {Promise<void>} A promise that resolves once the RSS feed URLs have been appended
+ */
+export async function parseAndAppendRssUrls(options: ProcessingOptions): Promise<void> {
+  if (!options['rssURLs']) {
+    return
+  }
+  const fsPromises = await import('node:fs/promises')
+  const content = await fsPromises.readFile(options['rssURLs'], 'utf8')
+  const rssFileUrls = content
+    .split('\n')
+    .map((line) => line.trim())
+    .filter((line) => line && !line.startsWith('#'))
+
+  if (rssFileUrls.length === 0) {
+    err('Error: No RSS URLs found in the file.')
+    process.exit(1)
+  }
+  if (!options.rss) {
+    options.rss = []
+  }
+  if (typeof options.rss === 'string') {
+    options.rss = [options.rss]
+  }
+  options.rss.push(...rssFileUrls)
+}
+
+/**
  * Validates RSS flags (e.g., --last, --skip, --order, --date, --lastDays) without requiring feed data.
  * 
  * @param options - The command-line options provided by the user

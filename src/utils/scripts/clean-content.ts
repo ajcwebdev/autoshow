@@ -12,6 +12,7 @@ const ALLOWED_FILES = new Set([
   '.gitkeep',
   'audio.mp3',
   'example-urls.md',
+  'example-rss-feeds.md',
   'custom-prompt.md',
 ])
 

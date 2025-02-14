@@ -2,7 +2,33 @@
 
 import chalk from 'chalk'
 
-import type { ChainableLogger, SeparatorParams } from './types/logging'
+/**
+ * A union type representing the various logging contexts for which a separator can be logged.
+ */
+export type SeparatorParams = {
+  // The context type: channel, playlist, or urls
+  type: 'channel' | 'playlist' | 'urls'
+  // The zero-based index of the current item being processed
+  index: number
+  // The total number of items to be processed
+  total: number
+  // The URL string to be displayed
+  descriptor: string
+} | {
+  // The context type: rss
+  type: 'rss'
+  // The zero-based index of the current item being processed
+  index: number
+  // The total number of items to be processed
+  total: number
+  // The title string to be displayed
+  descriptor: string
+} | {
+  // The context type: completion
+  type: 'completion'
+  // The action string that was completed successfully
+  descriptor: string
+}
 
 /**
  * Logs the first step of a top-level function call with its relevant options or parameters.
@@ -59,6 +85,21 @@ export function logSeparator(params: SeparatorParams) {
       l.final(`================================================================================================\n`)
       break
   }
+}
+
+/**
+ * Interface for chainable logger with style methods.
+ */
+export interface ChainableLogger {
+  (...args: any[]): void
+  step: (...args: any[]) => void
+  dim: (...args: any[]) => void
+  success: (...args: any[]) => void
+  warn: (...args: any[]) => void
+  opts: (...args: any[]) => void
+  info: (...args: any[]) => void
+  wait: (...args: any[]) => void
+  final: (...args: any[]) => void
 }
 
 /**

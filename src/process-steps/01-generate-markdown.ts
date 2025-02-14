@@ -1,10 +1,10 @@
 // src/process-steps/01-generate-markdown.ts
 
 import { basename, extname } from 'node:path'
-import { execFilePromise } from '../utils/validate-cli'
-import { sanitizeTitle, buildFrontMatter } from '../utils/step-utils/markdown-utils'
+import { execFilePromise } from '../utils/validation/cli'
+import { sanitizeTitle, buildFrontMatter } from '../utils/step-utils/01-markdown-utils'
 import { l, err, logInitialFunctionCall } from '../utils/logging'
-import type { ProcessingOptions, RSSItem } from '../utils/types/step-types'
+import type { ProcessingOptions, RSSItem } from '../utils/types'
 
 /**
  * Generates markdown content with front matter based on the provided options and input.

@@ -2,13 +2,13 @@
 
 import { generateMarkdown } from '../process-steps/01-generate-markdown'
 import { downloadAudio } from '../process-steps/02-download-audio'
+import { saveAudio } from '../utils/step-utils/02-save-audio'
 import { runTranscription } from '../process-steps/03-run-transcription'
 import { selectPrompts } from '../process-steps/04-select-prompt'
 import { runLLM } from '../process-steps/05-run-llm'
-import { saveAudio } from '../utils/command-utils/save-audio'
 import { err, logInitialFunctionCall } from '../utils/logging'
 
-import type { ProcessingOptions } from '../utils/types/step-types'
+import type { ProcessingOptions } from '../utils/types'
 
 /**
  * Processes a single video by executing a series of operations:

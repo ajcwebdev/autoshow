@@ -1,6 +1,4 @@
-#!/usr/bin/env node
-
-// scripts/create-embeddings-and-sqlite.js
+// src/utils/embeddings/create-embed.ts
 
 import path from 'path'
 import { fileURLToPath } from 'url'
@@ -10,41 +8,39 @@ import { env } from 'node:process'
 import Database from 'better-sqlite3'
 import * as sqliteVec from 'sqlite-vec'
 
-// Hard-coded filenames for the JSON output and database file
-const outputJSON = 'embeddings.json'  // where we'll save all embeddings
-const dbFile = 'embeddings.db'  // where we'll store embeddings in SQLite
-
-async function main() {
-  // Derive the current script directory
+/**
+ * Creates embeddings for all .md files found in the ../content directory
+ * and stores them in both a JSON file and an SQLite database. This function
+ * replicates the logic of the original create-embeddings-and-sqlite.js script.
+ *
+ * @async
+ * @function createEmbeddingsAndSQLite
+ * @returns {Promise<void>} Promise that resolves when embeddings are created and stored
+ * @throws {Error} If the OPENAI_API_KEY is missing or an error occurs in file reading/writing
+ */
+export async function createEmbeddingsAndSQLite(): Promise<void> {
   const __filename = fileURLToPath(import.meta.url)
   const __dirname = path.dirname(__filename)
-  // Always assume ../content is top-level next to scripts
-  const contentDir = path.resolve(__dirname, '..', 'content')
+  const contentDir = path.resolve(__dirname, '..', '..', '..', 'content')
 
-  // Check for an OpenAI API key
   const openaiApiKey = env['OPENAI_API_KEY']
   if (!openaiApiKey) {
-    console.error('Please set the OPENAI_API_KEY environment variable.')
-    process.exit(1)
+    throw new Error('Please set the OPENAI_API_KEY environment variable.')
   }
 
-  // Read the top-level content directory and filter .md files
   let mdFiles = []
   try {
     const files = await readdir(contentDir)
     mdFiles = files.filter(file => file.toLowerCase().endsWith('.md'))
     if (!mdFiles.length) {
       console.log('No .md files found in the content directory.')
-      process.exit(0)
+      return
     }
   } catch (err) {
-    console.error(`Error reading directory: ${contentDir}`, err)
-    process.exit(1)
+    throw new Error(`Error reading directory: ${contentDir} - ${err}`)
   }
 
-  // Create an object to hold filename -> embedding
-  const embeddings = {}
-  // Loop over .md files, call OpenAI for each
+  const embeddings: Record<string, number[]> = {}
   for (const file of mdFiles) {
     const filePath = path.join(contentDir, file)
     const content = await readFile(filePath, 'utf8')
@@ -57,7 +53,7 @@ async function main() {
         },
         body: JSON.stringify({
           input: content,
-          model: 'text-embedding-3-small',
+          model: 'text-embedding-3-large',
           encoding_format: 'float'
         })
       })
@@ -72,33 +68,26 @@ async function main() {
     }
   }
 
-  // Write the embeddings to a JSON file
-  fs.writeFileSync(outputJSON, JSON.stringify(embeddings, null, 2), 'utf8')
-  console.log(`Saved embeddings to "${outputJSON}"`)
+  fs.writeFileSync('embeddings.json', JSON.stringify(embeddings, null, 2), 'utf8')
+  console.log(`Saved embeddings to "embeddings.json"`)
 
-  // Create or open the SQLite database
-  const db = new Database(dbFile)
-  // Load the sqlite-vec extension
+  const db = new Database('embeddings.db')
   sqliteVec.load(db)
-  // Ensure embeddings table exists
   db.exec(`
     CREATE TABLE IF NOT EXISTS embeddings (
       filename TEXT PRIMARY KEY,
       vector BLOB
     ) STRICT
   `)
-  // Prepare insert statement
+
   const insert = db.prepare('INSERT OR REPLACE INTO embeddings (filename, vector) VALUES (?, ?)')
   let count = 0
-  // Insert embeddings into the table
   for (const [filename, floatArray] of Object.entries(embeddings)) {
     const float32 = new Float32Array(floatArray)
     const blob = new Uint8Array(float32.buffer)
     insert.run(filename, blob)
     count++
   }
-  console.log(`Inserted ${count} embeddings into "${dbFile}".`)
+  console.log(`Inserted ${count} embeddings into 'embeddings.db'.`)
   db.close()
 }
-
-main()

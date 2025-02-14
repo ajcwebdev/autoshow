@@ -1,22 +1,139 @@
 // src/utils/llm-utils.ts
 
-import { spawn } from 'node:child_process'
-import { readFile } from 'node:fs/promises'
-import { callOllama } from '../../llms/ollama'
-import { callChatGPT } from '../../llms/chatgpt'
-import { callClaude } from '../../llms/claude'
-import { callGemini } from '../../llms/gemini'
-import { callDeepSeek } from '../../llms/deepseek'
-import { callFireworks } from '../../llms/fireworks'
-import { callTogether } from '../../llms/together'
-
 import chalk from 'chalk'
+import { readFile } from 'node:fs/promises'
 import { l, err } from '../logging'
 import { ALL_MODELS } from '../../../shared/constants'
+import { runLLM } from '../../process-steps/05-run-llm'
 
-import type { OllamaTagsResponse } from '../types/llms'
-import type { LogLLMCost } from '../types/logging'
-import type { ProcessingOptions } from '../types/step-types'
+import type { ProcessingOptions, EpisodeMetadata } from '../types'
+import type { LogLLMCost } from '../../../shared/constants'
+
+/**
+ * @public
+ * @typedef {Object} ParsedPromptFile
+ * @property {string} frontMatter - The extracted front matter (including --- lines).
+ * @property {string} prompt - The prompt text to be processed.
+ * @property {string} transcript - The transcript text to be processed (if any).
+ * @property {EpisodeMetadata} metadata - The metadata object parsed from front matter.
+ */
+
+/**
+ * Utility function to parse a markdown file that may contain front matter,
+ * a prompt, and optionally a transcript section (marked by "## Transcript").
+ * 
+ * Front matter is assumed to be between the first pair of '---' lines at the top.
+ * The content after front matter and before "## Transcript" is considered prompt,
+ * and any content after "## Transcript" is considered transcript.
+ *
+ * Any recognized YAML keys in the front matter are mapped into the metadata object.
+ * 
+ * @param {string} fileContent - The content of the markdown file
+ * @returns {ParsedPromptFile} An object containing frontMatter, prompt, transcript, and metadata
+ */
+function parsePromptFile(fileContent: string) {
+  let frontMatter = ''
+  let prompt = ''
+  let transcript = ''
+  let metadata: EpisodeMetadata = {
+    showLink: '',
+    channel: '',
+    channelURL: '',
+    title: '',
+    description: '',
+    publishDate: '',
+    coverImage: ''
+  }
+
+  const lines = fileContent.split('\n')
+  let readingFrontMatter = false
+  let frontMatterDone = false
+  let readingTranscript = false
+
+  for (const line of lines) {
+    if (!frontMatterDone && line.trim() === '---') {
+      readingFrontMatter = !readingFrontMatter
+      frontMatter += `${line}\n`
+      if (!readingFrontMatter) {
+        frontMatterDone = true
+      }
+      continue
+    }
+
+    if (!frontMatterDone && readingFrontMatter) {
+      frontMatter += `${line}\n`
+      const match = line.match(/^(\w+):\s*"?([^"]+)"?/)
+      if (match) {
+        const key = match[1]
+        const value = match[2]
+        if (key === 'showLink') metadata.showLink = value
+        if (key === 'channel') metadata.channel = value
+        if (key === 'channelURL') metadata.channelURL = value
+        if (key === 'title') metadata.title = value
+        if (key === 'description') metadata.description = value
+        if (key === 'publishDate') metadata.publishDate = value
+        if (key === 'coverImage') metadata.coverImage = value
+      }
+      continue
+    }
+
+    if (line.trim().toLowerCase().startsWith('## transcript')) {
+      readingTranscript = true
+      transcript += `${line}\n`
+      continue
+    }
+
+    if (readingTranscript) {
+      transcript += `${line}\n`
+    } else {
+      prompt += `${line}\n`
+    }
+  }
+
+  return { frontMatter, prompt, transcript, metadata }
+}
+
+/**
+ * Reads a prompt markdown file and runs Step 5 (LLM processing) directly,
+ * bypassing the earlier steps of front matter generation, audio download, and transcription.
+ * 
+ * The markdown file is expected to contain optional front matter delimited by '---' lines,
+ * followed by prompt text, and optionally a "## Transcript" section.
+ * 
+ * This function extracts that content and calls {@link runLLM} with the user-specified LLM service.
+ * 
+ * @param {string} filePath - The path to the .md file containing front matter, prompt, and optional transcript
+ * @param {ProcessingOptions} options - Configuration options (including any LLM model flags)
+ * @param {string} llmServices - The chosen LLM service (e.g., 'chatgpt', 'claude', etc.)
+ * @returns {Promise<void>} A promise that resolves when the LLM processing completes
+ */
+export async function runLLMFromPromptFile(
+  filePath: string,
+  options: ProcessingOptions,
+  llmServices: string,
+) {
+  try {
+    const fileContent = await readFile(filePath, 'utf8')
+    const { frontMatter, prompt, transcript, metadata } = parsePromptFile(fileContent)
+
+    // Derive a base "finalPath" from the file path, removing the .md extension if present
+    const finalPath = filePath.replace(/\.[^.]+$/, '')
+
+    // Execute Step 5
+    await runLLM(
+      options,
+      finalPath,
+      frontMatter,
+      prompt,
+      transcript,
+      metadata,
+      llmServices
+    )
+  } catch (error) {
+    err(`Error in runLLMFromPromptFile: ${(error as Error).message}`)
+    throw error
+  }
+}
 
 /**
  * Finds the model configuration based on the model key
@@ -190,137 +307,6 @@ export async function estimateLLMCost(
 
   } catch (error) {
     err(`Error estimating LLM cost: ${(error as Error).message}`)
-    throw error
-  }
-}
-
-// Map of available LLM service handlers
-export const LLM_FUNCTIONS = {
-  ollama: callOllama,
-  chatgpt: callChatGPT,
-  claude: callClaude,
-  gemini: callGemini,
-  deepseek: callDeepSeek,
-  fireworks: callFireworks,
-  together: callTogether,
-}
-
-/**
- * checkOllamaServerAndModel()
- * ---------------------
- * Checks if the Ollama server is running, attempts to start it if not,
- * and ensures the specified model is available (pulling if needed).
- *
- * @param {string} ollamaHost - The Ollama host
- * @param {string} ollamaPort - The Ollama port
- * @param {string} ollamaModelName - The Ollama model name (e.g. 'qwen2.5:0.5b')
- * @returns {Promise<void>}
- */
-export async function checkOllamaServerAndModel(
-  ollamaHost: string,
-  ollamaPort: string,
-  ollamaModelName: string
-) {
-  // Helper to check if the Ollama server responds
-  async function checkServer(): Promise<boolean> {
-    try {
-      const serverResponse = await fetch(`http://${ollamaHost}:${ollamaPort}`)
-      return serverResponse.ok
-    } catch (error) {
-      return false
-    }
-  }
-
-  l.dim(`[checkOllamaServerAndModel] Checking server: http://${ollamaHost}:${ollamaPort}`)
-
-  // 1) Confirm the server is running
-  if (await checkServer()) {
-    l.dim('\n  Ollama server is already running...')
-  } else {
-    // If the Docker-based environment uses 'ollama' as hostname but it's not up, that's likely an error
-    if (ollamaHost === 'ollama') {
-      throw new Error('Ollama server is not running. Please ensure the Ollama server is running and accessible.')
-    } else {
-      // Attempt to spawn an Ollama server locally
-      l.dim('\n  Ollama server is not running. Attempting to start it locally...')
-      const ollamaProcess = spawn('ollama', ['serve'], {
-        detached: true,
-        stdio: 'ignore',
-      })
-      ollamaProcess.unref()
-
-      // Wait up to ~30 seconds for the server to respond
-      let attempts = 0
-      while (attempts < 30) {
-        if (await checkServer()) {
-          l.dim('    - Ollama server is now ready.\n')
-          break
-        }
-        await new Promise((resolve) => setTimeout(resolve, 1000))
-        attempts++
-      }
-      if (attempts === 30) {
-        throw new Error('Ollama server failed to become ready in time.')
-      }
-    }
-  }
-
-  // 2) Confirm the model is available; if not, pull it
-  l.dim(`  Checking if model is available: ${ollamaModelName}`)
-  try {
-    const tagsResponse = await fetch(`http://${ollamaHost}:${ollamaPort}/api/tags`)
-    if (!tagsResponse.ok) {
-      throw new Error(`HTTP error! status: ${tagsResponse.status}`)
-    }
-
-    const tagsData = (await tagsResponse.json()) as OllamaTagsResponse
-    const isModelAvailable = tagsData.models.some((m) => m.name === ollamaModelName)
-    l.dim(`[checkOllamaServerAndModel] isModelAvailable=${isModelAvailable}`)
-
-    if (!isModelAvailable) {
-      l.dim(`\n  Model ${ollamaModelName} is NOT available; pulling now...`)
-      const pullResponse = await fetch(`http://${ollamaHost}:${ollamaPort}/api/pull`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: ollamaModelName }),
-      })
-      if (!pullResponse.ok) {
-        throw new Error(`Failed to initiate pull for model ${ollamaModelName}`)
-      }
-      if (!pullResponse.body) {
-        throw new Error('Response body is null while pulling model.')
-      }
-
-      const reader = pullResponse.body.getReader()
-      const decoder = new TextDecoder()
-
-      // Stream the JSON lines from the server
-      while (true) {
-        const { done, value } = await reader.read()
-        if (done) break
-
-        const chunk = decoder.decode(value)
-        const lines = chunk.split('\n')
-        for (const line of lines) {
-          if (line.trim() === '') continue
-
-          // Each line should be a JSON object from the Ollama server
-          try {
-            const parsedLine = JSON.parse(line)
-            if (parsedLine.status === 'success') {
-              l.dim(`    - Model ${ollamaModelName} pulled successfully.\n`)
-              break
-            }
-          } catch (parseError) {
-            err(`Error parsing JSON while pulling model: ${parseError}`)
-          }
-        }
-      }
-    } else {
-      l.dim(`\n  Model ${ollamaModelName} is already available.\n`)
-    }
-  } catch (error) {
-    err(`Error checking/pulling model: ${(error as Error).message}`)
     throw error
   }
 }

@@ -4,8 +4,9 @@ import { env } from 'node:process'
 import Anthropic from '@anthropic-ai/sdk'
 import { CLAUDE_MODELS } from '../../shared/constants'
 import { err } from '../utils/logging'
-import { logLLMCost } from '../utils/step-utils/llm-utils'
-import type { ClaudeModelType } from '../utils/types/llms'
+import { logLLMCost } from '../utils/step-utils/05-llm-utils'
+
+import type { ClaudeModelType } from '../../shared/constants'
 
 /**
  * Main function to call Claude API and extract text content from the response.

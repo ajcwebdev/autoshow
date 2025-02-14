@@ -1,9 +1,8 @@
-// src/utils/validate-req.ts
+// src/utils/requests.ts
 
-import { TRANSCRIPTION_SERVICES, LLM_OPTIONS } from '../../shared/constants'
-import { XMLParser } from 'fast-xml-parser'
+import { TRANSCRIPTION_SERVICES, LLM_OPTIONS } from '../../../shared/constants'
 
-import type { ProcessingOptions } from './types/step-types'
+import type { ProcessingOptions } from '../types'
 
 /**
  * Maps server-side request body keys to corresponding environment variables.
@@ -95,14 +94,3 @@ export const otherOptions: string[] = [
   'saveAudio',
   'info',
 ]
-
-/**
- * Configure XML parser for RSS feed processing.
- * Handles attributes without prefixes and allows boolean values.
- *
- */
-export const parser = new XMLParser({
-  ignoreAttributes: false,
-  attributeNamePrefix: '',
-  allowBooleanAttributes: true,
-})

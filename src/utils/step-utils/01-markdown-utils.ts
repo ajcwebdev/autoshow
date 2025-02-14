@@ -1,10 +1,10 @@
 // src/utils/step-utils/markdown-utils.ts
 
 import { writeFile } from 'node:fs/promises'
-import { execFilePromise } from '../../utils/validate-cli'
+import { execFilePromise } from '../validation/cli'
 import { l, err } from '../logging'
 
-import type { VideoMetadata, VideoInfo, RSSItem } from '../types/step-types'
+import type { VideoMetadata, VideoInfo, RSSItem } from '../types'
 
 /**
  * Saves metadata or feed information to a JSON file, consolidating the logic from the original

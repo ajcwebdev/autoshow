@@ -11,10 +11,10 @@
 import { readFile } from 'node:fs/promises'
 import { env } from 'node:process'
 import { l, err } from '../utils/logging'
-import { logTranscriptionCost, formatAssemblyTranscript } from '../utils/step-utils/transcription-utils'
+import { logTranscriptionCost, formatAssemblyTranscript } from '../utils/step-utils/03-transcription-utils'
 import { ASSEMBLY_MODELS } from '../../shared/constants'
-import type { ProcessingOptions } from '../utils/types/step-types'
-import type { AssemblyModelType } from '../utils/types/transcription'
+import type { ProcessingOptions } from '../utils/types'
+import type { AssemblyModelType } from '../../shared/constants'
 
 const BASE_URL = 'https://api.assemblyai.com/v2'
 

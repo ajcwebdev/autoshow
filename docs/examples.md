@@ -197,6 +197,12 @@ npm run as -- \
   "https://feeds.transistor.fm/fsjam-podcast/"
 ```
 
+Process multiple RSS feeds listed in a `.md` file:
+
+```bash
+npm run as -- --rssURLs "content/example-rss-feeds.md" --whisper tiny --last 2
+```
+
 Download episodes from a specific date:
 
 ```bash
@@ -629,17 +635,30 @@ npm run as -- \
   --saveAudio
 ```
 
-## Chat with Show Notes
+## Create Embeddings
 
-***Note: Very rough prototype for upcoming "chat with your show notes" feature using OpenAI and Claude embeddings.***
+If you have generated multiple markdown files in the `content` directory, you can create embeddings for all the files and query them with ChatGPT.
 
-*Not currently integrated into the CLI, backend server, or frontend and only supports OpenAI.*
+*Note: Does not support creating embeddings for nested directory structures and does not support other LLMs yet.*
 
 ```bash
-node create-embeddings-and-sqlite.js <directory> <outputJSON> [dbFile]
+npm run as -- --createEmbeddings
 ```
 
 ```bash
-OPENAI_API_KEY="" node scripts/create-embeddings-and-sqlite.js content embeddings.json embeddings.db
-OPENAI_API_KEY="" node scripts/read-and-query-embeddings.js "What's the deal with these show notes? Answer in the voice of Jerry Seinfeld."
+npm run as -- --queryEmbeddings "What's the deal with these show notes? Answer in the voice of Jerry Seinfeld."
+```
+
+## Create Clips
+
+If your show note chapters are formatted correctly with three headers `###`, and you've saved the audio file, you can run this command to automatically create multiple audio files corresponding to the timestamps for each clip.
+
+```bash
+npm run as -- --rss "https://ajcwebdev.substack.com/feed" --saveAudio --chatgpt
+```
+
+```bash
+tsx src/utils/scripts/create-clips.ts \
+  content/2021-05-10-thoughts-on-lambda-school-layoffs-chatgpt-shownotes.md \
+  content/2021-05-10-thoughts-on-lambda-school-layoffs.wav
 ```

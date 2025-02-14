@@ -12,14 +12,11 @@
 import { argv, exit } from 'node:process'
 import { fileURLToPath } from 'node:url'
 import { Command } from 'commander'
-import { selectPrompts } from './process-steps/04-select-prompt'
-import { processAction, validateInputCLI, validateLLM, validateTranscription, envVarsMap } from './utils/validate-cli'
+import { processAction, validateInputCLI, envVarsMap, handleEarlyExitIfNeeded } from './utils/validation/cli'
 import { l, err, logSeparator } from './utils/logging'
-import { estimateLLMCost } from './utils/step-utils/llm-utils'
-import { estimateTranscriptCost } from './utils/step-utils/transcription-utils'
-import { runLLMFromPromptFile } from './process-steps/05-run-llm'
+import { parseAndAppendRssUrls } from './utils/command-utils/rss-utils'
 
-import type { ProcessingOptions } from './utils/types/step-types'
+import type { ProcessingOptions } from './utils/types'
 
 /**
  * Defines the command-line interface options and descriptions.
@@ -35,13 +32,14 @@ program
   .description('Automate processing of audio and video content from various sources.')
   .usage('[options]')
   // Input source options
-  .option('-v, --video <url>', 'Process a single YouTube video')
-  .option('-p, --playlist <playlistUrl>', 'Process all videos in a YouTube playlist')
-  .option('-c, --channel <channelUrl>', 'Process all videos in a YouTube channel')
-  .option('-u, --urls <filePath>', 'Process YouTube videos from a list of URLs in a file')
-  .option('-f, --file <filePath>', 'Process a local audio or video file')
-  .option('-r, --rss <rssURLs...>', 'Process one or more podcast RSS feeds')
+  .option('--video <url>', 'Process a single YouTube video')
+  .option('--playlist <playlistUrl>', 'Process all videos in a YouTube playlist')
+  .option('--channel <channelUrl>', 'Process all videos in a YouTube channel')
+  .option('--urls <filePath>', 'Process YouTube videos from a list of URLs in a file')
+  .option('--file <filePath>', 'Process a local audio or video file')
+  .option('--rss <rssURLs...>', 'Process one or more podcast RSS feeds')
   // RSS feed specific options
+  .option('--rssURLs <filePath>', 'Process multiple podcast RSS feeds from a file')
   .option('--item <itemUrls...>', 'Process specific items in the RSS feed by providing their audio URLs')
   .option('--order <order>', 'Specify the order for RSS feed processing (newest or oldest)')
   .option('--skip <number>', 'Number of items to skip when processing RSS feed', parseInt)
@@ -79,6 +77,9 @@ program
   .option('--deepseekApiKey <key>', 'Specify DeepSeek API key (overrides .env variable)')
   .option('--togetherApiKey <key>', 'Specify Together API key (overrides .env variable)')
   .option('--fireworksApiKey <key>', 'Specify Fireworks API key (overrides .env variable)')
+  // Create and query embeddings based on show notes
+  .option('--createEmbeddings', 'Create embeddings for .md content and store them in embeddings.db')
+  .option('--queryEmbeddings <question>', 'Query embeddings by question from embeddings.db')
 
 /**
  * Main action for the program.
@@ -98,56 +99,10 @@ program.action(async (options: ProcessingOptions) => {
   l.opts(JSON.stringify(options, null, 2))
   l.opts(``)
 
-  // If the user just wants to print prompts, do that and exit
-  if (options.printPrompt) {
-    const prompt = await selectPrompts({ printPrompt: options.printPrompt })
-    console.log(prompt)
-    exit(0)
-  }
+  await handleEarlyExitIfNeeded(options)
 
-  // Handle transcript cost estimation
-  if (options.transcriptCost) {
-    const transcriptServices = validateTranscription(options)
-
-    if (!transcriptServices) {
-      err('Please specify which transcription service to use (e.g., --deepgram, --assembly, --whisper).')
-      exit(1)
-    }
-
-    await estimateTranscriptCost(options, transcriptServices)
-    exit(0)
-  }
-
-  // Handle LLM cost estimation
-  if (options.llmCost) {
-    const llmService = validateLLM(options)
-
-    if (!llmService) {
-      err('Please specify which LLM service to use (e.g., --chatgpt, --claude, --ollama, etc.).')
-      exit(1)
-    }
-
-    await estimateLLMCost(options, llmService)
-    exit(0)
-  }
-
-  /**
-   * Handle running Step 5 (LLM) directly with a prompt file
-   * 
-   * Example usage:
-   * npm run as -- --runLLM "content/audio-prompt.md" --chatgpt
-   */
-  if (options.runLLM) {
-    const llmService = validateLLM(options)
-
-    if (!llmService) {
-      err('Please specify which LLM service to use (e.g., --chatgpt, --claude, --ollama, etc.).')
-      exit(1)
-    }
-
-    await runLLMFromPromptFile(options.runLLM, options, llmService)
-    exit(0)
-  }
+  // Extract RSS URLs from file if needed
+  await parseAndAppendRssUrls(options)
 
   // Validate action, LLM, and transcription inputs
   const { action, llmServices, transcriptServices } = validateInputCLI(options)

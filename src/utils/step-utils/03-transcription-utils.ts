@@ -3,10 +3,10 @@
 import { existsSync } from 'node:fs'
 import { l, err } from '../logging'
 import { DEEPGRAM_MODELS, ASSEMBLY_MODELS } from '../../../shared/constants'
-import { execPromise } from '../../utils/validate-cli'
+import { execPromise } from '../validation/cli'
 
-import type { ProcessingOptions } from '../types/step-types'
-import type { TranscriptionCostInfo, DeepgramModelType, AssemblyModelType, WhisperOutput } from '../types/transcription'
+import type { ProcessingOptions } from '../types'
+import type { DeepgramModelType, AssemblyModelType, WhisperOutput, TranscriptionCostInfo }from '../../../shared/constants'
 
 /**
  * Asynchronously logs the estimated transcription cost based on audio duration and per-minute cost.

@@ -11,10 +11,10 @@
 import { readFile } from 'node:fs/promises'
 import { env } from 'node:process'
 import { l, err } from '../utils/logging'
-import { logTranscriptionCost, formatDeepgramTranscript } from '../utils/step-utils/transcription-utils'
+import { logTranscriptionCost, formatDeepgramTranscript } from '../utils/step-utils/03-transcription-utils'
 import { DEEPGRAM_MODELS } from '../../shared/constants'
-import type { ProcessingOptions } from '../utils/types/step-types'
-import type { DeepgramModelType } from '../utils/types/transcription'
+import type { ProcessingOptions } from '../utils/types'
+import type { DeepgramModelType } from '../../shared/constants'
 
 /**
  * Main function to handle transcription using Deepgram API.

@@ -1,10 +1,6 @@
 #!/usr/bin/env bash
-# scripts/setup.sh
 
-# ------------------------------------------------------------------------------
-# A single script to set up your environment on macOS (brew) or Linux (apt).
-# Installs yt-dlp, ffmpeg, and ollama if they are missing, plus sets up whisper.cpp.
-# ------------------------------------------------------------------------------
+# src/utils/scripts/setup.sh
 
 # ------------------------------------------------------------------------------
 # 1. OS DETECTION
@@ -156,7 +152,6 @@ fi
 # If Ollama is installed, let's start the server and pull models
 if command_exists ollama; then
   check_ollama_server
-#   check_and_pull_model "llama3.2:1b"
   check_and_pull_model "qwen2.5:0.5b"
 fi
 

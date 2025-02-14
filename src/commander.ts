@@ -1,6 +1,4 @@
 // src/commander.ts
-// We removed the logic handling printPrompt, transcriptCost, llmCost, and runLLM,
-// and replaced it with a single call to handleEarlyExitIfNeeded(options).
 
 /**
  * Autoshow CLI Application
@@ -16,8 +14,6 @@ import { fileURLToPath } from 'node:url'
 import { Command } from 'commander'
 import { processAction, validateInputCLI, envVarsMap, handleEarlyExitIfNeeded } from './utils/validation/cli'
 import { l, err, logSeparator } from './utils/logging'
-import { createEmbeddingsAndSQLite } from './utils/embeddings/create-embed'
-import { queryEmbeddings } from './utils/embeddings/query-embed'
 
 import type { ProcessingOptions } from './utils/types'
 
@@ -102,27 +98,6 @@ program.action(async (options: ProcessingOptions) => {
   l.opts(``)
 
   await handleEarlyExitIfNeeded(options)
-
-  if (options['createEmbeddings']) {
-    try {
-      await createEmbeddingsAndSQLite()
-      console.log('Embeddings created successfully.')
-    } catch (error) {
-      err(`Error creating embeddings: ${(error as Error).message}`)
-      exit(1)
-    }
-    exit(0)
-  }
-
-  if (options['queryEmbeddings']) {
-    try {
-      await queryEmbeddings(options['queryEmbeddings'])
-    } catch (error) {
-      err(`Error querying embeddings: ${(error as Error).message}`)
-      exit(1)
-    }
-    exit(0)
-  }
 
   // Validate action, LLM, and transcription inputs
   const { action, llmServices, transcriptServices } = validateInputCLI(options)

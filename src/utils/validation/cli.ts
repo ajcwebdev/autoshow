@@ -4,11 +4,13 @@ import { exec, execFile } from 'node:child_process'
 import { promisify } from 'node:util'
 import { exit } from 'node:process'
 import { err } from '../logging'
-import { LLM_OPTIONS, PROCESS_HANDLERS } from '../../../shared/constants'
 import { validateRSSAction } from '../command-utils/rss-utils'
-import { selectPrompts } from '../../process-steps/04-select-prompt'
 import { estimateTranscriptCost } from '../step-utils/03-transcription-utils'
+import { selectPrompts } from '../../process-steps/04-select-prompt'
 import { estimateLLMCost, runLLMFromPromptFile } from '../step-utils/05-llm-utils'
+import { createEmbeddingsAndSQLite } from '../embeddings/create-embed'
+import { queryEmbeddings } from '../embeddings/query-embed'
+import { LLM_OPTIONS, PROCESS_HANDLERS } from '../../../shared/constants'
 
 import type { ProcessingOptions, ValidCLIAction, HandlerFunction } from '../types'
 
@@ -195,7 +197,7 @@ export async function processAction(
 }
 
 /**
- * Checks for early exit flags (printPrompt, transcriptCost, llmCost, runLLM)
+ * Checks for early exit flags (printPrompt, transcriptCost, llmCost, runLLM, createEmbeddings, queryEmbeddings)
  * and handles them if present, exiting the process after completion.
  *
  * @param options - The command-line options provided by the user
@@ -206,6 +208,29 @@ export async function handleEarlyExitIfNeeded(options: ProcessingOptions): Promi
   if (options.printPrompt) {
     const prompt = await selectPrompts({ printPrompt: options.printPrompt })
     console.log(prompt)
+    exit(0)
+  }
+
+  // If the user wants to create embeddings, do that and exit
+  if (options['createEmbeddings']) {
+    try {
+      await createEmbeddingsAndSQLite()
+      console.log('Embeddings created successfully.')
+    } catch (error) {
+      err(`Error creating embeddings: ${(error as Error).message}`)
+      exit(1)
+    }
+    exit(0)
+  }
+
+  // If the user wants to query embeddings, do that and exit
+  if (options['queryEmbeddings']) {
+    try {
+      await queryEmbeddings(options['queryEmbeddings'])
+    } catch (error) {
+      err(`Error querying embeddings: ${(error as Error).message}`)
+      exit(1)
+    }
     exit(0)
   }
 

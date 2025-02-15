@@ -9,6 +9,7 @@ out
 dist
 show_notes.db
 ollama.log
+setup.log
 embeddings.db
 embeddings.json
 new-llm.md

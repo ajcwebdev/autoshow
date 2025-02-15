@@ -4,9 +4,27 @@ import { writeFile } from 'node:fs/promises'
 import { insertShowNote } from '../db'
 import { l, err, logInitialFunctionCall } from '../utils/logging'
 import { retryLLMCall } from '../utils/validation/retry'
-import { LLM_FUNCTIONS } from '../../shared/constants'
 
 import type { ProcessingOptions, EpisodeMetadata } from '../utils/types'
+
+import { callOllama } from '../../src/llms/ollama'
+import { callChatGPT } from '../../src/llms/chatgpt'
+import { callClaude } from '../../src/llms/claude'
+import { callGemini } from '../../src/llms/gemini'
+import { callDeepSeek } from '../../src/llms/deepseek'
+import { callFireworks } from '../../src/llms/fireworks'
+import { callTogether } from '../../src/llms/together'
+
+// Map of available LLM service handlers
+export const LLM_FUNCTIONS = {
+  ollama: callOllama,
+  chatgpt: callChatGPT,
+  claude: callClaude,
+  gemini: callGemini,
+  deepseek: callDeepSeek,
+  fireworks: callFireworks,
+  together: callTogether,
+}
 
 /**
  * Processes a transcript using a specified Language Model service.

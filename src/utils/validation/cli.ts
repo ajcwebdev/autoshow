@@ -10,12 +10,31 @@ import { selectPrompts } from '../../process-steps/04-select-prompt'
 import { estimateLLMCost, runLLMFromPromptFile } from '../step-utils/05-llm-utils'
 import { createEmbeddingsAndSQLite } from '../embeddings/create-embed'
 import { queryEmbeddings } from '../embeddings/query-embed'
-import { LLM_OPTIONS, PROCESS_HANDLERS } from '../../../shared/constants'
+import { LLM_OPTIONS } from '../../../shared/constants'
 
 import type { ProcessingOptions, ValidCLIAction, HandlerFunction } from '../types'
 
 export const execPromise = promisify(exec)
 export const execFilePromise = promisify(execFile)
+
+import { processVideo } from '../../../src/process-commands/video'
+import { processPlaylist } from '../../../src/process-commands/playlist'
+import { processChannel } from '../../../src/process-commands/channel'
+import { processURLs } from '../../../src/process-commands/urls'
+import { processFile } from '../../../src/process-commands/file'
+import { processRSS } from '../../../src/process-commands/rss'
+
+/**
+ * Maps action names to their corresponding handler function.
+ */
+export const PROCESS_HANDLERS = {
+  video: processVideo,
+  playlist: processPlaylist,
+  channel: processChannel,
+  urls: processURLs,
+  file: processFile,
+  rss: processRSS,
+}
 
 export const envVarsMap = {
   openaiApiKey: 'OPENAI_API_KEY',

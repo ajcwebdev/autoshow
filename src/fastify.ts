@@ -164,7 +164,8 @@ export const getShowNote = async (request: FastifyRequest, reply: FastifyReply) 
   try {
     const { id } = request.params as { id: string }
     // Fetch the show note from the database
-    const showNote = db.prepare(`SELECT * FROM show_notes WHERE id = ?`).get(id)
+    const result = await db.query(`SELECT * FROM show_notes WHERE id = $1`, [id])
+    const showNote = result.rows[0]
     if (showNote) {
       reply.send({ showNote })
     } else {
@@ -179,7 +180,8 @@ export const getShowNote = async (request: FastifyRequest, reply: FastifyReply) 
 export const getShowNotes = async (_request: FastifyRequest, reply: FastifyReply) => {
   try {
     // Fetch all show notes from the database
-    const showNotes = db.prepare(`SELECT * FROM show_notes ORDER BY publishDate DESC`).all()
+    const result = await db.query(`SELECT * FROM show_notes ORDER BY publishDate DESC`)
+    const showNotes = result.rows
     reply.send({ showNotes })
   } catch (error) {
     console.error('Error fetching show notes:', error)

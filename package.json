@@ -34,7 +34,9 @@
     "setup-docker": "docker build --progress=plain -t autoshow -f .github/Dockerfile .",
     "docker-cli": "docker run --rm --env-file .env -v $PWD/content:/usr/src/app/content autoshow",
     "docker-serve": "docker run -d -p 3000:3000 -v $PWD/content:/usr/src/app/content autoshow serve",
-    "prune": "docker system prune -af --volumes && docker image prune -af && docker container prune -f && docker volume prune -af"
+    "prune": "docker system prune -af --volumes && docker image prune -af && docker container prune -f && docker volume prune -af",
+    "get-db": "psql -h localhost -U myuser -d mydatabase -c 'SELECT id, title, publishDate FROM show_notes ORDER BY id DESC'",
+    "drop-db": "psql -h localhost -U ajc -d template1 -c 'DROP DATABASE IF EXISTS mydatabase' && psql -h localhost -U ajc -d template1 -c 'CREATE DATABASE mydatabase WITH OWNER myuser' && psql -h localhost -U ajc -d mydatabase -c 'CREATE EXTENSION IF NOT EXISTS vector'"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "0.36.3",
@@ -49,11 +51,13 @@
     "fastify": "5.2.1",
     "file-type": "20.1.0",
     "openai": "4.85.0",
+    "pg": "^8.13.3",
     "sqlite-vec": "0.1.7-alpha.2"
   },
   "devDependencies": {
     "@types/better-sqlite3": "7.6.12",
     "@types/node": "22.13.2",
+    "@types/pg": "^8.11.11",
     "tsx": "4.19.2",
     "typescript": "5.7.3"
   }

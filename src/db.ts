@@ -6,10 +6,11 @@
  * @module db
  */
 
-import Database from 'better-sqlite3'
+import pg from 'pg'
+import { type Pool as PoolType } from 'pg'
 import { l } from './utils/logging'
 
-import type { Database as DatabaseType } from 'better-sqlite3'
+const { Pool } = pg
 
 /**
  * Represents a single show note record in the database
@@ -29,45 +30,54 @@ export type ShowNote = {
 }
 
 /**
- * A better-sqlite3 Database instance used to store show notes
+ * A pg Pool instance used to store show notes
  */
-export const db: DatabaseType = new Database('show_notes.db')
+export const db: PoolType = new Pool({
+  host: process.env['PGHOST'],
+  user: process.env['PGUSER'],
+  password: process.env['PGPASSWORD'],
+  database: process.env['PGDATABASE'],
+  port: process.env['PGPORT'] ? Number(process.env['PGPORT']) : undefined
+})
 
-db.exec(`
-  CREATE TABLE IF NOT EXISTS show_notes (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    showLink TEXT,
-    channel TEXT,
-    channelURL TEXT,
-    title TEXT NOT NULL,
-    description TEXT,
-    publishDate TEXT NOT NULL,
-    coverImage TEXT,
-    frontmatter TEXT,
-    prompt TEXT,
-    transcript TEXT,
-    llmOutput TEXT
-  )
-`)
+// Create the show_notes table if it doesn't already exist
+void (async () => {
+  await db.query(`
+    CREATE TABLE IF NOT EXISTS show_notes (
+      id SERIAL PRIMARY KEY,
+      showLink TEXT,
+      channel TEXT,
+      channelURL TEXT,
+      title TEXT NOT NULL,
+      description TEXT,
+      publishDate TEXT NOT NULL,
+      coverImage TEXT,
+      frontmatter TEXT,
+      prompt TEXT,
+      transcript TEXT,
+      llmOutput TEXT
+    )
+  `)
+})()
 
 /**
  * Inserts a new show note row into the show_notes table
  *
  * @param {ShowNote} showNote - The show note data to insert
  */
-export function insertShowNote(showNote: ShowNote) {
+export async function insertShowNote(showNote: ShowNote) {
   l.dim('\n  Inserting show note into the database...')
 
   const {
     showLink, channel, channelURL, title, description, publishDate, coverImage, frontmatter, prompt, transcript, llmOutput
   } = showNote
 
-  db.prepare(`
+  await db.query(`
     INSERT INTO show_notes (
       showLink, channel, channelURL, title, description, publishDate, coverImage, frontmatter, prompt, transcript, llmOutput
     )
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `).run(
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+  `, [
     showLink,
     channel,
     channelURL,
@@ -79,7 +89,7 @@ export function insertShowNote(showNote: ShowNote) {
     prompt,
     transcript,
     llmOutput
-  )
+  ])
 
   l.dim('    - Show note inserted successfully.\n')
 }

@@ -78,7 +78,7 @@ export async function runLLM(
       await writeFile(noLLMFile, `${frontMatter}\n${prompt}\n## Transcript\n\n${transcript}`)
     }
 
-    insertShowNote({
+    await insertShowNote({
       showLink: metadata.showLink ?? '',
       channel: metadata.channel ?? '',
       channelURL: metadata.channelURL ?? '',

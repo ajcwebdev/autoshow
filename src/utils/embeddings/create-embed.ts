@@ -5,13 +5,15 @@ import { fileURLToPath } from 'url'
 import { readdir, readFile } from 'fs/promises'
 import fs from 'fs'
 import { env } from 'node:process'
-import Database from 'better-sqlite3'
-import * as sqliteVec from 'sqlite-vec'
+import pg from 'pg'
+import { type Pool as PoolType } from 'pg'
+
+const { Pool } = pg
 
 /**
  * Creates embeddings for all .md files found in the ../content directory
- * and stores them in both a JSON file and an SQLite database. This function
- * replicates the logic of the original create-embeddings-and-sqlite.js script.
+ * and stores them in both a JSON file and a Postgres table using pgvector.
+ * This function replicates the logic of the original create-embeddings-and-sqlite.js script.
  *
  * @async
  * @function createEmbeddingsAndSQLite
@@ -71,23 +73,37 @@ export async function createEmbeddingsAndSQLite(): Promise<void> {
   fs.writeFileSync('embeddings.json', JSON.stringify(embeddings, null, 2), 'utf8')
   console.log(`Saved embeddings to "embeddings.json"`)
 
-  const db = new Database('embeddings.db')
-  sqliteVec.load(db)
-  db.exec(`
+  const embeddingsDb: PoolType = new Pool({
+    host: env['PGHOST'],
+    user: env['PGUSER'],
+    password: env['PGPASSWORD'],
+    database: env['PGDATABASE'],
+    port: env['PGPORT'] ? Number(env['PGPORT']) : undefined
+  })
+
+  // Create the vector extension and table if they don't already exist
+  await embeddingsDb.query(`CREATE EXTENSION IF NOT EXISTS vector`)
+  // Adjust dimension if your embedding length differs (text-embedding-3-large can be ~12288)
+  await embeddingsDb.query(`
     CREATE TABLE IF NOT EXISTS embeddings (
       filename TEXT PRIMARY KEY,
-      vector BLOB
-    ) STRICT
+      vector vector(3072) NOT NULL
+    )
   `)
 
-  const insert = db.prepare('INSERT OR REPLACE INTO embeddings (filename, vector) VALUES (?, ?)')
   let count = 0
   for (const [filename, floatArray] of Object.entries(embeddings)) {
-    const float32 = new Float32Array(floatArray)
-    const blob = new Uint8Array(float32.buffer)
-    insert.run(filename, blob)
+    // Convert embedding array to the pgvector format: [0.123,0.456,...]
+    const vectorString = `[${floatArray.join(',')}]`
+    await embeddingsDb.query(`
+      INSERT INTO embeddings (filename, vector)
+      VALUES ($1, $2::vector(3072))
+      ON CONFLICT (filename)
+      DO UPDATE SET vector = EXCLUDED.vector
+    `, [filename, vectorString])
     count++
   }
-  console.log(`Inserted ${count} embeddings into 'embeddings.db'.`)
-  db.close()
+  console.log(`Inserted ${count} embeddings into Postgres 'embeddings' table.`)
+
+  await embeddingsDb.end()
 }

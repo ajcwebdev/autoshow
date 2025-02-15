@@ -5,10 +5,7 @@ import { fileURLToPath } from 'url'
 import { readdir, readFile } from 'fs/promises'
 import fs from 'fs'
 import { env } from 'node:process'
-import pg from 'pg'
-import { type Pool as PoolType } from 'pg'
-
-const { Pool } = pg
+import { PrismaClient } from '@prisma/client'
 
 /**
  * Creates embeddings for all .md files found in the ../content directory
@@ -73,18 +70,11 @@ export async function createEmbeddingsAndSQLite(): Promise<void> {
   fs.writeFileSync('embeddings.json', JSON.stringify(embeddings, null, 2), 'utf8')
   console.log(`Saved embeddings to "embeddings.json"`)
 
-  const embeddingsDb: PoolType = new Pool({
-    host: env['PGHOST'],
-    user: env['PGUSER'],
-    password: env['PGPASSWORD'],
-    database: env['PGDATABASE'],
-    port: env['PGPORT'] ? Number(env['PGPORT']) : undefined
-  })
+  const db = new PrismaClient()
 
   // Create the vector extension and table if they don't already exist
-  await embeddingsDb.query(`CREATE EXTENSION IF NOT EXISTS vector`)
-  // Adjust dimension if your embedding length differs (text-embedding-3-large can be ~12288)
-  await embeddingsDb.query(`
+  await db.$executeRawUnsafe(`CREATE EXTENSION IF NOT EXISTS vector`)
+  await db.$executeRawUnsafe(`
     CREATE TABLE IF NOT EXISTS embeddings (
       filename TEXT PRIMARY KEY,
       vector vector(3072) NOT NULL
@@ -95,7 +85,7 @@ export async function createEmbeddingsAndSQLite(): Promise<void> {
   for (const [filename, floatArray] of Object.entries(embeddings)) {
     // Convert embedding array to the pgvector format: [0.123,0.456,...]
     const vectorString = `[${floatArray.join(',')}]`
-    await embeddingsDb.query(`
+    await db.$executeRawUnsafe(`
       INSERT INTO embeddings (filename, vector)
       VALUES ($1, $2::vector(3072))
       ON CONFLICT (filename)
@@ -105,5 +95,5 @@ export async function createEmbeddingsAndSQLite(): Promise<void> {
   }
   console.log(`Inserted ${count} embeddings into Postgres 'embeddings' table.`)
 
-  await embeddingsDb.end()
+  await db.$disconnect()
 }

@@ -11,3 +11,4 @@ show_notes.db
 ollama.log
 embeddings.db
 embeddings.json
+new-llm.md

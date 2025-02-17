@@ -45,8 +45,8 @@ RUN ls -l /usr/local/bin/whisper-cli
 
 # 11. Download the “base”, “tiny”, and “large-v3-turbo” models
 RUN whisper.cpp/models/download-ggml-model.sh base && \
-    whisper.cpp/models/download-ggml-model.sh tiny && \
-    whisper.cpp/models/download-ggml-model.sh large-v3-turbo
+    whisper.cpp/models/download-ggml-model.sh tiny
+    # whisper.cpp/models/download-ggml-model.sh large-v3-turbo
 
 # 12. Expose environment variables for model paths
 ENV WHISPER_BASE_MODEL=/usr/src/app/whisper.cpp/models/ggml-base.bin

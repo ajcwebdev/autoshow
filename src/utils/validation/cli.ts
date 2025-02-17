@@ -230,10 +230,12 @@ export async function handleEarlyExitIfNeeded(options: ProcessingOptions): Promi
     exit(0)
   }
 
+  const cliDirectory = options['directory']
+
   // If the user wants to create embeddings, do that and exit
   if (options['createEmbeddings']) {
     try {
-      await createEmbeddingsAndSQLite()
+      await createEmbeddingsAndSQLite(cliDirectory)
       console.log('Embeddings created successfully.')
     } catch (error) {
       err(`Error creating embeddings: ${(error as Error).message}`)
@@ -244,8 +246,9 @@ export async function handleEarlyExitIfNeeded(options: ProcessingOptions): Promi
 
   // If the user wants to query embeddings, do that and exit
   if (options['queryEmbeddings']) {
+    const question = options['queryEmbeddings']
     try {
-      await queryEmbeddings(options['queryEmbeddings'])
+      await queryEmbeddings(question, cliDirectory)
     } catch (error) {
       err(`Error querying embeddings: ${(error as Error).message}`)
       exit(1)

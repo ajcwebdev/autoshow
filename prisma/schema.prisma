@@ -1,0 +1,30 @@
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [vector(map: "vector")]
+}
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+model show_notes {
+  id          Int     @id @default(autoincrement())
+  showLink    String?
+  channel     String?
+  channelURL  String?
+  title       String
+  description String?
+  publishDate String
+  coverImage  String?
+  frontmatter String?
+  prompt      String?
+  transcript  String?
+  llmOutput   String?
+}
+
+model embeddings {
+  filename String                     @id
+  vector   Unsupported("vector(3072)")
+}

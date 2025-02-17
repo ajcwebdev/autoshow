@@ -642,7 +642,7 @@ If you have generated multiple markdown files in the `content` directory, you ca
 *Note: Does not support creating embeddings for nested directory structures and does not support other LLMs yet.*
 
 ```bash
-npm run as -- --createEmbeddings
+npm run as -- --createEmbeddings "content"
 ```
 
 ```bash

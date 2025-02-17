@@ -4,22 +4,23 @@ import path from 'path'
 import { fileURLToPath } from 'url'
 import fs from 'fs'
 import { env } from 'node:process'
-import Database from 'better-sqlite3'
-import * as sqliteVec from 'sqlite-vec'
+import { PrismaClient } from '@prisma/client'
 
 /**
- * Queries the previously created embeddings database to find the top matches
- * for a given question. It also calls the ChatCompletion API to provide an
- * answer using the text content of the top matching file. This function
- * replicates the logic of the original read-and-query-embeddings.js script.
+ * Queries the previously created embeddings in Postgres to find the top matches
+ * for a given question using pgvector's cosine distance operator (<=>).
+ * It also calls the ChatCompletion API to provide an answer using the text content
+ * of the top matching file. This function replicates the logic of the original
+ * read-and-query-embeddings.js script, but leverages pgvector instead of sqlite-vec.
  *
  * @async
  * @function queryEmbeddings
  * @param {string} question - The user's question to embed and query
+ * @param {string} [customDir] - An optional directory path if files are stored relatively
  * @returns {Promise<void>} Promise that resolves when the query is complete
  * @throws {Error} If the OPENAI_API_KEY is missing
  */
-export async function queryEmbeddings(question: string): Promise<void> {
+export async function queryEmbeddings(question: string, customDir?: string): Promise<void> {
   if (!question) {
     throw new Error('No question provided.')
   }
@@ -31,23 +32,37 @@ export async function queryEmbeddings(question: string): Promise<void> {
 
   const __filename = fileURLToPath(import.meta.url)
   const __dirname = path.dirname(__filename)
-  const contentDir = path.resolve(__dirname, '..', '..', '..', 'content')
 
-  const db = new Database('embeddings.db')
-  sqliteVec.load(db)
+  // Determine the base directory for reading files if customDir is provided.
+  // Otherwise default to the "content" directory, matching create-embed behavior.
+  let baseDir: string
+  if (customDir) {
+    baseDir = path.isAbsolute(customDir)
+      ? customDir
+      : path.resolve(process.cwd(), customDir)
+  } else {
+    baseDir = path.resolve(__dirname, '..', '..', '..', 'content')
+  }
+
+  const db = new PrismaClient()
 
   try {
-    const queryEmbedding = new Float32Array(await embedText(question, OPENAI_API_KEY))
-    const queryBlob = new Uint8Array(queryEmbedding.buffer)
+    const queryEmbedding = await embedText(question, OPENAI_API_KEY)
+    // Convert the embedding to the pgvector format
+    const vectorString = `[${queryEmbedding.join(',')}]`
+
+    // Use the <=> operator for cosine distance
     const sql = `
       SELECT
         filename,
-        vec_distance_cosine(vector, :query) AS distance
+        vector <=> $1::vector(3072) AS distance
       FROM embeddings
-      ORDER BY distance
+      ORDER BY vector <=> $1::vector(3072)
       LIMIT 5
     `
-    const rows = db.prepare(sql).all({ query: queryBlob })
+    // Pass 'vectorString' directly as a single parameter
+    const rows: { filename: string }[] = await db.$queryRawUnsafe(sql, vectorString)
+
     console.log(`Top matches for: "${question}"`)
     console.table(rows)
     if (rows.length === 0) {
@@ -57,25 +72,33 @@ export async function queryEmbeddings(question: string): Promise<void> {
 
     let combinedContent = ''
     for (const row of rows) {
-      const filename = (row as { filename: string }).filename
-      const contentPath = path.join(contentDir, filename)
+      /**
+       * If the stored filename is absolute, read it directly.
+       * Otherwise, join it with baseDir (the directory used during embedding).
+       */
+      const filename = row.filename
+      const fileAbsolutePath = path.isAbsolute(filename)
+        ? filename
+        : path.join(baseDir, filename)
+
       let fileContent = ''
       try {
-        fileContent = fs.readFileSync(contentPath, 'utf8')
+        fileContent = fs.readFileSync(fileAbsolutePath, 'utf8')
       } catch (err) {
-        console.error(`Error reading file for context: ${contentPath}`, err)
+        console.error(`Error reading file for context: ${fileAbsolutePath}`, err)
       }
       combinedContent += `\n\n---\n**File: ${filename}**\n${fileContent}\n`
     }
+
     const answer = await callChatCompletion(question, combinedContent, OPENAI_API_KEY)
     console.log('Answer:\n', answer)
   } finally {
-    db.close()
+    await db.$disconnect()
   }
 }
 
 /**
- * Embeds text using the OpenAI API, returning the vector (Float32Array) as a plain number array.
+ * Embeds text using the OpenAI API, returning the vector as a number array.
  *
  * @async
  * @function embedText

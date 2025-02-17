@@ -46,7 +46,7 @@ export const ShowNote: React.FC = () => {
   return (
     <div className="show-note">
       <h2>{showNote.title}</h2>
-      <p>Date: {showNote.publishDate}</p>
+      <p>Date: {showNote.publishdate}</p>
 
       <h3>LLM Output</h3>
       <div>{showNote.llmOutput && formatContent(showNote.llmOutput)}</div>

@@ -32,6 +32,9 @@ fi
 echo "Running prisma migrate deploy to ensure DB schema is up to date..."
 npx prisma migrate deploy --schema=/usr/src/app/prisma/schema.prisma || log_error "Failed to run prisma migrate deploy."
 
+echo "Generating Prisma client..."
+npx prisma generate --schema=/usr/src/app/prisma/schema.prisma || log_error "Failed to run prisma generate."
+
 # 4. Now proceed with original entrypoint logic
 if [ "$1" = "serve" ]; then
     echo "Starting Autoshow server..."

@@ -7,10 +7,7 @@ networks:
 services:
   autoshow-postgres:
     build:
-      # The context is "..", meaning "go up one directory from .github to the project root"
       context: ..
-      # Then the Dockerfile is in .github/postgres-pgvector.Dockerfile 
-      # (relative to the project root)
       dockerfile: .github/postgres-pgvector.Dockerfile
     container_name: autoshow-postgres
     environment:
@@ -29,9 +26,14 @@ services:
     container_name: autoshow-service
     environment:
       PGHOST: autoshow-postgres
+      PGPORT: 5432
       PGUSER: ${PGUSER:-postgres}
       PGPASSWORD: ${PGPASSWORD:-mypass}
       PGDATABASE: ${PGDATABASE:-mydatabase}
+      DATABASE_URL: postgres://${PGUSER:-postgres}:${PGPASSWORD:-mypass}@autoshow-postgres:5432/${PGDATABASE:-mydatabase}
+
+      # Or you can directly reference your .env (if it has the correct Docker host), but typically a direct override is more reliable:
+      # DATABASE_URL: ${DATABASE_URL:-postgres://${PGUSER:-postgres}:${PGPASSWORD:-mypass}@autoshow-postgres:5432/${PGDATABASE:-mydatabase}}
     depends_on:
       - autoshow-postgres
     ports:

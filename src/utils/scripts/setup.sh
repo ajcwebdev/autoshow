@@ -1,19 +1,43 @@
-#!/usr/bin/env bash
+#!/usr/bin/env zsh
 
 ##############################################################################
-# Ultra-verbose Mac-only setup script for debugging the pgvector location.
-# - Logs everything to setup.log (and prints to console).
-# - No libpq or initdb references.
-# - Installs postgresql@17, pgvector, etc. quietly but logs debug info heavily.
-# - Creates extension as "postgres" superuser, then makes "myuser" a superuser.
+# Mac-only setup script w/ pgvector + PostgreSQL@17.
+# - Logs go to a timestamped file: "setup-YYYYmmdd-HHMMSS.log"
+#   * If the script fails, we preserve the log file.
+#   * If the script succeeds, we remove it.
+# - Verbose output (no quiet mode).
+# - No final superuser promotion of the normal role.
+# - Checks for older Postgres versions, Docker environment, version mismatches, etc.
 ##############################################################################
 
-# Send all output (stdout+stderr) to setup.log as well as the terminal
-exec > >(tee -a setup.log) 2>&1
+# 0) Create a timestamped logfile and setup a trap to remove it on success
+TIMESTAMP="$(date +%Y%m%d-%H%M%S)"
+LOGFILE="setup-${TIMESTAMP}.log"
+
+# We'll capture all stdout/stderr into this log *and* show in console
+exec > >(tee -a "$LOGFILE") 2>&1
+
+# If the script ends with an error, keep the log; if success, remove it
+cleanup_log() {
+  local status=$?
+  if [ "$status" -eq 0 ]; then
+    rm -f "$LOGFILE"
+  else
+    echo ""
+    echo "============================================================"
+    echo "ERROR: Script failed (exit code $status)."
+    echo "Logs have been saved in: $LOGFILE"
+    echo "============================================================"
+  fi
+  exit $status
+}
+trap cleanup_log EXIT
+
+# Safeguards
 set -euo pipefail
 
 ##############################################################################
-# 1. OS DETECTION (Mac-only)
+# 1. OS DETECTION (Mac-only, zsh assumed)
 ##############################################################################
 IS_MAC=false
 case "$OSTYPE" in
@@ -28,13 +52,13 @@ esac
 # 2. HELPER FUNCTIONS
 ##############################################################################
 quiet_brew_install() {
-  # Silently install a package if it isn’t already
+  # Verbose to console, but we won't spam brew install logs
   local pkg="$1"
   if ! brew list --formula | grep -qx "$pkg"; then
-    echo "DEBUG: Installing $pkg (silent)..."
+    echo "Installing $pkg (silent)..."
     brew install "$pkg" &>/dev/null
   else
-    echo "DEBUG: $pkg is already installed."
+    echo "$pkg is already installed."
   fi
 }
 
@@ -44,41 +68,61 @@ command_exists() {
 
 ensure_homebrew() {
   if ! command_exists brew; then
-    echo "Homebrew not found! Please install from https://brew.sh/"
+    echo "Homebrew not found! Please install from https://brew.sh/ then rerun."
     exit 1
   fi
 }
 
-# Return the path to Homebrew's postgresql@17 install, or empty if not found
-get_brew_postgres_prefix() {
-  local formula="postgresql@17"
-  if brew ls --versions "$formula" &>/dev/null; then
-    brew --prefix "$formula" 2>/dev/null || true
+detect_and_stop_older_postgres() {
+  # We'll see if postgresql@14 or the unversioned "postgresql" is installed & running.
+  local older_versions=("postgresql" "postgresql@14" "postgresql@15" "postgresql@16")
+  # The current is "postgresql@17", so we skip that in this detection loop.
+
+  local found_running=false
+  for ov in "${older_versions[@]}"; do
+    if brew ls --versions "$ov" &>/dev/null; then
+      # It's installed. Check if running:
+      local is_running
+      is_running="$(brew services list | grep -E "^$ov\s" | grep started || true)"
+      if [ -n "$is_running" ]; then
+        echo "Detected older Postgres formula '$ov' is running."
+        found_running=true
+        # Prompt to stop it
+        read -q "?Stop the older '$ov' service now? [y/N]: "
+        echo ""
+        if [[ $REPLY =~ ^[Yy]$ ]]; then
+          brew services stop "$ov" || true
+        fi
+      fi
+    fi
+  done
+
+  if $found_running; then
+    echo "Older Postgres version(s) were found running. Attempted to stop as requested."
   else
-    echo ""
+    echo "No older Postgres versions detected running. Continuing."
   fi
 }
 
-get_brew_pg_config() {
-  local pg_prefix
-  pg_prefix="$(get_brew_postgres_prefix)"
-  if [ -n "$pg_prefix" ] && [ -x "$pg_prefix/bin/pg_config" ]; then
-    echo "$pg_prefix/bin/pg_config"
-  else
-    echo ""
+is_docker_container() {
+  # A common approach is to check for /.dockerenv or /run/.containerenv
+  if [ -f "/.dockerenv" ] || [ -f "/run/.containerenv" ]; then
+    return 0
   fi
+  return 1
 }
 
 ##############################################################################
-# 3. INSTALL DEPENDENCIES (macOS ONLY), NO libpq AND NO initdb
+# 3. INSTALL DEPENDENCIES, DETECT OLDER VERSIONS, ETC.
 ##############################################################################
 if [ "$IS_MAC" = true ]; then
   ensure_homebrew
 
-  echo "DEBUG: Homebrew overall prefix: $(brew --prefix || true)"
-  echo "DEBUG: Installing dependencies quietly..."
+  echo "==> Checking for older Postgres versions..."
+  detect_and_stop_older_postgres
 
-  quiet_brew_install "postgresql@17"   # We'll rely on user to have it started
+  echo "==> Installing dependencies..."
+  quiet_brew_install "postgresql@17"
   quiet_brew_install "yt-dlp"
   quiet_brew_install "ffmpeg"
   quiet_brew_install "ollama"
@@ -86,43 +130,69 @@ if [ "$IS_MAC" = true ]; then
 fi
 
 ##############################################################################
-# Force usage of Homebrew’s postgresql@17
+# 4. Force usage of postgresql@17; check version match
 ##############################################################################
-echo "DEBUG: Checking info for postgresql@17..."
-brew info postgresql@17 || true
+echo "==> Locating postgresql@17..."
+PG_PREFIX="$(brew --prefix postgresql@17 2>/dev/null || true)"
 
-echo "DEBUG: Checking installed versions for postgresql@17..."
-brew list --versions postgresql@17 || true
-
-BREW_PG_CONFIG="$(get_brew_pg_config)"
-if [ -z "$BREW_PG_CONFIG" ]; then
-  echo "Error: Could not locate a Homebrew postgresql@17 installation with a valid pg_config."
+if [ -z "$PG_PREFIX" ] || [ ! -d "$PG_PREFIX" ]; then
+  echo "Error: Could not locate a Homebrew postgresql@17 installation directory."
   exit 1
 fi
 
-BREW_PG_BIN="$(dirname "$BREW_PG_CONFIG")"
-BREW_PG_PREFIX="$(dirname "$BREW_PG_BIN")"
-echo "DEBUG: postgresql@17 prefix: $BREW_PG_PREFIX"
-echo "DEBUG: postgresql@17 bin dir: $BREW_PG_BIN"
-echo "DEBUG: Prepending $BREW_PG_BIN to PATH..."
-export PATH="$BREW_PG_BIN:$PATH"
-echo "DEBUG: Updated PATH: $PATH"
+# Validate that we have pg_config from the correct path
+if [ ! -x "$PG_PREFIX/bin/pg_config" ]; then
+  echo "Error: $PG_PREFIX/bin/pg_config not found or not executable."
+  exit 1
+fi
 
-echo "Attempting to start (or restart) postgresql@17 (quietly)..."
-brew services start postgresql@17 &>/dev/null || true
+echo "Using Postgres@17 prefix: $PG_PREFIX"
+
+# Check that `pg_config --version` actually says 17.x
+INSTALLED_VERSION="$("$PG_PREFIX/bin/pg_config" --version || true)"
+if [[ ! "$INSTALLED_VERSION" =~ 17\.[0-9] ]]; then
+  echo "WARNING: Found postgresql@17, but 'pg_config --version' returned:"
+  echo "         '$INSTALLED_VERSION'"
+  echo "We will attempt to rebuild or correct installation for 17.x..."
+  # Potentially force a reinstall from source
+  brew uninstall pgvector || true
+  PG_CONFIG="$PG_PREFIX/bin/pg_config" brew install pgvector --build-from-source || true
+fi
+
+# Prepend bin so we pick up the right Postgres commands
+export PATH="$PG_PREFIX/bin:$PATH"
+
+# If not in Docker, start the service
+if is_docker_container; then
+  echo "Detected Docker environment. Skipping 'brew services start' for postgresql@17."
+else
+  echo "Starting (or restarting) 'postgresql@17' via brew services..."
+  brew services start postgresql@17 || true
+fi
 
 ##############################################################################
-# 4. .ENV SETUP
+# 5. .ENV SETUP
 ##############################################################################
 if [ -f ".env" ]; then
   echo ".env file already exists, skipping copy."
 else
+  echo "Creating .env from .env.example..."
   cp .env.example .env
-  echo "Created .env from .env.example"
+fi
+
+echo "Loading environment variables from .env..."
+set -a
+source .env
+set +a
+
+# Ensure required env vars exist
+if [ -z "${PGHOST:-}" ] || [ -z "${PGUSER:-}" ] || [ -z "${PGPASSWORD:-}" ] || [ -z "${PGDATABASE:-}" ]; then
+  echo "One or more Postgres env vars missing (PGHOST, PGUSER, PGPASSWORD, PGDATABASE)."
+  exit 1
 fi
 
 ##############################################################################
-# 5. OLLAMA SERVER AND MODELS
+# 6. OLLAMA SERVER AND MODELS
 ##############################################################################
 if command_exists ollama; then
   echo "Checking if Ollama server is running..."
@@ -131,8 +201,6 @@ if command_exists ollama; then
   else
     echo "Starting Ollama server..."
     ollama serve > ollama.log 2>&1 &
-    OLLAMA_PID=$!
-    echo "Ollama server started with PID $OLLAMA_PID"
     sleep 5
   fi
 
@@ -146,13 +214,13 @@ if command_exists ollama; then
 fi
 
 ##############################################################################
-# 6. NPM DEPENDENCIES
+# 7. NPM DEPENDENCIES
 ##############################################################################
 echo "Installing npm dependencies..."
 npm install
 
 ##############################################################################
-# 7. WHISPER.CPP SETUP
+# 8. WHISPER.CPP SETUP
 ##############################################################################
 if [ -d "whisper.cpp" ]; then
   echo "whisper.cpp already exists, skipping."
@@ -172,194 +240,75 @@ else
 fi
 
 ##############################################################################
-# 8. POSTGRES SETUP & PGVECTOR (NO initdb)
+# 9. POSTGRES SETUP & PGVECTOR
 ##############################################################################
-echo "Loading environment variables from .env (if present)..."
-if [ -f ".env" ]; then
-  set -a
-  . .env
-  set +a
-fi
-
-# Ensure required env vars
-if [ -z "${PGHOST:-}" ] || [ -z "${PGUSER:-}" ] || [ -z "${PGPASSWORD:-}" ] || [ -z "${PGDATABASE:-}" ]; then
-  echo "Missing PGHOST/PGUSER/PGPASSWORD/PGDATABASE in env. Skipping DB setup."
-  exit 1
-fi
-
-# 8a. CREATE USER (ROLE) IF MISSING
-echo "Checking if role '$PGUSER' exists in Postgres..."
-ROLE_EXISTS=$(
-  PGPASSWORD="" psql -U "$USER" -d postgres -tAc \
-    "SELECT 1 FROM pg_roles WHERE rolname='$PGUSER'" 2>/dev/null \
-    || true
-)
-echo "DEBUG: 'SELECT 1 FROM pg_roles...' returned: '$ROLE_EXISTS'"
+echo "Checking if role '$PGUSER' exists..."
+ROLE_EXISTS=$(PGPASSWORD="" psql -U "${USER}" -d postgres -tAc \
+  "SELECT 1 FROM pg_roles WHERE rolname='$PGUSER'" 2>/dev/null || true)
 
 if [ "$ROLE_EXISTS" = "1" ]; then
   echo "Role '$PGUSER' already exists."
 else
-  echo "Creating role '$PGUSER' with LOGIN CREATEDB..."
-  if ! PGPASSWORD="" psql -U "$USER" -d postgres \
-       -c "CREATE ROLE $PGUSER WITH LOGIN CREATEDB PASSWORD '$PGPASSWORD'"; then
-    echo "Error creating role '$PGUSER'. Check your superuser privileges."
-    exit 1
-  fi
-  echo "Role '$PGUSER' created."
+  echo "Creating role '$PGUSER' with LOGIN and CREATEDB..."
+  PGPASSWORD="" psql -U "${USER}" -d postgres \
+    -c "CREATE ROLE $PGUSER WITH LOGIN CREATEDB PASSWORD '$PGPASSWORD'"
 fi
 
-# 8b. CREATE DATABASE IF MISSING
 echo "Checking if database '$PGDATABASE' exists..."
-DB_EXISTS=$(
-  PGPASSWORD="" psql -U "$USER" -d postgres -tAc \
-    "SELECT 1 FROM pg_database WHERE datname='$PGDATABASE'" 2>/dev/null \
-    || true
-)
-echo "DEBUG: 'SELECT 1 FROM pg_database...' returned: '$DB_EXISTS'"
+DB_EXISTS=$(PGPASSWORD="" psql -U "${USER}" -d postgres -tAc \
+  "SELECT 1 FROM pg_database WHERE datname='$PGDATABASE'" 2>/dev/null || true)
 
 if [ "$DB_EXISTS" = "1" ]; then
   echo "Database '$PGDATABASE' already exists."
 else
   echo "Creating database '$PGDATABASE' owned by '$PGUSER'..."
-  if ! PGPASSWORD="" createdb \
-       -U "$USER" \
-       -h "${PGHOST:-localhost}" \
-       -p "${PGPORT:-5432}" \
-       -O "$PGUSER" "$PGDATABASE"; then
-    echo "Error creating database '$PGDATABASE'."
-    exit 1
-  fi
-  echo "Database '$PGDATABASE' created."
+  PGPASSWORD="" createdb -U "${USER}" -h "${PGHOST}" -p "${PGPORT:-5432}" -O "$PGUSER" "$PGDATABASE"
 fi
 
-# 8c. ENSURE PGVECTOR EXTENSION - With extensive logging
+# Attempt to create extension as a superuser (postgres or local user)
 echo ""
-echo "Checking for 'vector' extension in '$PGDATABASE'..."
+echo "Ensuring 'vector' extension is installed..."
 
-echo "DEBUG: Brew info for pgvector:"
-brew info pgvector || true
-
-echo "DEBUG: Brew installed versions for pgvector:"
-brew list --versions pgvector || true
-
-echo "DEBUG: Checking postgresql@17 share dir via pg_config..."
-PG_SHAREDIR="$($BREW_PG_CONFIG --sharedir)"
-echo "DEBUG: \$PG_SHAREDIR is $PG_SHAREDIR"
-
-EXT_DIR1="$PG_SHAREDIR/postgresql@17/extension"   # sometimes used
-EXT_DIR2="$PG_SHAREDIR/postgresql/extension"      # sometimes used
-EXT_DIR3="$PG_SHAREDIR/extension"                 # fallback
-echo "DEBUG: Potential extension dirs:"
-echo "DEBUG: 1) $EXT_DIR1"
-echo "DEBUG: 2) $EXT_DIR2"
-echo "DEBUG: 3) $EXT_DIR3"
-
-echo "DEBUG: ls -l of $EXT_DIR1 (if exists):"
-[ -d "$EXT_DIR1" ] && ls -l "$EXT_DIR1" || echo "(does not exist)"
-
-echo "DEBUG: ls -l of $EXT_DIR2 (if exists):"
-[ -d "$EXT_DIR2" ] && ls -l "$EXT_DIR2" || echo "(does not exist)"
-
-echo "DEBUG: ls -l of $EXT_DIR3 (if exists):"
-[ -d "$EXT_DIR3" ] && ls -l "$EXT_DIR3" || echo "(does not exist)"
-
-vector_control_exists=""
-
-if [ -f "$EXT_DIR1/vector.control" ]; then
-  vector_control_exists="$EXT_DIR1/vector.control"
-elif [ -f "$EXT_DIR2/vector.control" ]; then
-  vector_control_exists="$EXT_DIR2/vector.control"
-elif [ -f "$EXT_DIR3/vector.control" ]; then
-  vector_control_exists="$EXT_DIR3/vector.control"
+# 9a. Find vector.control
+PG_CONFIG="$PG_PREFIX/bin/pg_config"
+SHARE_DIR="$($PG_CONFIG --sharedir)"
+echo "Sharedir = $SHARE_DIR"
+# We'll do a minimal check for vector.control; skip big directory logs
+VECTOR_FILE="$(find "$SHARE_DIR" -name vector.control 2>/dev/null | head -n1 || true)"
+if [ -z "$VECTOR_FILE" ]; then
+  echo "vector.control not found. Attempting to (re)install pgvector from source..."
+  brew uninstall pgvector || true
+  PG_CONFIG="$PG_PREFIX/bin/pg_config" brew install pgvector --build-from-source || true
 fi
 
-if [ -z "$vector_control_exists" ]; then
-  echo "DEBUG: 'vector.control' not found in EXT_DIR1/2/3. Reinstalling pgvector (quietly) now..."
-  brew reinstall pgvector &>/dev/null || true
-
-  echo "DEBUG: Checking again after reinstall..."
-  if [ -f "$EXT_DIR1/vector.control" ]; then
-    vector_control_exists="$EXT_DIR1/vector.control"
-  elif [ -f "$EXT_DIR2/vector.control" ]; then
-    vector_control_exists="$EXT_DIR2/vector.control"
-  elif [ -f "$EXT_DIR3/vector.control" ]; then
-    vector_control_exists="$EXT_DIR3/vector.control"
-  fi
-
-  if [ -z "$vector_control_exists" ]; then
-    echo "ERROR: pgvector still not found in any recognized extension directory!"
-
-    echo "DEBUG: Doing a broader 'find' under $BREW_PG_PREFIX and /opt/homebrew for vector.control..."
-    find "$BREW_PG_PREFIX" -name vector.control -print || echo "No hits in $BREW_PG_PREFIX"
-    find /opt/homebrew -name vector.control -print || echo "No hits in /opt/homebrew"
-
-    exit 1
-  fi
+# Now create the extension as a superuser
+echo "Attempting to create extension 'vector' as superuser..."
+SUPERUSER_TO_USE="postgres"
+if ! PGPASSWORD="" psql -U postgres -d "$PGDATABASE" -c "SELECT 1" &>/dev/null; then
+  # fallback to local user if 'postgres' not accessible
+  SUPERUSER_TO_USE="$USER"
 fi
 
-echo "DEBUG: Found vector.control at: $vector_control_exists"
+PGPASSWORD="" psql -U "$SUPERUSER_TO_USE" -d "$PGDATABASE" \
+  -c "CREATE EXTENSION IF NOT EXISTS vector" &>/dev/null
+echo "Successfully created/confirmed 'vector' extension with superuser: $SUPERUSER_TO_USE"
 
 ##############################################################################
-# 8c-i. CREATE EXTENSION AS SUPERUSER
+# 10. Final Checks
 ##############################################################################
-# We attempt to connect as 'postgres' first; fallback to $USER if that is superuser
 echo ""
-echo "Attempting to create extension 'vector' as a superuser..."
-
-superuser_to_use="postgres"
-
-# Check if we can connect as 'postgres' with no password:
-if ! PGPASSWORD="" psql -U postgres -d "$PGDATABASE" -c "SELECT version();" &>/dev/null; then
-  # If that fails, fallback to connecting as your local macOS user, if it is superuser
-  echo "Cannot connect as 'postgres'. Falling back to '$USER'..."
-  superuser_to_use="$USER"
-fi
-
-echo "Using superuser role: $superuser_to_use"
-
-if ! PGPASSWORD="" psql -U "$superuser_to_use" -d "$PGDATABASE" \
-     -c "CREATE EXTENSION IF NOT EXISTS vector" &>/dev/null; then
-  echo "ERROR: Could not create extension 'vector' as superuser ($superuser_to_use)."
+echo "Verifying that 'vector' is recognized in '$PGDATABASE'..."
+PSQL_CHECK=$(PGPASSWORD="$PGPASSWORD" psql -U "$PGUSER" -d "$PGDATABASE" -tAc \
+  "SELECT extname FROM pg_extension WHERE extname='vector';" 2>/dev/null || true)
+if [ "$PSQL_CHECK" = "vector" ]; then
+  echo "pgvector extension is active in $PGDATABASE."
+else
+  echo "ERROR: 'vector' extension not found in $PGDATABASE after creation!"
   exit 1
 fi
 
-echo "DEBUG: Successfully created/confirmed 'vector' extension with superuser '$superuser_to_use'."
-
-##############################################################################
-# 8c-ii. Permanently promote $PGUSER to SUPERUSER
-##############################################################################
-echo "Promoting role '$PGUSER' to SUPERUSER (permanently)..."
-
-if ! PGPASSWORD="" psql -U "$superuser_to_use" -d postgres \
-     -c "ALTER ROLE $PGUSER WITH SUPERUSER;" &>/dev/null; then
-  echo "ERROR: Could not grant superuser to '$PGUSER'."
-  exit 1
-fi
-
-echo "DEBUG: '$PGUSER' is now a superuser."
-
-##############################################################################
-# 8d. Verify Connection
-##############################################################################
-echo ""
-echo "Verifying connection as '$PGUSER' to '$PGDATABASE' (now a superuser)..."
-if ! PGPASSWORD="$PGPASSWORD" psql \
-      -U "$PGUSER" \
-      -h "${PGHOST:-localhost}" \
-      -p "${PGPORT:-5432}" \
-      -d "$PGDATABASE" \
-      -c "SELECT 'Connected as ' || current_user || ', DB=' || current_database(), 'SUPERUSER=' || (SELECT rolsuper FROM pg_roles WHERE rolname=current_user)::text;"; then
-  echo "ERROR: Could not connect as $PGUSER to $PGDATABASE!"
-  exit 1
-fi
-
-##############################################################################
-# DONE
-##############################################################################
 echo ""
 echo "Setup completed successfully!"
-echo "Logs have been written to setup.log."
-echo ""
 echo "You can now run your server, for example:"
 echo "  PGHOST=$PGHOST PGPORT=${PGPORT:-5432} PGUSER=$PGUSER PGPASSWORD=$PGPASSWORD PGDATABASE=$PGDATABASE \\"
 echo "    npm run tsx:base -- --watch src/fastify.ts"

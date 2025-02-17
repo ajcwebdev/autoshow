@@ -1,199 +1,211 @@
 # How Autoshow's Database Works
 
-## Regular Usage and Writing to Postgres Table
+## Regular Usage & Writing to Postgres (Prisma)
 
 ### Overview
 
-Your primary workflow uses Fastify to accept incoming HTTP requests and writes show-note data (front matter, transcripts, LLM output, etc.) to a Postgres database in the `show_notes` table.
+Your primary workflow uses **Fastify** to accept incoming HTTP requests and delegates the creation of show notes to **Prisma**. You no longer manually manage a connection pool; instead, you use a single `PrismaClient` instance to perform database operations.
 
 The key components are:
 
-- **`fastify.ts`**: Defines your Fastify server and routes.
-- **`handleProcessRequest`**: Receives requests, validates them, and dispatches them to the appropriate handler.
-- **`runLLMFromPromptFile`** (from your cost-estimation utility) or **`runLLM`** (in `05-run-llm.ts`): Orchestrates the final LLM run and calls `insertShowNote`.
-- **`db.ts`**: Creates a [pg](https://node-postgres.com/) Pool and exports functions to insert and query data in Postgres.
+- **`fastify.ts`**: Defines your Fastify server and routes, including `/api/process`, `/show-notes`, and `/show-notes/:id`.
+- **`handleProcessRequest`**: Receives, validates, and dispatches the request to the appropriate handler.
+- **`runLLMFromPromptFile`** or **`runLLM`** (in `05-run-llm.ts`): Orchestrates the final LLM run and calls `insertShowNote`.
+- **`db.ts`**: Exports a `PrismaClient` instance and an `insertShowNote` function that uses **Prisma** to create a row in the `show_notes` table.
 
-### Database Setup
+### Database Setup with Prisma
 
 ```ts
 // src/db.ts
 
-import pg from 'pg'
-const { Pool } = pg
+import { PrismaClient } from '@prisma/client'
+import { l } from './utils/logging'
 
-export const db: Pool = new Pool({
-  host: process.env['PGHOST'],
-  user: process.env['PGUSER'],
-  password: process.env['PGPASSWORD'],
-  database: process.env['PGDATABASE'],
-  port: process.env['PGPORT'] ? Number(process.env['PGPORT']) : undefined
-})
+export type ShowNote = {
+  showLink: string
+  channel: string
+  channelURL: string
+  title: string
+  description: string
+  publishDate: string
+  coverImage: string
+  frontmatter: string
+  prompt: string
+  transcript: string
+  llmOutput: string
+}
 
-// Auto-create the table if it doesn't exist
-void (async () => {
-  await db.query(`
-    CREATE TABLE IF NOT EXISTS show_notes (
-      id SERIAL PRIMARY KEY,
-      showLink TEXT,
-      channel TEXT,
-      channelURL TEXT,
-      title TEXT NOT NULL,
-      description TEXT,
-      publishDate TEXT NOT NULL,
-      coverImage TEXT,
-      frontmatter TEXT,
-      prompt TEXT,
-      transcript TEXT,
-      llmOutput TEXT
-    )
-  `)
-})()
+// Create a single PrismaClient instance
+export const db = new PrismaClient()
 
 // Insert function
 export async function insertShowNote(showNote: ShowNote) {
-  ...
+  l.dim('\n  Inserting show note into the database...')
+
+  const {
+    showLink,
+    channel,
+    channelURL,
+    title,
+    description,
+    publishDate,
+    coverImage,
+    frontmatter,
+    prompt,
+    transcript,
+    llmOutput
+  } = showNote
+
+  // Leverage Prisma's create() to insert a row in show_notes
+  await db.show_notes.create({
+    data: {
+      showLink,
+      channel,
+      channelURL,
+      title,
+      description,
+      publishDate,
+      coverImage,
+      frontmatter,
+      prompt,
+      transcript,
+      llmOutput
+    }
+  })
+
+  l.dim('    - Show note inserted successfully.\n')
 }
 ```
 
-Here:
-
-1. We build a connection pool (`Pool`) to Postgres using environment variables (`PGHOST`, `PGUSER`, `PGPASSWORD`, `PGDATABASE`, `PGPORT`).
-2. We run a one-time `CREATE TABLE IF NOT EXISTS show_notes` query on startup to ensure the table exists.
-3. We export `insertShowNote(showNote)`, which uses a parameterized INSERT query.
+- **`db.show_notes.create()`**: Uses Prisma’s generated model (`show_notes`) to insert a row.  
+- The table schema is now managed by **Prisma Migrations** (usually via your Prisma schema file), rather than manual `CREATE TABLE` calls.
 
 ### How Data Gets Inserted
 
 1. **HTTP Request**  
-   A client sends a POST request to `/api/process` with JSON body specifying `type: 'runLLM'` (or `type: 'video'` / `type: 'file'` plus subsequent steps). For example:
-   ```json
-   {
-     "type": "runLLM",
-     "filePath": "path/to/content-file.md",
-     "llmServices": "chatgpt",
-     "llmModel": "gpt-4"
-   }
-   ```
-2. **`handleProcessRequest`**  
-   Inside `fastify.ts`, the `handleProcessRequest` function parses and validates the request, dispatching to the correct case in the switch statement.
-3. **Running the LLM**  
-   If `type === 'runLLM'`, the code calls `runLLMFromPromptFile(...)`, which eventually invokes `runLLM(...)` in `05-run-llm.ts`.
-4. **`runLLM`**  
-   In `05-run-llm.ts`, `runLLM`:
+   - A client sends a POST request to `/api/process` with JSON specifying `type: 'runLLM'` (or other types) and relevant file or YouTube URL data.
 
-   - Optionally calls your LLM function (e.g., ChatGPT or Claude) to generate show notes.
-   - Writes a combined `.md` file to disk containing front matter, LLM output, and transcript (for later reference).
-   - **Calls `insertShowNote(...)`** with all the metadata, transcripts, and LLM output.
-5. **`insertShowNote`**  
-   The code executes a parameterized SQL INSERT. For example:
-   ```sql
-   INSERT INTO show_notes (
-     showLink, channel, channelURL, title, description, publishDate, coverImage, frontmatter, prompt, transcript, llmOutput
-   )
-   VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
-   ```
+2. **`handleProcessRequest`**  
+   - Inside `fastify.ts`, you parse and validate the request. A `switch` statement dispatches to the correct process method.
+
+3. **Running the LLM**  
+   - If `type === 'runLLM'`, the code calls `runLLMFromPromptFile`, which eventually invokes `runLLM` in `05-run-llm.ts`.
+
+4. **`runLLM`**  
+   - This function:
+     - Potentially calls an external LLM (e.g., OpenAI or Claude) to generate show notes.
+     - Writes a combined `.md` file to disk (for reference).
+     - **Calls `insertShowNote(...)`** with the full metadata (prompt, transcript, LLM output).
+
+5. **Prisma Insert**  
+   - `insertShowNote` runs `db.show_notes.create({ data: {...} })`, adding a new record.
 
 ### Reading Show Notes
 
-`fastify.ts` defines:
+In `fastify.ts`, you now use Prisma to fetch data:
 
-- **`GET /show-notes`**: Returns all show notes, sorted by `publishDate DESC`.
+- **`GET /show-notes`**:
   ```ts
-  const result = await db.query(`SELECT * FROM show_notes ORDER BY publishDate DESC`)
+  const showNotes = await db.show_notes.findMany({
+    orderBy: {
+      publishDate: 'desc'
+    }
+  })
   ```
-- **`GET /show-notes/:id`**: Returns a single show note by primary key:
+- **`GET /show-notes/:id`**:
   ```ts
-  const result = await db.query(`SELECT * FROM show_notes WHERE id = $1`, [id])
+  const showNote = await db.show_notes.findUnique({
+    where: {
+      id: Number(id)
+    }
+  })
   ```
+These queries return a JavaScript array or object, which you then send as JSON in the response.
 
-These endpoints make the Postgres query and return the rows as JSON to the caller.
-
----
-
-## 2. Creating Embeddings (with Postgres + pgvector)
+## Creating Embeddings (Prisma + pgvector)
 
 ### Overview
 
-Instead of using SQLite for embeddings, you now use **pgvector** in Postgres. The script **`create-embed.ts`**:
+You continue to store semantic embeddings in Postgres with the **pgvector** extension, but you now manage those embeddings through **Prisma** using raw SQL. The script **`create-embed.ts`**:
 
-1. Reads each `.md` file in your `content` directory.
+1. Reads `.md` files in your `content` directory.
 2. Calls the OpenAI Embeddings API (`text-embedding-3-large`).
-3. **Stores** each embedding in a Postgres table named `embeddings`, which includes a `vector` column of type `vector(...)`.
+3. **Stores** each embedding in a Postgres table named `embeddings` (with a `vector` column) by executing raw SQL via Prisma.
 
 ### Step-by-Step: Creating Embeddings
 
 1. **Reading Markdown Files**  
-   The script looks for all `.md` files in the `content` directory.
+   - Find all `.md` files in your `content` directory.
+
 2. **Generating Embeddings**  
-   For each file, it sends the content to:
-   ```
-   POST https://api.openai.com/v1/embeddings
-   ```
-   with your `OPENAI_API_KEY`. The response contains an array of floats (embedding).
-3. **Writing Embeddings to JSON**  
-   - It writes out `embeddings.json` for debugging or backup.
+   - For each file, call `https://api.openai.com/v1/embeddings` with `OPENAI_API_KEY`.
+   - The response includes `json.data[0].embedding`, an array of floats.
+
+3. **Writing to JSON**  
+   - This script writes a local `embeddings.json` file for debugging or backup.
+
 4. **Storing in Postgres**  
-   - It establishes a connection pool (similar to `db.ts`):
+   - Create a new `PrismaClient` and ensure `pgvector` is available:
      ```ts
-     const embeddingsDb = new Pool({ ... })
+     await db.$executeRawUnsafe(`CREATE EXTENSION IF NOT EXISTS vector`)
+     await db.$executeRawUnsafe(`
+       CREATE TABLE IF NOT EXISTS embeddings (
+         filename TEXT PRIMARY KEY,
+         vector vector(3072) NOT NULL
+       )
+     `)
      ```
-   - Ensures the `vector` extension and `embeddings` table exist:
-     ```sql
-     CREATE EXTENSION IF NOT EXISTS vector;
-     CREATE TABLE IF NOT EXISTS embeddings (
-       filename TEXT PRIMARY KEY,
-       vector vector(3072) NOT NULL
-     );
-     ```
-   - For each file’s embedding, it inserts or upserts (`ON CONFLICT`) into the `embeddings` table:
+   - Insert or update each embedding:
      ```ts
-     INSERT INTO embeddings (filename, vector)
-     VALUES ($1, $2::vector(3072))
-     ON CONFLICT (filename)
-     DO UPDATE SET vector = EXCLUDED.vector
+     await db.$executeRawUnsafe(`
+       INSERT INTO embeddings (filename, vector)
+       VALUES ($1, $2::vector(3072))
+       ON CONFLICT (filename)
+       DO UPDATE SET vector = EXCLUDED.vector
+     `, [filename, vectorString])
      ```
-   - Note: The dimension `3072` may need to match the actual embedding length you receive for `text-embedding-3-large`.
+   - **Note**: `vectorString` is the `[0.123,0.456,...]` representation.  
+   - The dimension (3072) depends on the model’s embedding size.
 
----
-
-## 3. Reading & Querying Embeddings (`query-embed.ts`)
+## Querying Embeddings (`query-embed.ts`)
 
 ### Overview
 
-To perform semantic search against the embedded files, **`query-embed.ts`**:
+To perform **semantic search**:
 
-1. Takes a user’s question or query string.
-2. Embeds that question using the same OpenAI Embeddings API.
-3. Runs a **pgvector** similarity query using the `<=>` (cosine distance) operator.
-4. Fetches the top matches, reads their full text content, and then queries the ChatCompletion API to provide an answer.
+1. The script takes a user’s **question**.
+2. Embeds that question using the OpenAI Embeddings API.
+3. Executes a **cosine distance** query (`<=>`) via pgvector’s operator to find similar documents.
+4. Reads the top files, then calls the ChatCompletion API to get an answer.
 
 ### Step-by-Step: Querying
 
-1. **Embedding the Query**  
-   The question is sent to the `v1/embeddings` endpoint, which returns an array of floats.
-2. **Building the Vector String**  
-   The script creates a string of the form: `[0.12345, -0.6789, ...]`.
-3. **pgvector Query**  
-   ```sql
-   SELECT
-     filename,
-     vector <=> $1::vector(3072) AS distance
-   FROM embeddings
-   ORDER BY vector <=> $1::vector(3072)
-   LIMIT 5
-   ```
-   - `<=>` is the **cosine distance** operator from pgvector.
-   - The query returns the top 5 closest documents by semantic similarity.
-4. **Reading the Files & Calling Chat**  
-   - The script then reads each matching `.md` file from `contentDir`, concatenates them, and passes that combined context + question to OpenAI’s ChatCompletion API.
-   - The final answer is logged.
+1. **Embed the Query**  
+   - Similar to creating embeddings, we call `v1/embeddings` to get a float array for the question.
 
-This effectively transforms your application into a semantic Q&A system that uses Postgres + pgvector for embedding storage and retrieval.
+2. **pgvector Query**  
+   - Build the string `[0.123, -0.456, ...]`.
+   - Run raw SQL with Prisma:
+     ```ts
+     const sql = `
+       SELECT
+         filename,
+         vector <=> $1::vector(3072) AS distance
+       FROM embeddings
+       ORDER BY vector <=> $1::vector(3072)
+       LIMIT 5
+     `
+     const rows = await db.$queryRawUnsafe(sql, [vectorString])
+     ```
+   - This returns the top 5 matches sorted by ascending cosine distance.
 
----
+3. **Reading Files & Calling Chat**  
+   - For each returned `filename`, read the actual `.md` file from `content/`.
+   - Combine them into a single context string, then pass it (plus the question) to OpenAI’s ChatCompletion API.
 
 ## High-Level Architecture
 
-Below is a simplified flow diagram for reference:
+Although you’re now using **Prisma**, the overall flow remains similar:
 
 ```
                                ┌───────────────────┐
@@ -218,50 +230,50 @@ Below is a simplified flow diagram for reference:
               ▼
     ┌───────────────────────────────────────────┐
     │                 db.ts                    │
-    │  Postgres (show_notes)                   │
+    │   PrismaClient -> show_notes table       │
     └───────────────────────────────────────────┘
 
     
     ┌───────────────────────────────────────────┐
-    │       create-embed.ts (embeddings)       │
+    │   create-embed.ts (embeddings)          │
     │ -> Reads content/*.md -> Embeds ->       │
-    │ -> Upserts into Postgres embeddings      │
+    │ -> Upserts into "embeddings" table       │
+    │   using Prisma raw SQL & pgvector        │
     └───────────────────────────────────────────┘
     
     ┌───────────────────────────────────────────┐
-    │       query-embed.ts (embeddings)        │
+    │   query-embed.ts (embeddings)           │
     │ -> Embeds query -> SELECT filename       │
     │    ORDER BY vector <=> $1::vector(3072)   │
     │ -> Retrieves top matches -> calls Chat    │
     └───────────────────────────────────────────┘
 ```
 
----
+## Key Points & Best Practices (Prisma Edition)
 
-## Key Points & Best Practices
+1. **Prisma Client**  
+   - You create a single `PrismaClient` in `db.ts`.  
+   - Access it as `db` in your routes and scripts.  
+   - Use `.create()`, `.findUnique()`, `.findMany()`, etc. for standard CRUD.
 
-1. **Postgres Connection**  
-   - All scripts create their own pool or reuse the existing pool. Generally, you might centralize this for production. But this works for simpler scripts.
+2. **Raw SQL for pgvector**  
+   - Prisma does not natively support pgvector yet, so you use `$executeRawUnsafe()` and `$queryRawUnsafe()` for table creation and queries.  
+   - Keep your model definitions in `prisma/schema.prisma` if you want them typed.  
+   - Migrations can still handle your `show_notes` table; for the `embeddings` table, you may manage it via raw SQL or a migration script.
 
-2. **Environment Variables**  
-   - You must set `PGHOST`, `PGUSER`, `PGPASSWORD`, `PGDATABASE`, `PGPORT` (optional), and `OPENAI_API_KEY`.
+3. **Environment Variables**  
+   - `DATABASE_URL` is typically used by Prisma for connection.  
+   - You still need `OPENAI_API_KEY` for embedding/ChatCompletion.
 
-3. **pgvector**  
-   - Make sure to install and enable the `pgvector` extension in your Postgres instance:  
-     ```sql
-     CREATE EXTENSION IF NOT EXISTS vector;
-     ```
-   - The dimension (e.g., 3072) must match the exact length of the embeddings.
+4. **pgvector**  
+   - Ensure `CREATE EXTENSION IF NOT EXISTS vector;` is in your database.  
+   - The dimension (e.g., 3072) must match the model’s output.
 
-4. **Error Handling**  
-   - Each script uses standard `try/catch` blocks.  
-   - The Fastify routes catch errors and respond with `500` or `400` as appropriate.
-
-5. **Upserting Embeddings**  
-   - `ON CONFLICT (filename) DO UPDATE SET ...` ensures the embedding is replaced if you generate it multiple times for the same file.
+5. **Error Handling**  
+   - Each script has `try/catch` blocks.  
+   - Fastify routes respond with the appropriate HTTP status if something fails.
 
 6. **Semantic Search Flow**  
-   - Query embedding → `<=>` comparison → top files → ChatCompletion.  
-   - This can be further refined by chunking your `.md` files, adding metadata, etc.
+   - The logic remains: embed the query, find nearest neighbors by `<=>`, gather context from `.md` files, and call ChatCompletion.
 
-With this document, you should have a complete understanding of how data flows through your application now that you’ve migrated to **PostgreSQL** and **pgvector**. From standard show-note insertions and retrieval via `fastify.ts` and `show_notes`, to creating and querying embeddings in the `embeddings` table, the Postgres-based solution maintains the same conceptual flow as before but leverages the power of a single relational database and advanced vector operations.
+By adopting Prisma, you gain type safety, migrations, and convenience methods for your normal CRUD operations while still retaining the power of raw SQL for advanced features like **pgvector**. This approach unifies your show note storage and embedding logic under a single, consistent database interface.

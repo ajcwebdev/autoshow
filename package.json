@@ -33,8 +33,10 @@
     "setup-no-docker": "bash ./src/utils/scripts/setup.sh",
     "setup-docker": "docker build --progress=plain -t autoshow -f .github/Dockerfile .",
     "docker-cli": "docker run --rm --env-file .env -v $PWD/content:/usr/src/app/content autoshow",
-    "docker-serve": "docker run -d -p 3000:3000 -v $PWD/content:/usr/src/app/content autoshow serve",
+    "docker-all": "npm run deep-prune && docker build -t custom-pgvector -f .github/postgres-pgvector.Dockerfile . && docker network create autoshow-network || true && docker run -d --name autoshow-postgres --network autoshow-network -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=mypass -e POSTGRES_DB=mydatabase -p 5432:5432 custom-pgvector && docker build --progress=plain -t autoshow -f .github/Dockerfile . && docker run -d --name autoshow-service --network autoshow-network -p 3000:3000 --env-file .env -v $PWD/content:/usr/src/app/content autoshow serve",
+    "docker-serve": "docker run -d -p 3000:3000 --env-file .env -v $PWD/content:/usr/src/app/content autoshow serve",
     "prune": "docker system prune -af --volumes && docker image prune -af && docker container prune -f && docker volume prune -af",
+    "deep-prune": "docker kill $(docker ps -q) 2>/dev/null || true && docker rm -f $(docker ps -aq) 2>/dev/null || true && docker builder prune -af && docker network prune -f && docker image prune -af && docker volume prune -af && docker system prune -af --volumes",
     "get-db": "psql -h localhost -U myuser -d mydatabase -c 'SELECT id, title, publishDate FROM show_notes ORDER BY id DESC'",
     "drop-db": "psql -h localhost -U ajc -d template1 -c 'DROP DATABASE IF EXISTS mydatabase' && psql -h localhost -U ajc -d template1 -c 'CREATE DATABASE mydatabase WITH OWNER myuser' && psql -h localhost -U ajc -d mydatabase -c 'CREATE EXTENSION IF NOT EXISTS vector'"
   },

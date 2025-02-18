@@ -3,25 +3,7 @@
 ### Build the Image
 
 ```bash
-npm run docker-setup
-```
-
-### Run CLI Commands with Docker
-
-You can run any of the `as` CLI commands by passing arguments to the container via `docker-cli`.
-
-```bash
-npm run docker-cli -- \
-  --video "https://www.youtube.com/watch?v=MORMZXEaONk" \
-  --whisper base 
-```
-
-### Run the Server with Docker
-
-To spin up the server on port 3000, run:
-
-```bash
-npm run docker-serve
+npm run docker-up
 ```
 
 ### Docker Hub
@@ -79,46 +61,6 @@ curl -X POST http://localhost:3000/api/process \
 
 ```bash
 curl -X POST http://localhost:3000/api/process \
-  -H "Content-Type: application/json" \
-  -d '{
-    "type": "video",
-    "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
-    "transcriptServices": "whisper",
-    "whisperModel": "base"
-  }'
-```
-
-### Railway
-
-Work in progress, still having issues getting the server to start on 3000.
-
-```toml
-# railway.toml
-
-[build]
-  builder = "DOCKERFILE"
-  buildCommand = "docker build -t autoshow -f .github/Dockerfile ."
-  dockerfilePath = ".github/Dockerfile"
-
-[deploy]
-  runtime = "V2"
-  numReplicas = 1
-  startCommand = "docker run -d -p 3000:3000 -v $PWD/content:/usr/src/app/content autoshow serve"
-  sleepApplication = false
-  multiRegionConfig = {"us-west1":{"numReplicas":1}}
-  restartPolicyType = "ON_FAILURE"
-  restartPolicyMaxRetries = 10
-```
-
-```bash
-railway login
-railway init
-railway link
-railway up
-```
-
-```bash
-curl -X POST https://autoshow.up.railway.app/process \
   -H "Content-Type: application/json" \
   -d '{
     "type": "video",

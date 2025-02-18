@@ -65,6 +65,9 @@ COPY prisma ./prisma
 COPY src ./src
 COPY shared ./shared
 
+# 15.5. Generate the Prisma client
+RUN npx prisma generate --schema=/usr/src/app/prisma/schema.prisma
+
 # 16. Create + set permissions on content directory
 RUN mkdir -p /usr/src/app/content \
  && chown -R node:node /usr/src/app \

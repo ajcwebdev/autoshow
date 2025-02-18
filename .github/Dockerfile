@@ -71,9 +71,9 @@ RUN mkdir -p /usr/src/app/content \
  && chmod -R 755 /usr/src/app \
  && chmod 777 /usr/src/app/content
 
-# 17. Copy new docker-entrypoint script
-COPY .github/docker-entrypoint.sh /usr/src/app/docker-entrypoint.sh
-RUN chmod +x /usr/src/app/docker-entrypoint.sh
+# 17. Copy new docker-entrypoint script (TypeScript)
+COPY .github/docker-entrypoint.ts /usr/src/app/docker-entrypoint.ts
+RUN chmod +x /usr/src/app/docker-entrypoint.ts
 
 # 18. Switch to non-root user
 USER node
@@ -82,5 +82,5 @@ USER node
 EXPOSE 3000
 
 # 20. Entry point + default command
-ENTRYPOINT ["/usr/src/app/docker-entrypoint.sh"]
+ENTRYPOINT ["tsx", "/usr/src/app/docker-entrypoint.ts"]
 CMD ["serve"]

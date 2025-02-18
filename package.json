@@ -38,8 +38,9 @@
     "docker-down": "docker-compose -f .github/docker-compose.yml --env-file .env down --remove-orphans --volumes",
     "docker-serve": "docker run -d -p 3000:3000 --env-file .env -v $PWD/content:/usr/src/app/content autoshow serve",
     "prune": "docker kill $(docker ps -q) 2>/dev/null || true && docker rm -f $(docker ps -aq) 2>/dev/null || true && docker builder prune -af && docker network prune -f && docker image prune -af && docker volume prune -af && docker system prune -af --volumes && docker network rm $(docker network ls -q) 2>/dev/null || true",
-    "get-db": "psql -h localhost -U myuser -d mydatabase -c 'SELECT id, title, publishDate FROM show_notes ORDER BY id DESC'",
-    "drop-db": "psql -h localhost -U ajc -d template1 -c 'DROP DATABASE IF EXISTS mydatabase' && psql -h localhost -U ajc -d template1 -c 'CREATE DATABASE mydatabase WITH OWNER myuser' && psql -h localhost -U ajc -d mydatabase -c 'CREATE EXTENSION IF NOT EXISTS vector'"
+    "get-db": "psql -h localhost -U myuser -d mydatabase -c 'SELECT id, title FROM show_notes ORDER BY id DESC'",
+    "drop-db": "psql -h localhost -U ajc -d template1 -c 'DROP DATABASE IF EXISTS mydatabase' && psql -h localhost -U ajc -d template1 -c 'CREATE DATABASE mydatabase WITH OWNER myuser' && psql -h localhost -U ajc -d mydatabase -c 'CREATE EXTENSION IF NOT EXISTS vector'",
+    "railway-info": "railway list && railway status && railway volume list && railway variables -s autoshow && railway variables -s Postgres"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "0.36.3",

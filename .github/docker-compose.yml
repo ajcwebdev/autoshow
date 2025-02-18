@@ -11,13 +11,18 @@ services:
       dockerfile: .github/postgres-pgvector.Dockerfile
     container_name: autoshow-postgres
     environment:
-      POSTGRES_USER: ${PGUSER:-postgres}
-      POSTGRES_PASSWORD: ${PGPASSWORD:-mypass}
-      POSTGRES_DB: ${PGDATABASE:-mydatabase}
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+      POSTGRES_DB: mydatabase
     ports:
       - "5432:5432"
     networks:
       - autoshow-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U myuser -d mydatabase"]
+      interval: 5s
+      timeout: 2s
+      retries: 20
 
   autoshow-service:
     build:
@@ -27,19 +32,16 @@ services:
     environment:
       PGHOST: autoshow-postgres
       PGPORT: 5432
-      PGUSER: ${PGUSER:-postgres}
-      PGPASSWORD: ${PGPASSWORD:-mypass}
-      PGDATABASE: ${PGDATABASE:-mydatabase}
-      DATABASE_URL: postgres://${PGUSER:-postgres}:${PGPASSWORD:-mypass}@autoshow-postgres:5432/${PGDATABASE:-mydatabase}
-
-      # Or you can directly reference your .env (if it has the correct Docker host), but typically a direct override is more reliable:
-      # DATABASE_URL: ${DATABASE_URL:-postgres://${PGUSER:-postgres}:${PGPASSWORD:-mypass}@autoshow-postgres:5432/${PGDATABASE:-mydatabase}}
+      PGUSER: myuser
+      PGPASSWORD: mypassword
+      PGDATABASE: mydatabase
+      DATABASE_URL: postgres://myuser:mypassword@autoshow-postgres:5432/mydatabase
     depends_on:
-      - autoshow-postgres
+      autoshow-postgres:
+        condition: service_healthy
     ports:
       - "3000:3000"
     networks:
       - autoshow-network
     volumes:
       - ./content:/usr/src/app/content
-    command: "serve"

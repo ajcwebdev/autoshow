@@ -3,10 +3,7 @@
 import { env } from 'node:process'
 import { OpenAI } from 'openai'
 import { GPT_MODELS } from '../../shared/constants'
-import { err } from '../utils/logging'
-import { logLLMCost } from '../utils/step-utils/05-llm-utils'
-
-import type { ChatGPTModelType } from '../../shared/constants'
+import { err, logLLMCost } from '../utils/logging'
 
 /**
  * Main function to call ChatGPT API.
@@ -19,7 +16,7 @@ import type { ChatGPTModelType } from '../../shared/constants'
 export const callChatGPT = async (
   prompt: string,
   transcript: string,
-  model: string = 'GPT_4o_MINI'
+  model: keyof typeof GPT_MODELS = 'GPT_4o_MINI'
 ) => {
   if (!env['OPENAI_API_KEY']) {
     throw new Error('OPENAI_API_KEY environment variable is not set. Please set it to your OpenAI API key.')
@@ -28,7 +25,7 @@ export const callChatGPT = async (
   const openai = new OpenAI({ apiKey: env['OPENAI_API_KEY'] })
 
   try {
-    const actualModel = (GPT_MODELS[model as ChatGPTModelType] || GPT_MODELS.GPT_4o_MINI).modelId
+    const actualModel = GPT_MODELS[model].modelId
     const combinedPrompt = `${prompt}\n${transcript}`
 
     const response = await openai.chat.completions.create({

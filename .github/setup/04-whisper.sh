@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# .github/setup/whisper.sh
+# .github/setup/04-whisper.sh
 
 ##############################################################################
 # Clones whisper.cpp and downloads models if not present

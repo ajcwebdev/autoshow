@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# .github/setup/ollama.sh
+# .github/setup/03-ollama.sh
 
 ##############################################################################
 # Checks if Ollama is installed and starts the server + pulls model

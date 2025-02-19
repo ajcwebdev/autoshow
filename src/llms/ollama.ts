@@ -1,8 +1,7 @@
 // src/llms/ollama.ts
 
 import { env } from 'node:process'
-import { l, err } from '../utils/logging'
-import { logLLMCost } from '../utils/step-utils/05-llm-utils'
+import { l, err, logLLMCost } from '../utils/logging'
 import { spawn } from 'node:child_process'
 import type { OllamaTagsResponse } from '../../shared/constants'
 

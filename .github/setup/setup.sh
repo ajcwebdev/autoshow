@@ -1,36 +1,19 @@
 #!/usr/bin/env bash
 # .github/setup/setup.sh
-
-##############################################################################
+#
 # Main Mac-only setup script, which sources other scripts:
-#   1) npm-and-env-vars.sh    (sets up .env, ensures PGUSER, etc.)
-#   2) homebrew-and-pg.sh     (removes old PG, reinstalls, creates roles/db)
-#   3) ollama.sh              (starts Ollama server and pulls model)
-#   4) whisper.sh             (sets up whisper.cpp)
+#   0) 00-cleanup.sh
+#   1) 01-npm-and-env-vars.sh
+#   2) 02-homebrew-and-pg.sh
+#   3) 03-ollama.sh
+#   4) 04-whisper.sh
 #
 # Finally, it does a verification for pgvector extension and prints success.
-##############################################################################
 
-# 0) Create a timestamped logfile and setup a trap to remove it on success
-TIMESTAMP="$(date +%Y%m%d-%H%M%S)"
-LOGFILE="setup-${TIMESTAMP}.log"
+# 0) Source our new cleanup script (timestamped logfile + trap)
+source "$(dirname "$0")/00-cleanup.sh"
 
-exec > >(tee -a "$LOGFILE") 2>&1
-cleanup_log() {
-  local status=$?
-  if [ "$status" -eq 0 ]; then
-    rm -f "$LOGFILE"
-  else
-    echo ""
-    echo "============================================================"
-    echo "ERROR: Script failed (exit code $status)."
-    echo "Logs have been saved in: $LOGFILE"
-    echo "============================================================"
-  fi
-  exit $status
-}
-trap cleanup_log EXIT
-
+# Safe shell flags after sourcing cleanup.sh so the trap still fires on error
 set -euo pipefail
 
 ##############################################################################
@@ -58,9 +41,7 @@ quiet_brew_install() {
   fi
 }
 
-command_exists() {
-  command -v "$1" &>/dev/null
-}
+command_exists() { command -v "$1" &>/dev/null; }
 
 ensure_homebrew() {
   if ! command_exists brew; then
@@ -70,41 +51,29 @@ ensure_homebrew() {
 }
 
 is_docker_container() {
-  if [ -f "/.dockerenv" ] || [ -f "/run/.containerenv" ]; then
-    return 0
-  fi
-  return 1
+  [ -f "/.dockerenv" ] || [ -f "/run/.containerenv" ]
 }
 
 ##############################################################################
-# Source our broken-out scripts *in an order that ensures .env is loaded first*
+# 3. SOURCE SCRIPTS (order ensures .env is loaded before Postgres tasks)
 ##############################################################################
-
-# 1) Load environment variables *before* referencing $PGUSER in Postgres tasks
-source "$(dirname "$0")/npm-and-env-vars.sh"
-
-# 2) Now do Homebrew + Postgres
-source "$(dirname "$0")/homebrew-and-pg.sh"
-
-# 3) Ollama server + model
-source "$(dirname "$0")/ollama.sh"
-
-# 4) Whisper.cpp
-source "$(dirname "$0")/whisper.sh"
-
+source "$(dirname "$0")/01-npm-and-env-vars.sh"
+source "$(dirname "$0")/02-homebrew-and-pg.sh"
+source "$(dirname "$0")/03-ollama.sh"
+source "$(dirname "$0")/04-whisper.sh"
 
 ##############################################################################
-# Final check: verify pgvector extension, print success info
+# 4. FINAL CHECK: verify pgvector extension, print success info
 ##############################################################################
 echo ""
 echo "Verifying that 'vector' is recognized in '$PGDATABASE'..."
-PSQL_CHECK=$(PGPASSWORD="${PGPASSWORD:-}" psql -U "${PGUSER:-}" -d "${PGDATABASE:-}" -tAc \
-  "SELECT extname FROM pg_extension WHERE extname='vector';" 2>/dev/null || true)
+PSQL_CHECK="$(PGPASSWORD="${PGPASSWORD:-}" psql -U "${PGUSER:-}" -d "${PGDATABASE:-}" -tAc \
+  "SELECT extname FROM pg_extension WHERE extname='vector';" 2>/dev/null || true)"
 
 if [ "$PSQL_CHECK" = "vector" ]; then
   echo "pgvector extension is active in $PGDATABASE."
 else
-  echo "ERROR: 'vector' extension not found in $PGDATABASE' after creation!"
+  echo "ERROR: 'vector' extension not found in '$PGDATABASE' after creation!"
   exit 1
 fi
 

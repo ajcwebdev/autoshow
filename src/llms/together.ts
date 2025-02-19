@@ -2,10 +2,7 @@
 
 import { env } from 'node:process'
 import { TOGETHER_MODELS } from '../../shared/constants'
-import { err } from '../utils/logging'
-import { logLLMCost } from '../utils/step-utils/05-llm-utils'
-
-import type { TogetherModelType } from '../../shared/constants'
+import { err, logLLMCost } from '../utils/logging'
 
 /**
  * Main function to call Together AI API.
@@ -18,14 +15,14 @@ import type { TogetherModelType } from '../../shared/constants'
 export const callTogether = async (
   prompt: string,
   transcript: string,
-  model: string | TogetherModelType = 'LLAMA_3_2_3B'
+  model: keyof typeof TOGETHER_MODELS = 'LLAMA_3_2_3B'
 ) => {
   if (!env['TOGETHER_API_KEY']) {
     throw new Error('TOGETHER_API_KEY environment variable is not set. Please set it to your Together AI API key.')
   }
 
   try {
-    const actualModel = (TOGETHER_MODELS[model as TogetherModelType] || TOGETHER_MODELS.LLAMA_3_2_3B).modelId
+    const actualModel = TOGETHER_MODELS[model].modelId
     const combinedPrompt = `${prompt}\n${transcript}`
 
     const requestBody = {

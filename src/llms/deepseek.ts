@@ -2,11 +2,8 @@
 
 import { env } from 'node:process'
 import { OpenAI } from 'openai'
-import { err } from '../utils/logging'
-import { logLLMCost } from '../utils/step-utils/05-llm-utils'
+import { err, logLLMCost } from '../utils/logging'
 import { DEEPSEEK_MODELS } from '../../shared/constants'
-
-import type { DeepSeekModelType } from '../../shared/constants'
 
 /**
  * Main function to call DeepSeek API via an OpenAI-compatible SDK.
@@ -21,7 +18,7 @@ import type { DeepSeekModelType } from '../../shared/constants'
 export async function callDeepSeek(
   prompt: string,
   transcript: string,
-  model: string = 'DEEPSEEK_CHAT'
+  model: keyof typeof DEEPSEEK_MODELS = 'DEEPSEEK_CHAT'
 ): Promise<string> {
   if (!env['DEEPSEEK_API_KEY']) {
     throw new Error('DEEPSEEK_API_KEY environment variable is not set. Please set it to your DeepSeek API key.')
@@ -33,7 +30,7 @@ export async function callDeepSeek(
   })
 
   try {
-    const actualModel = (DEEPSEEK_MODELS[model as DeepSeekModelType] || DEEPSEEK_MODELS.DEEPSEEK_CHAT).modelId
+    const actualModel = DEEPSEEK_MODELS[model].modelId
     const combinedPrompt = `${prompt}\n${transcript}`
 
     const response = await openai.chat.completions.create({

@@ -3,10 +3,7 @@
 import { env } from 'node:process'
 import Anthropic from '@anthropic-ai/sdk'
 import { CLAUDE_MODELS } from '../../shared/constants'
-import { err } from '../utils/logging'
-import { logLLMCost } from '../utils/step-utils/05-llm-utils'
-
-import type { ClaudeModelType } from '../../shared/constants'
+import { err, logLLMCost } from '../utils/logging'
 
 /**
  * Main function to call Claude API and extract text content from the response.
@@ -19,7 +16,7 @@ import type { ClaudeModelType } from '../../shared/constants'
 export const callClaude = async (
   prompt: string,
   transcript: string,
-  model: string = 'CLAUDE_3_HAIKU'
+  model: keyof typeof CLAUDE_MODELS = 'CLAUDE_3_HAIKU'
 ) => {
   if (!env['ANTHROPIC_API_KEY']) {
     throw new Error('ANTHROPIC_API_KEY environment variable is not set. Please set it to your Anthropic API key.')
@@ -28,27 +25,27 @@ export const callClaude = async (
   const anthropic = new Anthropic({ apiKey: env['ANTHROPIC_API_KEY'] })
   
   try {
-    const actualModel = (CLAUDE_MODELS[model as ClaudeModelType] || CLAUDE_MODELS.CLAUDE_3_HAIKU).modelId
+    const actualModel = CLAUDE_MODELS[model].modelId
     const combinedPrompt = `${prompt}\n${transcript}`
 
-    const response = await anthropic.messages.create({
+    const res = await anthropic.messages.create({
       model: actualModel,
       max_tokens: 4000,
       messages: [{ role: 'user', content: combinedPrompt }]
     })
 
-    const firstBlock = response.content[0]
+    const firstBlock = res.content[0]
     if (!firstBlock || firstBlock.type !== 'text') {
       throw new Error('No text content generated from the API')
     }
 
     logLLMCost({
       modelName: actualModel,
-      stopReason: response.stop_reason ?? 'unknown',
+      stopReason: res.stop_reason ?? 'unknown',
       tokenUsage: {
-        input: response.usage?.input_tokens,
-        output: response.usage?.output_tokens,
-        total: response.usage?.input_tokens + response.usage?.output_tokens
+        input: res.usage?.input_tokens,
+        output: res.usage?.output_tokens,
+        total: res.usage?.input_tokens + res.usage?.output_tokens
       }
     })
 

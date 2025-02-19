@@ -3,10 +3,7 @@
 import { env } from 'node:process'
 import { GoogleGenerativeAI } from "@google/generative-ai"
 import { GEMINI_MODELS } from '../../shared/constants'
-import { err } from '../utils/logging'
-import { logLLMCost } from '../utils/step-utils/05-llm-utils'
-
-import type { GeminiModelType } from '../../shared/constants'
+import { err, logLLMCost } from '../utils/logging'
 
 /**
  * Utility function to introduce a delay
@@ -26,14 +23,14 @@ const delay = (ms: number): Promise<void> => new Promise(resolve => setTimeout(r
 export const callGemini = async (
   prompt: string,
   transcript: string,
-  model: string = 'GEMINI_1_5_FLASH'
+  model: keyof typeof GEMINI_MODELS = 'GEMINI_1_5_FLASH'
 ) => {
   if (!env['GEMINI_API_KEY']) {
     throw new Error('GEMINI_API_KEY environment variable is not set. Please set it to your Gemini API key.')
   }
   
   const genAI = new GoogleGenerativeAI(env['GEMINI_API_KEY'])
-  const actualModel = (GEMINI_MODELS[model as GeminiModelType] || GEMINI_MODELS.GEMINI_1_5_FLASH).modelId
+  const actualModel = GEMINI_MODELS[model].modelId
   const geminiModel = genAI.getGenerativeModel({ model: actualModel })
 
   const maxRetries = 3
@@ -70,6 +67,5 @@ export const callGemini = async (
     }
   }
 
-  // In case something unexpected happens
   throw new Error('All attempts to call Gemini API have failed.')
 }

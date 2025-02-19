@@ -1,4 +1,4 @@
-// src/utils/transcription-utils.ts
+// src/utils/step-utils/03-transcription-utils.ts
 
 import { existsSync } from 'node:fs'
 import { l, err } from '../logging'
@@ -6,7 +6,7 @@ import { DEEPGRAM_MODELS, ASSEMBLY_MODELS } from '../../../shared/constants'
 import { execPromise } from '../validation/cli'
 
 import type { ProcessingOptions } from '../types'
-import type { DeepgramModelType, AssemblyModelType, WhisperOutput, TranscriptionCostInfo }from '../../../shared/constants'
+import type { WhisperOutput, TranscriptionCostInfo }from '../../../shared/constants'
 
 /**
  * Asynchronously logs the estimated transcription cost based on audio duration and per-minute cost.
@@ -50,7 +50,7 @@ export async function estimateTranscriptCost(
   switch (transcriptServices) {
     case 'deepgram': {
       const deepgramModel = typeof options.deepgram === 'string' ? options.deepgram : 'NOVA_2'
-      const { name, costPerMinute } = DEEPGRAM_MODELS[deepgramModel as DeepgramModelType] || DEEPGRAM_MODELS.NOVA_2
+      const { name, costPerMinute } = DEEPGRAM_MODELS[deepgramModel] || DEEPGRAM_MODELS.NOVA_2
       await logTranscriptionCost({
         modelName: name,
         costPerMinute,
@@ -60,7 +60,7 @@ export async function estimateTranscriptCost(
     }
     case 'assembly': {
       const assemblyModel = typeof options.assembly === 'string' ? options.assembly : 'NANO'
-      const { name, costPerMinute } = ASSEMBLY_MODELS[assemblyModel as AssemblyModelType] || ASSEMBLY_MODELS.NANO
+      const { name, costPerMinute } = ASSEMBLY_MODELS[assemblyModel] || ASSEMBLY_MODELS.NANO
       await logTranscriptionCost({
         modelName: name,
         costPerMinute,

@@ -116,23 +116,41 @@ export const WHISPER_MODELS: Array<{ value: string; label: string; }> = [
 ]
 
 /**
- * Represents the complete LLM cost and usage details for logging
+ * Deepgram models with their per-minute cost.
  */
-export type LogLLMCost = {
-  // The name of the model used
-  modelName: string
-  // The reason why the model request stopped
-  stopReason: string
-  // Contains token usage details
-  tokenUsage: {
-    // Number of input tokens used
-    input: number | undefined
-    // Number of output tokens generated
-    output: number | undefined
-    // Total number of tokens involved in the request
-    total: number | undefined
-  }
-}
+export const DEEPGRAM_MODELS = {
+  NOVA_2: {
+    name: 'Nova-2',
+    modelId: 'nova-2',
+    costPerMinute: 0.0043,
+  },
+  BASE: {
+    name: 'Base',
+    modelId: 'base',
+    costPerMinute: 0.0125,
+  },
+  ENHANCED: {
+    name: 'Enhanced',
+    modelId: 'enhanced',
+    costPerMinute: 0.0145,
+  },
+} as const
+
+/**
+ * AssemblyAI models with their per-minute cost.
+ */
+export const ASSEMBLY_MODELS = {
+  BEST: {
+    name: 'Best',
+    modelId: 'best',
+    costPerMinute: 0.0062,
+  },
+  NANO: {
+    name: 'Nano',
+    modelId: 'nano',
+    costPerMinute: 0.002,
+  },
+} as const
 
 /**
  * Mapping of available LLM providers and their configuration.
@@ -253,8 +271,6 @@ export const LLM_MODELS = {
   ],
 } as const
 
-export type ChatGPTModelType = 'GPT_4o_MINI' | 'GPT_4o' | 'GPT_o1_MINI'
-
 /**
  * Configuration for ChatGPT models, mapping model types to their display names and identifiers.
  * Includes various GPT-4 models with different capabilities and performance characteristics.
@@ -278,9 +294,7 @@ export const GPT_MODELS = {
     inputCostPer1M: 3.00,
     outputCostPer1M: 12.00
   }
-}
-
-export type ClaudeModelType = 'CLAUDE_3_5_SONNET' | 'CLAUDE_3_5_HAIKU' | 'CLAUDE_3_OPUS' | 'CLAUDE_3_SONNET' | 'CLAUDE_3_HAIKU'
+} as const
 
 /**
  * Configuration for Claude models, mapping model types to their display names and identifiers.
@@ -317,9 +331,7 @@ export const CLAUDE_MODELS = {
     inputCostPer1M: 0.25,
     outputCostPer1M: 1.25
   },
-}
-
-export type GeminiModelType = 'GEMINI_1_5_FLASH' | 'GEMINI_1_5_FLASH_8B' | 'GEMINI_1_5_PRO'
+} as const
 
 /**
  * Configuration for Google Gemini models, mapping model types to their display names and identifiers.
@@ -344,9 +356,7 @@ export const GEMINI_MODELS = {
     inputCostPer1M: 2.50,
     outputCostPer1M: 10.00
   },
-}
-
-export type FireworksModelType = 'LLAMA_3_1_405B' | 'LLAMA_3_1_70B' | 'LLAMA_3_1_8B' | 'LLAMA_3_2_3B' | 'QWEN_2_5_72B'
+} as const
 
 /**
  * Configuration for Fireworks AI models, mapping model types to their display names and identifiers.
@@ -383,9 +393,7 @@ export const FIREWORKS_MODELS = {
     inputCostPer1M: 0.90,
     outputCostPer1M: 0.90
   },
-}
-
-export type TogetherModelType = 'LLAMA_3_2_3B' | 'LLAMA_3_1_405B' | 'LLAMA_3_1_70B' | 'LLAMA_3_1_8B' | 'GEMMA_2_27B' | 'GEMMA_2_9B' | 'QWEN_2_5_72B' | 'QWEN_2_5_7B'
+} as const
 
 /**
  * Configuration for Together AI models, mapping model types to their display names and identifiers.
@@ -440,9 +448,7 @@ export const TOGETHER_MODELS = {
     inputCostPer1M: 0.30,
     outputCostPer1M: 0.30
   },
-}
-
-export type DeepSeekModelType = 'DEEPSEEK_CHAT' | 'DEEPSEEK_REASONER'
+} as const
 
 /**
  * Configuration for DeepSeek models, mapping model types to their display names and identifiers.
@@ -461,7 +467,7 @@ export const DEEPSEEK_MODELS = {
     inputCostPer1M: 0.14,
     outputCostPer1M: 2.19
   },
-}
+} as const
 
 /**
  * All available model configurations combined
@@ -473,45 +479,4 @@ export const ALL_MODELS = {
   ...DEEPSEEK_MODELS,
   ...FIREWORKS_MODELS,
   ...TOGETHER_MODELS,
-}
-
-export type DeepgramModelType = 'NOVA_2' | 'BASE' | 'ENHANCED'
-
-/**
- * Deepgram models with their per-minute cost.
- */
-export const DEEPGRAM_MODELS: Record<DeepgramModelType, { name: string; modelId: string; costPerMinute: number }> = {
-  NOVA_2: {
-    name: 'Nova-2',
-    modelId: 'nova-2',
-    costPerMinute: 0.0043,
-  },
-  BASE: {
-    name: 'Base',
-    modelId: 'base',
-    costPerMinute: 0.0125,
-  },
-  ENHANCED: {
-    name: 'Enhanced',
-    modelId: 'enhanced',
-    costPerMinute: 0.0145,
-  },
-}
-
-export type AssemblyModelType = 'NANO' | 'BEST'
-
-/**
- * AssemblyAI models with their per-minute cost.
- */
-export const ASSEMBLY_MODELS: Record<AssemblyModelType, { name: string; modelId: string; costPerMinute: number }> = {
-  BEST: {
-    name: 'Best',
-    modelId: 'best',
-    costPerMinute: 0.0062,
-  },
-  NANO: {
-    name: 'Nano',
-    modelId: 'nano',
-    costPerMinute: 0.002,
-  },
 }

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# .github/setup/npm-and-env-vars.sh
+# .github/setup/01-npm-and-env-vars.sh
 
 ##############################################################################
 # Sets up .env, ensures Postgres env vars, installs npm packages

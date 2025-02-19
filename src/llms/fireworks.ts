@@ -2,10 +2,7 @@
 
 import { env } from 'node:process'
 import { FIREWORKS_MODELS } from '../../shared/constants'
-import { err } from '../utils/logging'
-import { logLLMCost } from '../utils/step-utils/05-llm-utils'
-
-import type { FireworksModelType } from '../../shared/constants'
+import { err, logLLMCost } from '../utils/logging'
 
 /**
  * Main function to call Fireworks AI API.
@@ -18,15 +15,14 @@ import type { FireworksModelType } from '../../shared/constants'
 export const callFireworks = async (
   prompt: string,
   transcript: string,
-  model: string | FireworksModelType = 'LLAMA_3_2_3B'
+  model: keyof typeof FIREWORKS_MODELS = 'LLAMA_3_2_3B'
 ) => {
   if (!env['FIREWORKS_API_KEY']) {
     throw new Error('FIREWORKS_API_KEY environment variable is not set. Please set it to your Fireworks API key.')
   }
 
   try {
-    const actualModel = (FIREWORKS_MODELS[model as FireworksModelType] || FIREWORKS_MODELS.LLAMA_3_2_3B).modelId
-
+    const actualModel = FIREWORKS_MODELS[model].modelId
     const combinedPrompt = `${prompt}\n${transcript}`
     const requestBody = {
       model: actualModel,
@@ -38,7 +34,7 @@ export const callFireworks = async (
       ],
     }
 
-    const response = await fetch('https://api.fireworks.ai/inference/v1/chat/completions', {
+    const res = await fetch('https://api.fireworks.ai/inference/v1/chat/completions', {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${env['FIREWORKS_API_KEY']}`,
@@ -47,12 +43,12 @@ export const callFireworks = async (
       body: JSON.stringify(requestBody),
     })
 
-    if (!response.ok) {
-      const errorText = await response.text()
-      throw new Error(`Fireworks API error: ${response.status} ${response.statusText} - ${errorText}`)
+    if (!res.ok) {
+      const errorText = await res.text()
+      throw new Error(`Fireworks API error: ${res.status} ${res.statusText} - ${errorText}`)
     }
 
-    const data = await response.json()
+    const data = await res.json()
     const content = data.choices[0]?.message?.content
 
     if (!content) {

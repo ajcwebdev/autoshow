@@ -9,22 +9,7 @@
 import { PrismaClient } from '@prisma/client'
 import { l } from './utils/logging'
 
-/**
- * Represents a single show note record in the database
- */
-export type ShowNote = {
-  showLink: string
-  channel: string
-  channelURL: string
-  title: string
-  description: string
-  publishDate: string
-  coverImage: string
-  frontmatter: string
-  prompt: string
-  transcript: string
-  llmOutput: string
-}
+import type { ShowNote } from './utils/types'
 
 /**
  * A PrismaClient instance used to store show notes

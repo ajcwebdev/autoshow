@@ -1,4 +1,4 @@
-// src/utils/prompts.ts
+// src/utils/step-utils/04-prompts.ts
 
 /**
  * Define the structure for different sections of the prompt

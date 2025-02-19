@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 
-// src/utils/scripts/create-clips.ts
+// src/utils/create-clips.ts
 
 /**
  * Usage:
- *    tsx src/utils/scripts/create-clips.ts <markdown_file> <video_file>
+ *    tsx src/utils/create-clips.ts <markdown_file> <video_file>
  *
  * Example:
- *    tsx src/utils/scripts/create-clips.ts content/2021-05-10-thoughts-on-lambda-school-layoffs-chatgpt-shownotes.md content/2021-05-10-thoughts-on-lambda-school-layoffs.wav
+ *    tsx src/utils/create-clips.ts content/2021-05-10-thoughts-on-lambda-school-layoffs-chatgpt-shownotes.md content/2021-05-10-thoughts-on-lambda-school-layoffs.wav
  */
 
 import fs from 'fs'

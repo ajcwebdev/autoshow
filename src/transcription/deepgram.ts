@@ -14,7 +14,6 @@ import { l, err } from '../utils/logging'
 import { logTranscriptionCost, formatDeepgramTranscript } from '../utils/step-utils/03-transcription-utils'
 import { DEEPGRAM_MODELS } from '../../shared/constants'
 import type { ProcessingOptions } from '../utils/types'
-import type { DeepgramModelType } from '../../shared/constants'
 
 /**
  * Main function to handle transcription using Deepgram API.
@@ -27,7 +26,7 @@ import type { DeepgramModelType } from '../../shared/constants'
 export async function callDeepgram(
   _options: ProcessingOptions,
   finalPath: string,
-  model: string = 'NOVA_2'
+  model: keyof typeof DEEPGRAM_MODELS = 'NOVA_2'
 ) {
   l.dim('\n  callDeepgram called with arguments:')
   l.dim(`    - finalPath: ${finalPath}`)
@@ -38,7 +37,7 @@ export async function callDeepgram(
   }
 
   try {
-    const modelInfo = DEEPGRAM_MODELS[model as DeepgramModelType] || DEEPGRAM_MODELS['NOVA_2']
+    const modelInfo = DEEPGRAM_MODELS[model] || DEEPGRAM_MODELS['NOVA_2']
 
     if (!modelInfo) {
       throw new Error(`Model information for model ${model} is not defined.`)

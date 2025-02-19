@@ -1,4 +1,4 @@
-// src/utils/rss-utils.ts
+// src/utils/command-utils/rss-utils.ts
 
 import { l, err } from '../../utils/logging'
 

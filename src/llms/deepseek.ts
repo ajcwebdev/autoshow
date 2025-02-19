@@ -2,59 +2,59 @@
 
 import { env } from 'node:process'
 import { OpenAI } from 'openai'
-import { err } from '../utils/logging'
-import { logLLMCost } from '../utils/step-utils/05-llm-utils'
-import { DEEPSEEK_MODELS } from '../../shared/constants'
-
-import type { DeepSeekModelType } from '../../shared/constants'
+import { err, logLLMCost } from '../utils/logging'
+import { LLM_SERVICES_CONFIG } from '../../shared/constants'
 
 /**
- * Main function to call DeepSeek API via an OpenAI-compatible SDK.
- * 
+ * Type union of all possible `.value` fields for DeepSeek models in {@link LLM_SERVICES_CONFIG}.
+ */
+type DeepSeekModelValue = (typeof LLM_SERVICES_CONFIG.deepseek.models)[number]['value']
+
+/**
+ * Calls the DeepSeek API via an OpenAI-compatible endpoint and returns generated text.
+ *
  * @param prompt - The prompt or instructions to process.
  * @param transcript - The transcript text to be appended to the prompt.
- * @param model - (optional) The DeepSeek model to use (e.g., 'DEEPSEEK_CHAT' or 'DEEPSEEK_REASONER').
- *                Defaults to 'DEEPSEEK_CHAT'.
- * @returns A Promise that resolves with the generated text from DeepSeek.
- * @throws Will throw an error if the DEEPSEEK_API_KEY environment variable is not set, or if no valid response is returned.
+ * @param modelValue - The string key identifying which DeepSeek model to use (e.g. "deepseek-chat").
+ * @returns The generated text from DeepSeek.
+ * @throws If the `DEEPSEEK_API_KEY` is missing or no valid response is returned.
  */
 export async function callDeepSeek(
   prompt: string,
   transcript: string,
-  model: string = 'DEEPSEEK_CHAT'
+  modelValue: DeepSeekModelValue
 ): Promise<string> {
   if (!env['DEEPSEEK_API_KEY']) {
-    throw new Error('DEEPSEEK_API_KEY environment variable is not set. Please set it to your DeepSeek API key.')
+    throw new Error('Missing DEEPSEEK_API_KEY environment variable.')
   }
 
   const openai = new OpenAI({
-    baseURL: 'https://api.deepseek.com',
-    apiKey: env['DEEPSEEK_API_KEY']
+    apiKey: env['DEEPSEEK_API_KEY'],
+    baseURL: 'https://api.deepseek.com'
   })
 
-  try {
-    const actualModel = (DEEPSEEK_MODELS[model as DeepSeekModelType] || DEEPSEEK_MODELS.DEEPSEEK_CHAT).modelId
-    const combinedPrompt = `${prompt}\n${transcript}`
+  const combinedPrompt = `${prompt}\n${transcript}`
 
-    const response = await openai.chat.completions.create({
-      model: actualModel,
+  try {
+    const res = await openai.chat.completions.create({
+      model: modelValue,
       messages: [{ role: 'user', content: combinedPrompt }]
     })
 
-    const firstChoice = response.choices[0]
-    if (!firstChoice || !firstChoice.message?.content) {
-      throw new Error('No valid response received from the DeepSeek API')
+    const firstChoice = res.choices?.[0]
+    if (!firstChoice?.message?.content) {
+      throw new Error('No valid response from DeepSeek.')
     }
 
     const content = firstChoice.message.content
 
     logLLMCost({
-      modelName: actualModel,
+      modelName: modelValue,
       stopReason: firstChoice.finish_reason ?? 'unknown',
       tokenUsage: {
-        input: response.usage?.prompt_tokens,
-        output: response.usage?.completion_tokens,
-        total: response.usage?.total_tokens
+        input: res.usage?.prompt_tokens,
+        output: res.usage?.completion_tokens,
+        total: res.usage?.total_tokens
       }
     })
 

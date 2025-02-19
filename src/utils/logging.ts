@@ -1,33 +1,166 @@
 // src/utils/logging.ts
 
 import chalk from 'chalk'
+import { LLM_SERVICES_CONFIG } from '../../shared/constants'
+
+import type { ModelConfig, LogLLMCost } from './types'
+
+/** 
+ * For whichever service the user chose, we want to pick the user-supplied model 
+ * or default to the service’s first model. Then pass that to the LLM function.
+ */
+export function getModelIdOrDefault(serviceKey: string, userValue: unknown): string {
+  const serviceConfig = LLM_SERVICES_CONFIG[serviceKey as keyof typeof LLM_SERVICES_CONFIG]
+
+  if (!serviceConfig) {
+    // e.g. user typed --llmServices=foo but you have no 'foo' in LLM_SERVICES_CONFIG
+    throw new Error(`Unsupported LLM service '${serviceKey}'`)
+  }
+
+  // If userValue is boolean true (meaning just --claude, with no model),
+  // or an empty string, or undefined, pick the first model in that service.
+  if (typeof userValue !== 'string' || userValue === 'true' || userValue.trim() === '') {
+    const defaultModel = serviceConfig.models[0]
+    if (!defaultModel) {
+      // The service might have zero models (like 'skip'?). Fallback or return empty.
+      throw new Error(`No models found for LLM service '${serviceKey}'`)
+    }
+    return defaultModel.value // e.g. 'gpt-4o-mini' or 'claude-3-sonnet-20240229'
+  }
+
+  // Otherwise userValue is a string with some model name.
+  // You may want to check if it matches one of the known .value fields:
+  const match = serviceConfig.models.find((m) => m.value === userValue)
+  if (!match) {
+    // If user typed a model that doesn't exist in your config, either throw or fallback:
+    throw new Error(`Unknown model '${userValue}' for service '${serviceKey}'`)
+  }
+
+  return match.value
+}
 
 /**
- * A union type representing the various logging contexts for which a separator can be logged.
+ * Formats a cost value to show cents as "¢1", fractions of a cent as "¢0.5", etc.
+ *  - If cost is undefined => "N/A"
+ *  - If cost is exactly 0 => "0¢"
+ *  - If cost is less than one cent => e.g. "¢0.5"
+ *  - If cost is less than one dollar => e.g. "¢25.00"
+ *  - Otherwise, format in dollars => e.g. "$1.99"
  */
-export type SeparatorParams = {
-  // The context type: channel, playlist, or urls
-  type: 'channel' | 'playlist' | 'urls'
-  // The zero-based index of the current item being processed
-  index: number
-  // The total number of items to be processed
-  total: number
-  // The URL string to be displayed
-  descriptor: string
-} | {
-  // The context type: rss
-  type: 'rss'
-  // The zero-based index of the current item being processed
-  index: number
-  // The total number of items to be processed
-  total: number
-  // The title string to be displayed
-  descriptor: string
-} | {
-  // The context type: completion
-  type: 'completion'
-  // The action string that was completed successfully
-  descriptor: string
+export function formatCost(cost: number | undefined): string {
+  if (cost === undefined) return 'N/A'
+  if (cost === 0) return '0¢'
+
+  const costInCents = cost * 100
+
+  // If total cost in cents is below 1, display fraction of a cent.
+  if (costInCents < 1) {
+    // e.g. $0.005 => "¢0.50"
+    return `¢${costInCents.toFixed(4)}`
+  }
+
+  // If total cost is below $1, show in cents with two decimal places.
+  if (cost < 1) {
+    return `¢${costInCents.toFixed(2)}`
+  }
+
+  // Otherwise, display in dollars.
+  return `$${cost.toFixed(2)}`
+}
+
+/**
+ * Logs API call results in a standardized format across different LLM providers.
+ * Includes token usage and cost calculations.
+ */
+export function logLLMCost(info: LogLLMCost) {
+  const { modelName, stopReason, tokenUsage } = info
+  const { input, output, total } = tokenUsage
+
+  // Inline logic for finding modelConfig
+  let modelConfig: ModelConfig | undefined
+  for (const service of Object.values(LLM_SERVICES_CONFIG)) {
+    for (const model of service.models) {
+      if (
+        model.value === modelName ||
+        model.value.toLowerCase() === modelName.toLowerCase()
+      ) {
+        modelConfig = model
+        break
+      }
+    }
+    if (modelConfig) break
+  }
+
+  // Destructure out of modelConfig if it was found
+  const { label, inputCostPer1M, outputCostPer1M } = modelConfig ?? {}
+
+  // Use model label if available, else fallback to the original name
+  const displayName = label ?? modelName
+
+  // Log stop/finish reason and model
+  l.dim(`  - ${stopReason ? `${stopReason} Reason` : 'Status'}: ${stopReason}\n  - Model: ${displayName}`)
+
+  // Prepare token usage lines
+  const tokenLines: string[] = []
+  if (input) tokenLines.push(`${input} input tokens`)
+  if (output) tokenLines.push(`${output} output tokens`)
+  if (total) tokenLines.push(`${total} total tokens`)
+
+  // Log token usage if there's any data
+  if (tokenLines.length > 0) {
+    l.dim(`  - Token Usage:\n    - ${tokenLines.join('\n    - ')}`)
+  }
+
+  // Calculate costs
+  let inputCost: number | undefined
+  let outputCost: number | undefined
+  let totalCost: number | undefined
+
+  if (!modelConfig) {
+    // Warn if we have no cost information
+    console.warn(`Warning: Could not find cost configuration for model: ${modelName}`)
+  } else if (
+    inputCostPer1M !== undefined &&
+    outputCostPer1M !== undefined &&
+    inputCostPer1M < 0.0000001 &&
+    outputCostPer1M < 0.0000001
+  ) {
+    // If both costs per million are effectively zero, treat them as zero
+    inputCost = 0
+    outputCost = 0
+    totalCost = 0
+  } else if (
+    typeof inputCostPer1M === 'number' &&
+    typeof outputCostPer1M === 'number'
+  ) {
+    if (input) {
+      const rawInputCost = (input / 1_000_000) * inputCostPer1M
+      inputCost = Math.abs(rawInputCost) < 0.00001 ? 0 : rawInputCost
+    }
+    if (output) {
+      outputCost = (output / 1_000_000) * outputCostPer1M
+    }
+    if (inputCost !== undefined && outputCost !== undefined) {
+      totalCost = inputCost + outputCost
+    }
+  }
+
+  // Gather cost lines to log
+  const costLines: string[] = []
+  if (inputCost !== undefined) {
+    costLines.push(`Input cost: ${formatCost(inputCost)}`)
+  }
+  if (outputCost !== undefined) {
+    costLines.push(`Output cost: ${formatCost(outputCost)}`)
+  }
+  if (totalCost !== undefined) {
+    costLines.push(`Total cost: ${chalk.bold(formatCost(totalCost))}`)
+  }
+
+  // Log cost breakdown
+  if (costLines.length > 0) {
+    l.dim(`  - Cost Breakdown:\n    - ${costLines.join('\n    - ')}`)
+  }
 }
 
 /**
@@ -59,7 +192,11 @@ export function logInitialFunctionCall(functionName: string, details: Record<str
  *
  * @param params - An object describing the context and values needed to log the separator.
  */
-export function logSeparator(params: SeparatorParams) {
+export function logSeparator(params:
+  | { type: 'channel' | 'playlist' | 'urls', index: number, total: number, descriptor: string  }
+  | { type: 'rss', index: number, total: number, descriptor: string  }
+  | { type: 'completion', descriptor: string  }
+) {
   switch (params.type) {
     case 'channel':
     case 'playlist':
@@ -88,68 +225,26 @@ export function logSeparator(params: SeparatorParams) {
 }
 
 /**
- * Interface for chainable logger with style methods.
- */
-export interface ChainableLogger {
-  (...args: any[]): void
-  step: (...args: any[]) => void
-  dim: (...args: any[]) => void
-  success: (...args: any[]) => void
-  warn: (...args: any[]) => void
-  opts: (...args: any[]) => void
-  info: (...args: any[]) => void
-  wait: (...args: any[]) => void
-  final: (...args: any[]) => void
-}
-
-/**
- * Creates a chainable logger function that maintains both function call and method syntax.
+ * Creates a chainable logger function that uses the provided base logging function
+ * and attaches chalk-styled methods for consistent usage.
  *
+ * @param baseLogger - The underlying logging function (e.g., `console.log` or `console.error`).
  * @returns A chainable logger instance with styled methods.
  */
-function createChainableLogger(): ChainableLogger {
-  // Base logging function
-  const logger = (...args: any[]) => console.log(...args)
-
-  // Add chalk styles as methods
+function createChainableLogger(baseLogger: (...args: any[]) => void) {
+  const logger = (...args: any[]) => baseLogger(...args)
   const styledLogger = Object.assign(logger, {
-    step: (...args: any[]) => console.log(chalk.bold.underline(...args)),
-    dim: (...args: any[]) => console.log(chalk.dim(...args)),
-    success: (...args: any[]) => console.log(chalk.bold.blue(...args)),
-    warn: (...args: any[]) => console.log(chalk.bold.yellow(...args)),
-    opts: (...args: any[]) => console.log(chalk.magentaBright.bold(...args)),
-    info: (...args: any[]) => console.log(chalk.magentaBright.bold(...args)),
-    wait: (...args: any[]) => console.log(chalk.bold.cyan(...args)),
-    final: (...args: any[]) => console.log(chalk.bold.italic(...args)),
+    step: (...args: any[]) => baseLogger(chalk.bold.underline(...args)),
+    dim: (...args: any[]) => baseLogger(chalk.dim(...args)),
+    success: (...args: any[]) => baseLogger(chalk.bold.blue(...args)),
+    warn: (...args: any[]) => baseLogger(chalk.bold.yellow(...args)),
+    opts: (...args: any[]) => baseLogger(chalk.magentaBright.bold(...args)),
+    info: (...args: any[]) => baseLogger(chalk.magentaBright.bold(...args)),
+    wait: (...args: any[]) => baseLogger(chalk.bold.cyan(...args)),
+    final: (...args: any[]) => baseLogger(chalk.bold.italic(...args)),
   })
-
   return styledLogger
 }
 
-/**
- * Creates a chainable error logger function.
- *
- * @returns A chainable logger that writes to stderr with styled methods.
- */
-function createChainableErrorLogger(): ChainableLogger {
-  // Base error logging function
-  const errorLogger = (...args: any[]) => console.error(...args)
-
-  // Add chalk styles as methods
-  const styledErrorLogger = Object.assign(errorLogger, {
-    step: (...args: any[]) => console.error(chalk.bold.underline(...args)),
-    dim: (...args: any[]) => console.error(chalk.dim(...args)),
-    success: (...args: any[]) => console.error(chalk.bold.blue(...args)),
-    warn: (...args: any[]) => console.error(chalk.bold.yellow(...args)),
-    opts: (...args: any[]) => console.error(chalk.magentaBright.bold(...args)),
-    info: (...args: any[]) => console.error(chalk.magentaBright.bold(...args)),
-    wait: (...args: any[]) => console.error(chalk.bold.cyan(...args)),
-    final: (...args: any[]) => console.error(chalk.bold.italic(...args)),
-  })
-
-  return styledErrorLogger
-}
-
-// Create and export the chainable loggers
-export const l = createChainableLogger()
-export const err = createChainableErrorLogger()
+export const l = createChainableLogger(console.log)
+export const err = createChainableLogger(console.error)

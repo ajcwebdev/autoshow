@@ -1,4 +1,4 @@
-// src/utils/retry.ts
+// src/utils/validation/retry.ts
 
 import { l, err } from '../logging'
 import { execFilePromise } from './cli'
@@ -51,20 +51,20 @@ export async function executeWithRetry(
  * @param {number} delayBetweenRetries - Delay in milliseconds between retry attempts
  * @returns {Promise<void>} Resolves when the function succeeds or rejects after max attempts
  */
-export async function retryLLMCall(
-  fn: () => Promise<void>,
+export async function retryLLMCall<T>(
+  fn: () => Promise<T>,
   maxRetries: number,
   delayBetweenRetries: number
-) {
+): Promise<T> {
   let attempt = 0
 
   while (attempt < maxRetries) {
     try {
       attempt++
       l.dim(`  Attempt ${attempt} - Processing LLM call...\n`)
-      await fn()
+      const result = await fn()
       l.dim(`\n  LLM call completed successfully on attempt ${attempt}.`)
-      return
+      return result
     } catch (error) {
       err(`  Attempt ${attempt} failed: ${(error as Error).message}`)
       if (attempt >= maxRetries) {
@@ -75,6 +75,7 @@ export async function retryLLMCall(
       await new Promise((resolve) => setTimeout(resolve, delayBetweenRetries))
     }
   }
+  throw new Error('LLM call failed after maximum retries.')
 }
 
 /**

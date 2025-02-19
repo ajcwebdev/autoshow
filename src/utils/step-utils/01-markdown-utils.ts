@@ -1,4 +1,4 @@
-// src/utils/step-utils/markdown-utils.ts
+// src/utils/step-utils/01-markdown-utils.ts
 
 import { writeFile } from 'node:fs/promises'
 import { execFilePromise } from '../validation/cli'

@@ -4,8 +4,8 @@ import type { SiteConfig } from "@/types"
 
 export const siteConfig: SiteConfig = {
 	author: "Anthony Campolo",
-	title: "Astro Autoshow",
-	description: "Autoshow site generator with Astro.",
+	title: "Astro AutoShow",
+	description: "AutoShow site generator with Astro.",
 	lang: "en-US",
 	ogLocale: "en_US",
 	sortPostsByUpdatedDate: false,

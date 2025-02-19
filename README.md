@@ -1,5 +1,5 @@
 <div align="center">
-  <h1>Autoshow</h1>
+  <h1>AutoShow</h1>
   <img alt="autoshow logo" src="https://ajc.pics/autoshow/autoshow-cover-01.webp" width="300" />
 </div>
 
@@ -8,15 +8,15 @@
 - [Project Overview](#project-overview)
   - [Key Features](#key-features)
 - [Setup](#setup)
-- [Run Autoshow Node Scripts](#run-autoshow-node-scripts)
+- [Run AutoShow Node Scripts](#run-autoshow-node-scripts)
 - [Project Structure](#project-structure)
 - [Contributors](#contributors)
 
 ## Project Overview
 
-Autoshow automates the processing of audio and video content from various sources, including YouTube videos, playlists, podcast RSS feeds, and local media files. It performs transcription, summarization, and chapter generation using different language models (LLMs) and transcription services.
+AutoShow automates the processing of audio and video content from various sources, including YouTube videos, playlists, podcast RSS feeds, and local media files. It performs transcription, summarization, and chapter generation using different language models (LLMs) and transcription services.
 
-The Autoshow workflow includes the following steps:
+The AutoShow workflow includes the following steps:
 
 1. The user provides a content input (video URL, playlist, RSS feed, or local file) and front matter is created based on the content's metadata.
 2. The audio is downloaded (if necessary).
@@ -44,7 +44,7 @@ The Autoshow workflow includes the following steps:
 npm run setup
 ```
 
-## Run Autoshow Node Scripts
+## Run AutoShow Node Scripts
 
 Run on a single YouTube video.
 

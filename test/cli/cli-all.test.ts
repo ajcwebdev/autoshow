@@ -8,7 +8,7 @@ import { join } from 'node:path'
 
 const commands = [
   {
-    // Process single YouTube video using Autoshow's default settings.
+    // Process single YouTube video using AutoShow's default settings.
     cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk"',
     expectedFile: '2024-09-24-ep0-fsjam-podcast-prompt.md',
     newName: '01-video-default.md'
@@ -173,7 +173,7 @@ const commands = [
   }
 ]
 
-test('Autoshow Command Tests', async (t) => {
+test('AutoShow Command Tests', async (t) => {
   for (const [index, command] of commands.entries()) {
     await t.test(`should run command ${index + 1} successfully`, async () => {
       // Run the command

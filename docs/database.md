@@ -1,4 +1,4 @@
-# How Autoshow's Database Works
+# How AutoShow's Database Works
 
 ## Regular Usage & Writing to Postgres (Prisma)
 

@@ -1,7 +1,7 @@
 // src/commander.ts
 
 /**
- * Autoshow CLI Application
+ * AutoShow CLI Application
  *
  * Automate processing of audio and video content from various sources.
  * Supports processing YouTube videos, playlists, local files, and podcast RSS feeds.

@@ -53,7 +53,7 @@ const commands = [
   }
 ]
 
-test('Autoshow Fireworks Command Tests', async (t) => {
+test(' Fireworks Command Tests', async (t) => {
   for (const [index, command] of commands.entries()) {
     await t.test(`should run command ${index + 1} successfully`, async () => {
       // Run the command

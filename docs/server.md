@@ -1,4 +1,4 @@
-# Autoshow Server
+# AutoShow Server
 
 ## Outline
 

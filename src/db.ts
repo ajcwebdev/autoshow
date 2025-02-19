@@ -25,22 +25,23 @@ export async function insertShowNote(showNote: ShowNote) {
   l.dim('\n  Inserting show note into the database...')
 
   const {
-    showLink, channel, channelURL, title, description, publishDate, coverImage, frontmatter, prompt, transcript, llmOutput
+    showLink, channel, channelURL, title, description, publishDate, coverImage,
+    frontmatter, prompt, transcript, llmOutput
   } = showNote
 
   await db.show_notes.create({
     data: {
-      showLink,
-      channel,
-      channelURL,
+      showLink: showLink ?? null,
+      channel: channel ?? null,
+      channelURL: channelURL ?? null,
       title,
-      description,
+      description: description ?? null,
       publishDate,
-      coverImage,
-      frontmatter,
-      prompt,
-      transcript,
-      llmOutput
+      coverImage: coverImage ?? null,
+      frontmatter: frontmatter ?? null,
+      prompt: prompt ?? null,
+      transcript: transcript ?? null,
+      llmOutput: llmOutput ?? null
     }
   })
 

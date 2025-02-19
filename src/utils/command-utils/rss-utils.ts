@@ -2,7 +2,7 @@
 
 import { l, err } from '../../utils/logging'
 
-import type { ProcessingOptions, RSSItem, HandlerFunction } from '../types'
+import type { ProcessingOptions, ShowNote, HandlerFunction } from '../types'
 
 /**
  * Reads the file specified in --rssURLs, parses RSS feed URLs from each line, and appends them to options.rss.
@@ -116,7 +116,7 @@ export async function filterRSSItems(
   channelImage?: string
 ) {
   const defaultDate = new Date().toISOString().substring(0, 10)
-  const unfilteredItems: RSSItem[] = (feedItemsArray || [])
+  const unfilteredItems: ShowNote[] = (feedItemsArray || [])
     .filter((item: any) => {
       if (!item.enclosure || !item.enclosure.type) return false
       const audioVideoTypes = ['audio/', 'video/']
@@ -142,24 +142,25 @@ export async function filterRSSItems(
       }
     })
 
-  let itemsToProcess: RSSItem[] = []
+  let itemsToProcess: ShowNote[] = []
 
   if (options.item && options.item.length > 0) {
     itemsToProcess = unfilteredItems.filter((it) =>
-      options.item!.includes(it.showLink)
+      options.item!.includes(it.showLink || '')
     )
   } else if (options.lastDays !== undefined) {
     const now = new Date()
     const cutoff = new Date(now.getTime() - options.lastDays * 24 * 60 * 60 * 1000)
 
     itemsToProcess = unfilteredItems.filter((it) => {
+      if (!it.publishDate) return false
       const itDate = new Date(it.publishDate)
       return itDate >= cutoff
     })
   } else if (options.date && options.date.length > 0) {
     const selectedDates = new Set(options.date)
     itemsToProcess = unfilteredItems.filter((it) =>
-      selectedDates.has(it.publishDate)
+      it.publishDate && selectedDates.has(it.publishDate)
     )
   } else if (options.last) {
     itemsToProcess = unfilteredItems.slice(0, options.last)

@@ -1,20 +1,22 @@
 // src/utils/types.ts
 
 /**
- * Represents a single show note record in the database
+ * Represents a single show note record in the database.
+ * Matches the Prisma model and underlying database schema.
  */
 export type ShowNote = {
-  showLink: string
-  channel: string
-  channelURL: string
+  id?: number
+  showLink?: string
+  channel?: string
+  channelURL?: string
   title: string
-  description: string
+  description?: string
   publishDate: string
-  coverImage: string
-  frontmatter: string
-  prompt: string
-  transcript: string
-  llmOutput: string
+  coverImage?: string
+  frontmatter?: string
+  prompt?: string
+  transcript?: string
+  llmOutput?: string
 }
 
 /**
@@ -116,46 +118,6 @@ export interface PlaylistData {
   entries: PlaylistEntry[];
 }
 
-/**
- * Metadata extracted from a YouTube video.
- */
-export type VideoMetadata = {
-  /** The URL to the video's webpage. */
-  showLink: string
-  /** The name of the channel that uploaded the video. */
-  channel: string
-  /** The URL to the uploader's channel page. */
-  channelURL: string
-  /** The title of the video. */
-  title: string
-  /** The description of the video. */
-  description: string
-  /** The upload date in 'YYYY-MM-DD' format. */
-  publishDate: string
-  /** The URL to the video's thumbnail image. */
-  coverImage: string
-}
-
-/**
- * @interface EpisodeMetadata
- * @property {string} [showLink]
- * @property {string} [channel]
- * @property {string} [channelURL]
- * @property {string} [title]
- * @property {string} [description]
- * @property {string} [publishDate]
- * @property {string} [coverImage]
- */
-export interface EpisodeMetadata {
-  showLink?: string | undefined
-  channel?: string | undefined
-  channelURL?: string | undefined
-  title?: string | undefined
-  description?: string | undefined
-  publishDate?: string | undefined
-  coverImage?: string | undefined
-}
-
 // Define valid action types for processing
 export type ValidCLIAction = 'video' | 'playlist' | 'channel' | 'urls' | 'file' | 'rss'
 
@@ -183,32 +145,6 @@ export interface VideoInfo {
   date: Date
   timestamp: number  // Unix timestamp for more precise sorting
   isLive: boolean   // Flag to identify live streams
-}
-
-/**
- * Item in an RSS feed.
- */
-export type RSSItem = {
-  enclosure?: {
-    url?: string
-    type?: string
-  }
-  /** The publication date of the RSS item (e.g., '2024-09-24'). */
-  publishDate: string
-  /** The title of the RSS item. */
-  title: string
-  /** The URL to the cover image of the RSS item. */
-  coverImage: string
-  /** The URL to the show or episode. */
-  showLink: string
-  /** The name of the channel or podcast. */
-  channel: string
-  /** The URL to the channel or podcast. */
-  channelURL: string
-  /** A brief description of the RSS item. */
-  description?: string
-  /** The URL to the audio file of the RSS item. */
-  audioURL?: string
 }
 
 /**

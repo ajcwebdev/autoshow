@@ -11,7 +11,7 @@ import { callDeepSeek } from '../../../src/llms/deepseek'
 import { callFireworks } from '../../../src/llms/fireworks'
 import { callTogether } from '../../../src/llms/together'
 
-import type { ProcessingOptions, EpisodeMetadata } from '../types'
+import type { ProcessingOptions, ShowNote } from '../types'
 
 // Type for LLM function signatures
 type LLMFunction = (prompt: string, transcript: string, options: any) => Promise<string>;
@@ -28,12 +28,11 @@ export const LLM_FUNCTIONS: Record<string, LLMFunction> = {
 }
 
 /**
- * @public
  * @typedef {Object} ParsedPromptFile
  * @property {string} frontMatter - The extracted front matter (including --- lines).
  * @property {string} prompt - The prompt text to be processed.
  * @property {string} transcript - The transcript text to be processed (if any).
- * @property {EpisodeMetadata} metadata - The metadata object parsed from front matter.
+ * @property {ShowNote} metadata - The metadata object parsed from front matter.
  */
 
 /**
@@ -53,14 +52,9 @@ function parsePromptFile(fileContent: string) {
   let frontMatter = ''
   let prompt = ''
   let transcript = ''
-  let metadata: EpisodeMetadata = {
-    showLink: '',
-    channel: '',
-    channelURL: '',
+  let metadata: ShowNote = {
     title: '',
-    description: '',
-    publishDate: '',
-    coverImage: ''
+    publishDate: ''
   }
 
   const lines = fileContent.split('\n')
@@ -84,13 +78,13 @@ function parsePromptFile(fileContent: string) {
       if (match) {
         const key = match[1]
         const value = match[2]
-        if (key === 'showLink') metadata.showLink = value
-        if (key === 'channel') metadata.channel = value
-        if (key === 'channelURL') metadata.channelURL = value
-        if (key === 'title') metadata.title = value
-        if (key === 'description') metadata.description = value
-        if (key === 'publishDate') metadata.publishDate = value
-        if (key === 'coverImage') metadata.coverImage = value
+        if (key === 'showLink') metadata.showLink = value || ''
+        if (key === 'channel') metadata.channel = value || ''
+        if (key === 'channelURL') metadata.channelURL = value || ''
+        if (key === 'title') metadata.title = value || ''
+        if (key === 'description') metadata.description = value || ''
+        if (key === 'publishDate') metadata.publishDate = value || ''
+        if (key === 'coverImage') metadata.coverImage = value || ''
       }
       continue
     }

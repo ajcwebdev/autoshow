@@ -6,7 +6,7 @@ import { l, err, logInitialFunctionCall, getModelIdOrDefault } from '../utils/lo
 import { retryLLMCall } from '../utils/validation/retry'
 import { LLM_FUNCTIONS } from '../utils/step-utils/05-llm-utils'
 
-import type { ProcessingOptions, EpisodeMetadata } from '../utils/types'
+import type { ProcessingOptions, ShowNote } from '../utils/types'
 
 /**
  * Processes a transcript using a specified Language Model service.
@@ -31,7 +31,7 @@ import type { ProcessingOptions, EpisodeMetadata } from '../utils/types'
  * @param {string} frontMatter - YAML front matter content to include in the output
  * @param {string} prompt - Optional prompt or instructions to process
  * @param {string} transcript - The transcript content
- * @param {EpisodeMetadata} metadata - The metadata object from generateMarkdown
+ * @param {ShowNote} metadata - The metadata object
  * @param {string} [llmServices] - The LLM service to use
  * @returns {Promise<string>} Resolves with the LLM output, or an empty string if no LLM is selected
  */
@@ -41,7 +41,7 @@ export async function runLLM(
   frontMatter: string,
   prompt: string,
   transcript: string,
-  metadata: EpisodeMetadata,
+  metadata: ShowNote,
   llmServices?: string,
 ) {
   l.step(`\nStep 5 - Run Language Model\n`)
@@ -86,9 +86,9 @@ export async function runLLM(
       showLink: metadata.showLink ?? '',
       channel: metadata.channel ?? '',
       channelURL: metadata.channelURL ?? '',
-      title: metadata.title ?? '',
+      title: metadata.title,
       description: metadata.description ?? '',
-      publishDate: metadata.publishDate ?? '',
+      publishDate: metadata.publishDate,
       coverImage: metadata.coverImage ?? '',
       frontmatter: frontMatter,
       prompt,

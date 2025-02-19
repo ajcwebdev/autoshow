@@ -4,7 +4,7 @@ import { writeFile } from 'node:fs/promises'
 import { execFilePromise } from '../validation/cli'
 import { l, err } from '../logging'
 
-import type { VideoMetadata, VideoInfo, RSSItem } from '../types'
+import type { VideoInfo, ShowNote } from '../types'
 
 /**
  * Saves metadata or feed information to a JSON file, consolidating the logic from the original
@@ -14,18 +14,18 @@ import type { VideoMetadata, VideoInfo, RSSItem } from '../types'
  * @param data - The actual data to process and save:
  *   - For 'playlist' or 'urls': an array of string URLs
  *   - For 'channel': an array of VideoInfo objects
- *   - For 'rss': an array of RSSItem objects
+ *   - For 'rss': an array of ShowNote objects
  * @param title - The title or name associated with the data (e.g., a playlist/channel title)
  * @returns A Promise that resolves when the file has been written successfully
  */
 export async function saveInfo(
   type: 'playlist' | 'urls' | 'channel' | 'rss',
-  data: string[] | VideoInfo[] | RSSItem[],
+  data: string[] | VideoInfo[] | ShowNote[],
   title?: string
 ) {
   // Handle RSS items
   if (type === 'rss') {
-    const items = data as RSSItem[]
+    const items = data as ShowNote[]
     const jsonContent = JSON.stringify(items, null, 2)
     const sanitizedTitle = sanitizeTitle(title || '')
     const jsonFilePath = `content/${sanitizedTitle}_info.json`
@@ -86,7 +86,7 @@ export async function saveInfo(
           description: '',
           publishDate,
           coverImage,
-        } as VideoMetadata
+        } as ShowNote
       } catch (error) {
         err(
           `Error extracting metadata for ${url}: ${
@@ -99,7 +99,7 @@ export async function saveInfo(
   )
 
   const validMetadata = metadataList.filter(
-    (metadata): metadata is VideoMetadata => metadata !== null
+    (metadata): metadata is ShowNote => metadata !== null
   )
 
   const jsonContent = JSON.stringify(validMetadata, null, 2)

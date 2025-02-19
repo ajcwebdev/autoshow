@@ -10,7 +10,7 @@ import { selectPrompts } from '../../process-steps/04-select-prompt'
 import { estimateLLMCost, runLLMFromPromptFile } from '../step-utils/05-llm-utils'
 import { createEmbeddingsAndSQLite } from '../embeddings/create-embed'
 import { queryEmbeddings } from '../embeddings/query-embed'
-import { LLM_OPTIONS } from '../../../shared/constants'
+import { LLM_SERVICES_CONFIG } from '../../../shared/constants'
 
 import type { ProcessingOptions, ValidCLIAction, HandlerFunction } from '../types'
 
@@ -156,9 +156,12 @@ export function validateInputCLI(options: ProcessingOptions): {
  * @throws An error if the LLM service is invalid or not provided
  */
 export function validateLLM(options: ProcessingOptions) {
-  const llmKeys = LLM_OPTIONS as string[]
-  const llmKey = validateOption(llmKeys, options, 'LLM option')
+  // Collect all service values (excluding null) from LLM_SERVICES_CONFIG
+  const llmKeys = Object.values(LLM_SERVICES_CONFIG)
+    .map((service) => service.value)
+    .filter((v) => v !== null) as string[]
 
+  const llmKey = validateOption(llmKeys, options, 'LLM option')
   if (!llmKey) {
     return undefined
   }

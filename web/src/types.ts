@@ -1,6 +1,6 @@
 // web/src/types.ts
 
-import { LLM_MODELS } from '../../shared/constants'
+import { LLM_SERVICES_CONFIG } from '../../shared/constants'
 
 export interface SiteConfig {
 	author: string;
@@ -34,8 +34,8 @@ export interface AlertProps {
   variant: string
 }
 
-// Define the allowed LLM service keys from LLM_MODELS
-export type LlmServiceKey = keyof typeof LLM_MODELS
+// Define the allowed LLM service keys from LLM_SERVICES_CONFIG
+export type LlmServiceKey = keyof typeof LLM_SERVICES_CONFIG
 
 // Define props for the Form component
 export interface FormProps {

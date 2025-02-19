@@ -2,7 +2,7 @@
 
 import { writeFile } from 'node:fs/promises'
 import { insertShowNote } from '../db'
-import { l, err, logInitialFunctionCall } from '../utils/logging'
+import { l, err, logInitialFunctionCall, getModelIdOrDefault } from '../utils/logging'
 import { retryLLMCall } from '../utils/validation/retry'
 import { LLM_FUNCTIONS } from '../utils/step-utils/05-llm-utils'
 
@@ -52,16 +52,19 @@ export async function runLLM(
     if (llmServices) {
       l.dim(`\n  Preparing to process with '${llmServices}' Language Model...\n`)
       const llmFunction = LLM_FUNCTIONS[llmServices as keyof typeof LLM_FUNCTIONS]
-
+    
       if (!llmFunction) {
         throw new Error(`Invalid LLM option: ${llmServices}`)
       }
+    
+      // 1. Pick the actual model name (e.g. 'gpt-4o-mini') from user or default
+      const userModel = getModelIdOrDefault(llmServices, options[llmServices])
+    
+      // 2. Pass that along to the LLM function in your retry block
       let showNotes = ''
-
       await retryLLMCall<string>(
         async () => {
-          const llmOptions = options[llmServices] ?? ''
-          showNotes = await llmFunction(prompt, transcript, llmOptions)
+          showNotes = await llmFunction(prompt, transcript, userModel)
           return showNotes
         },
         5,

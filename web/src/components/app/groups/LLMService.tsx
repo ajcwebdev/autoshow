@@ -1,7 +1,10 @@
 // web/src/components/app/groups/LLMService.tsx
 
 import React from 'react'
-import { LLM_SERVICES, LLM_MODELS } from '../../../../../shared/constants'
+import { LLM_SERVICES_CONFIG } from '../../../../../shared/constants'
+
+// Define the LLMServiceKey type
+type LLMServiceKey = keyof typeof LLM_SERVICES_CONFIG;
 
 /**
  * The LLMService component provides a dropdown for selecting the LLM service,
@@ -17,7 +20,7 @@ import { LLM_SERVICES, LLM_MODELS } from '../../../../../shared/constants'
  * @returns {JSX.Element}
  */
 export const LLMService: React.FC<{
-  llmService: string
+  llmService: LLMServiceKey
   setLlmService: React.Dispatch<React.SetStateAction<string>>
   llmModel: string
   setLlmModel: React.Dispatch<React.SetStateAction<string>>
@@ -28,16 +31,21 @@ export const LLMService: React.FC<{
   setLlmModel
 }) => {
   /**
-   * Automatically set the first model from LLM_MODELS if none is selected.
-   * 
-   * @remarks
-   * Ensures a valid model is always sent to the backend if an LLM service has been chosen.
+   * Automatically set the first model from the chosen service's array if none is selected.
    */
   React.useEffect(() => {
-    if (llmService && llmService in LLM_MODELS && !llmModel) {
-      setLlmModel((LLM_MODELS[llmService as keyof typeof LLM_MODELS][0].value))
+    if (llmService && LLM_SERVICES_CONFIG[llmService]?.models?.length && !llmModel) {
+      setLlmModel(LLM_SERVICES_CONFIG[llmService].models[0].value)
     }
   }, [llmService, llmModel, setLlmModel])
+
+  // Build an array of services from the config (excluding "skip" which has null value)
+  const allServices = Object.values(LLM_SERVICES_CONFIG).filter((s) => s.value)
+
+  // Get the models for the selected service
+  const modelsForService = llmService
+    ? LLM_SERVICES_CONFIG[llmService]?.models ?? []
+    : []
 
   return (
     <>
@@ -52,15 +60,15 @@ export const LLMService: React.FC<{
           }}
         >
           <option value="">None</option>
-          {LLM_SERVICES.map((service) => (
-            <option key={service.value} value={service.value}>
+          {allServices.map((service) => (
+            <option key={service.value} value={service.value as string}>
               {service.label}
             </option>
           ))}
         </select>
       </div>
 
-      {llmService && llmService in LLM_MODELS && (
+      {llmService && modelsForService.length > 0 && (
         <div className="form-group">
           <label htmlFor="llmModel">LLM Model</label>
           <select
@@ -68,7 +76,7 @@ export const LLMService: React.FC<{
             value={llmModel}
             onChange={(e) => setLlmModel(e.target.value)}
           >
-            {LLM_MODELS[llmService as keyof typeof LLM_MODELS].map((model) => (
+            {modelsForService.map((model) => (
               <option key={model.value} value={model.value}>
                 {model.label}
               </option>

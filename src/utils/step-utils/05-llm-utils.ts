@@ -203,11 +203,25 @@ export async function estimateLLMCost(
       ? options[llmService] as string
       : undefined
 
-    // Provide default fallback for ChatGPT if no string model was given
+    // Provide default fallback for models if no string model was given
     if (llmService === 'chatgpt' && (userModel === undefined || userModel === 'true')) {
-      userModel = 'GPT_4o_MINI'
+      userModel = 'gpt-4o-mini'
     }
-
+    if (llmService === 'claude' && (userModel === undefined || userModel === 'true')) {
+      userModel = 'claude-3-sonnet-20240229'
+    }
+    if (llmService === 'gemini' && (userModel === undefined || userModel === 'true')) {
+      userModel = 'gemini-1.5-flash'
+    }
+    if (llmService === 'deepseek' && (userModel === undefined || userModel === 'true')) {
+      userModel = 'deepseek-chat'
+    }
+    if (llmService === 'fireworks' && (userModel === undefined || userModel === 'true')) {
+      userModel = 'accounts/fireworks/models/llama-v3p2-3b-instruct'
+    }
+    if (llmService === 'together' && (userModel === undefined || userModel === 'true')) {
+      userModel = 'meta-llama/Llama-3.2-3B-Instruct-Turbo'
+    }
     // If still nothing is set, use the service name as a last resort
     const modelName = userModel || llmService
 

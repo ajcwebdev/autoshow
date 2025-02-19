@@ -1,6 +1,6 @@
 // src/utils/validation/requests.ts
 
-import { TRANSCRIPTION_SERVICES, LLM_OPTIONS } from '../../../shared/constants'
+import { TRANSCRIPTION_SERVICES, LLM_SERVICES_CONFIG } from '../../../shared/constants'
 
 import type { ProcessingOptions } from '../types'
 
@@ -47,11 +47,14 @@ export function validateRequest(requestData: any): {
   let llmServices: string | undefined
   let transcriptServices: string | undefined
 
+  // Collect all valid LLM service values from LLM_SERVICES_CONFIG (excluding null/skip)
+  const validLlmValues = Object.values(LLM_SERVICES_CONFIG)
+    .map((service) => service.value)
+    .filter((v) => v !== null)
+
   // Check if a valid LLM service is provided
-  if (requestData.llm && LLM_OPTIONS.includes(requestData.llm)) {
-    // Set the LLM service
+  if (requestData.llm && validLlmValues.includes(requestData.llm)) {
     llmServices = requestData.llm as string
-    // Set the LLM model or default to true
     options[llmServices] = requestData.llmModel || true
   }
 

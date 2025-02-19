@@ -2,47 +2,51 @@
 
 import { env } from 'node:process'
 import { OpenAI } from 'openai'
-import { GPT_MODELS } from '../../shared/constants'
+import { LLM_SERVICES_CONFIG } from '../../shared/constants'
 import { err, logLLMCost } from '../utils/logging'
 
 /**
  * Main function to call ChatGPT API.
- * @param {string} prompt - The prompt or instructions to process.
- * @param {string} transcript - The transcript text.
- * @param {string} [model] - The GPT model to use.
- * @returns {Promise<string>} A Promise that resolves with the generated text.
- * @throws {Error} If an error occurs during API call.
+ * @param {string} prompt
+ * @param {string} transcript
+ * @param {string} modelValue - e.g. "gpt-4o-mini"
+ * @returns {Promise<string>}
  */
-export const callChatGPT = async (
+export async function callChatGPT(
   prompt: string,
   transcript: string,
-  model: keyof typeof GPT_MODELS = 'GPT_4o_MINI'
-) => {
+  modelValue: string
+) {
   if (!env['OPENAI_API_KEY']) {
-    throw new Error('OPENAI_API_KEY environment variable is not set. Please set it to your OpenAI API key.')
+    throw new Error('Missing OPENAI_API_KEY')
+  }
+
+  const modelConfig = LLM_SERVICES_CONFIG.chatgpt.models.find(
+    (m) => m.value === modelValue
+  )
+  if (!modelConfig) {
+    throw new Error(`Could not find config for ChatGPT model '${modelValue}'`)
   }
 
   const openai = new OpenAI({ apiKey: env['OPENAI_API_KEY'] })
+  const combinedPrompt = `${prompt}\n${transcript}`
 
   try {
-    const actualModel = GPT_MODELS[model].modelId
-    const combinedPrompt = `${prompt}\n${transcript}`
-
     const response = await openai.chat.completions.create({
-      model: actualModel,
+      model: modelConfig.modelId,
       max_completion_tokens: 4000,
       messages: [{ role: 'user', content: combinedPrompt }],
     })
 
     const firstChoice = response.choices[0]
-    if (!firstChoice || !firstChoice.message?.content) {
-      throw new Error('No valid response received from the API')
+    if (!firstChoice?.message?.content) {
+      throw new Error('No valid response from the API')
     }
 
     const content = firstChoice.message.content
 
     logLLMCost({
-      modelName: actualModel,
+      modelName: modelConfig.modelId,
       stopReason: firstChoice.finish_reason ?? 'unknown',
       tokenUsage: {
         input: response.usage?.prompt_tokens,

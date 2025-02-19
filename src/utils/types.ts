@@ -1,4 +1,21 @@
-// src/types/process.ts
+// src/utils/types.ts
+
+/**
+ * Represents a single show note record in the database
+ */
+export type ShowNote = {
+  showLink: string
+  channel: string
+  channelURL: string
+  title: string
+  description: string
+  publishDate: string
+  coverImage: string
+  frontmatter: string
+  prompt: string
+  transcript: string
+  llmOutput: string
+}
 
 /**
  * Processing options passed through command-line arguments.
@@ -192,4 +209,33 @@ export type RSSItem = {
   description?: string
   /** The URL to the audio file of the RSS item. */
   audioURL?: string
+}
+
+/**
+ * Represents the configuration for a model, including cost details.
+ */
+export type ModelConfig = {
+  value: string
+  label: string
+  inputCostPer1M: number
+  outputCostPer1M: number
+}
+
+/**
+ * Represents the complete LLM cost and usage details for logging
+ */
+export type LogLLMCost = {
+  // The name of the model used
+  modelName: string
+  // The reason why the model request stopped
+  stopReason: string
+  // Contains token usage details
+  tokenUsage: {
+    // Number of input tokens used
+    input: number | undefined
+    // Number of output tokens generated
+    output: number | undefined
+    // Total number of tokens involved in the request
+    total: number | undefined
+  }
 }

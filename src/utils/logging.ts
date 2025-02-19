@@ -3,6 +3,8 @@
 import chalk from 'chalk'
 import { LLM_SERVICES_CONFIG } from '../../shared/constants'
 
+import type { ModelConfig, LogLLMCost } from './types'
+
 /** 
  * For whichever service the user chose, we want to pick the user-supplied model 
  * or default to the service’s first model. Then pass that to the LLM function.
@@ -38,32 +40,32 @@ export function getModelIdOrDefault(serviceKey: string, userValue: unknown): str
 }
 
 /**
- * Represents the configuration for a model, including cost details.
+ * Formats a cost value to show cents as "¢1", fractions of a cent as "¢0.5", etc.
+ *  - If cost is undefined => "N/A"
+ *  - If cost is exactly 0 => "0¢"
+ *  - If cost is less than one cent => e.g. "¢0.5"
+ *  - If cost is less than one dollar => e.g. "¢25.00"
+ *  - Otherwise, format in dollars => e.g. "$1.99"
  */
-export type ModelConfig = {
-  value: string
-  label: string
-  inputCostPer1M: number
-  outputCostPer1M: number
-}
+export function formatCost(cost: number | undefined): string {
+  if (cost === undefined) return 'N/A'
+  if (cost === 0) return '0¢'
 
-/**
- * Represents the complete LLM cost and usage details for logging
- */
-export type LogLLMCost = {
-  // The name of the model used
-  modelName: string
-  // The reason why the model request stopped
-  stopReason: string
-  // Contains token usage details
-  tokenUsage: {
-    // Number of input tokens used
-    input: number | undefined
-    // Number of output tokens generated
-    output: number | undefined
-    // Total number of tokens involved in the request
-    total: number | undefined
+  const costInCents = cost * 100
+
+  // If total cost in cents is below 1, display fraction of a cent.
+  if (costInCents < 1) {
+    // e.g. $0.005 => "¢0.50"
+    return `¢${costInCents.toFixed(4)}`
   }
+
+  // If total cost is below $1, show in cents with two decimal places.
+  if (cost < 1) {
+    return `¢${costInCents.toFixed(2)}`
+  }
+
+  // Otherwise, display in dollars.
+  return `$${cost.toFixed(2)}`
 }
 
 /**
@@ -72,90 +74,79 @@ export type LogLLMCost = {
  */
 export function logLLMCost(info: LogLLMCost) {
   const { modelName, stopReason, tokenUsage } = info
-  
-  /**
-   * Searches the consolidated LLM_SERVICES_CONFIG for a model config matching
-   * the given model key.
-   */
-  function findModelConfig(modelKey: string): ModelConfig | undefined {
-    for (const service of Object.values(LLM_SERVICES_CONFIG)) {
-      for (const model of service.models) {
-        if (
-          model.value === modelKey ||
-          model.value.toLowerCase() === modelKey.toLowerCase()
-        ) {
-          return model
-        }
+  const { input, output, total } = tokenUsage
+
+  // Inline logic for finding modelConfig
+  let modelConfig: ModelConfig | undefined
+  for (const service of Object.values(LLM_SERVICES_CONFIG)) {
+    for (const model of service.models) {
+      if (
+        model.value === modelName ||
+        model.value.toLowerCase() === modelName.toLowerCase()
+      ) {
+        modelConfig = model
+        break
       }
     }
-    return undefined
+    if (modelConfig) break
   }
 
-  /**
-   * Formats a cost value to a standardized string representation.
-   */
-  function formatCost(cost: number | undefined) {
-    if (cost === undefined) return 'N/A'
-    if (cost === 0) return '$0.0000'
-    return `$${cost.toFixed(4)}`
-  }
+  // Destructure out of modelConfig if it was found
+  const { label, inputCostPer1M, outputCostPer1M } = modelConfig ?? {}
 
-  // Get model display name if available, otherwise use the provided name
-  const modelConfig = findModelConfig(modelName)
-  const displayName = modelConfig?.label ?? modelName
-  
+  // Use model label if available, else fallback to the original name
+  const displayName = label ?? modelName
+
   // Log stop/finish reason and model
   l.dim(`  - ${stopReason ? `${stopReason} Reason` : 'Status'}: ${stopReason}\n  - Model: ${displayName}`)
-  
-  // Format token usage string based on available data
-  const tokenLines = []
-  if (tokenUsage.input) tokenLines.push(`${tokenUsage.input} input tokens`)
-  if (tokenUsage.output) tokenLines.push(`${tokenUsage.output} output tokens`)
-  if (tokenUsage.total) tokenLines.push(`${tokenUsage.total} total tokens`)
-  
-  // Log token usage if any data is available
+
+  // Prepare token usage lines
+  const tokenLines: string[] = []
+  if (input) tokenLines.push(`${input} input tokens`)
+  if (output) tokenLines.push(`${output} output tokens`)
+  if (total) tokenLines.push(`${total} total tokens`)
+
+  // Log token usage if there's any data
   if (tokenLines.length > 0) {
     l.dim(`  - Token Usage:\n    - ${tokenLines.join('\n    - ')}`)
   }
 
-  // Calculate and log costs
+  // Calculate costs
   let inputCost: number | undefined
   let outputCost: number | undefined
   let totalCost: number | undefined
 
-  // If no config found, we can't compute cost reliably
   if (!modelConfig) {
+    // Warn if we have no cost information
     console.warn(`Warning: Could not find cost configuration for model: ${modelName}`)
   } else if (
-    modelConfig.inputCostPer1M !== undefined &&
-    modelConfig.outputCostPer1M !== undefined &&
-    modelConfig.inputCostPer1M < 0.0000001 &&
-    modelConfig.outputCostPer1M < 0.0000001
+    inputCostPer1M !== undefined &&
+    outputCostPer1M !== undefined &&
+    inputCostPer1M < 0.0000001 &&
+    outputCostPer1M < 0.0000001
   ) {
-    // If both costs per million are effectively zero, return all zeros
+    // If both costs per million are effectively zero, treat them as zero
     inputCost = 0
     outputCost = 0
     totalCost = 0
   } else if (
-    modelConfig.inputCostPer1M !== undefined &&
-    modelConfig.outputCostPer1M !== undefined
+    typeof inputCostPer1M === 'number' &&
+    typeof outputCostPer1M === 'number'
   ) {
-    // Calculate costs if token usage is available
-    if (tokenUsage.input) {
-      const rawInputCost = (tokenUsage.input / 1_000_000) * modelConfig.inputCostPer1M
+    if (input) {
+      const rawInputCost = (input / 1_000_000) * inputCostPer1M
       inputCost = Math.abs(rawInputCost) < 0.00001 ? 0 : rawInputCost
     }
-    if (tokenUsage.output) {
-      outputCost = (tokenUsage.output / 1_000_000) * modelConfig.outputCostPer1M
+    if (output) {
+      outputCost = (output / 1_000_000) * outputCostPer1M
     }
-    // Calculate total cost if both input and output costs are available
     if (inputCost !== undefined && outputCost !== undefined) {
       totalCost = inputCost + outputCost
     }
   }
 
-  const costLines = []
-  
+  // Gather cost lines to log
+  const costLines: string[] = []
   if (inputCost !== undefined) {
     costLines.push(`Input cost: ${formatCost(inputCost)}`)
   }
@@ -166,7 +157,7 @@ export function logLLMCost(info: LogLLMCost) {
     costLines.push(`Total cost: ${chalk.bold(formatCost(totalCost))}`)
   }
 
-  // Log costs if any calculations were successful
+  // Log cost breakdown
   if (costLines.length > 0) {
     l.dim(`  - Cost Breakdown:\n    - ${costLines.join('\n    - ')}`)
   }

@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
 
 ##############################################################################
-# Mac-only setup script w/ pgvector + PostgreSQL@17.
+# Mac-only setup script w/ pgvector + PostgreSQL@16.
 # - Logs go to a timestamped file: "setup-YYYYmmdd-HHMMSS.log"
 #   * If the script fails, we preserve the log file.
 #   * If the script succeeds, we remove it.
@@ -75,11 +75,11 @@ ensure_homebrew() {
 
 detect_and_stop_older_postgres() {
   # We'll see if postgresql@14 or the unversioned "postgresql" is installed & running.
-  local older_versions=("postgresql" "postgresql@14" "postgresql@15" "postgresql@16")
-  # The current is "postgresql@17", so we skip that in this detection loop.
+  local other_versions=("postgresql" "postgresql@14" "postgresql@15" "postgresql@17")
+  # The current is "postgresql@16", so we skip that in this detection loop.
 
   local found_running=false
-  for ov in "${older_versions[@]}"; do
+  for ov in "${other_versions[@]}"; do
     if brew ls --versions "$ov" &>/dev/null; then
       # It's installed. Check if running:
       local is_running
@@ -122,7 +122,7 @@ if [ "$IS_MAC" = true ]; then
   detect_and_stop_older_postgres
 
   echo "==> Installing dependencies..."
-  quiet_brew_install "postgresql@17"
+  quiet_brew_install "postgresql@16"
   quiet_brew_install "yt-dlp"
   quiet_brew_install "ffmpeg"
   quiet_brew_install "ollama"
@@ -130,13 +130,13 @@ if [ "$IS_MAC" = true ]; then
 fi
 
 ##############################################################################
-# 4. Force usage of postgresql@17; check version match
+# 4. Force usage of postgresql@16; check version match
 ##############################################################################
-echo "==> Locating postgresql@17..."
-PG_PREFIX="$(brew --prefix postgresql@17 2>/dev/null || true)"
+echo "==> Locating postgresql@16..."
+PG_PREFIX="$(brew --prefix postgresql@16 2>/dev/null || true)"
 
 if [ -z "$PG_PREFIX" ] || [ ! -d "$PG_PREFIX" ]; then
-  echo "Error: Could not locate a Homebrew postgresql@17 installation directory."
+  echo "Error: Could not locate a Homebrew postgresql@16 installation directory."
   exit 1
 fi
 
@@ -151,7 +151,7 @@ echo "Using Postgres@17 prefix: $PG_PREFIX"
 # Check that `pg_config --version` actually says 17.x
 INSTALLED_VERSION="$("$PG_PREFIX/bin/pg_config" --version || true)"
 if [[ ! "$INSTALLED_VERSION" =~ 17\.[0-9] ]]; then
-  echo "WARNING: Found postgresql@17, but 'pg_config --version' returned:"
+  echo "WARNING: Found postgresql@16, but 'pg_config --version' returned:"
   echo "         '$INSTALLED_VERSION'"
   echo "We will attempt to rebuild or correct installation for 17.x..."
   # Potentially force a reinstall from source
@@ -164,10 +164,10 @@ export PATH="$PG_PREFIX/bin:$PATH"
 
 # If not in Docker, start the service
 if is_docker_container; then
-  echo "Detected Docker environment. Skipping 'brew services start' for postgresql@17."
+  echo "Detected Docker environment. Skipping 'brew services start' for postgresql@16."
 else
-  echo "Starting (or restarting) 'postgresql@17' via brew services..."
-  brew services start postgresql@17 || true
+  echo "Starting (or restarting) 'postgresql@16' via brew services..."
+  brew services start postgresql@16 || true
 fi
 
 ##############################################################################
@@ -231,6 +231,7 @@ else
   echo "Downloading whisper models (tiny, base)..."
   bash ./whisper.cpp/models/download-ggml-model.sh tiny &>/dev/null
   bash ./whisper.cpp/models/download-ggml-model.sh base &>/dev/null
+  bash ./whisper.cpp/models/download-ggml-model.sh large-v3-turbo &>/dev/null
 
   echo "Compiling whisper.cpp..."
   cmake -B whisper.cpp/build -S whisper.cpp &>/dev/null

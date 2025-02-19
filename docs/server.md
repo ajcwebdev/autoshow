@@ -286,6 +286,18 @@ curl --json '{
 
 ## Test Railway
 
+### Setup Database on Railway
+
+```bash
+railway init --name custom-postgres-pgvector
+railway add --database postgres --service pgvector-db --variables "RAILWAY_DOCKERFILE_PATH=.github/postgres-pgvector.Dockerfile"
+railway up --service Postgres
+railway variables -s Postgres --kv
+echo "DATABASE_URL=$(railway variables -s Postgres --kv | grep DATABASE_PUBLIC_URL | cut -d'=' -f2)" >> .env
+```
+
+### Video Test Requests
+
 ```bash
 curl --json '{
   "type": "video",

@@ -17,7 +17,7 @@ brew services stop postgresql@12 || true
 brew services stop postgresql@13 || true
 brew services stop postgresql@14 || true
 brew services stop postgresql@15 || true
-brew services stop postgresql@16 || true
+brew services stop postgresql@17 || true
 
 # Just in case any processes are still lingering
 echo "Killing any leftover postgres processes..."

@@ -14,7 +14,6 @@ import { l, err } from '../utils/logging'
 import { logTranscriptionCost, formatAssemblyTranscript } from '../utils/step-utils/03-transcription-utils'
 import { ASSEMBLY_MODELS } from '../../shared/constants'
 import type { ProcessingOptions } from '../utils/types'
-import type { AssemblyModelType } from '../../shared/constants'
 
 const BASE_URL = 'https://api.assemblyai.com/v2'
 
@@ -29,7 +28,7 @@ const BASE_URL = 'https://api.assemblyai.com/v2'
 export async function callAssembly(
   options: ProcessingOptions,
   finalPath: string,
-  model: string = 'NANO'
+  model: keyof typeof ASSEMBLY_MODELS = 'NANO'
 ) {
   l.dim('\n  callAssembly called with arguments:')
   l.dim(`    - finalPath: ${finalPath}`)
@@ -48,7 +47,7 @@ export async function callAssembly(
     const { speakerLabels } = options
     const audioFilePath = `${finalPath}.wav`
 
-    const modelInfo = ASSEMBLY_MODELS[model as AssemblyModelType] || ASSEMBLY_MODELS['NANO']
+    const modelInfo = ASSEMBLY_MODELS[model] || ASSEMBLY_MODELS['NANO']
 
     if (!modelInfo) {
       throw new Error(`Model information for model ${model} is not available.`)

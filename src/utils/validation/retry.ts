@@ -1,4 +1,4 @@
-// src/utils/retry.ts
+// src/utils/validation/retry.ts
 
 import { l, err } from '../logging'
 import { execFilePromise } from './cli'

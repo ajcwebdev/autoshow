@@ -1,4 +1,4 @@
-// src/utils/channel-utils.ts
+// src/utils/command-utils/channel-utils.ts
 
 import { l, err } from '../logging'
 

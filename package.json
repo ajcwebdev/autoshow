@@ -17,7 +17,7 @@
   "type": "module",
   "scripts": {
     "tsx:base": "tsx --env-file=.env --no-warnings",
-    "setup": "npm run setup-no-docker",
+    "setup": "bash ./src/utils/scripts/setup.sh && npx prisma migrate deploy",
     "clean": "npm run tsx:base src/utils/scripts/clean-content.ts",
     "check": "npx tsc",
     "as": "npm run tsx:base -- src/commander.ts",
@@ -30,7 +30,6 @@
     "test-docker-server-all": "npm run tsx:base -- test/server/docker-server-all.ts",
     "test-server-local": "npm run tsx:base -- test/server/server-local.ts",
     "test-server-all": "npm run tsx:base -- test/server/server-all.ts",
-    "setup-no-docker": "bash ./src/utils/scripts/setup.sh && npx prisma migrate deploy",
     "docker-up": "docker-compose -f .github/docker-compose.yml --env-file .env up -d --build",
     "docker-logs": "docker images && docker ps && docker logs autoshow-service && docker-compose -f .github/docker-compose.yml ps && docker-compose -f .github/docker-compose.yml logs && docker network inspect autoshow-network && docker inspect autoshow-service",
     "docker-down": "docker-compose -f .github/docker-compose.yml --env-file .env down --remove-orphans --volumes",

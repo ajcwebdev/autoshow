@@ -1,4 +1,4 @@
-#!/usr/bin/env zsh
+#!/usr/bin/env bash
 
 ##############################################################################
 # Mac-only setup script w/ pgvector + PostgreSQL@16.
@@ -6,8 +6,8 @@
 #   * If the script fails, we preserve the log file.
 #   * If the script succeeds, we remove it.
 # - Verbose output (no quiet mode).
-# - No final superuser promotion of the normal role.
-# - Checks for older Postgres versions, Docker environment, version mismatches, etc.
+# - Includes logic to completely remove any existing Postgres + data directories.
+# - Builds pgvector from source (no brew formula).
 ##############################################################################
 
 # 0) Create a timestamped logfile and setup a trap to remove it on success
@@ -73,37 +73,6 @@ ensure_homebrew() {
   fi
 }
 
-detect_and_stop_older_postgres() {
-  # We'll see if postgresql@14 or the unversioned "postgresql" is installed & running.
-  local other_versions=("postgresql" "postgresql@14" "postgresql@15" "postgresql@17")
-  # The current is "postgresql@16", so we skip that in this detection loop.
-
-  local found_running=false
-  for ov in "${other_versions[@]}"; do
-    if brew ls --versions "$ov" &>/dev/null; then
-      # It's installed. Check if running:
-      local is_running
-      is_running="$(brew services list | grep -E "^$ov\s" | grep started || true)"
-      if [ -n "$is_running" ]; then
-        echo "Detected older Postgres formula '$ov' is running."
-        found_running=true
-        # Prompt to stop it
-        read -q "?Stop the older '$ov' service now? [y/N]: "
-        echo ""
-        if [[ $REPLY =~ ^[Yy]$ ]]; then
-          brew services stop "$ov" || true
-        fi
-      fi
-    fi
-  done
-
-  if $found_running; then
-    echo "Older Postgres version(s) were found running. Attempted to stop as requested."
-  else
-    echo "No older Postgres versions detected running. Continuing."
-  fi
-}
-
 is_docker_container() {
   # A common approach is to check for /.dockerenv or /run/.containerenv
   if [ -f "/.dockerenv" ] || [ -f "/run/.containerenv" ]; then
@@ -113,14 +82,37 @@ is_docker_container() {
 }
 
 ##############################################################################
-# 3. INSTALL DEPENDENCIES, DETECT OLDER VERSIONS, ETC.
+# 3. REMOVE ALL EXISTING POSTGRES + INSTALL DEPENDENCIES
 ##############################################################################
 if [ "$IS_MAC" = true ]; then
   ensure_homebrew
 
-  echo "==> Checking for older Postgres versions..."
-  detect_and_stop_older_postgres
+  echo "==> Stopping all Postgres services (any version)..."
+  brew services stop postgresql || true
+  brew services stop postgresql@13 || true
+  brew services stop postgresql@14 || true
+  brew services stop postgresql@15 || true
+  brew services stop postgresql@17 || true
 
+  # Just in case any processes are still lingering
+  echo "==> Killing any leftover postgres processes..."
+  pkill -x postgres || true
+
+  echo "==> Removing common Postgres data directories..."
+  rm -rf /usr/local/var/postgres
+  rm -rf /opt/homebrew/var/postgres
+
+  echo "==> Uninstalling all Postgres formulae found in Homebrew..."
+  brew list --formula | grep -E '^postgresql(@.*)?$' || true \
+    | xargs -I {} brew uninstall --force {} || true
+
+  echo ""
+  echo "================================================================="
+  echo "PostgreSQL has been completely removed (via Homebrew), "
+  echo "and all local Postgres data directories are deleted."
+  echo "================================================================="
+
+  echo ""
   echo "==> Installing dependencies..."
   quiet_brew_install "postgresql@16"
   quiet_brew_install "yt-dlp"
@@ -130,7 +122,7 @@ if [ "$IS_MAC" = true ]; then
 fi
 
 ##############################################################################
-# 4. Force usage of postgresql@16; check version match
+# 4. Force usage of postgresql@16
 ##############################################################################
 echo "==> Locating postgresql@16..."
 PG_PREFIX="$(brew --prefix postgresql@16 2>/dev/null || true)"
@@ -146,18 +138,7 @@ if [ ! -x "$PG_PREFIX/bin/pg_config" ]; then
   exit 1
 fi
 
-echo "Using Postgres@17 prefix: $PG_PREFIX"
-
-# Check that `pg_config --version` actually says 17.x
-INSTALLED_VERSION="$("$PG_PREFIX/bin/pg_config" --version || true)"
-if [[ ! "$INSTALLED_VERSION" =~ 17\.[0-9] ]]; then
-  echo "WARNING: Found postgresql@16, but 'pg_config --version' returned:"
-  echo "         '$INSTALLED_VERSION'"
-  echo "We will attempt to rebuild or correct installation for 17.x..."
-  # Potentially force a reinstall from source
-  brew uninstall pgvector || true
-  PG_CONFIG="$PG_PREFIX/bin/pg_config" brew install pgvector --build-from-source || true
-fi
+echo "Using Postgres@16 prefix: $PG_PREFIX"
 
 # Prepend bin so we pick up the right Postgres commands
 export PATH="$PG_PREFIX/bin:$PATH"
@@ -228,7 +209,7 @@ else
   echo "Cloning whisper.cpp..."
   git clone https://github.com/ggerganov/whisper.cpp.git &>/dev/null
 
-  echo "Downloading whisper models (tiny, base)..."
+  echo "Downloading whisper models (tiny, base, large-v3-turbo)..."
   bash ./whisper.cpp/models/download-ggml-model.sh tiny &>/dev/null
   bash ./whisper.cpp/models/download-ggml-model.sh base &>/dev/null
   bash ./whisper.cpp/models/download-ggml-model.sh large-v3-turbo &>/dev/null
@@ -241,8 +222,9 @@ else
 fi
 
 ##############################################################################
-# 9. POSTGRES SETUP & PGVECTOR
+# 9. POSTGRES SETUP (Role, DB) & BUILD PGVECTOR FROM SOURCE
 ##############################################################################
+# 9a. Ensure role + DB exist
 echo "Checking if role '$PGUSER' exists..."
 ROLE_EXISTS=$(PGPASSWORD="" psql -U "${USER}" -d postgres -tAc \
   "SELECT 1 FROM pg_roles WHERE rolname='$PGUSER'" 2>/dev/null || true)
@@ -266,23 +248,21 @@ else
   PGPASSWORD="" createdb -U "${USER}" -h "${PGHOST}" -p "${PGPORT:-5432}" -O "$PGUSER" "$PGDATABASE"
 fi
 
-# Attempt to create extension as a superuser (postgres or local user)
+# 9b. Build and install pgvector from source
 echo ""
-echo "Ensuring 'vector' extension is installed..."
+echo "Installing pgvector from source for Postgres@16..."
+# You can pick a different dir than /tmp if you want
+TMP_PGVECTOR_DIR="/tmp/pgvector"
+rm -rf "$TMP_PGVECTOR_DIR"
+git clone https://github.com/pgvector/pgvector.git "$TMP_PGVECTOR_DIR" &>/dev/null
 
-# 9a. Find vector.control
-PG_CONFIG="$PG_PREFIX/bin/pg_config"
-SHARE_DIR="$($PG_CONFIG --sharedir)"
-echo "Sharedir = $SHARE_DIR"
-# We'll do a minimal check for vector.control; skip big directory logs
-VECTOR_FILE="$(find "$SHARE_DIR" -name vector.control 2>/dev/null | head -n1 || true)"
-if [ -z "$VECTOR_FILE" ]; then
-  echo "vector.control not found. Attempting to (re)install pgvector from source..."
-  brew uninstall pgvector || true
-  PG_CONFIG="$PG_PREFIX/bin/pg_config" brew install pgvector --build-from-source || true
-fi
+cd "$TMP_PGVECTOR_DIR"
+make PG_CONFIG="$PG_PREFIX/bin/pg_config" &>/dev/null
+make install PG_CONFIG="$PG_PREFIX/bin/pg_config" &>/dev/null
+cd - &>/dev/null
 
-# Now create the extension as a superuser
+# 9c. Create the extension once, as a superuser
+echo ""
 echo "Attempting to create extension 'vector' as superuser..."
 SUPERUSER_TO_USE="postgres"
 if ! PGPASSWORD="" psql -U postgres -d "$PGDATABASE" -c "SELECT 1" &>/dev/null; then
@@ -291,8 +271,7 @@ if ! PGPASSWORD="" psql -U postgres -d "$PGDATABASE" -c "SELECT 1" &>/dev/null; 
 fi
 
 PGPASSWORD="" psql -U "$SUPERUSER_TO_USE" -d "$PGDATABASE" \
-  -c "CREATE EXTENSION IF NOT EXISTS vector" &>/dev/null
-echo "Successfully created/confirmed 'vector' extension with superuser: $SUPERUSER_TO_USE"
+  -c "CREATE EXTENSION IF NOT EXISTS vector"
 
 ##############################################################################
 # 10. Final Checks

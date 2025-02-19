@@ -2,7 +2,7 @@
 
 import path from 'node:path'
 import { promises as fs } from 'node:fs'
-import { l, err } from '../../utils/logging'
+import { l, err } from '../src/utils/logging'
 
 /**
  * List of filenames we want to keep.

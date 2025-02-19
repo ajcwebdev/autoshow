@@ -13,3 +13,4 @@ setup.log
 embeddings.db
 embeddings.json
 new-llm.md
+setup-*.log

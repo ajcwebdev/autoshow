@@ -17,7 +17,7 @@
   "type": "module",
   "scripts": {
     "tsx:base": "tsx --env-file=.env --no-warnings",
-    "setup": "bash .github/setup.sh && npx prisma migrate deploy",
+    "setup": "bash .github/setup/setup.sh && npx prisma migrate deploy",
     "clean": "npm run tsx:base .github/clean-content.ts",
     "check": "npx tsc",
     "as": "npm run tsx:base -- src/commander.ts",

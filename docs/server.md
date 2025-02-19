@@ -1,4 +1,4 @@
-# Autoshow Server
+# AutoShow Server
 
 ## Outline
 
@@ -286,6 +286,18 @@ curl --json '{
 
 ## Test Railway
 
+### Setup Database on Railway
+
+```bash
+railway init --name custom-postgres-pgvector
+railway add --database postgres --service pgvector-db --variables "RAILWAY_DOCKERFILE_PATH=.github/postgres-pgvector.Dockerfile"
+railway up --service Postgres
+railway variables -s Postgres --kv
+echo "DATABASE_URL=$(railway variables -s Postgres --kv | grep DATABASE_PUBLIC_URL | cut -d'=' -f2)" >> .env
+```
+
+### Video Test Requests
+
 ```bash
 curl --json '{
   "type": "video",
@@ -312,6 +324,23 @@ curl --json '{
   "deepgramApiKey": ""
 }' -o "content/2024-09-24-ep0-fsjam-podcast-prompt.json" \
 https://autodaily.show/api/process
+```
+
+## Create and Query Embeddings
+
+```bash
+curl --json '{
+  "type": "createEmbeddings",
+  "directory": "content"
+}' http://localhost:3000/api/process
+```
+
+```bash
+curl --json '{
+  "type": "queryEmbeddings",
+  "directory": "content",
+  "question": "What'\''s the deal with these show notes? Answer in the voice of Jerry Seinfeld."
+}' http://localhost:3000/api/process
 ```
 
 ## Experimental Deno and Bun Support

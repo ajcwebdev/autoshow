@@ -1,92 +1,84 @@
 # .github/Dockerfile
 
-# 1. Use Node 22-slim as base image
 FROM node:22-alpine AS base
 
-# 2. Install system dependencies
+# 1. Install system dependencies + psql client
 RUN apk add --no-cache \
-    ffmpeg git wget curl ca-certificates cmake python3 build-base \
+    ffmpeg git wget curl ca-certificates cmake python3 build-base postgresql-client \
  && update-ca-certificates
 
-# 3. Set working directory to /usr/src/app
+# 2. Set working directory
 WORKDIR /usr/src/app
 
-# 4. Install yt-dlp
+# 3. Install yt-dlp
 RUN wget https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp \
     -O /usr/local/bin/yt-dlp \
  && chmod a+rx /usr/local/bin/yt-dlp
 
-# 5. Install tsx globally
+# 4. Install tsx globally
 RUN npm install -g tsx
 
-# 6. Clone whisper.cpp
+# 5. Clone whisper.cpp
 RUN git clone --depth=1 https://github.com/ggerganov/whisper.cpp.git
 
-# 7. Configure with CMake (verbose output)
+# 6. CMake config
 RUN cmake -B whisper.cpp/build -S whisper.cpp \
     -DGGML_NATIVE=OFF \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_VERBOSE_MAKEFILE=ON \
     -DWHISPER_BUILD_EXAMPLES=ON
 
-# 8. Build; if it fails, print CMakeError.log & CMakeOutput.log
+# 7. Build
 RUN cmake --build whisper.cpp/build --config Release -j \
  || (cat whisper.cpp/build/CMakeFiles/CMakeError.log && \
      cat whisper.cpp/build/CMakeFiles/CMakeOutput.log && false)
 
-# 9. Print out the files in the build/bin folder for debugging
+# 8. Debug listing
 RUN ls -l whisper.cpp/build/bin || true
 
-# 10. Make sure the whisper-cli binary is executable + symlink to /usr/local/bin
+# 9. Symlink whisper-cli
 RUN chmod +x /usr/src/app/whisper.cpp/build/bin/whisper-cli \
  && ln -s /usr/src/app/whisper.cpp/build/bin/whisper-cli /usr/local/bin/whisper-cli
 
-# 11. Confirm that whisper-cli is found
+# 10. Confirm whisper-cli
 RUN ls -l /usr/local/bin/whisper-cli
 
-# 12. Download the “base” and “tiny” models
+# 11. Download the “base”, “tiny”, and “large-v3-turbo” models
 RUN whisper.cpp/models/download-ggml-model.sh base && \
-    whisper.cpp/models/download-ggml-model.sh tiny && \
-    whisper.cpp/models/download-ggml-model.sh large-v3-turbo
+    whisper.cpp/models/download-ggml-model.sh tiny
+    # whisper.cpp/models/download-ggml-model.sh large-v3-turbo
 
-# 12a. Expose environment variables to reference model paths
+# 12. Expose environment variables for model paths
 ENV WHISPER_BASE_MODEL=/usr/src/app/whisper.cpp/models/ggml-base.bin
 ENV WHISPER_TINY_MODEL=/usr/src/app/whisper.cpp/models/ggml-tiny.bin
+ENV WHISPER_FORCE_CPU=1
+ENV WHISPER_NO_GPU=1
 
-# 13. Copy package.json and package-lock.json
+# 13. Copy package files + install Node deps
 COPY package*.json ./
-
-# 14. Install Node deps
 RUN npm ci --production --legacy-peer-deps && npm cache clean --force
+
+# 14. Copy prisma folder so we have `prisma/schema.prisma`
+COPY prisma ./prisma
 
 # 15. Copy source code
 COPY src ./src
 COPY shared ./shared
 
-# 16. Copy Docker entrypoint script
-COPY .github/docker-entrypoint.sh ./
+# 15.5. Generate the Prisma client
+RUN npx prisma generate --schema=/usr/src/app/prisma/schema.prisma
 
-# 17. Set permissions to make the script executable
-RUN chmod +x /usr/src/app/docker-entrypoint.sh
-
-# 18. Set environment variables for Whisper
-ENV WHISPER_FORCE_CPU=1
-ENV WHISPER_NO_GPU=1
-
-# 19. Create content directory first
-RUN mkdir -p /usr/src/app/content
-
-# 20. Set proper permissions for the entire app directory including content
-RUN chown -R node:node /usr/src/app \
+# 16. Create + set permissions on content directory
+RUN mkdir -p /usr/src/app/content \
+ && chown -R node:node /usr/src/app \
  && chmod -R 755 /usr/src/app \
  && chmod 777 /usr/src/app/content
 
-# 21. Switch to non-root user
+# 17. Switch to non-root user
 USER node
 
-# 22. Expose port 3000
+# 18. Expose port 3000
 EXPOSE 3000
 
-# 23. Set the entrypoint and default command
-ENTRYPOINT ["/usr/src/app/docker-entrypoint.sh"]
-CMD ["serve"]
+# 19. Always run server
+ENTRYPOINT [ "sh", "-c", "npm run db-deploy && exec npx tsx --no-warnings src/fastify.ts" ]

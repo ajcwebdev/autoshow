@@ -1,4 +1,4 @@
-// src/utils/requests.ts
+// src/utils/validation/requests.ts
 
 import { TRANSCRIPTION_SERVICES, LLM_OPTIONS } from '../../../shared/constants'
 
@@ -28,7 +28,7 @@ export const envVarsServerMap = {
  * @throws Error if the type is not valid or is missing
  */
 export function validateServerProcessAction(type: string) {
-  if (!['video', 'file', 'transcriptCost', 'llmCost', 'runLLM'].includes(type)) {
+  if (!['video', 'file', 'transcriptCost', 'llmCost', 'runLLM', 'createEmbeddings', 'queryEmbeddings'].includes(type)) {
     throw new Error('Invalid or missing process type')
   }
   return type

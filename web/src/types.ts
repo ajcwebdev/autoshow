@@ -55,7 +55,7 @@ export interface ResultType {
 // Define types for show notes
 export interface ShowNoteType {
   title: string
-  publishDate: string
+  publishdate: string
   content: string
   transcript: string
   frontmatter: string

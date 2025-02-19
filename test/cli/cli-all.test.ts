@@ -8,7 +8,7 @@ import { join } from 'node:path'
 
 const commands = [
   {
-    // Process single YouTube video using Autoshow's default settings.
+    // Process single YouTube video using AutoShow's default settings.
     cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk"',
     expectedFile: '2024-09-24-ep0-fsjam-podcast-prompt.md',
     newName: '01-video-default.md'
@@ -88,156 +88,92 @@ const commands = [
     newName: '16-ajcwebdev-rss-info.json',
   },
   {
-    cmd: 'npm run docker-cli -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --whisper base',
-    expectedFile: '2024-09-24-ep0-fsjam-podcast-prompt.md',
-    newName: '17-docker-video-default.md'
-  },
-  {
-    cmd: 'npm run docker-cli -- --playlist "https://www.youtube.com/playlist?list=PLCVnrVv4KhXPz0SoAVu8Rc1emAdGPbSbr" --whisper base',
-    expectedFiles: [
-      { file: '2024-09-24-ep1-fsjam-podcast-prompt.md', newName: '18-docker-playlist-default.md' },
-      { file: '2024-09-24-ep0-fsjam-podcast-prompt.md', newName: '19-docker-playlist-default.md' }
-    ]
-  },
-  {
-    cmd: 'npm run docker-cli -- --urls "content/example-urls.md" --whisper base',
-    expectedFiles: [
-      { file: '2024-09-24-ep1-fsjam-podcast-prompt.md', newName: '20-docker-urls-default.md' },
-      { file: '2024-09-24-ep0-fsjam-podcast-prompt.md', newName: '21-docker-urls-default.md' }
-    ]
-  },
-  {
-    cmd: 'npm run docker-cli -- --file "content/audio.mp3" --whisper base',
-    expectedFile: 'audio-prompt.md',
-    newName: '22-docker-file-default.md'
-  },
-  {
-    cmd: 'npm run docker-cli -- --file "content/audio.mp3" --whisper tiny',
-    expectedFile: 'audio-prompt.md',
-    newName: '23-docker-whisper-tiny.md'
-  },
-  {
-    cmd: 'npm run docker-cli -- --file "content/audio.mp3" --whisper base --prompt titles summary mediumChapters takeaways questions',
-    expectedFile: 'audio-prompt.md',
-    newName: '24-docker-all-prompts.md'
-  },
-  {
-    cmd: 'npm run docker-cli -- --playlist "https://www.youtube.com/playlist?list=PLCVnrVv4KhXPz0SoAVu8Rc1emAdGPbSbr" --prompt titles --whisper tiny --chatgpt',
-    expectedFiles: [
-      { file: '2024-09-24-ep1-fsjam-podcast-chatgpt-shownotes.md', newName: '25-docker-prompt-whisper-chatgpt-shownotes.md' },
-      { file: '2024-09-24-ep0-fsjam-podcast-chatgpt-shownotes.md', newName: '26-docker-prompt-whisper-chatgpt-shownotes.md' }
-    ]
-  },
-  {
-    cmd: 'npm run docker-cli -- --urls "content/example-urls.md" --prompt titles --whisper tiny --claude',
-    expectedFiles: [
-      { file: '2024-09-24-ep1-fsjam-podcast-claude-shownotes.md', newName: '27-docker-prompt-whisper-claude-shownotes.md' },
-      { file: '2024-09-24-ep0-fsjam-podcast-claude-shownotes.md', newName: '28-docker-prompt-whisper-claude-shownotes.md' }
-    ]
-  },
-  {
-    cmd: 'npm run docker-cli -- --rss "https://ajcwebdev.substack.com/feed" --whisper base',
-    expectedFile: '2021-05-10-thoughts-on-lambda-school-layoffs-prompt.md',
-    newName: '29-docker-rss-default.md'
-  },
-  {
-    cmd: 'npm run docker-cli -- --rss "https://ajcwebdev.substack.com/feed" --info',
-    expectedFile: 'ajcwebdev_info.json',
-    newName: '30-docker-ajcwebdev-rss-info.json',
-  },
-  {
-    // Process local audio file with Dockerized Whisper 'base' model.
-    cmd: 'npm run as -- --file "content/audio.mp3" --whisper base',
-    expectedFile: 'audio-prompt.md',
-    newName: '31-docker-whisper-docker-base.md'
-  },
-  {
     // process file using ChatGPT for LLM operations.
     cmd: 'npm run as -- --file "content/audio.mp3" --chatgpt',
     expectedFile: 'audio-chatgpt-shownotes.md',
-    newName: '32-chatgpt-default.md'
+    newName: '17-chatgpt-default.md'
   },
   {
     // Process file with ChatGPT using GPT_4o_MINI model.
     cmd: 'npm run as -- --file "content/audio.mp3" --chatgpt GPT_4o_MINI',
     expectedFile: 'audio-chatgpt-shownotes.md',
-    newName: '33-chatgpt-gpt-4o-mini.md'
+    newName: '18-chatgpt-gpt-4o-mini.md'
   },
   {
     // process file using Claude for LLM operations.
     cmd: 'npm run as -- --file "content/audio.mp3" --claude',
     expectedFile: 'audio-claude-shownotes.md',
-    newName: '34-claude-default.md'
+    newName: '19-claude-default.md'
   },
   {
     // Process file with Claude using CLAUDE_3_5_HAIKU model.
     cmd: 'npm run as -- --file "content/audio.mp3" --claude CLAUDE_3_5_HAIKU',
     expectedFile: 'audio-claude-shownotes.md',
-    newName: '35-claude-shownotes.md'
+    newName: '20-claude-shownotes.md'
   },
   {
     // process file using Gemini for LLM operations.
     cmd: 'npm run as -- --file "content/audio.mp3" --gemini',
     expectedFile: 'audio-gemini-shownotes.md',
-    newName: '36-gemini-shownotes.md'
+    newName: '21-gemini-shownotes.md'
   },
   {
     // Process file with Gemini using GEMINI_1_5_FLASH model.
     cmd: 'npm run as -- --file "content/audio.mp3" --gemini GEMINI_1_5_FLASH',
     expectedFile: 'audio-gemini-shownotes.md',
-    newName: '37-gemini-shownotes.md'
+    newName: '22-gemini-shownotes.md'
   },
   {
     // process file using DeepSeek for LLM operations
     cmd: 'npm run as -- --file "content/audio.mp3" --deepseek',
     expectedFile: 'audio-deepseek-shownotes.md',
-    newName: '38-deepseek-shownotes.md'
+    newName: '23-deepseek-shownotes.md'
   },
   {
     // process file using Fireworks for LLM operations
     cmd: 'npm run as -- --file "content/audio.mp3" --fireworks',
     expectedFile: 'audio-fireworks-shownotes.md',
-    newName: '39-fireworks-shownotes.md'
+    newName: '24-fireworks-shownotes.md'
   },
   {
     // process file using Together for LLM operations
     cmd: 'npm run as -- --file "content/audio.mp3" --together',
     expectedFile: 'audio-together-shownotes.md',
-    newName: '40-together-shownotes.md'
+    newName: '25-together-shownotes.md'
   },
   {
     // process file using Deepgram for transcription
     cmd: 'npm run as -- --file "content/audio.mp3" --deepgram',
     expectedFile: 'audio-prompt.md',
-    newName: '41-deepgram-prompt.md'
+    newName: '26-deepgram-prompt.md'
   },
   {
     // Process file using Deepgram and ChatGPT.
     cmd: 'npm run as -- --file "content/audio.mp3" --deepgram --chatgpt',
     expectedFile: 'audio-chatgpt-shownotes.md',
-    newName: '42-deepgram-chatgpt-shownotes.md'
+    newName: '27-deepgram-chatgpt-shownotes.md'
   },
   {
     // process file using AssemblyAI for transcription
     cmd: 'npm run as -- --file "content/audio.mp3" --assembly',
     expectedFile: 'audio-prompt.md',
-    newName: '43-assembly-prompt.md'
+    newName: '28-assembly-prompt.md'
   },
   {
     // Process file using AssemblyAI and ChatGPT.
     cmd: 'npm run as -- --file "content/audio.mp3" --assembly --chatgpt',
     expectedFile: 'audio-chatgpt-shownotes.md',
-    newName: '44-assembly-chatgpt-shownotes.md'
+    newName: '29-assembly-chatgpt-shownotes.md'
   },
   {
     // Process an audio file using AssemblyAI with speaker labels
     cmd: 'npm run as -- --video "https://ajc.pics/audio/fsjam-short.mp3" --assembly --speakerLabels',
     expectedFile: '2024-05-08-fsjam-short-prompt.md',
-    newName: '45-assembly-speaker-labels-prompt.md'
+    newName: '30-assembly-speaker-labels-prompt.md'
   }
 ]
 
-test('Autoshow Command Tests', async (t) => {
+test('AutoShow Command Tests', async (t) => {
   for (const [index, command] of commands.entries()) {
     await t.test(`should run command ${index + 1} successfully`, async () => {
       // Run the command

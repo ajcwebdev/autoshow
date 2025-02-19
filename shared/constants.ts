@@ -8,32 +8,6 @@
  *
  */
 
-import { callOllama } from '../src/llms/ollama'
-import { callChatGPT } from '../src/llms/chatgpt'
-import { callClaude } from '../src/llms/claude'
-import { callGemini } from '../src/llms/gemini'
-import { callDeepSeek } from '../src/llms/deepseek'
-import { callFireworks } from '../src/llms/fireworks'
-import { callTogether } from '../src/llms/together'
-import { processVideo } from '../src/process-commands/video'
-import { processPlaylist } from '../src/process-commands/playlist'
-import { processChannel } from '../src/process-commands/channel'
-import { processURLs } from '../src/process-commands/urls'
-import { processFile } from '../src/process-commands/file'
-import { processRSS } from '../src/process-commands/rss'
-
-/**
- * Maps action names to their corresponding handler function.
- */
-export const PROCESS_HANDLERS = {
-  video: processVideo,
-  playlist: processPlaylist,
-  channel: processChannel,
-  urls: processURLs,
-  file: processFile,
-  rss: processRSS,
-}
-
 export const PROCESS_TYPES = [
   { value: 'video', label: 'Video' },
   { value: 'file', label: 'File' },
@@ -158,17 +132,6 @@ export type LogLLMCost = {
     // Total number of tokens involved in the request
     total: number | undefined
   }
-}
-
-// Map of available LLM service handlers
-export const LLM_FUNCTIONS = {
-  ollama: callOllama,
-  chatgpt: callChatGPT,
-  claude: callClaude,
-  gemini: callGemini,
-  deepseek: callDeepSeek,
-  fireworks: callFireworks,
-  together: callTogether,
 }
 
 /**

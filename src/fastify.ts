@@ -10,6 +10,8 @@ import { l, err } from './utils/logging'
 import { validateRequest, validateServerProcessAction, envVarsServerMap } from './utils/validation/requests'
 import { estimateTranscriptCost } from './utils/step-utils/03-transcription-utils'
 import { estimateLLMCost, runLLMFromPromptFile } from './utils/step-utils/05-llm-utils'
+import { createEmbeddingsAndSQLite } from './utils/embeddings/create-embed'
+import { queryEmbeddings } from './utils/embeddings/query-embed'
 
 import type { FastifyRequest, FastifyReply } from 'fastify'
 
@@ -151,6 +153,42 @@ export const handleProcessRequest = async (
         reply.send({ message: 'LLM run completed successfully' })
         break
       }
+
+      case 'createEmbeddings': {
+        /**
+         * Creates embeddings by reading .md files (recursively) from the specified directory
+         * (or defaults to the "content" directory if none provided) and storing them in the
+         * Postgres "embeddings" table via Prisma.
+         *
+         * @async
+         * @param {string} [directory] - An optional directory path to scan for markdown files
+         * @returns {Promise<void>} - Responds with a success message once embeddings are created
+         */
+        const { directory } = requestData
+        await createEmbeddingsAndSQLite(directory)
+        reply.send({ message: 'Embeddings created successfully' })
+        break
+      }
+
+      case 'queryEmbeddings': {
+        /**
+         * Queries the embeddings in the Postgres "embeddings" table for the most relevant documents
+         * based on the question provided in the request body, optionally scoped to a directory.
+         *
+         * @async
+         * @param {string} question - The user question
+         * @param {string} [directory] - Optional directory path used to locate .md files
+         * @returns {Promise<void>} - Responds with a success message once query is complete
+         */
+        const { question, directory } = requestData
+        if (!question) {
+          reply.status(400).send({ error: 'A question is required to query embeddings' })
+          return
+        }
+        await queryEmbeddings(question, directory)
+        reply.send({ message: 'Query embeddings completed successfully' })
+        break
+      }
     }
 
     l('\nProcess completed successfully')
@@ -164,7 +202,11 @@ export const getShowNote = async (request: FastifyRequest, reply: FastifyReply) 
   try {
     const { id } = request.params as { id: string }
     // Fetch the show note from the database
-    const showNote = db.prepare(`SELECT * FROM show_notes WHERE id = ?`).get(id)
+    const showNote = await db.show_notes.findUnique({
+      where: {
+        id: Number(id)
+      }
+    })
     if (showNote) {
       reply.send({ showNote })
     } else {
@@ -179,7 +221,11 @@ export const getShowNote = async (request: FastifyRequest, reply: FastifyReply) 
 export const getShowNotes = async (_request: FastifyRequest, reply: FastifyReply) => {
   try {
     // Fetch all show notes from the database
-    const showNotes = db.prepare(`SELECT * FROM show_notes ORDER BY publishDate DESC`).all()
+    const showNotes = await db.show_notes.findMany({
+      orderBy: {
+        publishDate: 'desc'
+      }
+    })
     reply.send({ showNotes })
   } catch (error) {
     console.error('Error fetching show notes:', error)

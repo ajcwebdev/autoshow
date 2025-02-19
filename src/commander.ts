@@ -1,7 +1,7 @@
 // src/commander.ts
 
 /**
- * Autoshow CLI Application
+ * AutoShow CLI Application
  *
  * Automate processing of audio and video content from various sources.
  * Supports processing YouTube videos, playlists, local files, and podcast RSS feeds.
@@ -78,7 +78,7 @@ program
   .option('--togetherApiKey <key>', 'Specify Together API key (overrides .env variable)')
   .option('--fireworksApiKey <key>', 'Specify Fireworks API key (overrides .env variable)')
   // Create and query embeddings based on show notes
-  .option('--createEmbeddings', 'Create embeddings for .md content and store them in embeddings.db')
+  .option('--createEmbeddings [directory]', 'Create embeddings for .md content (optionally specify directory)')
   .option('--queryEmbeddings <question>', 'Query embeddings by question from embeddings.db')
 
 /**

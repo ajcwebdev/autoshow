@@ -4,7 +4,7 @@ import { basename, extname } from 'node:path'
 import { execFilePromise } from '../utils/validation/cli'
 import { sanitizeTitle, buildFrontMatter } from '../utils/step-utils/01-markdown-utils'
 import { l, err, logInitialFunctionCall } from '../utils/logging'
-import type { ProcessingOptions, RSSItem } from '../utils/types'
+import type { ProcessingOptions, ShowNote } from '../utils/types'
 
 /**
  * Generates markdown content with front matter based on the provided options and input.
@@ -46,7 +46,7 @@ import type { ProcessingOptions, RSSItem } from '../utils/types'
  */
 export async function generateMarkdown(
   options: ProcessingOptions,
-  input: string | RSSItem
+  input: string | ShowNote
 ) {
   l.step(`\nStep 1 - Generate Markdown\n`)
   logInitialFunctionCall('generateMarkdown', { options, input })
@@ -119,7 +119,7 @@ export async function generateMarkdown(
 
       case !!options.rss:
         l.dim('\n  Generating markdown for an RSS item...\n')
-        const item = input as RSSItem
+        const item = input as ShowNote
         const {
           publishDate,
           title: rssTitle,
@@ -150,7 +150,15 @@ export async function generateMarkdown(
   })()
 
   const finalPath = `content/${filename}`
-  const frontMatter = buildFrontMatter(metadata)
+  const frontMatter = buildFrontMatter({
+    showLink: metadata.showLink || '',
+    channel: metadata.channel || '',
+    channelURL: metadata.channelURL || '',
+    title: metadata.title,
+    description: metadata.description,
+    publishDate: metadata.publishDate || '',
+    coverImage: metadata.coverImage || ''
+  })
   const frontMatterContent = frontMatter.join('\n')
 
   l.dim(`\n  generateMarkdown returning:\n\n    - finalPath: ${finalPath}\n    - filename: ${filename}\n`)

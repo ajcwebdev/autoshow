@@ -12,7 +12,7 @@ import { l, err, logSeparator, logInitialFunctionCall } from '../utils/logging'
 import { logRSSProcessingStatus, filterRSSItems } from '../utils/command-utils/rss-utils'
 import { retryRSSFetch } from '../utils/validation/retry'
 
-import type { ProcessingOptions } from '../utils/types'
+import type { ProcessingOptions, ShowNote } from '../utils/types'
 
 export const parser = new XMLParser({
   ignoreAttributes: false,
@@ -146,7 +146,11 @@ export async function processRSS(
 
       try {
         const { frontMatter, finalPath, filename, metadata } = await generateMarkdown(options, item)
-        await downloadAudio(options, item.showLink, filename)
+        if (item.showLink) {
+          await downloadAudio(options, item.showLink, filename)
+        } else {
+          throw new Error(`showLink is undefined for item: ${item.title}`)
+        }
         const transcript = await runTranscription(options, finalPath, transcriptServices)
         const selectedPrompts = await selectPrompts(options)
         const llmOutput = await runLLM(
@@ -155,7 +159,7 @@ export async function processRSS(
           frontMatter,
           selectedPrompts,
           transcript,
-          metadata,
+          metadata as ShowNote,
           llmServices
         )
         if (!options.saveAudio) {

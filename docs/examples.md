@@ -398,7 +398,7 @@ Select ChatGPT model:
 
 ```bash
 # Select GPT-4o mini model - https://platform.openai.com/docs/models/gpt-4o-mini
-npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --chatgpt GPT_4o_MINI
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --chatgpt gpt-4o-mini
 
 # Select GPT-4o model - https://platform.openai.com/docs/models/gpt-4o
 npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --chatgpt GPT_4o
@@ -426,7 +426,7 @@ Select Claude model:
 
 ```bash
 npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --claude CLAUDE_3_5_SONNET
-npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --claude CLAUDE_3_5_HAIKU
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --claude claude-3-haiku-20240307
 npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --claude CLAUDE_3_OPUS
 npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --claude CLAUDE_3_SONNET
 npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --claude CLAUDE_3_HAIKU
@@ -450,7 +450,7 @@ npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --gemini
 Select Gemini model:
 
 ```bash
-npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --gemini GEMINI_1_5_FLASH
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --gemini gemini-1.5-flash
 npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --gemini GEMINI_1_5_PRO
 ```
 

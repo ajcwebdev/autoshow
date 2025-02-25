@@ -17,13 +17,13 @@ const commands = [
   },
   {
     // Process video with Gemini 1.5 Flash-8B model
-    cmd: 'npm run as -- --file "content/audio.mp3" --gemini GEMINI_1_5_FLASH_8B',
+    cmd: 'npm run as -- --file "content/audio.mp3" --gemini gemini-1.5-flash_8B',
     expectedFile: 'audio-gemini-shownotes.md',
     newName: '03-gemini-1-5-flash-8b.md'
   },
   {
     // Process video with Gemini 1.5 Flash model
-    cmd: 'npm run as -- --file "content/audio.mp3" --gemini GEMINI_1_5_FLASH',
+    cmd: 'npm run as -- --file "content/audio.mp3" --gemini gemini-1.5-flash',
     expectedFile: 'audio-gemini-shownotes.md',
     newName: '04-gemini-1-5-flash.md'
   },

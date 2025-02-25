@@ -137,7 +137,7 @@ curl --json '{
   "type": "video",
   "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "llm": "chatgpt",
-  "llmModel": "GPT_4o_MINI"
+  "llmModel": "gpt-4o-mini"
 }' http://localhost:3000/api/process
 ```
 
@@ -175,7 +175,7 @@ curl --json '{
   "type": "video",
   "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "llm": "gemini",
-  "llmModel": "GEMINI_1_5_FLASH"
+  "llmModel": "gemini-1.5-flash"
 }' http://localhost:3000/api/process
 ```
 

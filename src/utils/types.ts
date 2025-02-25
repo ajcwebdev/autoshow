@@ -55,7 +55,7 @@ export type ProcessingOptions = {
   llmCost?: string
   /** Flag to run LLM on the processed transcript. */
   runLLM?: string
-  /** ChatGPT model to use (e.g., 'GPT_4o_MINI'). */
+  /** ChatGPT model to use (e.g., 'gpt-4o-mini'). */
   chatgpt?: string
   /** Claude model to use (e.g., 'CLAUDE_3_SONNET'). */
   claude?: string
@@ -65,7 +65,7 @@ export type ProcessingOptions = {
   together?: string
   /** Ollama model to use for local inference (e.g., 'LLAMA_3_2_1B'). */
   ollama?: string
-  /** Gemini model to use (e.g., 'GEMINI_1_5_FLASH'). */
+  /** Gemini model to use (e.g., 'gemini-1.5-flash'). */
   gemini?: string
   /** DeepSeek model to use (e.g., ''). */
   deepseek?: string

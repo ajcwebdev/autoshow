@@ -16,8 +16,8 @@ const commands = [
     ]
   },
   {
-    // Process video with ChatGPT using GPT_4o_MINI model.
-    cmd: 'npm run as -- --file "content/audio.mp3" --chatgpt GPT_4o_MINI',
+    // Process video with ChatGPT using gpt-4o-mini model.
+    cmd: 'npm run as -- --file "content/audio.mp3" --chatgpt gpt-4o-mini',
     expectedFile: 'audio-chatgpt-shownotes.md',
     newName: '03-chatgpt-gpt-4o-mini.md'
   },

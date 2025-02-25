@@ -23,7 +23,7 @@ const commands = [
   },
   {
     // Process video with Claude 3.5 Haiku model
-    cmd: 'npm run as -- --file "content/audio.mp3" --claude CLAUDE_3_5_HAIKU',
+    cmd: 'npm run as -- --file "content/audio.mp3" --claude claude-3-haiku-20240307',
     expectedFile: 'audio-claude-shownotes.md',
     newName: '04-claude-3-5-haiku.md'
   },

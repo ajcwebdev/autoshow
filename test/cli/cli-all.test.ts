@@ -94,8 +94,8 @@ const commands = [
     newName: '17-chatgpt-default.md'
   },
   {
-    // Process file with ChatGPT using GPT_4o_MINI model.
-    cmd: 'npm run as -- --file "content/audio.mp3" --chatgpt GPT_4o_MINI',
+    // Process file with ChatGPT using gpt-4o-mini model.
+    cmd: 'npm run as -- --file "content/audio.mp3" --chatgpt gpt-4o-mini',
     expectedFile: 'audio-chatgpt-shownotes.md',
     newName: '18-chatgpt-gpt-4o-mini.md'
   },
@@ -106,8 +106,8 @@ const commands = [
     newName: '19-claude-default.md'
   },
   {
-    // Process file with Claude using CLAUDE_3_5_HAIKU model.
-    cmd: 'npm run as -- --file "content/audio.mp3" --claude CLAUDE_3_5_HAIKU',
+    // Process file with Claude using claude-3-haiku-20240307 model.
+    cmd: 'npm run as -- --file "content/audio.mp3" --claude claude-3-haiku-20240307',
     expectedFile: 'audio-claude-shownotes.md',
     newName: '20-claude-shownotes.md'
   },
@@ -118,8 +118,8 @@ const commands = [
     newName: '21-gemini-shownotes.md'
   },
   {
-    // Process file with Gemini using GEMINI_1_5_FLASH model.
-    cmd: 'npm run as -- --file "content/audio.mp3" --gemini GEMINI_1_5_FLASH',
+    // Process file with Gemini using gemini-1.5-flash model.
+    cmd: 'npm run as -- --file "content/audio.mp3" --gemini gemini-1.5-flash',
     expectedFile: 'audio-gemini-shownotes.md',
     newName: '22-gemini-shownotes.md'
   },

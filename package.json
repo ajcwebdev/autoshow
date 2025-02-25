@@ -22,7 +22,6 @@
     "check": "npx tsc",
     "as": "npm run tsx:base -- src/commander.ts",
     "test-cli-local": "npm run tsx:base -- test/cli/cli-local.test.ts",
-    "test-cli-docker": "npm run tsx:base -- test/cli/cli-docker.test.ts",
     "test-cli-services": "npm run tsx:base -- test/cli/cli-services.test.ts",
     "test-cli-all": "npm run tsx:base -- test/cli/cli-all.test.ts",
     "serve": "npm run tsx:base -- --watch src/fastify.ts",

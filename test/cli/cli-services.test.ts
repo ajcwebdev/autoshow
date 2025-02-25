@@ -8,8 +8,8 @@ import { join } from 'node:path'
 
 const commands = [
   {
-    // Process multiple YouTube videos from URLs with title prompts, Whisper 'tiny' model, and ChatGPT GPT_4o_MINI model.
-    cmd: 'npm run as -- --urls "content/example-urls.md" --prompt titles --whisper tiny --chatgpt GPT_4o_MINI',
+    // Process multiple YouTube videos from URLs with title prompts, Whisper 'tiny' model, and ChatGPT gpt-4o-mini model.
+    cmd: 'npm run as -- --urls "content/example-urls.md" --prompt titles --whisper tiny --chatgpt gpt-4o-mini',
     expectedFiles: [
       { file: '2024-09-24-ep1-fsjam-podcast-chatgpt-shownotes.md', newName: '01-chatgpt-gpt-4o-mini.md' },
       { file: '2024-09-24-ep0-fsjam-podcast-chatgpt-shownotes.md', newName: '02-chatgpt-gpt-4o-mini.md' }
@@ -22,8 +22,8 @@ const commands = [
     newName: '03-chatgpt-default.md'
   },
   {
-    // Process video with ChatGPT using GPT_4o_MINI model.
-    cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --chatgpt GPT_4o_MINI',
+    // Process video with ChatGPT using gpt-4o-mini model.
+    cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --chatgpt gpt-4o-mini',
     expectedFile: '2024-09-24-ep0-fsjam-podcast-chatgpt-shownotes.md',
     newName: '04-chatgpt-gpt-4o-mini.md'
   },
@@ -34,8 +34,8 @@ const commands = [
     newName: '05-claude-default.md'
   },
   {
-    // Process video with Claude using CLAUDE_3_5_HAIKU model.
-    cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --claude CLAUDE_3_5_HAIKU',
+    // Process video with Claude using claude-3-haiku-20240307 model.
+    cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --claude claude-3-haiku-20240307',
     expectedFile: '2024-09-24-ep0-fsjam-podcast-claude-shownotes.md',
     newName: '06-claude-claude-3-5-haiku-shownotes.md'
   },
@@ -46,8 +46,8 @@ const commands = [
     newName: '07-gemini-shownotes.md'
   },
   {
-    // Process video with Gemini using GEMINI_1_5_FLASH model.
-    cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --gemini GEMINI_1_5_FLASH',
+    // Process video with Gemini using gemini-1.5-flash model.
+    cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --gemini gemini-1.5-flash',
     expectedFile: '2024-09-24-ep0-fsjam-podcast-gemini-shownotes.md',
     newName: '08-gemini-1-5-flash-shownotes.md'
   },

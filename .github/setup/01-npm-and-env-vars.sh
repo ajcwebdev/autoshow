@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
 # .github/setup/01-npm-and-env-vars.sh
-
-##############################################################################
-# Sets up .env, ensures Postgres env vars, installs npm packages
-##############################################################################
+#
+# Sets up .env and installs npm packages
+# Modified to remove database environment variable requirements
 
 # Create .env if none exists
 if [ -f ".env" ]; then
@@ -18,11 +17,7 @@ set -a
 source .env
 set +a
 
-# Ensure required env vars exist
-if [ -z "${PGHOST:-}" ] || [ -z "${PGUSER:-}" ] || [ -z "${PGPASSWORD:-}" ] || [ -z "${PGDATABASE:-}" ]; then
-  echo "One or more Postgres env vars missing (PGHOST, PGUSER, PGPASSWORD, PGDATABASE)."
-  exit 1
-fi
+# Note: We no longer check for PG* environment variables since we're not using a database in CLI mode
 
 echo "Installing npm dependencies..."
 npm install

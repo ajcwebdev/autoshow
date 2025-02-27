@@ -3,7 +3,7 @@
 import { env } from 'node:process'
 import Fastify from 'fastify'
 import cors from '@fastify/cors'
-import { db } from './db'
+import { dbService } from './db'
 import { processVideo } from './process-commands/video'
 import { processFile } from './process-commands/file'
 import { l, err } from './utils/logging'
@@ -17,6 +17,9 @@ import type { FastifyRequest, FastifyReply } from 'fastify'
 
 // Set server port from environment variable or default to 3000
 const port = Number(env['PORT']) || 3000
+
+// Explicitly set server mode for database service
+env['SERVER_MODE'] = 'true'
 
 /**
  * Handler for the /process route.
@@ -202,11 +205,7 @@ export const getShowNote = async (request: FastifyRequest, reply: FastifyReply) 
   try {
     const { id } = request.params as { id: string }
     // Fetch the show note from the database
-    const showNote = await db.show_notes.findUnique({
-      where: {
-        id: Number(id)
-      }
-    })
+    const showNote = await dbService.getShowNote(Number(id))
     if (showNote) {
       reply.send({ showNote })
     } else {
@@ -221,11 +220,7 @@ export const getShowNote = async (request: FastifyRequest, reply: FastifyReply) 
 export const getShowNotes = async (_request: FastifyRequest, reply: FastifyReply) => {
   try {
     // Fetch all show notes from the database
-    const showNotes = await db.show_notes.findMany({
-      orderBy: {
-        publishDate: 'desc'
-      }
-    })
+    const showNotes = await dbService.getShowNotes()
     reply.send({ showNotes })
   } catch (error) {
     console.error('Error fetching show notes:', error)

@@ -1,10 +1,11 @@
 // src/process-steps/05-run-llm.ts
 
 import { writeFile } from 'node:fs/promises'
-import { insertShowNote } from '../db'
+import { dbService } from '../db'
 import { l, err, logInitialFunctionCall, getModelIdOrDefault } from '../utils/logging'
 import { retryLLMCall } from '../utils/validation/retry'
 import { LLM_FUNCTIONS } from '../utils/step-utils/05-llm-utils'
+import { env } from 'node:process'
 
 import type { ProcessingOptions, ShowNote } from '../utils/types'
 
@@ -17,7 +18,7 @@ import type { ProcessingOptions, ShowNote } from '../utils/types'
  * 1. Combines the transcript with a provided prompt (if any)
  * 2. Processes the content with the selected LLM
  * 3. Saves the results with front matter and transcript or prompt+transcript
- * 4. Inserts show notes into the database
+ * 4. Inserts show notes into the database (when in server mode only)
  * 
  * If no LLM is selected, it writes the front matter, prompt, and transcript to a file.
  * If an LLM is selected, it writes the front matter, showNotes, and transcript to a file.
@@ -82,19 +83,25 @@ export async function runLLM(
       await writeFile(noLLMFile, `${frontMatter}\n${prompt}\n## Transcript\n\n${transcript}`)
     }
 
-    await insertShowNote({
-      showLink: metadata.showLink ?? '',
-      channel: metadata.channel ?? '',
-      channelURL: metadata.channelURL ?? '',
-      title: metadata.title,
-      description: metadata.description ?? '',
-      publishDate: metadata.publishDate,
-      coverImage: metadata.coverImage ?? '',
-      frontmatter: frontMatter,
-      prompt,
-      transcript,
-      llmOutput: showNotesResult
-    })
+    // Only attempt to insert into the database if we're in server mode
+    // This is a double-check to ensure CLI commands don't trigger database access
+    if (env['SERVER_MODE'] === 'true') {
+      await dbService.insertShowNote({
+        showLink: metadata.showLink ?? '',
+        channel: metadata.channel ?? '',
+        channelURL: metadata.channelURL ?? '',
+        title: metadata.title,
+        description: metadata.description ?? '',
+        publishDate: metadata.publishDate,
+        coverImage: metadata.coverImage ?? '',
+        frontmatter: frontMatter,
+        prompt,
+        transcript,
+        llmOutput: showNotesResult
+      })
+    } else {
+      l.dim('\n  Skipping database insertion in CLI mode')
+    }
 
     return showNotesResult
   } catch (error) {

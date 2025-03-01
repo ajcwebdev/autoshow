@@ -44,4 +44,4 @@ services:
     networks:
       - autoshow-network
     volumes:
-      - ./content:/usr/src/app/content
+      - ../content:/usr/src/app/content

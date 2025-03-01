@@ -104,7 +104,7 @@ const requests = [
       type: 'video',
       url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
       llm: 'claude',
-      llmModel: 'CLAUDE_3_SONNET',
+      llmModel: 'claude-3-sonnet-20240229',
       anthropicApiKey: ANTHROPIC_API_KEY,
     },
     endpoint: '/api/process',
@@ -139,7 +139,7 @@ const requests = [
       deepseekApiKey: DEEPSEEK_API_KEY,
     },
     endpoint: '/api/process',
-    outputFiles: ['FILE_17.md'],
+    outputFiles: ['FILE_13.md'],
   },
   {
     data: {
@@ -148,7 +148,7 @@ const requests = [
       whisperModel: 'tiny',
     },
     endpoint: '/api/process',
-    outputFiles: ['FILE_19.md'],
+    outputFiles: ['FILE_14.md'],
   },
   {
     data: {
@@ -158,7 +158,7 @@ const requests = [
       deepgramApiKey: DEEPGRAM_API_KEY,
     },
     endpoint: '/api/process',
-    outputFiles: ['FILE_20.md'],
+    outputFiles: ['FILE_15.md'],
   },
   {
     data: {
@@ -169,7 +169,7 @@ const requests = [
     //   transcriptModel: '',
     },
     endpoint: '/api/process',
-    outputFiles: ['FILE_21.md'],
+    outputFiles: ['FILE_16.md'],
   },
   {
     data: {
@@ -179,7 +179,7 @@ const requests = [
       assemblyApiKey: ASSEMBLY_API_KEY,
     },
     endpoint: '/api/process',
-    outputFiles: ['FILE_22.md'],
+    outputFiles: ['FILE_17.md'],
   },
   {
     data: {
@@ -190,7 +190,7 @@ const requests = [
       //   transcriptModel: '',
     },
     endpoint: '/api/process',
-    outputFiles: ['FILE_23.md'],
+    outputFiles: ['FILE_18.md'],
   },
   {
     data: {
@@ -201,7 +201,7 @@ const requests = [
       assemblyApiKey: ASSEMBLY_API_KEY,
     },
     endpoint: '/api/process',
-    outputFiles: ['FILE_24.md'],
+    outputFiles: ['FILE_19.md'],
   },
   {
     data: {
@@ -210,7 +210,7 @@ const requests = [
       prompts: ['titles', 'summary', 'shortChapters', 'takeaways', 'questions'],
     },
     endpoint: '/api/process',
-    outputFiles: ['FILE_25.md'],
+    outputFiles: ['FILE_20.md'],
   },
 ]
 

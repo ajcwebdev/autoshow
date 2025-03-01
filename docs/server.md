@@ -18,7 +18,15 @@
   - [Assembly](#assembly)
   - [Estimate Transcription Cost](#estimate-transcription-cost)
 - [Prompt Options](#prompt-options)
-- [Test Railway](#test-railway)
+- [Docker](#docker)
+  - [Build the Image](#build-the-image)
+  - [Docker Hub](#docker-hub)
+  - [GitHub Container Registry](#github-container-registry)
+- [Railway](#railway)
+  - [Setup Database on Railway](#setup-database-on-railway)
+  - [Video Test Requests](#video-test-requests)
+- [Create and Query Embeddings](#create-and-query-embeddings)
+- [Experimental Deno and Bun Support](#experimental-deno-and-bun-support)
 
 ## Start Server
 
@@ -284,16 +292,100 @@ curl --json '{
 }' http://localhost:3000/api/process
 ```
 
-## Test Railway
+## Docker
+
+### Build the Image
+
+```bash
+npm run docker-up
+```
+
+### Docker Hub
+
+Login to Docker Hub.
+
+```bash
+docker login
+```
+
+Tag and push.
+
+```bash
+docker tag autoshow:latest ajcwebdev/autoshow:latest
+docker push ajcwebdev/autoshow:latest
+```
+
+Pull and run.
+
+```bash
+docker pull ajcwebdev/autoshow:latest
+docker run --rm -p 3000:3000 ajcwebdev/autoshow:latest serve
+```
+
+### GitHub Container Registry
+
+To login, create a PAT [(personal access token)](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) with the ability to upload packages to GitHub Package Registry. Include your key instead of xxxx.
+
+```bash
+CR_PAT="xxxx" && echo $CR_PAT | docker login ghcr.io -u ajcwebdev --password-stdin
+```
+
+Tag and push.
+
+```bash
+docker tag autoshow:latest ghcr.io/ajcwebdev/autoshow:latest
+docker push ghcr.io/ajcwebdev/autoshow:latest
+```
+
+Pull and run.
+
+```bash
+docker pull ghcr.io/ajcwebdev/autoshow:latest
+docker run --rm -p 3000:3000 ghcr.io/ajcwebdev/autoshow:latest serve
+```
+
+```bash
+curl -X POST http://localhost:3000/api/process \
+  -H "Content-Type: application/json" \
+  -d '{
+    "type": "video",
+    "url": "https://www.youtube.com/watch?v=MORMZXEaONk"
+  }'
+```
+
+```bash
+curl -X POST http://localhost:3000/api/process \
+  -H "Content-Type: application/json" \
+  -d '{
+    "type": "video",
+    "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
+    "transcriptServices": "whisper",
+    "whisperModel": "base"
+  }'
+```
+
+## Railway
 
 ### Setup Database on Railway
 
+Link to staging environment in Autoshow project and deploy [`pgvector` template](https://railway.com/template/3jJFCA). Use your own team name in place of `--team Autoshow`.
+
 ```bash
-railway init --name custom-postgres-pgvector
-railway add --database postgres --service pgvector-db --variables "RAILWAY_DOCKERFILE_PATH=.github/postgres-pgvector.Dockerfile"
-railway up --service Postgres
-railway variables -s Postgres --kv
-echo "DATABASE_URL=$(railway variables -s Postgres --kv | grep DATABASE_PUBLIC_URL | cut -d'=' -f2)" >> .env
+railway link --team Autoshow --project autoshow --environment staging
+railway deploy --template 3jJFCA
+```
+
+Get `DATABASE_URL_PRIVATE` variable from the newly deployed `pgvector` service and set it to `DATABASE_URL` in the `autoshow` service with `?sslmode=disable` appended to the end of the connection string for Prisma configuration.
+
+```bash
+railway variables --service autoshow --environment staging \
+  --set "DATABASE_URL=$(railway variables -s pgvector --kv | grep DATABASE_URL_PRIVATE | cut -d'=' -f2)?sslmode=disable"
+```
+
+Use remote Postgres database on Railway for local development:
+
+```bash
+echo "\nDATABASE_URL=$(railway variables -s pgvector --kv | grep DATABASE_URL= | cut -d'=' -f2)?sslmode=require" >> .env
 ```
 
 ### Video Test Requests

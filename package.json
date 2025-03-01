@@ -18,7 +18,6 @@
   "scripts": {
     "tsx:base": "tsx --env-file=.env --no-warnings",
     "setup": "bash .github/setup/setup.sh",
-    "clean": "npm run tsx:base .github/clean-content.ts",
     "check": "npx tsc",
     "as": "npm run tsx:base -- src/commander.ts",
     "test-cli-local": "npm run tsx:base -- test/cli/cli-local.test.ts",

@@ -30,34 +30,35 @@
     "test-server-local": "npm run tsx:base -- test/server/server-local.ts",
     "test-server-all": "npm run tsx:base -- test/server/server-all.ts",
     "docker-up": "docker-compose -f .github/docker-compose.yml --env-file .env up -d --build",
-    "docker-logs": "docker images && docker ps && docker logs autoshow-service && docker-compose -f .github/docker-compose.yml ps && docker-compose -f .github/docker-compose.yml logs && docker network inspect autoshow-network && docker inspect autoshow-service",
+    "docker-info": "docker images && docker-compose -f .github/docker-compose.yml images && docker ps && docker-compose -f .github/docker-compose.yml ps && docker volume ls",
+    "docker-inspect": "docker network inspect autoshow-network && docker inspect autoshow-service && docker inspect autoshow-postgres",
+    "docker-logs": "docker logs autoshow-service && docker-compose -f .github/docker-compose.yml logs",
     "docker-down": "docker-compose -f .github/docker-compose.yml --env-file .env down --remove-orphans --volumes",
     "prune": "docker kill $(docker ps -q) 2>/dev/null || true && docker rm -f $(docker ps -aq) 2>/dev/null || true && docker builder prune -af && docker network prune -f && docker image prune -af && docker volume prune -af && docker system prune -af --volumes && docker network rm $(docker network ls -q) 2>/dev/null || true",
-    "get-db-local": "psql -h localhost -U myuser -d mydatabase -c 'SELECT id, title FROM show_notes ORDER BY id DESC'",
     "get-db-docker": "docker-compose -f .github/docker-compose.yml exec autoshow-postgres psql -U myuser -d mydatabase -c 'SELECT id, title FROM show_notes ORDER BY id DESC'",
-    "drop-db": "psql -h localhost -U ajc -d template1 -c 'DROP DATABASE IF EXISTS mydatabase' && psql -h localhost -U ajc -d template1 -c 'CREATE DATABASE mydatabase WITH OWNER myuser' && psql -h localhost -U ajc -d mydatabase -c 'CREATE EXTENSION IF NOT EXISTS vector'",
     "railway-info": "railway list && railway status && railway volume list && railway variables -s autoshow && railway variables -s Postgres",
     "db-deploy": "npx prisma migrate deploy --schema=/usr/src/app/prisma/schema.prisma && npx prisma generate --schema=/usr/src/app/prisma/schema.prisma"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "0.36.3",
+    "@anthropic-ai/sdk": "0.39.0",
     "@deepgram/sdk": "3.11.1",
-    "@fastify/cors": "10.0.2",
-    "@google/generative-ai": "0.21.0",
-    "@prisma/client": "6.4.0",
+    "@fastify/cors": "11.0.0",
+    "@google/generative-ai": "0.22.0",
+    "@prisma/client": "6.4.1",
     "assemblyai": "4.9.0",
     "chalk": "5.4.1",
     "commander": "13.1.0",
-    "fast-xml-parser": "4.5.2",
+    "fast-xml-parser": "5.0.8",
     "fastify": "5.2.1",
-    "file-type": "20.1.0",
-    "openai": "4.85.2",
+    "file-type": "20.4.0",
+    "ollama": "0.5.14",
+    "openai": "4.86.1",
     "pg": "8.13.3",
-    "prisma": "6.4.0"
+    "prisma": "6.4.1"
   },
   "devDependencies": {
-    "@types/node": "22.13.4",
+    "@types/node": "22.13.7",
     "@types/pg": "8.11.11",
-    "typescript": "5.7.3"
+    "typescript": "5.8.2"
   }
 }

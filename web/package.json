@@ -1,25 +1,25 @@
 {
-	"name": "astro-autoshow",
-	"scripts": {
-		"dev": "astro dev",
-		"start": "astro dev",
-		"build": "astro build",
-		"preview": "astro preview",
-		"check": "astro check"
-	},
-	"dependencies": {
-		"@astrojs/mdx": "^4.0.1",
-		"@astrojs/react": "^4.0.0",
-		"@astrojs/sitemap": "^3.2.1",
-		"astro": "^5.0.3",
-		"astro-expressive-code": "^0.38.3",
-		"react": "^19.0.0",
-		"react-dom": "^19.0.0",
-		"sharp": "^0.33.5"
-	},
-	"devDependencies": {
-		"@types/react": "^19.0.1",
-		"@types/react-dom": "^19.0.1",
-		"typescript": "^5.7.2"
-	}
+  "name": "astro-autoshow",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check"
+  },
+  "dependencies": {
+    "@astrojs/mdx": "4.1.0",
+    "@astrojs/react": "4.2.1",
+    "@astrojs/sitemap": "3.2.1",
+    "astro": "5.4.1",
+    "astro-expressive-code": "0.40.2",
+    "react": "19.0.0",
+    "react-dom": "19.0.0",
+    "sharp": "0.33.5"
+  },
+  "devDependencies": {
+    "@types/react": "19.0.10",
+    "@types/react-dom": "19.0.4",
+    "typescript": "5.8.2"
+  }
 }

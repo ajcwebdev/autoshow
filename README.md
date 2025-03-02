@@ -6,7 +6,9 @@
 ## Outline
 
 - [Project Overview](#project-overview)
+  - [Prompts and Content Formats](#prompts-and-content-formats)
   - [Key Features](#key-features)
+  - [AutoShow Pipeline](#autoshow-pipeline)
 - [Setup](#setup)
 - [Run AutoShow Node Scripts](#run-autoshow-node-scripts)
 - [Project Structure](#project-structure)
@@ -20,15 +22,31 @@
 
 ## Project Overview
 
-AutoShow automates the processing of audio and video content from various sources, including YouTube videos, playlists, podcast RSS feeds, and local media files. It performs transcription, summarization, and chapter generation using different language models (LLMs) and transcription services.
+AutoShow automates the processing of audio and video content from various sources, including YouTube videos, playlists, podcast RSS feeds, and local media files. It leverages advanced transcription services and language models (LLMs) to perform transcription, summarization, and chapter generation.
 
-The AutoShow workflow includes the following steps:
+### Prompts and Content Formats
 
-1. The user provides a content input (video URL, playlist, RSS feed, or local file) and front matter is created based on the content's metadata.
-2. The audio is downloaded (if necessary).
-3. Transcription is performed using the selected service.
-4. A customizable prompt is inserted containing instructions for the contents of the show notes.
-5. The transcript is processed by the chosen LLM to generate show notes based on the selected prompts.
+AutoShow can generate diverse content formats including:
+
+- **Summaries and Chapters:**
+  - Concise summaries
+  - Detailed chapter descriptions
+  - Bullet-point summaries
+  - Chapter titles with timestamps
+- **Social Media Posts:**
+  - X (Twitter)
+  - Facebook
+  - LinkedIn
+- **Creative Content:**
+  - Rap songs
+  - Rock songs
+  - Country songs
+- **Educational and Informative Content:**
+  - Key takeaways
+  - Comprehension questions
+  - Frequently asked questions (FAQs)
+  - Curated quotes
+  - Blog outlines and drafts
 
 ### Key Features
 
@@ -39,8 +57,16 @@ The AutoShow workflow includes the following steps:
 - Local LLM support with Ollama
 - Customizable prompts for generating titles, summaries, chapter titles/descriptions, key takeaways, and questions to test comprehension
 - Markdown output with metadata and formatted content
-- Command-line interface for easy usage
-- *WIP: Node.js server and React frontend*
+
+### AutoShow Pipeline
+
+The AutoShow workflow includes the following steps that feed sequentially into each other:
+
+1. The user provides a content input (video URL, playlist, RSS feed, or local file) and front matter is created based on the content's metadata.
+2. The audio is downloaded (if necessary).
+3. Transcription is performed using the selected transcription service.
+4. A customizable prompt is inserted containing instructions for the show notes or other content forms.
+5. The transcript is processed by the selected LLM service to generate the desired output based on the selected prompts.
 
 ## Setup
 

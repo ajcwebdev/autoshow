@@ -30,14 +30,15 @@
     "test-server-local": "npm run tsx:base -- test/server/server-local.ts",
     "test-server-all": "npm run tsx:base -- test/server/server-all.ts",
     "docker-up": "docker-compose -f .github/docker-compose.yml --env-file .env up -d --build",
+    "up": "docker-compose -f .github/docker-compose.yml --env-file .env up -d --build",
+    "start": "npx prisma migrate deploy --schema=/usr/src/app/prisma/schema.prisma && npx tsx --no-warnings src/fastify.ts",
     "docker-info": "docker images && docker-compose -f .github/docker-compose.yml images && docker ps && docker-compose -f .github/docker-compose.yml ps && docker volume ls",
     "docker-inspect": "docker network inspect autoshow-network && docker inspect autoshow-service && docker inspect autoshow-postgres",
     "docker-logs": "docker logs autoshow-service && docker-compose -f .github/docker-compose.yml logs",
     "docker-down": "docker-compose -f .github/docker-compose.yml --env-file .env down --remove-orphans --volumes",
     "prune": "docker kill $(docker ps -q) 2>/dev/null || true && docker rm -f $(docker ps -aq) 2>/dev/null || true && docker builder prune -af && docker network prune -f && docker image prune -af && docker volume prune -af && docker system prune -af --volumes && docker network rm $(docker network ls -q) 2>/dev/null || true",
     "get-db-docker": "docker-compose -f .github/docker-compose.yml exec autoshow-postgres psql -U myuser -d mydatabase -c 'SELECT id, title FROM show_notes ORDER BY id DESC'",
-    "railway-info": "railway list && railway status && railway volume list && railway variables -s autoshow && railway variables -s Postgres",
-    "db-deploy": "npx prisma migrate deploy --schema=/usr/src/app/prisma/schema.prisma && npx prisma generate --schema=/usr/src/app/prisma/schema.prisma"
+    "railway-info": "railway list && railway status && railway volume list && railway variables -s autoshow && railway variables -s Postgres"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "0.39.0",

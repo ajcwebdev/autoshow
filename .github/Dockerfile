@@ -44,8 +44,8 @@ RUN chmod +x /usr/src/app/whisper.cpp/build/bin/whisper-cli \
 RUN ls -l /usr/local/bin/whisper-cli
 
 # 11. Download the “base”, “tiny”, and “large-v3-turbo” models
-RUN whisper.cpp/models/download-ggml-model.sh base && \
-    whisper.cpp/models/download-ggml-model.sh tiny
+RUN whisper.cpp/models/download-ggml-model.sh base
+RUN whisper.cpp/models/download-ggml-model.sh tiny
     # whisper.cpp/models/download-ggml-model.sh large-v3-turbo
 
 # 12. Expose environment variables for model paths
@@ -58,14 +58,12 @@ ENV WHISPER_NO_GPU=1
 COPY package*.json ./
 RUN npm ci --production --legacy-peer-deps && npm cache clean --force
 
-# 14. Copy prisma folder so we have `prisma/schema.prisma`
+# 14. Copy prisma folder so we have `prisma/schema.prisma` and copy source code
 COPY prisma ./prisma
-
-# 15. Copy source code
 COPY src ./src
 COPY shared ./shared
 
-# 15.5. Generate the Prisma client
+# 15. Generate the Prisma client
 RUN npx prisma generate --schema=/usr/src/app/prisma/schema.prisma
 
 # 16. Create + set permissions on content directory
@@ -81,4 +79,4 @@ USER node
 EXPOSE 3000
 
 # 19. Always run server
-ENTRYPOINT [ "sh", "-c", "npm run db-deploy && exec npx tsx --no-warnings src/fastify.ts" ]
+ENTRYPOINT [ "npm", "start" ]

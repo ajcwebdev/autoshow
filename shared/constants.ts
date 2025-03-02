@@ -33,6 +33,11 @@ export const PROMPT_CHOICES: Array<{ name: string; value: string }> = [
   { name: 'Rap Song', value: 'rapSong' },
   { name: 'Rock Song', value: 'rockSong' },
   { name: 'Country Song', value: 'countrySong' },
+  { name: 'Quotes', value: 'quotes' },
+  { name: 'Chapter Titles and Quotes', value: 'chapterTitlesAndQuotes' },
+  { name: 'Social Post (X)', value: 'x' },
+  { name: 'Social Post (Facebook)', value: 'facebook' },
+  { name: 'Social Post (LinkedIn)', value: 'linkedin' },
 ]
 
 export type TranscriptionCostInfo = {

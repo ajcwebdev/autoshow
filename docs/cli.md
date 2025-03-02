@@ -519,58 +519,72 @@ npm run as -- \
 
 ## Prompt Options
 
-Default includes summary and long chapters, equivalent to running this:
-
 ```bash
-npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --prompt summary longChapters
-```
+# Default includes summary and long chapters, equivalent to running this:
+npm run as -- --rss "https://ajcwebdev.substack.com/feed" --prompt summary longChapters
 
-Create five title ideas:
+# Create five title ideas:
+npm run as -- --rss "https://ajcwebdev.substack.com/feed" --prompt titles
 
-```bash
-npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --prompt titles
-```
+# Create a one sentence and one paragraph summary:
+npm run as -- --rss "https://ajcwebdev.substack.com/feed" --prompt summary
 
-Create a one sentence and one paragraph summary:
+# Create a short, one sentence description for each chapter that's 25 words or shorter.
+npm run as -- --rss "https://ajcwebdev.substack.com/feed" --prompt shortChapters
 
-```bash
-npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --prompt summary
-```
+# Create a one paragraph description for each chapter that's around 50 words.
+npm run as -- --rss "https://ajcwebdev.substack.com/feed" --prompt mediumChapters
 
-Create a short, one sentence description for each chapter that's 25 words or shorter.
+# Create a two paragraph description for each chapter that's over 75 words.
+npm run as -- --rss "https://ajcwebdev.substack.com/feed" --prompt longChapters
 
-```bash
-npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --prompt shortChapters
-```
+# Create three key takeaways about the content:
+npm run as -- --rss "https://ajcwebdev.substack.com/feed" --prompt takeaways
 
-Create a one paragraph description for each chapter that's around 50 words.
+# Create ten questions about the content to check for comprehension:
+npm run as -- --rss "https://ajcwebdev.substack.com/feed" --prompt questions
 
-```bash
-npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --prompt mediumChapters
-```
+# Create a short, one sentence description of the transcript:
+npm run as -- --rss "https://ajcwebdev.substack.com/feed" --prompt shortSummary
 
-Create a two paragraph description for each chapter that's over 75 words.
+# Create a one paragraph summary of the transcript:
+npm run as -- --rss "https://ajcwebdev.substack.com/feed" --prompt longSummary
 
-```bash
-npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --prompt longChapters
-```
+# Generate a bullet-point list summarizing the transcript:
+npm run as -- --rss "https://ajcwebdev.substack.com/feed" --prompt bulletPoints
 
-Create three key takeaways about the content:
+# Select five important quotes from the transcript:
+npm run as -- --rss "https://ajcwebdev.substack.com/feed" --prompt quotes
 
-```bash
-npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --prompt takeaways
-```
+# Create chapter titles with timestamps and representative quotes:
+npm run as -- --rss "https://ajcwebdev.substack.com/feed" --prompt chapterTitlesAndQuotes
 
-Create ten questions about the content to check for comprehension:
+# Write a concise and engaging social media post optimized for X (Twitter):
+npm run as -- --rss "https://ajcwebdev.substack.com/feed" --prompt x
 
-```bash
-npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --prompt questions
-```
+# Write an engaging and conversational Facebook post:
+npm run as -- --rss "https://ajcwebdev.substack.com/feed" --prompt facebook
 
-Include all prompt options:
+# Write a professional and insightful LinkedIn post:
+npm run as -- --rss "https://ajcwebdev.substack.com/feed" --prompt linkedin
 
-```bash
-npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --prompt titles summary longChapters takeaways questions
+# Generate a list of chapter titles with timestamps:
+npm run as -- --rss "https://ajcwebdev.substack.com/feed" --prompt chapterTitles
+
+# Generate frequently asked questions with answers based on the transcript:
+npm run as -- --rss "https://ajcwebdev.substack.com/feed" --prompt faq
+
+# Generate a blog outline and a first draft blog post (750+ words):
+npm run as -- --rss "https://ajcwebdev.substack.com/feed" --prompt blog
+
+# Write an Eminem-inspired rap song based on the transcript:
+npm run as -- --rss "https://ajcwebdev.substack.com/feed" --prompt rapSong
+
+# Write a high-energy, anthemic rock song based on the transcript:
+npm run as -- --rss "https://ajcwebdev.substack.com/feed" --prompt rockSong
+
+# Write a heartfelt, storytelling country song based on the transcript:
+npm run as -- --rss "https://ajcwebdev.substack.com/feed" --prompt countrySong
 ```
 
 ### Print Select Prompts without Process Commands

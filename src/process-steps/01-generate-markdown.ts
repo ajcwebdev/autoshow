@@ -17,7 +17,7 @@ import type { ProcessingOptions, ShowNote } from '../utils/types'
  * 
  * @param {ProcessingOptions} options - The processing options specifying the type of content to generate.
  *                                     Valid options include: video, playlist, urls, file, and rss.
- * @param {string | RSSItem} input - The input data to process:
+ * @param {string | ShowNote} input - The input data to process:
  *                                   - For video/playlist/urls: A URL string
  *                                   - For file: A file path string
  *                                   - For RSS: An RSSItem object containing feed item details

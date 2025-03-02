@@ -21,9 +21,9 @@ export const parser = new XMLParser({
 })
 
 /**
- * Fetches and parses an RSS feed, then applies filtering via {@link filterRSSItems}.
+ * Fetches and parses an RSS feed (URL or local file path), then applies filtering via {@link filterRSSItems}.
  * 
- * @param rssUrl - URL of the RSS feed to fetch
+ * @param rssUrl - URL or local file path of the RSS feed to parse
  * @param options - Configuration options
  * @returns A promise that resolves to an object with filtered RSS items and the channel title
  * @throws Will exit the process on network or parsing errors
@@ -32,6 +32,36 @@ export async function selectRSSItemsToProcess(
   rssUrl: string,
   options: ProcessingOptions
 ) {
+  try {
+    const fsPromises = await import('node:fs/promises')
+    await fsPromises.access(rssUrl)
+
+    const text = await fsPromises.readFile(rssUrl, 'utf8')
+    const feed = parser.parse(text)
+    const {
+      title: channelTitle,
+      link: channelLink,
+      image: channelImageObject,
+      item: feedItems,
+    } = feed.rss.channel
+
+    const feedItemsArray = Array.isArray(feedItems) ? feedItems : [feedItems]
+    if (!feedItemsArray || feedItemsArray.length === 0) {
+      err('Error: No items found in the RSS feed.')
+      process.exit(1)
+    }
+
+    const itemsToProcess = await filterRSSItems(
+      options,
+      feedItemsArray,
+      channelTitle,
+      channelLink,
+      channelImageObject?.url
+    )
+
+    return { items: itemsToProcess, channelTitle: channelTitle || '' }
+  } catch {}
+
   const controller = new AbortController()
   const timeout = setTimeout(() => controller.abort(), 10000)
 

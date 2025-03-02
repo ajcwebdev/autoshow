@@ -141,6 +141,12 @@ Here’s what’s happening in this single command:
 
 ### Process Podcast RSS Feed
 
+Process local XML file containing an RSS feed:
+
+```bash
+npm run as -- --rss "content/feed.xml"
+```
+
 Process RSS feed from newest to oldest (default behavior):
 
 ```bash

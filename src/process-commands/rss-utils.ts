@@ -1,8 +1,8 @@
-// src/utils/command-utils/rss-utils.ts
+// src/process-commands/rss-utils.ts
 
-import { l, err } from '../../utils/logging'
+import { l, err } from '../utils/logging'
 
-import type { ProcessingOptions, ShowNote, HandlerFunction } from '../types'
+import type { ProcessingOptions, ShowNote, HandlerFunction } from '../utils/types'
 
 /**
  * Reads the file specified in --rssURLs, parses RSS feed URLs from each line, and appends them to options.rss.

@@ -2,9 +2,9 @@
 
 import { processVideo } from './video'
 import { execFilePromise } from '../utils/validation/cli'
-import { saveInfo } from '../utils/step-utils/01-markdown-utils'
+import { saveInfo } from '../process-steps/01-generate-markdown-utils'
 import { l, err, logSeparator, logInitialFunctionCall } from '../utils/logging'
-import { validateChannelOptions, logChannelProcessingStatus } from '../utils/command-utils/channel-utils'
+import { validateChannelOptions, logChannelProcessingStatus } from './channel-utils'
 
 import type { ProcessingOptions } from '../utils/types'
 

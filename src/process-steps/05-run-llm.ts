@@ -4,7 +4,7 @@ import { writeFile } from 'node:fs/promises'
 import { dbService } from '../db'
 import { l, err, logInitialFunctionCall, getModelIdOrDefault } from '../utils/logging'
 import { retryLLMCall } from '../utils/validation/retry'
-import { LLM_FUNCTIONS } from '../utils/step-utils/05-llm-utils'
+import { LLM_FUNCTIONS } from './05-run-llm-utils'
 import { env } from 'node:process'
 
 import type { ProcessingOptions, ShowNote } from '../utils/types'

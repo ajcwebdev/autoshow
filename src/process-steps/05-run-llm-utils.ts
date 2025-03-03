@@ -1,17 +1,17 @@
-// src/utils/step-utils/05-llm-utils.ts
+// src/process-steps/05-run-llm-utils.ts
 
 import { readFile } from 'node:fs/promises'
-import { l, err, logLLMCost } from '../logging'
-import { runLLM } from '../../process-steps/05-run-llm'
-import { callOllama } from '../../../src/llms/ollama'
-import { callChatGPT } from '../../../src/llms/chatgpt'
-import { callClaude } from '../../../src/llms/claude'
-import { callGemini } from '../../../src/llms/gemini'
-import { callDeepSeek } from '../../../src/llms/deepseek'
-import { callFireworks } from '../../../src/llms/fireworks'
-import { callTogether } from '../../../src/llms/together'
+import { l, err, logLLMCost } from '../utils/logging'
+import { runLLM } from './05-run-llm'
+import { callOllama } from '../llms/ollama'
+import { callChatGPT } from '../llms/chatgpt'
+import { callClaude } from '../llms/claude'
+import { callGemini } from '../llms/gemini'
+import { callDeepSeek } from '../llms/deepseek'
+import { callFireworks } from '../llms/fireworks'
+import { callTogether } from '../llms/together'
 
-import type { ProcessingOptions, ShowNote } from '../types'
+import type { ProcessingOptions, ShowNote } from '../utils/types'
 
 // Type for LLM function signatures
 type LLMFunction = (prompt: string, transcript: string, options: any) => Promise<string>;

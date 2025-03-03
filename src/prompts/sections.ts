@@ -1,4 +1,4 @@
-// src/utils/step-utils/04-prompts.ts
+// src/prompts/prompts.ts
 
 /**
  * Define the structure for different sections of the prompt
@@ -6,28 +6,28 @@
 export const sections = {
   titles: {
     instruction: `- Write 5 potential titles for the video.
-  - The first two titles should be very, very shorter and have no subtitle.
-  - The last three titles can be longer and have subtitles.\n`,
+  - The first two titles should be very short and have no subtitle.
+  - The last three titles can be longer and include subtitles.`,
     example: `## Potential Titles
 
     1. Title Hard
     2. Title Harder
     3. Title Hard with a Vengeance
     4. Title Hard IV: Live Free or Title Hard
-    5. Title Hard V: A Good Day to Die Hard\n`,
+    5. Title Hard V: A Good Day to Die Hard`,
   },
 
   summary: {
-    instruction: `- Write a one sentence description of the transcript and a one paragraph summary.
-  - The one sentence description shouldn't exceed 180 characters (roughly 30 words).
-  - The one paragraph summary should be approximately 600-1200 characters (roughly 100-200 words).\n`,
+    instruction: `- Write a one-sentence description of the transcript and a one-paragraph summary.
+  - The one-sentence description shouldn't exceed 180 characters (roughly 30 words).
+  - The one-paragraph summary should be approximately 600-1200 characters (roughly 100-200 words).`,
     example: `## Episode Description
 
-    One sentence description of the transcript that encapsulates the content contained in the file but does not exceed roughly 180 characters (or approximately 30 words).
+    One sentence description encapsulating the content within roughly 180 characters.
 
     ## Episode Summary
 
-    A concise summary of a chapter's content, typically ranging from 600 to 1200 characters or approximately 100 to 200 words. It begins by introducing the main topic or theme of the chapter, providing context for the reader. The summary then outlines key points or arguments presented in the chapter, touching on major concepts, theories, or findings discussed. It may briefly mention methodologies used or data analyzed, if applicable. The paragraph also highlights any significant conclusions or implications drawn from the chapter's content. Throughout, it maintains a balance between providing enough detail to give readers a clear understanding of the chapter's scope and keeping the information general enough to apply to various subjects. This summary style efficiently conveys the essence of the chapter's content, allowing readers to quickly grasp its main ideas and decide if they want to dig deeper into the full text.\n`,
+    A concise summary of the transcript, typically 600-1200 characters or about 100-200 words, highlighting main topics, significant points, methods, conclusions, and implications.`,
   },
 
   shortSummary: {
@@ -105,57 +105,58 @@ export const sections = {
   },
   chapterTitles: {
     instruction: `- Create chapter titles based on the topics discussed throughout the transcript.
-  - Include timestamps for when these chapters begin.
-  - Chapters should be roughly 3-6 minutes long.\n`,
+  - Include only starting timestamps in exact HH:MM:SS format, always using two digits each for hours, minutes, and seconds.
+  - Chapters should be roughly 3-6 minutes long.`,
     example: `## Chapters
 
     ### 00:00:00 - Introduction and Overview
     ### 00:03:12 - The History of Web Development
     ### 00:07:45 - The Rise of JavaScript Frameworks
     ### 00:12:30 - Server-Side Technologies
-    ### 00:18:00 - The Future of Web Development\n`,
+    ### 00:18:00 - The Future of Web Development`,
   },
 
   shortChapters: {
-    instruction: `- Create chapter titles and descriptions based on the topics discussed throughout.
-  - Include timestamps for when these chapters begin.
+    instruction: `- Create chapter titles and one-sentence descriptions based on the topics discussed.
+  - Include only starting timestamps in exact HH:MM:SS format, always using two digits each for hours, minutes, and seconds.
   - Chapters should be roughly 3-6 minutes long.
-  - Write a one-sentence description for each chapter (max 25 words).
-  - Ensure chapters cover the entire content (note the last timestamp, HH:MM:SS, which means the transcript is HH hours and MM minutes).
-  - Let descriptions flow naturally from the content, avoiding formulaic templates.\n`,
+  - Ensure chapters cover the entire content, clearly noting the last timestamp (HH:MM:SS), indicating total duration.
+  - Descriptions should flow naturally from the content.`,
     example: `## Chapters
 
-    ### 00:00:00 - Introduction and Beginning of Episode
-      
-    A comprehensive description of the content, serving as an overview for readers. It begins by introducing the main themes and concepts.\n`,
+    ### 00:00:00 - Introduction and Episode Overview
+
+    Briefly introduces the episode's main themes, setting the stage for detailed discussions ahead.`,
   },
 
   mediumChapters: {
-    instruction: `- Create chapter titles and descriptions based on the topics discussed throughout.
-  - Include timestamps for when these chapters begin.
+    instruction: `- Create chapter titles and one-paragraph descriptions based on the topics discussed.
+  - Include only starting timestamps in exact HH:MM:SS format, always using two digits each for hours, minutes, and seconds.
   - Chapters should be roughly 3-6 minutes long.
-  - Write a one-paragraph description for each chapter (~50 words).
-  - Ensure chapters cover the entire content (note the last timestamp, HH:MM:SS, which means the transcript is HH hours and MM minutes).
-  - Let descriptions flow naturally from the content, avoiding formulaic templates.\n`,
+  - Write descriptions of about 50 words each.
+  - Ensure chapters cover the entire content, clearly noting the last timestamp (HH:MM:SS), indicating total duration.
+  - Descriptions should flow naturally from the content.`,
     example: `## Chapters
 
-    ### 00:00:00 - Introduction and Beginning of Episode
-      
-    This summary introduces the chapter's main themes and outlines several key points, each examined in detail regarding their significance and impact on the subject matter. It explores practical applications and highlights the relevance to current issues and challenges, demonstrating the interrelationships and broader implications within the field.\n`,
+    ### 00:00:00 - Introduction and Overview
+
+    Introduces the key themes and concepts explored in the episode, briefly outlining the significant points and their relevance to broader discussions. This foundation helps listeners grasp the scope and importance of the subsequent content and prepares them for deeper exploration of each topic.`,
   },
 
   longChapters: {
     instruction: `- Create chapter titles and descriptions based on the topics discussed throughout.
-  - Include timestamps for when these chapters begin.
-  - Chapters should be roughly 3-6 minutes long.
-  - Write a two-paragraph description for each chapter (75+ words).
-  - Ensure chapters cover the entire content (note the last timestamp, HH:MM:SS, which means the transcript is HH hours and MM minutes).
-  - Let descriptions flow naturally from the content, avoiding formulaic templates.\n`,
+  - Include only starting timestamps in exact HH:MM:SS format, always using two digits each for hours, minutes, and seconds.
+  - Chapters should each cover approximately 3-6 minutes of content.
+  - Write a two-paragraph description (75+ words) for each chapter.
+  - Ensure chapters cover the entire content, clearly noting the last timestamp (HH:MM:SS), indicating total duration.
+  - Descriptions should flow naturally from the content, avoiding formulaic language.`,
     example: `## Chapters
 
     ### 00:00:00 - Introduction and Overview
-      
-    A comprehensive description of the content, serving as an overview for readers. It begins by introducing the main themes and concepts that will be explored throughout the chapter. The author outlines several key points, each of which is examined in detail. These points are discussed in terms of their significance and potential impact on various aspects of the subject matter. The text then explores how these core ideas are applied in practical contexts, highlighting their relevance to current issues and challenges. Throughout the chapter, connections are drawn between different concepts, demonstrating their interrelationships and broader implications within the field of study.\n`,
+
+    A comprehensive introduction providing readers with the main themes and concepts explored throughout the chapter. The content highlights significant points discussed in detail and explores their broader implications and practical relevance.
+
+    Connections are made between concepts, emphasizing interrelationships and potential impacts on various fields or current challenges. The chapter sets a clear foundation for understanding the subsequent discussions.`,
   },
 
   takeaways: {

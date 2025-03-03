@@ -1,10 +1,10 @@
-// src/utils/step-utils/01-markdown-utils.ts
+// src/process-steps/01-generate-markdown-utils.ts
 
 import { writeFile } from 'node:fs/promises'
-import { execFilePromise } from '../validation/cli'
-import { l, err } from '../logging'
+import { execFilePromise } from '../utils/validation/cli'
+import { l, err } from '../utils/logging'
 
-import type { VideoInfo, ShowNote } from '../types'
+import type { VideoInfo, ShowNote } from '../utils/types'
 
 /**
  * Saves metadata or feed information to a JSON file, consolidating the logic from the original

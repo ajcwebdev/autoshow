@@ -1,12 +1,12 @@
-// src/utils/step-utils/03-transcription-utils.ts
+// src/process-steps/03-run-transcription-utils.ts
 
 import { existsSync } from 'node:fs'
-import { l, err } from '../logging'
-import { DEEPGRAM_MODELS, ASSEMBLY_MODELS } from '../../../shared/constants'
-import { execPromise } from '../validation/cli'
+import { l, err } from '../utils/logging'
+import { DEEPGRAM_MODELS, ASSEMBLY_MODELS } from '../../shared/constants'
+import { execPromise } from '../utils/validation/cli'
 
-import type { ProcessingOptions } from '../types'
-import type { WhisperOutput, TranscriptionCostInfo }from '../../../shared/constants'
+import type { ProcessingOptions } from '../utils/types'
+import type { WhisperOutput, TranscriptionCostInfo }from '../../shared/constants'
 
 /**
  * Asynchronously logs the estimated transcription cost based on audio duration and per-minute cost.

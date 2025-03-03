@@ -1,7 +1,7 @@
-// src/utils/step-utils/02-save-audio.ts
+// src/process-steps/02-download-audio-utils.ts
 
 import { unlink } from 'node:fs/promises'
-import { l, err } from '../logging'
+import { l, err } from '../utils/logging'
 
 /**
  * Removes temporary files generated during content processing.

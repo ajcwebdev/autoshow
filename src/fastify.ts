@@ -12,6 +12,8 @@ import { estimateTranscriptCost } from './process-steps/03-run-transcription-uti
 import { estimateLLMCost, runLLMFromPromptFile } from './process-steps/05-run-llm-utils'
 import { createEmbeddingsAndSQLite } from './utils/embeddings/create-embed'
 import { queryEmbeddings } from './utils/embeddings/query-embed'
+import { join } from 'node:path'
+import { writeFile } from 'node:fs/promises'
 
 import type { FastifyRequest, FastifyReply } from 'fastify'
 
@@ -74,6 +76,16 @@ export const handleProcessRequest = async (
         }
         options.video = url
         const result = await processVideo(options, url, llmServices, transcriptServices)
+
+        /**
+         * Write the entire result to a .json file in the "content" directory
+         * @type {string}
+         */
+        const contentDir = join(process.cwd(), 'content')
+        const timestamp = Date.now()
+        const outputPath = join(contentDir, `video-${timestamp}.json`)
+        await writeFile(outputPath, JSON.stringify(result, null, 2), 'utf8')
+
         reply.send({
           frontMatter: result.frontMatter,
           prompt: result.prompt,
@@ -91,6 +103,16 @@ export const handleProcessRequest = async (
         }
         options.file = filePath
         const result = await processFile(options, filePath, llmServices, transcriptServices)
+
+        /**
+         * Write the entire result to a .json file in the "content" directory
+         * @type {string}
+         */
+        const contentDir = join(process.cwd(), 'content')
+        const timestamp = Date.now()
+        const outputPath = join(contentDir, `file-${timestamp}.json`)
+        await writeFile(outputPath, JSON.stringify(result, null, 2), 'utf8')
+
         reply.send({
           frontMatter: result.frontMatter,
           prompt: result.prompt,

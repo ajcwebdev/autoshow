@@ -35,13 +35,25 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
   const [url, setUrl] = useState<string>('https://www.youtube.com/watch?v=MORMZXEaONk')
   const [filePath, setFilePath] = useState<string>('content/audio.mp3')
   const [transcriptionService, setTranscriptionService] = useState<string>('whisper')
-  const [whisperModel, setWhisperModel] = useState<string>('base')
-  const [llmService, setLlmService] = useState<string>('ollama')
+  const [whisperModel, setWhisperModel] = useState<string>('tiny')
+  const [llmService, setLlmService] = useState<string>('none')
   const [llmModel, setLlmModel] = useState<string>('')
-  const [selectedPrompts, setSelectedPrompts] = useState<string[]>(['summary'])
+  const [selectedPrompts, setSelectedPrompts] = useState<string[]>(['shortSummary'])
   const [result, setResult] = useState<ResultType | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState<boolean>(false)
+
+  /**
+   * Stores the user's wallet address.
+   * @type {[string, React.Dispatch<React.SetStateAction<string>>]}
+   */
+  const [walletAddress, setWalletAddress] = useState<string>('')
+
+  /**
+   * Stores the user's mnemonic for the wallet.
+   * @type {[string, React.Dispatch<React.SetStateAction<string>>]}
+   */
+  const [mnemonic, setMnemonic] = useState<string>('')
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -76,6 +88,10 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
       if (llmService) {
         requestBody.llmModel = llmModel
       }
+
+      // Include walletAddress and mnemonic in the request body
+      requestBody.walletAddress = walletAddress
+      requestBody.mnemonic = mnemonic
 
       const response = await fetch('http://localhost:3000/api/process', {
         method: 'POST',
@@ -117,6 +133,22 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
     <>
       <form onSubmit={handleSubmit}>
 
+        <label htmlFor="walletAddress">Wallet Address</label>
+        <input
+          type="text"
+          id="walletAddress"
+          value={walletAddress}
+          onChange={(e) => setWalletAddress(e.target.value)}
+        />
+
+        <label htmlFor="mnemonic">Mnemonic</label>
+        <input
+          type="text"
+          id="mnemonic"
+          value={mnemonic}
+          onChange={(e) => setMnemonic(e.target.value)}
+        />
+
         <ProcessType
           processType={processType}
           setProcessType={setProcessType}
@@ -134,6 +166,7 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
         />
 
         <LLMService
+          // @ts-ignore
           llmService={llmService}
           setLlmService={setLlmService}
           llmModel={llmModel}

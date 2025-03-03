@@ -72,31 +72,19 @@ npm run as -- --channel "https://www.youtube.com/@ajcwebdev"
 Process videos starting from the oldest instead of newest:
 
 ```bash
-npm run as -- \
-  --channel "https://www.youtube.com/@ajcwebdev" \
-  --order oldest
-```
-
-Skip a certain number of videos before beginning processing (starts from newest by default and can be used with `--order oldest`):
-
-```bash
-npm run as -- \
-  --channel "https://www.youtube.com/@ajcwebdev" \
-  --skip 1
+npm run as -- --channel "https://www.youtube.com/@ajcwebdev" --order oldest
 ```
 
 Process a certain number of the most recent videos, for example the last three videos released on the channel:
 
 ```bash
-npm run as -- \
-  --channel "https://www.youtube.com/@ajcwebdev" \
-  --last 3
+npm run as -- --channel "https://www.youtube.com/@ajcwebdev" --last 3
 ```
 
 Run on a YouTube channel and generate JSON info file with markdown metadata of each video:
 
 ```bash
-npm run as -- --info --channel "https://www.youtube.com/@ajcwebdev"
+npm run as -- --channel "https://www.youtube.com/@ajcwebdev" --info
 ```
 
 ## rss - Process Podcast RSS Feed
@@ -116,65 +104,55 @@ npm run as -- --rss "https://ajcwebdev.substack.com/feed"
 Process RSS feed from oldest to newest:
 
 ```bash
-npm run as -- \
-  --rss "https://feeds.transistor.fm/fsjam-podcast/" \
-  --order oldest
+npm run as -- --rss "https://feeds.transistor.fm/fsjam-podcast/" --order oldest
 ```
 
 Process a certain number of the most recent items, for example the last three episodes released on the feed:
 
 ```bash
-npm run as -- \
-  --rss "https://feeds.transistor.fm/fsjam-podcast/" \
-  --last 3
+npm run as -- --rss "https://feeds.transistor.fm/fsjam-podcast/" --last 3
 ```
 
 Process a single specific episode from a podcast RSS feed by providing the episode's audio URL with the `--item` option:
 
 ```bash
-npm run as -- \
-  --rss "https://ajcwebdev.substack.com/feed" \
-  --item "https://api.substack.com/feed/podcast/36236609/fd1f1532d9842fe1178de1c920442541.mp3"
+npm run as -- --rss "https://ajcwebdev.substack.com/feed" --item "https://api.substack.com/feed/podcast/36236609/fd1f1532d9842fe1178de1c920442541.mp3"
 ```
 
 Run on a podcast RSS feed and generate JSON info file with markdown metadata of each item:
 
 ```bash
-npm run as -- \
-  --rss "https://ajcwebdev.substack.com/feed" \
-  --info
+npm run as -- --rss "https://ajcwebdev.substack.com/feed" --info
 ```
 
 Process multiple RSS feeds:
 
 ```bash
-npm run as -- \
-  --last 1 \
-  --whisper tiny \
-  --rss "https://ajcwebdev.substack.com/feed" \
-  "https://feeds.transistor.fm/fsjam-podcast/"
+npm run as -- --rss "https://ajcwebdev.substack.com/feed" "https://feeds.transistor.fm/fsjam-podcast/"
 ```
 
 Process multiple RSS feeds listed in a `.md` file:
 
 ```bash
-npm run as -- --rssURLs "content/example-rss-feeds.md" --whisper tiny --last 2
+npm run as -- --rssURLs "content/example-rss-feeds.md" --last 2
+```
+
+Download episodes from a specific number of previous days, for example to download episodes from the last 7 days:
+
+```bash
+npm run as -- --rss "https://ajcwebdev.substack.com/feed" --lastDays 7
 ```
 
 Download episodes from a specific date:
 
 ```bash
-npm run as -- \
-  --rss "https://ajcwebdev.substack.com/feed" \
-  --date 2021-05-10
+npm run as -- --rss "https://ajcwebdev.substack.com/feed" --date 2021-05-10
 ```
 
 Download episodes from multiple dates:
 
 ```bash
-npm run as -- \
-  --rss "https://ajcwebdev.substack.com/feed" \
-  --date 2021-05-10 2022-05-10
+npm run as -- --rss "https://ajcwebdev.substack.com/feed" --date 2021-05-10 2022-05-10
 ```
 
 Download episodes from multiple dates on multiple RSS feeds:
@@ -184,12 +162,4 @@ npm run as -- \
   --rss "https://ajcwebdev.substack.com/feed" \
   "https://feeds.transistor.fm/fsjam-podcast/" \
   --date 2021-05-10 2022-05-10
-```
-
-Download episodes from a specific number of previous days, for example to download episodes from the last 7 days:
-
-```bash
-npm run as -- \
-  --rss "https://ajcwebdev.substack.com/feed" \
-  --lastDays 7
 ```

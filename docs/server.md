@@ -459,3 +459,7 @@ curl --json '{
   "mnemonic": "exile slab craft fade august tape length various borrow taxi bulb abuse"
 }' http://localhost:3000/api/process
 ```
+
+```bash
+npm run create-data-contract
+```

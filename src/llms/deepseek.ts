@@ -6,9 +6,9 @@ import { err, logLLMCost } from '../utils/logging'
 import { LLM_SERVICES_CONFIG } from '../../shared/constants'
 
 /**
- * Type union of all possible `.value` fields for DeepSeek models in {@link LLM_SERVICES_CONFIG}.
+ * Type union of all possible `.modelId` fields for DeepSeek models in {@link LLM_SERVICES_CONFIG}.
  */
-type DeepSeekModelValue = (typeof LLM_SERVICES_CONFIG.deepseek.models)[number]['value']
+type DeepSeekModelValue = (typeof LLM_SERVICES_CONFIG.deepseek.models)[number]['modelId']
 
 /**
  * Calls the DeepSeek API via an OpenAI-compatible endpoint and returns generated text.
@@ -49,7 +49,7 @@ export async function callDeepSeek(
     const content = firstChoice.message.content
 
     logLLMCost({
-      modelName: modelValue,
+      name: modelValue,
       stopReason: firstChoice.finish_reason ?? 'unknown',
       tokenUsage: {
         input: res.usage?.prompt_tokens,

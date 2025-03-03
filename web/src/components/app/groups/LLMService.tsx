@@ -35,7 +35,7 @@ export const LLMService: React.FC<{
    */
   React.useEffect(() => {
     if (llmService && LLM_SERVICES_CONFIG[llmService]?.models?.length && !llmModel) {
-      setLlmModel(LLM_SERVICES_CONFIG[llmService].models[0].value)
+      setLlmModel(LLM_SERVICES_CONFIG[llmService].models[0].modelId)
     }
   }, [llmService, llmModel, setLlmModel])
 
@@ -77,8 +77,8 @@ export const LLMService: React.FC<{
             onChange={(e) => setLlmModel(e.target.value)}
           >
             {modelsForService.map((model) => (
-              <option key={model.value} value={model.value}>
-                {model.label}
+              <option key={model.modelId} value={model.modelId}>
+                {model.modelName}
               </option>
             ))}
           </select>

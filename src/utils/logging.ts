@@ -25,18 +25,18 @@ export function getModelIdOrDefault(serviceKey: string, userValue: unknown): str
       // The service might have zero models (like 'skip'?). Fallback or return empty.
       throw new Error(`No models found for LLM service '${serviceKey}'`)
     }
-    return defaultModel.value // e.g. 'gpt-4o-mini' or 'claude-3-sonnet-20240229'
+    return defaultModel.modelId // e.g. 'gpt-4o-mini' or 'claude-3-sonnet-20240229'
   }
 
   // Otherwise userValue is a string with some model name.
-  // You may want to check if it matches one of the known .value fields:
-  const match = serviceConfig.models.find((m) => m.value === userValue)
+  // You may want to check if it matches one of the known .modelId fields:
+  const match = serviceConfig.models.find((m) => m.modelId === userValue)
   if (!match) {
     // If user typed a model that doesn't exist in your config, either throw or fallback:
     throw new Error(`Unknown model '${userValue}' for service '${serviceKey}'`)
   }
 
-  return match.value
+  return match.modelId
 }
 
 /**
@@ -73,7 +73,7 @@ export function formatCost(cost: number | undefined): string {
  * Includes token usage and cost calculations.
  */
 export function logLLMCost(info: LogLLMCost) {
-  const { modelName, stopReason, tokenUsage } = info
+  const { name, stopReason, tokenUsage } = info
   const { input, output, total } = tokenUsage
 
   // Inline logic for finding modelConfig
@@ -81,8 +81,8 @@ export function logLLMCost(info: LogLLMCost) {
   for (const service of Object.values(LLM_SERVICES_CONFIG)) {
     for (const model of service.models) {
       if (
-        model.value === modelName ||
-        model.value.toLowerCase() === modelName.toLowerCase()
+        model.modelId === name ||
+        model.modelId.toLowerCase() === name.toLowerCase()
       ) {
         modelConfig = model
         break
@@ -92,10 +92,10 @@ export function logLLMCost(info: LogLLMCost) {
   }
 
   // Destructure out of modelConfig if it was found
-  const { label, inputCostPer1M, outputCostPer1M } = modelConfig ?? {}
+  const { modelName, inputCostPer1M, outputCostPer1M } = modelConfig ?? {}
 
   // Use model label if available, else fallback to the original name
-  const displayName = label ?? modelName
+  const displayName = modelName ?? name
 
   // Log stop/finish reason and model
   l.dim(`  - ${stopReason ? `${stopReason} Reason` : 'Status'}: ${stopReason}\n  - Model: ${displayName}`)

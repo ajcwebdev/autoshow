@@ -34,11 +34,13 @@ test('CLI Prompts Command Tests', async (t) => {
   for (const { prompt, renamed } of commands) {
     await t.test(`should generate ${prompt} successfully`, async () => {
       execSync(
-        `npm run as -- --rss https://ajcwebdev.substack.com/feed --prompt ${prompt} --whisper tiny --deepseek`,
+        // `npm run as -- --rss https://ajcwebdev.substack.com/feed --prompt ${prompt} --whisper tiny --deepseek`,
+        `npm run as -- --video https://www.youtube.com/watch?v=AjvVcekVcDE --prompt ${prompt} --whisper turbo --deepseek`,
         { stdio: 'inherit' }
       )
 
-      const generatedFile = join('content', '2021-05-10-thoughts-on-lambda-school-layoffs-deepseek-shownotes.md')
+      // const generatedFile = join('content', '2021-05-10-thoughts-on-lambda-school-layoffs-deepseek-shownotes.md')
+      const generatedFile = join('content', '2025-02-28-officer-krupke-teaching-character-costume-body-voice-face-deepseek-shownotes.md')
       const renamedFile = join('content', renamed)
 
       strictEqual(existsSync(generatedFile), true, `Expected file ${generatedFile} was not created`)

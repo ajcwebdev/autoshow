@@ -49,9 +49,11 @@ Test all available models for a certain LLM service.
 ```bash
 npx tsx --test test/models/chatgpt.test.ts
 npx tsx --test test/models/claude.test.ts
+npx tsx --test test/models/deepseek.test.ts
 npx tsx --test test/models/gemini.test.ts
 npx tsx --test test/models/fireworks.test.ts
 npx tsx --test test/models/together.test.ts
+npx tsx --test test/models/ollama.test.ts
 ```
 
 ## Transcription Tests

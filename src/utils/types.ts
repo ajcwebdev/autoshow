@@ -153,8 +153,8 @@ export interface VideoInfo {
  * Represents the configuration for a model, including cost details.
  */
 export type ModelConfig = {
-  value: string
-  label: string
+  modelId: string
+  modelName: string
   inputCostPer1M: number
   outputCostPer1M: number
 }
@@ -164,7 +164,7 @@ export type ModelConfig = {
  */
 export type LogLLMCost = {
   // The name of the model used
-  modelName: string
+  name: string
   // The reason why the model request stopped
   stopReason: string
   // Contains token usage details

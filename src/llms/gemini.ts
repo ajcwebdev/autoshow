@@ -6,9 +6,9 @@ import { LLM_SERVICES_CONFIG } from '../../shared/constants'
 import { err, logLLMCost } from '../utils/logging'
 
 /**
- * Type union of all possible `.value` fields for Gemini models in {@link LLM_SERVICES_CONFIG}.
+ * Type union of all possible `.modelId` fields for Gemini models in {@link LLM_SERVICES_CONFIG}.
  */
-type GeminiModelValue = (typeof LLM_SERVICES_CONFIG.gemini.models)[number]['value']
+type GeminiModelValue = (typeof LLM_SERVICES_CONFIG.gemini.models)[number]['modelId']
 
 /**
  * Simple utility function to introduce a delay.
@@ -60,7 +60,7 @@ export async function callGemini(
       } = usageMetadata ?? {}
 
       logLLMCost({
-        modelName: modelValue,
+        name: modelValue,
         stopReason: 'complete',
         tokenUsage: {
           input: promptTokenCount,

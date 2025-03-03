@@ -217,11 +217,11 @@ export async function estimateLLMCost(
       userModel = 'meta-llama/Llama-3.2-3B-Instruct-Turbo'
     }
     // If still nothing is set, use the service name as a last resort
-    const modelName = userModel || llmService
+    const name = userModel || llmService
 
     // Log cost using the same function that logs LLM usage after real calls
     logLLMCost({
-      modelName,
+      name,
       stopReason: 'n/a',
       tokenUsage: {
         input: tokenCount,

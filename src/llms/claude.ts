@@ -6,9 +6,9 @@ import { LLM_SERVICES_CONFIG } from '../../shared/constants'
 import { err, logLLMCost } from '../utils/logging'
 
 /**
- * Type union of all possible `.value` fields for Claude models in {@link LLM_SERVICES_CONFIG}.
+ * Type union of all possible `.modelId` fields for Claude models in {@link LLM_SERVICES_CONFIG}.
  */
-type ClaudeModelValue = (typeof LLM_SERVICES_CONFIG.claude.models)[number]['value']
+type ClaudeModelValue = (typeof LLM_SERVICES_CONFIG.claude.models)[number]['modelId']
 
 /**
  * Calls the Anthropic Claude API and returns generated text.
@@ -47,7 +47,7 @@ export async function callClaude(
     }
 
     logLLMCost({
-      modelName: modelValue,
+      name: modelValue,
       stopReason: res.stop_reason ?? 'unknown',
       tokenUsage: {
         input: res.usage?.input_tokens,

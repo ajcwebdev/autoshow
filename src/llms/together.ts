@@ -5,9 +5,9 @@ import { LLM_SERVICES_CONFIG } from '../../shared/constants'
 import { err, logLLMCost } from '../utils/logging'
 
 /**
- * Type union of all `.value` fields for Together models in {@link LLM_SERVICES_CONFIG}.
+ * Type union of all `.modelId` fields for Together models in {@link LLM_SERVICES_CONFIG}.
  */
-type TogetherModelValue = (typeof LLM_SERVICES_CONFIG.together.models)[number]['value']
+type TogetherModelValue = (typeof LLM_SERVICES_CONFIG.together.models)[number]['modelId']
 
 /**
  * Calls the Together AI API and returns generated text.
@@ -57,7 +57,7 @@ export async function callTogether(
     }
 
     logLLMCost({
-      modelName: modelValue,
+      name: modelValue,
       stopReason: data.choices?.[0]?.finish_reason ?? 'unknown',
       tokenUsage: {
         input: data.usage?.prompt_tokens,

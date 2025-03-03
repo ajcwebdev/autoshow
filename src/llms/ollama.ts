@@ -6,9 +6,9 @@ import { l, err, logLLMCost } from '../utils/logging'
 import { LLM_SERVICES_CONFIG } from '../../shared/constants'
 
 /**
- * Type union of all `.value` fields for Ollama models in {@link LLM_SERVICES_CONFIG}.
+ * Type union of all `.modelId` fields for Ollama models in {@link LLM_SERVICES_CONFIG}.
  */
-type OllamaModelValue = (typeof LLM_SERVICES_CONFIG.ollama.models)[number]['value']
+type OllamaModelValue = (typeof LLM_SERVICES_CONFIG.ollama.models)[number]['modelId']
 
 /**
  * Structure representing Ollama's tags endpoint response.
@@ -79,7 +79,7 @@ export async function callOllama(
     const totalPromptTokens = data.prompt_eval_count ?? 0
     const totalCompletionTokens = data.eval_count ?? 0
     logLLMCost({
-      modelName: modelValue,
+      name: modelValue,
       stopReason: 'stop',
       tokenUsage: {
         input: totalPromptTokens || undefined,

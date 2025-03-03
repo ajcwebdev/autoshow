@@ -17,6 +17,8 @@ export type ShowNote = {
   prompt?: string
   transcript?: string
   llmOutput?: string
+  walletAddress?: string
+  mnemonic?: string
 }
 
 /**

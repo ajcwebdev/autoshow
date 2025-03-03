@@ -41,7 +41,8 @@ export const handleProcessRequest = async (
     const requestData = request.body as any
     l('\nParsed request body:', requestData)
 
-    const { type } = requestData
+    const { type, walletAddress, mnemonic } = requestData
+    l(`walletAddress from request: ${walletAddress}, mnemonic from request: ${mnemonic}`)
 
     try {
       validateServerProcessAction(type)
@@ -53,6 +54,8 @@ export const handleProcessRequest = async (
 
     // Map request data to processing options
     const { options, llmServices, transcriptServices } = validateRequest(requestData)
+    options['walletAddress'] = walletAddress
+    options['mnemonic'] = mnemonic
 
     // Ensure the user-selected LLM model is passed through to the options object
     if (llmServices && requestData['llmModel']) {

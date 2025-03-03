@@ -6,7 +6,6 @@ import type { ProcessingOptions } from '../types'
 
 /**
  * Maps server-side request body keys to corresponding environment variables.
- * 
  */
 export const envVarsServerMap = {
   openaiApiKey: 'OPENAI_API_KEY',
@@ -16,7 +15,7 @@ export const envVarsServerMap = {
   geminiApiKey: 'GEMINI_API_KEY',
   deepseekApiKey: 'DEEPSEEK_API_KEY',
   togetherApiKey: 'TOGETHER_API_KEY',
-  fireworksApiKey: 'FIREWORKS_API_KEY',
+  fireworksApiKey: 'FIREWORKS_API_KEY'
 }
 
 /**
@@ -24,7 +23,7 @@ export const envVarsServerMap = {
  * process type supported by the application. Throws an error if the type is invalid.
  *
  * @param type - The process type string from the request body
- * @returns The valid process type as a `ValidCLIAction` if validation passes
+ * @returns The valid process type as a string if validation passes
  * @throws Error if the type is not valid or is missing
  */
 export function validateServerProcessAction(type: string) {
@@ -34,13 +33,24 @@ export function validateServerProcessAction(type: string) {
   return type
 }
 
-// Function to map request data to processing options
-export function validateRequest(requestData: any): {
+/**
+ * Mapped return type for the validateRequest function, ensuring exactOptionalPropertyTypes usage.
+ */
+interface ValidateRequestReturn {
   options: ProcessingOptions
   llmServices?: string
   transcriptServices?: string
-} {
-  // Initialize options object
+}
+
+/**
+ * Maps the incoming request data to typed processing options, determining which LLM
+ * and transcription service (if any) to use. Returns an object with the `options`
+ * plus optional `llmServices` and `transcriptServices` if they are defined.
+ *
+ * @param requestData - The raw request body
+ * @returns An object containing processing options and optionally LLM or transcript service.
+ */
+export function validateRequest(requestData: any): ValidateRequestReturn {
   const options: ProcessingOptions = {}
 
   // Variables to hold selected services
@@ -54,13 +64,15 @@ export function validateRequest(requestData: any): {
 
   // Check if a valid LLM service is provided
   if (requestData.llm && validLlmValues.includes(requestData.llm)) {
-    llmServices = requestData.llm as string
-    options[llmServices] = requestData.llmModel || true
+    llmServices = requestData.llm
+    if (llmServices) {
+      options[llmServices] = requestData.llmModel || true
+    }
   }
 
   const validTranscriptValues = TRANSCRIPTION_SERVICES.map(s => s.value)
   transcriptServices = validTranscriptValues.includes(requestData.transcriptServices)
-    ? (requestData.transcriptServices)
+    ? requestData.transcriptServices
     : 'whisper'
 
   if (transcriptServices === 'whisper') {
@@ -77,23 +89,31 @@ export function validateRequest(requestData: any): {
   // Map additional options from the request data
   for (const opt of otherOptions) {
     if (requestData[opt] !== undefined) {
-      // @ts-ignore
       options[opt] = requestData[opt]
     }
   }
 
-  // Return the mapped options along with selected services
-  // @ts-ignore
-  return { options, llmServices, transcriptServices }
+  // Build our return object conditionally for exactOptionalPropertyTypes:
+  const result: ValidateRequestReturn = { options }
+
+  if (llmServices !== undefined) {
+    result.llmServices = llmServices
+  }
+  if (transcriptServices !== undefined) {
+    result.transcriptServices = transcriptServices
+  }
+
+  return result
 }
 
 /**
  * Additional CLI flags or options that can be enabled.
- * 
  */
 export const otherOptions: string[] = [
   'speakerLabels',
   'prompt',
   'saveAudio',
   'info',
+  'walletAddress',
+  'mnemonic'
 ]

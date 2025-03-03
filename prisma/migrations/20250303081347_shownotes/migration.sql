@@ -15,6 +15,8 @@ CREATE TABLE "show_notes" (
     "prompt" TEXT,
     "transcript" TEXT,
     "llmOutput" TEXT,
+    "walletAddress" TEXT,
+    "mnemonic" TEXT,
 
     CONSTRAINT "show_notes_pkey" PRIMARY KEY ("id")
 );

@@ -1,3 +1,5 @@
+// prisma/schema.prisma
+
 datasource db {
   provider   = "postgresql"
   url        = env("DATABASE_URL")
@@ -10,21 +12,23 @@ generator client {
 }
 
 model show_notes {
-  id          Int     @id @default(autoincrement())
-  showLink    String?
-  channel     String?
-  channelURL  String?
-  title       String
-  description String?
-  publishDate String
-  coverImage  String?
-  frontmatter String?
-  prompt      String?
-  transcript  String?
-  llmOutput   String?
+  id            Int     @id @default(autoincrement())
+  showLink      String?
+  channel       String?
+  channelURL    String?
+  title         String
+  description   String?
+  publishDate   String
+  coverImage    String?
+  frontmatter   String?
+  prompt        String?
+  transcript    String?
+  llmOutput     String?
+  walletAddress String?
+  mnemonic      String?
 }
 
 model embeddings {
-  filename String                     @id
-  vector   Unsupported("vector(3072)")
+  filename      String                     @id
+  vector        Unsupported("vector(3072)")
 }

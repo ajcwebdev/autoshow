@@ -16,6 +16,7 @@ import { join } from 'node:path'
 import { writeFile } from 'node:fs/promises'
 
 import type { FastifyRequest, FastifyReply } from 'fastify'
+import { submitShowNoteDoc } from './utils/dash-documents'
 
 // Set server port from environment variable or default to 3000
 const port = Number(env['PORT']) || 3000
@@ -69,7 +70,7 @@ export const handleProcessRequest = async (
     // Process based on type
     switch (type) {
       case 'video': {
-        const { url } = requestData
+        const { url, identityId, contractId } = requestData
         if (!url) {
           reply.status(400).send({ error: 'YouTube URL is required' })
           return
@@ -86,11 +87,31 @@ export const handleProcessRequest = async (
         const outputPath = join(contentDir, `video-${timestamp}.json`)
         await writeFile(outputPath, JSON.stringify(result, null, 2), 'utf8')
 
+        // If identityId and contractId were provided, also submit the resulting show note to Dash
+        let dashDocumentId = ''
+        if (identityId && contractId) {
+          try {
+            dashDocumentId = await submitShowNoteDoc(
+              identityId,
+              contractId,
+              result.frontMatter,
+              result.prompt,
+              result.llmOutput,
+              result.transcript,
+              options['mnemonic']
+            )
+            l(`Dash document created with ID: ${dashDocumentId}`)
+          } catch (subErr) {
+            err('Error creating Dash document after video processing:', subErr)
+          }
+        }
+
         reply.send({
           frontMatter: result.frontMatter,
           prompt: result.prompt,
           llmOutput: result.llmOutput,
           transcript: result.transcript,
+          dashDocumentId
         })
         break
       }

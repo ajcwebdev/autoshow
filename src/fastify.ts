@@ -8,10 +8,12 @@ import { processVideo } from './process-commands/video'
 import { processFile } from './process-commands/file'
 import { l, err } from './utils/logging'
 import { validateRequest, validateServerProcessAction, envVarsServerMap } from './utils/validation/requests'
-import { estimateTranscriptCost } from './utils/step-utils/03-transcription-utils'
-import { estimateLLMCost, runLLMFromPromptFile } from './utils/step-utils/05-llm-utils'
+import { estimateTranscriptCost } from './process-steps/03-run-transcription-utils'
+import { estimateLLMCost, runLLMFromPromptFile } from './process-steps/05-run-llm-utils'
 import { createEmbeddingsAndSQLite } from './utils/embeddings/create-embed'
 import { queryEmbeddings } from './utils/embeddings/query-embed'
+import { join } from 'node:path'
+import { writeFile } from 'node:fs/promises'
 
 import type { FastifyRequest, FastifyReply } from 'fastify'
 
@@ -41,7 +43,8 @@ export const handleProcessRequest = async (
     const requestData = request.body as any
     l('\nParsed request body:', requestData)
 
-    const { type } = requestData
+    const { type, walletAddress, mnemonic } = requestData
+    l(`walletAddress from request: ${walletAddress}, mnemonic from request: ${mnemonic}`)
 
     try {
       validateServerProcessAction(type)
@@ -53,6 +56,8 @@ export const handleProcessRequest = async (
 
     // Map request data to processing options
     const { options, llmServices, transcriptServices } = validateRequest(requestData)
+    options['walletAddress'] = walletAddress
+    options['mnemonic'] = mnemonic
 
     // Ensure the user-selected LLM model is passed through to the options object
     if (llmServices && requestData['llmModel']) {
@@ -71,6 +76,16 @@ export const handleProcessRequest = async (
         }
         options.video = url
         const result = await processVideo(options, url, llmServices, transcriptServices)
+
+        /**
+         * Write the entire result to a .json file in the "content" directory
+         * @type {string}
+         */
+        const contentDir = join(process.cwd(), 'content')
+        const timestamp = Date.now()
+        const outputPath = join(contentDir, `video-${timestamp}.json`)
+        await writeFile(outputPath, JSON.stringify(result, null, 2), 'utf8')
+
         reply.send({
           frontMatter: result.frontMatter,
           prompt: result.prompt,
@@ -88,6 +103,16 @@ export const handleProcessRequest = async (
         }
         options.file = filePath
         const result = await processFile(options, filePath, llmServices, transcriptServices)
+
+        /**
+         * Write the entire result to a .json file in the "content" directory
+         * @type {string}
+         */
+        const contentDir = join(process.cwd(), 'content')
+        const timestamp = Date.now()
+        const outputPath = join(contentDir, `file-${timestamp}.json`)
+        await writeFile(outputPath, JSON.stringify(result, null, 2), 'utf8')
+
         reply.send({
           frontMatter: result.frontMatter,
           prompt: result.prompt,

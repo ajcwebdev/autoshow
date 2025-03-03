@@ -14,7 +14,7 @@ import { fileURLToPath } from 'node:url'
 import { Command } from 'commander'
 import { processAction, validateInputCLI, envVarsMap, handleEarlyExitIfNeeded } from './utils/validation/cli'
 import { l, err, logSeparator } from './utils/logging'
-import { parseAndAppendRssUrls } from './utils/command-utils/rss-utils'
+import { parseAndAppendRssUrls } from './process-commands/rss-utils'
 
 import type { ProcessingOptions } from './utils/types'
 

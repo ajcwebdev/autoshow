@@ -11,7 +11,7 @@
 import { readFile } from 'node:fs/promises'
 import { env } from 'node:process'
 import { l, err } from '../utils/logging'
-import { logTranscriptionCost, formatAssemblyTranscript } from '../utils/step-utils/03-transcription-utils'
+import { logTranscriptionCost, formatAssemblyTranscript } from '../process-steps/03-run-transcription-utils'
 import { ASSEMBLY_MODELS } from '../../shared/constants'
 import type { ProcessingOptions } from '../utils/types'
 

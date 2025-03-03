@@ -2,7 +2,7 @@
 
 import { generateMarkdown } from '../process-steps/01-generate-markdown'
 import { downloadAudio } from '../process-steps/02-download-audio'
-import { saveAudio } from '../utils/step-utils/02-save-audio'
+import { saveAudio } from '../process-steps/02-download-audio-utils'
 import { runTranscription } from '../process-steps/03-run-transcription'
 import { selectPrompts } from '../process-steps/04-select-prompt'
 import { runLLM } from '../process-steps/05-run-llm'

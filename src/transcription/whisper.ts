@@ -6,7 +6,7 @@
  */
 
 import { readFile, unlink } from 'node:fs/promises'
-import { checkWhisperDirAndModel, formatWhisperTranscript } from '../utils/step-utils/03-transcription-utils'
+import { checkWhisperDirAndModel, formatWhisperTranscript } from '../process-steps/03-run-transcription-utils'
 import { WHISPER_MODELS } from '../../shared/constants'
 import { execPromise } from '../utils/validation/cli'
 import { l, err } from '../utils/logging'

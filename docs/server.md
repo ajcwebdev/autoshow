@@ -27,6 +27,7 @@
   - [Video Test Requests](#video-test-requests)
 - [Create and Query Embeddings](#create-and-query-embeddings)
 - [Experimental Deno and Bun Support](#experimental-deno-and-bun-support)
+- [Dash](#dash)
 
 ## Start Server
 
@@ -446,4 +447,15 @@ Add either of the following to your `scripts` in `package.json`.
     "deno": "deno run --allow-sys --allow-read --allow-run --allow-write --allow-env --unstable-sloppy-imports src/commander.ts"
   }
 }
+```
+
+## Dash
+
+```bash
+curl --json '{
+  "type": "video",
+  "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
+  "walletAddress": "yVtCv413ByXiRxkixsj4M2LR6FyrJzVYzL",
+  "mnemonic": "exile slab craft fade august tape length various borrow taxi bulb abuse"
+}' http://localhost:3000/api/process
 ```

@@ -31,13 +31,15 @@
     "test-server-all": "npm run tsx:base -- test/server/server-all.ts",
     "docker-up": "docker-compose -f .github/docker-compose.yml --env-file .env up -d --build",
     "up": "docker-compose -f .github/docker-compose.yml --env-file .env up -d --build",
+    "web": "npm run up && cd web && npm i && npm run dev",
     "start": "npx prisma migrate deploy --schema=/usr/src/app/prisma/schema.prisma && npx tsx --no-warnings src/fastify.ts",
     "docker-info": "docker images && docker-compose -f .github/docker-compose.yml images && docker ps && docker-compose -f .github/docker-compose.yml ps && docker volume ls",
     "docker-inspect": "docker network inspect autoshow-network && docker inspect autoshow-service && docker inspect autoshow-postgres",
     "docker-logs": "docker logs autoshow-service && docker-compose -f .github/docker-compose.yml logs",
     "docker-down": "docker-compose -f .github/docker-compose.yml --env-file .env down --remove-orphans --volumes",
     "prune": "docker kill $(docker ps -q) 2>/dev/null || true && docker rm -f $(docker ps -aq) 2>/dev/null || true && docker builder prune -af && docker network prune -f && docker image prune -af && docker volume prune -af && docker system prune -af --volumes && docker network rm $(docker network ls -q) 2>/dev/null || true",
-    "get-db-docker": "docker-compose -f .github/docker-compose.yml exec autoshow-postgres psql -U myuser -d mydatabase -c 'SELECT id, title FROM show_notes ORDER BY id DESC'",
+    "get-db": "docker-compose -f .github/docker-compose.yml exec -T autoshow-postgres psql -U myuser -d mydatabase -t -q --set AUTOCOMMIT=on --set ON_ERROR_STOP=on -c 'SELECT row_to_json(s) FROM show_notes s'",
+    "wipe-db": "docker-compose -f .github/docker-compose.yml exec -T autoshow-postgres psql -U myuser -d mydatabase -t -q --set AUTOCOMMIT=on --set ON_ERROR_STOP=on -c 'TRUNCATE show_notes, embeddings RESTART IDENTITY CASCADE;'",
     "railway-info": "railway list && railway status && railway volume list && railway variables -s autoshow && railway variables -s Postgres"
   },
   "dependencies": {

@@ -4,7 +4,7 @@ import { writeFile } from 'node:fs/promises'
 import { dbService } from '../db'
 import { l, err, logInitialFunctionCall, getModelIdOrDefault } from '../utils/logging'
 import { retryLLMCall } from '../utils/validation/retry'
-import { LLM_FUNCTIONS } from '../utils/step-utils/05-llm-utils'
+import { LLM_FUNCTIONS } from './05-run-llm-utils'
 import { env } from 'node:process'
 
 import type { ProcessingOptions, ShowNote } from '../utils/types'
@@ -48,20 +48,24 @@ export async function runLLM(
   l.step(`\nStep 5 - Run Language Model\n`)
   logInitialFunctionCall('runLLM', { llmServices, metadata })
 
+  l(`[runLLM] walletAddress from options: ${options['walletAddress']}`)
+  l(`[runLLM] mnemonic from options: ${options['mnemonic']}`)
+
+  metadata.walletAddress = options['walletAddress'] || metadata.walletAddress
+  metadata.mnemonic = options['mnemonic'] || metadata.mnemonic
+
+  l(`[runLLM] final metadata.walletAddress: ${metadata.walletAddress}`)
+  l(`[runLLM] final metadata.mnemonic: ${metadata.mnemonic}`)
+
   try {
     let showNotesResult = ''
     if (llmServices) {
       l.dim(`\n  Preparing to process with '${llmServices}' Language Model...\n`)
       const llmFunction = LLM_FUNCTIONS[llmServices as keyof typeof LLM_FUNCTIONS]
-    
       if (!llmFunction) {
         throw new Error(`Invalid LLM option: ${llmServices}`)
       }
-    
-      // 1. Pick the actual model name (e.g. 'gpt-4o-mini') from user or default
       const userModel = getModelIdOrDefault(llmServices, options[llmServices])
-    
-      // 2. Pass that along to the LLM function in your retry block
       let showNotes = ''
       await retryLLMCall<string>(
         async () => {
@@ -83,8 +87,6 @@ export async function runLLM(
       await writeFile(noLLMFile, `${frontMatter}\n${prompt}\n## Transcript\n\n${transcript}`)
     }
 
-    // Only attempt to insert into the database if we're in server mode
-    // This is a double-check to ensure CLI commands don't trigger database access
     if (env['SERVER_MODE'] === 'true') {
       await dbService.insertShowNote({
         showLink: metadata.showLink ?? '',
@@ -97,7 +99,9 @@ export async function runLLM(
         frontmatter: frontMatter,
         prompt,
         transcript,
-        llmOutput: showNotesResult
+        llmOutput: showNotesResult,
+        walletAddress: metadata.walletAddress ?? '',
+        mnemonic: metadata.mnemonic ?? ''
       })
     } else {
       l.dim('\n  Skipping database insertion in CLI mode')

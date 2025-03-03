@@ -87,21 +87,18 @@ export class PrismaDatabaseService implements DatabaseService {
     
     return this
   }
-  
   async insertShowNote(showNote: ShowNote): Promise<void> {
     if (!this.initialized) await this.init()
-    
-    // If initialization failed, operate in silent no-op mode
     if (!this.prismaClient) {
       l.dim('\n  Database unavailable - skipping show note insertion')
       return Promise.resolve()
     }
-    
     l.dim('\n  Inserting show note into the database...')
-
+    l.dim(`  * walletAddress: ${showNote.walletAddress}`)
+    l.dim(`  * mnemonic: ${showNote.mnemonic}`)
     const {
       showLink, channel, channelURL, title, description, publishDate, coverImage,
-      frontmatter, prompt, transcript, llmOutput
+      frontmatter, prompt, transcript, llmOutput, walletAddress, mnemonic
     } = showNote
 
     try {
@@ -117,20 +114,19 @@ export class PrismaDatabaseService implements DatabaseService {
           frontmatter: frontmatter ?? null,
           prompt: prompt ?? null,
           transcript: transcript ?? null,
-          llmOutput: llmOutput ?? null
+          llmOutput: llmOutput ?? null,
+          walletAddress: walletAddress ?? null,
+          mnemonic: mnemonic ?? null
         }
       })
       l.dim('    - Show note inserted successfully.\n')
     } catch (error) {
       l.dim(`    - Failed to insert show note: ${(error as Error).message}\n`)
-      // Don't rethrow - we want to continue even if the database operation fails
     }
   }
-  
   async getShowNote(id: number): Promise<any> {
     if (!this.initialized) await this.init()
     if (!this.prismaClient) return null
-    
     try {
       return await this.prismaClient.show_notes.findUnique({
         where: {
@@ -142,11 +138,9 @@ export class PrismaDatabaseService implements DatabaseService {
       return null
     }
   }
-  
   async getShowNotes(): Promise<any[]> {
     if (!this.initialized) await this.init()
     if (!this.prismaClient) return []
-    
     try {
       return await this.prismaClient.show_notes.findMany({
         orderBy: {
@@ -164,22 +158,16 @@ export class PrismaDatabaseService implements DatabaseService {
  * Determines if we're running in server mode or CLI mode
  */
 function isServerMode(): boolean {
-  return env['DATABASE_URL'] !== undefined || 
+  return env['DATABASE_URL'] !== undefined ||
          env['PGHOST'] !== undefined ||
          env['SERVER_MODE'] === 'true'
 }
 
-/**
- * Creates the appropriate database service based on the environment
- */
 let dbServiceInstance: DatabaseService | null = null
 
-// Instead of lazily creating the service, create it immediately
-// This avoids race conditions in initialization
 if (isServerMode()) {
   l.dim('  Server mode detected - initializing database service')
   dbServiceInstance = new PrismaDatabaseService()
-  // Don't await the init() here - it will be called when needed
 } else {
   l.dim('  CLI mode detected - using no-op database service')
   dbServiceInstance = new NoOpDatabaseService()

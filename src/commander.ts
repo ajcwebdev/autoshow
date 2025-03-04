@@ -14,8 +14,7 @@ import { fileURLToPath } from 'node:url'
 import { Command } from 'commander'
 import { processAction, validateInputCLI, handleEarlyExitIfNeeded } from './utils/validation/cli'
 import { l, err, logSeparator } from './utils/logging'
-import { parseAndAppendRssUrls } from './process-commands/rss-utils'
-import { envVarsMap } from '../shared/constants'
+import { ENV_VARS_MAP } from '../shared/constants'
 
 import type { ProcessingOptions } from './utils/types'
 
@@ -40,7 +39,6 @@ program
   .option('--file <filePath>', 'Process a local audio or video file')
   .option('--rss <rssURLs...>', 'Process one or more podcast RSS feeds')
   // RSS feed specific options
-  .option('--rssURLs <filePath>', 'Process multiple podcast RSS feeds from a file')
   .option('--item <itemUrls...>', 'Process specific items in the RSS feed by providing their audio URLs')
   .option('--order <order>', 'Specify the order for RSS feed processing (newest or oldest)')
   .option('--skip <number>', 'Number of items to skip when processing RSS feed', parseInt)
@@ -90,7 +88,7 @@ program
  */
 program.action(async (options: ProcessingOptions) => {
   // Override environment variables from CLI if provided
-  Object.entries(envVarsMap).forEach(([key, envKey]) => {
+  Object.entries(ENV_VARS_MAP).forEach(([key, envKey]) => {
     const value = (options as Record<string, string | undefined>)[key]
     if (value) process.env[envKey] = value
   })
@@ -101,9 +99,6 @@ program.action(async (options: ProcessingOptions) => {
   l.opts(``)
 
   await handleEarlyExitIfNeeded(options)
-
-  // Extract RSS URLs from file if needed
-  await parseAndAppendRssUrls(options)
 
   // Validate action, LLM, and transcription inputs
   const { action, llmServices, transcriptServices } = validateInputCLI(options)

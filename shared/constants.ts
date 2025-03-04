@@ -1,14 +1,6 @@
 // shared/constants.ts
 
-/**
- * @remarks
- * The Whisper model definitions include a `bin` property for the backend to reference
- * the required `.bin` files, while the frontend can simply use the `value` and `label`
- * for display and selection purposes.
- *
- */
-
-export const envVarsMap = {
+export const ENV_VARS_MAP = {
   openaiApiKey: 'OPENAI_API_KEY',
   anthropicApiKey: 'ANTHROPIC_API_KEY',
   deepgramApiKey: 'DEEPGRAM_API_KEY',
@@ -49,24 +41,6 @@ export const PROMPT_CHOICES: Array<{ name: string; value: string }> = [
   { name: 'Social Post (X)', value: 'x' },
   { name: 'Social Post (Facebook)', value: 'facebook' },
   { name: 'Social Post (LinkedIn)', value: 'linkedin' },
-]
-
-export type TranscriptionCostInfo = {
-  // The name of the model being used
-  modelName: string
-  // The cost (in USD) per minute for the model
-  costPerMinute: number
-  // The file path to the audio file
-  filePath: string
-}
-
-/**
- * All user-facing transcription services, unified for both backend and frontend usage.
- */
-export const TRANSCRIPTION_SERVICES: Array<{ value: string; label: string }> = [
-  { value: 'whisper', label: 'Whisper.cpp' },
-  { value: 'deepgram', label: 'Deepgram' },
-  { value: 'assembly', label: 'AssemblyAI' },
 ]
 
 export type WhisperOutput = {
@@ -112,59 +86,47 @@ export type WhisperOutput = {
 }
 
 /**
- * All user-facing Whisper models, mapping `value` to a specific `bin` file for
- * whisper.cpp usage. The `label` is used on the frontend UI, while the `bin`
- * path is crucial on the backend.
+ * A single consolidated constant for all user-facing transcription services, including
+ * relevant model lists, display labels, optional cost data, and whisper model `.bin` references.
  */
-export const WHISPER_MODELS: Array<{ value: string; label: string; }> = [
-  { value: 'ggml-tiny.bin', label: 'tiny' },
-  { value: 'ggml-tiny.en.bin', label: 'tiny.en' },
-  { value: 'ggml-base.bin', label: 'base' },
-  { value: 'ggml-base.en.bin', label: 'base.en' },
-  { value: 'ggml-small.bin', label: 'small' },
-  { value: 'ggml-small.en.bin', label: 'small.en' },
-  { value: 'ggml-medium.bin', label: 'medium' },
-  { value: 'ggml-medium.en.bin', label: 'medium.en' },
-  { value: 'ggml-large-v1.bin', label: 'large-v1' },
-  { value: 'ggml-large-v2.bin', label: 'large-v2' },
-  { value: 'ggml-large-v3-turbo.bin', label: 'large-v3-turbo' },
-  { value: 'ggml-large-v3-turbo.bin', label: 'turbo' },
-]
-
-/**
- * Deepgram models with their per-minute cost.
- */
-export const DEEPGRAM_MODELS = {
-  NOVA_2: {
-    name: 'Nova-2',
-    modelId: 'nova-2',
-    costPerMinute: 0.0043,
+export const TRANSCRIPTION_SERVICES_CONFIG = {
+  whisper: {
+    serviceName: 'Whisper.cpp',
+    value: 'whisper',
+    label: 'Whisper.cpp',
+    models: [
+      { value: 'ggml-tiny.bin', label: 'tiny' },
+      { value: 'ggml-tiny.en.bin', label: 'tiny.en' },
+      { value: 'ggml-base.bin', label: 'base' },
+      { value: 'ggml-base.en.bin', label: 'base.en' },
+      { value: 'ggml-small.bin', label: 'small' },
+      { value: 'ggml-small.en.bin', label: 'small.en' },
+      { value: 'ggml-medium.bin', label: 'medium' },
+      { value: 'ggml-medium.en.bin', label: 'medium.en' },
+      { value: 'ggml-large-v1.bin', label: 'large-v1' },
+      { value: 'ggml-large-v2.bin', label: 'large-v2' },
+      { value: 'ggml-large-v3-turbo.bin', label: 'large-v3-turbo' },
+      { value: 'ggml-large-v3-turbo.bin', label: 'turbo' },
+    ]
   },
-  BASE: {
-    name: 'Base',
-    modelId: 'base',
-    costPerMinute: 0.0125,
+  deepgram: {
+    serviceName: 'Deepgram',
+    value: 'deepgram',
+    label: 'Deepgram',
+    models: [
+      { name: 'Nova-2', modelId: 'nova-2', costPerMinute: 0.0043 },
+      { name: 'Base', modelId: 'base', costPerMinute: 0.0125 },
+      { name: 'Enhanced', modelId: 'enhanced', costPerMinute: 0.0145 },
+    ]
   },
-  ENHANCED: {
-    name: 'Enhanced',
-    modelId: 'enhanced',
-    costPerMinute: 0.0145,
-  },
-} as const
-
-/**
- * AssemblyAI models with their per-minute cost.
- */
-export const ASSEMBLY_MODELS = {
-  BEST: {
-    name: 'Best',
-    modelId: 'best',
-    costPerMinute: 0.0062,
-  },
-  NANO: {
-    name: 'Nano',
-    modelId: 'nano',
-    costPerMinute: 0.002,
+  assembly: {
+    serviceName: 'AssemblyAI',
+    value: 'assembly',
+    label: 'AssemblyAI',
+    models: [
+      { name: 'Best', modelId: 'best', costPerMinute: 0.0062 },
+      { name: 'Nano', modelId: 'nano', costPerMinute: 0.002 },
+    ]
   },
 } as const
 

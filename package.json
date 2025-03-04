@@ -24,6 +24,7 @@
     "cli-services-test": "npm run tsx:base -- test/cli/cli-services.test.ts",
     "cli-prompts-test": "npm run tsx:base -- test/cli/cli-prompts.test.ts",
     "cli-all-test": "npm run tsx:base -- test/cli/cli-all.test.ts",
+    "cli-models-test": "npm run tsx:base -- test/models/all.test.ts",
     "serve": "npm run tsx:base -- --watch src/fastify.ts",
     "server-local-test": "npm run tsx:base -- test/server/server-local.ts",
     "server-all-test": "npm run tsx:base -- test/server/server-all.ts",

@@ -1,7 +1,7 @@
 // web/src/components/app/groups/TranscriptionService.tsx
 
 import React from 'react'
-import { TRANSCRIPTION_SERVICES, WHISPER_MODELS } from '../../../../../shared/constants'
+import { TRANSCRIPTION_SERVICES_CONFIG } from '../../../../../shared/constants'
 
 /**
  * The TranscriptionService component provides a dropdown for selecting
@@ -36,7 +36,7 @@ export const TranscriptionService: React.FC<{
           value={transcriptionService}
           onChange={(e) => setTranscriptionService(e.target.value)}
         >
-          {TRANSCRIPTION_SERVICES.map((service) => (
+          {Object.values(TRANSCRIPTION_SERVICES_CONFIG).map((service) => (
             <option key={service.value} value={service.value}>
               {service.label}
             </option>
@@ -52,7 +52,7 @@ export const TranscriptionService: React.FC<{
             value={whisperModel}
             onChange={(e) => setWhisperModel(e.target.value)}
           >
-            {WHISPER_MODELS.map((model) => (
+            {TRANSCRIPTION_SERVICES_CONFIG.whisper.models.map((model) => (
               <option key={model.label} value={model.label}>
                 {model.value}
               </option>

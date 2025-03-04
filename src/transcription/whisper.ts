@@ -1,13 +1,8 @@
 // src/transcription/whisper.ts
 
-/**
- * This file manages transcription using local Whisper.cpp.
- * It provides a streamlined, single-container approach for audio transcription.
- */
-
 import { readFile, unlink } from 'node:fs/promises'
 import { checkWhisperDirAndModel, formatWhisperTranscript } from '../process-steps/03-run-transcription-utils'
-import { WHISPER_MODELS } from '../../shared/constants'
+import { TRANSCRIPTION_SERVICES_CONFIG } from '../../shared/constants'
 import { execPromise } from '../utils/validation/cli'
 import { l, err } from '../utils/logging'
 import type { ProcessingOptions } from '../utils/types'
@@ -34,9 +29,9 @@ export async function callWhisper(
         ? 'base'
         : (() => { throw new Error('Invalid whisper option') })()
 
-    // Destructure label and value directly from the found model
-    const { label, value } = WHISPER_MODELS.find(m => m.label === whisperModel) ?? 
-      (() => { throw new Error(`Unknown model type: ${whisperModel}`) })()
+    const whisperModels = TRANSCRIPTION_SERVICES_CONFIG.whisper.models
+    const { label, value } = whisperModels.find(m => m.label === whisperModel)
+      ?? (() => { throw new Error(`Unknown model type: ${whisperModel}`) })()
 
     l.dim(`\n  Whisper model information:\n\n    - whisperModel: ${whisperModel}`)
     l.dim(`    - modelGGMLName: ${value}`)

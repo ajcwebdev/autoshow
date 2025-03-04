@@ -1,18 +1,10 @@
 // src/transcription/assembly.ts
 
-// This file manages transcription using the AssemblyAI API service.
-// Steps involved:
-// 1. Upload the local WAV audio file to AssemblyAI.
-// 2. Request transcription of the uploaded file.
-// 3. Poll for completion until the transcript is ready or fails.
-// 4. Once completed, format the transcript using a helper function from transcription-utils.ts.
-// 5. Return the formatted transcript.
-
 import { readFile } from 'node:fs/promises'
 import { env } from 'node:process'
 import { l, err } from '../utils/logging'
 import { logTranscriptionCost, formatAssemblyTranscript } from '../process-steps/03-run-transcription-utils'
-import { ASSEMBLY_MODELS } from '../../shared/constants'
+import { TRANSCRIPTION_SERVICES_CONFIG } from '../../shared/constants'
 import type { ProcessingOptions } from '../utils/types'
 
 const BASE_URL = 'https://api.assemblyai.com/v2'
@@ -28,7 +20,7 @@ const BASE_URL = 'https://api.assemblyai.com/v2'
 export async function callAssembly(
   options: ProcessingOptions,
   finalPath: string,
-  model: keyof typeof ASSEMBLY_MODELS = 'NANO'
+  model: string = 'Nano'
 ) {
   l.dim('\n  callAssembly called with arguments:')
   l.dim(`    - finalPath: ${finalPath}`)
@@ -47,7 +39,10 @@ export async function callAssembly(
     const { speakerLabels } = options
     const audioFilePath = `${finalPath}.wav`
 
-    const modelInfo = ASSEMBLY_MODELS[model] || ASSEMBLY_MODELS['NANO']
+    // const assemblyModels = TRANSCRIPTION_SERVICES_CONFIG.assembly.models
+    const modelInfo = 
+      TRANSCRIPTION_SERVICES_CONFIG.assembly.models.find(m => m.modelId.toLowerCase() === model.toLowerCase())
+      || TRANSCRIPTION_SERVICES_CONFIG.assembly.models.find(m => m.modelId === 'nano')
 
     if (!modelInfo) {
       throw new Error(`Model information for model ${model} is not available.`)

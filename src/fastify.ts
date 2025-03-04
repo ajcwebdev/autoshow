@@ -13,7 +13,7 @@ import { createEmbeddingsAndSQLite } from './utils/embeddings/create-embed'
 import { queryEmbeddings } from './utils/embeddings/query-embed'
 import { join } from 'node:path'
 import { writeFile } from 'node:fs/promises'
-import { envVarsMap, TRANSCRIPTION_SERVICES, LLM_SERVICES_CONFIG } from '../shared/constants'
+import { ENV_VARS_MAP, TRANSCRIPTION_SERVICES_CONFIG, LLM_SERVICES_CONFIG } from '../shared/constants'
 import { submitShowNoteDoc } from './utils/dash-documents'
 
 import type { FastifyRequest, FastifyReply } from 'fastify'
@@ -47,7 +47,7 @@ export function validateRequest(requestData: Record<string, unknown>) {
 
   // Variables to hold selected services
   let llmServices: string | undefined
-  let transcriptServices: string | undefined
+  let transcriptServices: 'whisper' | 'deepgram' | 'assembly' | undefined
 
   // Collect all valid LLM service values from LLM_SERVICES_CONFIG (excluding null/skip)
   const validLlmValues = Object.values(LLM_SERVICES_CONFIG)
@@ -64,30 +64,28 @@ export function validateRequest(requestData: Record<string, unknown>) {
     }
   }
 
-  const validTranscriptValues = TRANSCRIPTION_SERVICES.map(s => s.value)
-  const transcriptServicesValue = requestData['transcriptServices']
-  transcriptServices = typeof transcriptServicesValue === 'string' && validTranscriptValues.includes(transcriptServicesValue)
-    ? transcriptServicesValue
+  // Collect valid transcription service values
+  const validTranscriptValues = Object.values(TRANSCRIPTION_SERVICES_CONFIG).map(s => s.value) as Array<'whisper'|'deepgram'|'assembly'>
+  const transcriptServicesValue = requestData['transcriptServices'] as unknown
+
+  // Resolve transcriptServices to 'whisper', 'deepgram', or 'assembly'
+  transcriptServices = (typeof transcriptServicesValue === 'string'
+    && validTranscriptValues.includes(transcriptServicesValue as 'whisper'|'deepgram'|'assembly'))
+    ? transcriptServicesValue as 'whisper'|'deepgram'|'assembly'
     : 'whisper'
 
+  // Pick whichever model was passed in
+  const transcriptModelRaw =
+    (typeof requestData['transcriptModel'] === 'string' ? requestData['transcriptModel'] : undefined)
+    || (typeof requestData[`${transcriptServices}Model`] === 'string' ? requestData[`${transcriptServices}Model`] : undefined)
+  const transcriptModel = transcriptModelRaw as string | undefined
+
   if (transcriptServices === 'whisper') {
-    const transcriptModel = requestData['transcriptModel']
-    const whisperModel = requestData['whisperModel']
-    const model = (typeof transcriptModel === 'string' ? transcriptModel : undefined) || 
-                  (typeof whisperModel === 'string' ? whisperModel : undefined)
-    options.whisper = model || 'base'
+    options.whisper = transcriptModel || 'base'
   } else if (transcriptServices === 'deepgram') {
-    const transcriptModel = requestData['transcriptModel']
-    const deepgramModel = requestData['deepgramModel']
-    const model = (typeof transcriptModel === 'string' ? transcriptModel : undefined) || 
-                  (typeof deepgramModel === 'string' ? deepgramModel : undefined)
-    options.deepgram = model || true
+    options.deepgram = transcriptModel || true
   } else if (transcriptServices === 'assembly') {
-    const transcriptModel = requestData['transcriptModel']
-    const assemblyModel = requestData['assemblyModel']
-    const model = (typeof transcriptModel === 'string' ? transcriptModel : undefined) || 
-                  (typeof assemblyModel === 'string' ? assemblyModel : undefined)
-    options.assembly = model || true
+    options.assembly = transcriptModel || true
   }
 
   // Map additional options from the request data
@@ -101,7 +99,7 @@ export function validateRequest(requestData: Record<string, unknown>) {
   const result: { 
     options: ProcessingOptions; 
     llmServices?: string; 
-    transcriptServices?: string 
+    transcriptServices?: 'whisper' | 'deepgram' | 'assembly'
   } = { options }
 
   if (llmServices !== undefined) {
@@ -402,7 +400,7 @@ async function start() {
   fastify.addHook('preHandler', async (request) => {
     const body = request.body
     if (body) {
-      Object.entries(envVarsMap).forEach(([bodyKey, envKey]) => {
+      Object.entries(ENV_VARS_MAP).forEach(([bodyKey, envKey]) => {
         const value = (body as Record<string, string | undefined>)[bodyKey]
         if (value) {
           process.env[envKey as string] = value

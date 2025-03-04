@@ -134,7 +134,7 @@ npm run as -- --rss "https://ajcwebdev.substack.com/feed" "https://feeds.transis
 Process multiple RSS feeds listed in a `.md` file:
 
 ```bash
-npm run as -- --rssURLs "content/example-rss-feeds.md" --last 2
+npm run as -- --rss "content/example-rss-feeds.md" --last 2
 ```
 
 Download episodes from a specific number of previous days, for example to download episodes from the last 7 days:

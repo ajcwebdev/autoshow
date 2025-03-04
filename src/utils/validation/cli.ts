@@ -12,7 +12,7 @@ import { createEmbeddingsAndSQLite } from '../embeddings/create-embed'
 import { queryEmbeddings } from '../embeddings/query-embed'
 import { LLM_SERVICES_CONFIG } from '../../../shared/constants'
 
-import type { ProcessingOptions, ValidCLIAction, HandlerFunction } from '../types'
+import type { ProcessingOptions, HandlerFunction } from '../types'
 
 export const execPromise = promisify(exec)
 export const execFilePromise = promisify(execFile)
@@ -34,17 +34,6 @@ export const PROCESS_HANDLERS = {
   urls: processURLs,
   file: processFile,
   rss: processRSS,
-}
-
-export const envVarsMap = {
-  openaiApiKey: 'OPENAI_API_KEY',
-  anthropicApiKey: 'ANTHROPIC_API_KEY',
-  deepgramApiKey: 'DEEPGRAM_API_KEY',
-  assemblyApiKey: 'ASSEMBLY_API_KEY',
-  geminiApiKey: 'GEMINI_API_KEY',
-  deepseekApiKey: 'DEEPSEEK_API_KEY',
-  togetherApiKey: 'TOGETHER_API_KEY',
-  fireworksApiKey: 'FIREWORKS_API_KEY',
 }
 
 /**
@@ -126,7 +115,7 @@ export function validateOption(
  * @throws An error (and exits) if the action is invalid or missing
  */
 export function validateInputCLI(options: ProcessingOptions): {
-  action: ValidCLIAction
+  action: 'video' | 'playlist' | 'channel' | 'urls' | 'file' | 'rss'
   llmServices: string | undefined
   transcriptServices: string | undefined
 } {
@@ -137,7 +126,7 @@ export function validateInputCLI(options: ProcessingOptions): {
     err(`Invalid or missing action`)
     exit(1)
   }
-  const action = selectedAction as ValidCLIAction
+  const action = selectedAction as 'video' | 'playlist' | 'channel' | 'urls' | 'file' | 'rss'
 
   // Validate LLM
   const llmServices = validateLLM(options)
@@ -198,7 +187,7 @@ export function validateTranscription(options: ProcessingOptions) {
  * @throws {Error} If the action is invalid or the required input is missing
  */
 export async function processAction(
-  action: ValidCLIAction,
+  action: 'video' | 'playlist' | 'channel' | 'urls' | 'file' | 'rss',
   options: ProcessingOptions,
   llmServices?: string,
   transcriptServices?: string

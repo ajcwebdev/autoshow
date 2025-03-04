@@ -30,8 +30,14 @@ export async function runTranscription(
     switch (transcriptServices) {
       case 'deepgram':
         const deepgramModel = typeof options.deepgram === 'string' ? options.deepgram : 'NOVA_2'
+        // Convert string model to enum key if needed
+        const normalizedDeepgramModel = deepgramModel === 'nova-2' || deepgramModel === 'Nova-2' ? 'NOVA_2' :
+                                        deepgramModel === 'base' || deepgramModel === 'Base' ? 'BASE' :
+                                        deepgramModel === 'enhanced' || deepgramModel === 'Enhanced' ? 'ENHANCED' : 
+                                        deepgramModel as 'NOVA_2' | 'BASE' | 'ENHANCED'
+        
         const deepgramTranscript = await retryTranscriptionCall(
-          () => callDeepgram(options, finalPath, deepgramModel),
+          () => callDeepgram(options, finalPath, normalizedDeepgramModel),
           5,
           5000
         )
@@ -41,8 +47,13 @@ export async function runTranscription(
 
       case 'assembly':
         const assemblyModel = typeof options.assembly === 'string' ? options.assembly : 'NANO'
+        // Convert string model to enum key if needed
+        const normalizedAssemblyModel = assemblyModel === 'best' || assemblyModel === 'Best' ? 'BEST' :
+                                        assemblyModel === 'nano' || assemblyModel === 'Nano' ? 'NANO' : 
+                                        assemblyModel as 'BEST' | 'NANO'
+        
         const assemblyTranscript = await retryTranscriptionCall(
-          () => callAssembly(options, finalPath, assemblyModel),
+          () => callAssembly(options, finalPath, normalizedAssemblyModel),
           5,
           5000
         )

@@ -8,6 +8,17 @@
  *
  */
 
+export const envVarsMap = {
+  openaiApiKey: 'OPENAI_API_KEY',
+  anthropicApiKey: 'ANTHROPIC_API_KEY',
+  deepgramApiKey: 'DEEPGRAM_API_KEY',
+  assemblyApiKey: 'ASSEMBLY_API_KEY',
+  geminiApiKey: 'GEMINI_API_KEY',
+  deepseekApiKey: 'DEEPSEEK_API_KEY',
+  togetherApiKey: 'TOGETHER_API_KEY',
+  fireworksApiKey: 'FIREWORKS_API_KEY',
+}
+
 export const PROCESS_TYPES = [
   { value: 'video', label: 'Video' },
   { value: 'file', label: 'File' },

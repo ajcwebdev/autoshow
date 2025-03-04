@@ -44,11 +44,11 @@ export type ProcessingOptions = {
   /** Flag to indicate whether to keep temporary audio WAV file after processing. */
   saveAudio?: boolean
   /** The Whisper model to use (e.g., 'tiny', 'base'). */
-  whisper?: boolean
-  /** Flag to use Deepgram for transcription. */
-  deepgram?: boolean
-  /** Flag to use AssemblyAI for transcription. */
-  assembly?: boolean
+  whisper?: boolean | string
+  /** Flag to use Deepgram for transcription or Deepgram model to use. */
+  deepgram?: boolean | string
+  /** Flag to use AssemblyAI for transcription or AssemblyAI model to use. */
+  assembly?: boolean | string
   /** Flag to use speaker labels in AssemblyAI transcription. */
   speakerLabels?: boolean
   /** File path for estimating transcription cost. */
@@ -110,19 +110,6 @@ export type ProcessingOptions = {
   [key: string]: any
 }
 
-// Parse the JSON output
-export interface PlaylistEntry {
-  id: string;
-}
-
-export interface PlaylistData {
-  title: string;
-  entries: PlaylistEntry[];
-}
-
-// Define valid action types for processing
-export type ValidCLIAction = 'video' | 'playlist' | 'channel' | 'urls' | 'file' | 'rss'
-
 /**
  * Handler function for processing different actions (e.g., video, playlist).
  * 
@@ -147,33 +134,4 @@ export interface VideoInfo {
   date: Date
   timestamp: number  // Unix timestamp for more precise sorting
   isLive: boolean   // Flag to identify live streams
-}
-
-/**
- * Represents the configuration for a model, including cost details.
- */
-export type ModelConfig = {
-  modelId: string
-  modelName: string
-  inputCostPer1M: number
-  outputCostPer1M: number
-}
-
-/**
- * Represents the complete LLM cost and usage details for logging
- */
-export type LogLLMCost = {
-  // The name of the model used
-  name: string
-  // The reason why the model request stopped
-  stopReason: string
-  // Contains token usage details
-  tokenUsage: {
-    // Number of input tokens used
-    input: number | undefined
-    // Number of output tokens generated
-    output: number | undefined
-    // Total number of tokens involved in the request
-    total: number | undefined
-  }
 }

@@ -12,9 +12,10 @@
 import { argv, exit } from 'node:process'
 import { fileURLToPath } from 'node:url'
 import { Command } from 'commander'
-import { processAction, validateInputCLI, envVarsMap, handleEarlyExitIfNeeded } from './utils/validation/cli'
+import { processAction, validateInputCLI, handleEarlyExitIfNeeded } from './utils/validation/cli'
 import { l, err, logSeparator } from './utils/logging'
 import { parseAndAppendRssUrls } from './process-commands/rss-utils'
+import { envVarsMap } from '../shared/constants'
 
 import type { ProcessingOptions } from './utils/types'
 

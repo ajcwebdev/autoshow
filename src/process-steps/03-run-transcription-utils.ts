@@ -50,7 +50,12 @@ export async function estimateTranscriptCost(
   switch (transcriptServices) {
     case 'deepgram': {
       const deepgramModel = typeof options.deepgram === 'string' ? options.deepgram : 'NOVA_2'
-      const { name, costPerMinute } = DEEPGRAM_MODELS[deepgramModel] || DEEPGRAM_MODELS.NOVA_2
+      // Handle string model name by converting to key
+      const modelKey = deepgramModel === 'nova-2' || deepgramModel === 'Nova-2' ? 'NOVA_2' :
+                       deepgramModel === 'base' || deepgramModel === 'Base' ? 'BASE' :
+                       deepgramModel === 'enhanced' || deepgramModel === 'Enhanced' ? 'ENHANCED' : 'NOVA_2';
+      
+      const { name, costPerMinute } = DEEPGRAM_MODELS[modelKey as keyof typeof DEEPGRAM_MODELS]
       await logTranscriptionCost({
         modelName: name,
         costPerMinute,
@@ -60,7 +65,11 @@ export async function estimateTranscriptCost(
     }
     case 'assembly': {
       const assemblyModel = typeof options.assembly === 'string' ? options.assembly : 'NANO'
-      const { name, costPerMinute } = ASSEMBLY_MODELS[assemblyModel] || ASSEMBLY_MODELS.NANO
+      // Handle string model name by converting to key
+      const modelKey = assemblyModel === 'best' || assemblyModel === 'Best' ? 'BEST' :
+                       assemblyModel === 'nano' || assemblyModel === 'Nano' ? 'NANO' : 'NANO';
+      
+      const { name, costPerMinute } = ASSEMBLY_MODELS[modelKey as keyof typeof ASSEMBLY_MODELS]
       await logTranscriptionCost({
         modelName: name,
         costPerMinute,

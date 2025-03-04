@@ -5,7 +5,7 @@ import { execFilePromise } from '../utils/validation/cli'
 import { saveInfo } from '../process-steps/01-generate-markdown-utils'
 import { l, err, logSeparator, logInitialFunctionCall } from '../utils/logging'
 
-import type { ProcessingOptions, PlaylistData } from '../utils/types'
+import type { ProcessingOptions } from '../utils/types'
 
 /**
  * Processes an entire YouTube playlist by:
@@ -45,11 +45,11 @@ export async function processPlaylist(
       err(`yt-dlp warnings: ${stderr}`)
     }
 
-    const playlistData: PlaylistData = JSON.parse(stdout);
-    const playlistTitle = playlistData.title;
-    const entries = playlistData.entries;
+    const playlistData: { title: string, entries: Array<{ id: string }> } = JSON.parse(stdout)
+    const playlistTitle = playlistData.title
+    const entries = playlistData.entries
 
-    const urls: string[] = entries.map((entry) => `https://www.youtube.com/watch?v=${entry.id}`);
+    const urls: string[] = entries.map((entry) => `https://www.youtube.com/watch?v=${entry.id}`)
 
     // Exit if no videos were found in the playlist
     if (urls.length === 0) {

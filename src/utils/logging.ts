@@ -3,11 +3,14 @@
 import chalk from 'chalk'
 import { LLM_SERVICES_CONFIG } from '../../shared/constants'
 
-import type { ModelConfig, LogLLMCost } from './types'
-
-/** 
- * For whichever service the user chose, we want to pick the user-supplied model 
- * or default to the service’s first model. Then pass that to the LLM function.
+/**
+ * Gets the model ID for the specified LLM service, using either the user-supplied value or the default.
+ *
+ * @param serviceKey - The key identifying the LLM service (e.g., 'chatgpt', 'claude')
+ * @param userValue - The model value provided by the user, which could be a string, boolean, or undefined
+ * @returns The resolved model ID string to use with the LLM service
+ * @throws Error if the service is not supported or no models are found for the service
+ * @throws Error if the user specified a model that doesn't exist for the given service
  */
 export function getModelIdOrDefault(serviceKey: string, userValue: unknown): string {
   const serviceConfig = LLM_SERVICES_CONFIG[serviceKey as keyof typeof LLM_SERVICES_CONFIG]
@@ -41,11 +44,20 @@ export function getModelIdOrDefault(serviceKey: string, userValue: unknown): str
 
 /**
  * Formats a cost value to show cents as "¢1", fractions of a cent as "¢0.5", etc.
+ *
+ * @param cost - The cost value to format, in dollars
+ * @returns A formatted string representation of the cost:
  *  - If cost is undefined => "N/A"
  *  - If cost is exactly 0 => "0¢"
- *  - If cost is less than one cent => e.g. "¢0.5"
+ *  - If cost is less than one cent => e.g. "¢0.5" 
  *  - If cost is less than one dollar => e.g. "¢25.00"
  *  - Otherwise, format in dollars => e.g. "$1.99"
+ * @example
+ * formatCost(undefined) // returns "N/A"
+ * formatCost(0) // returns "0¢"
+ * formatCost(0.005) // returns "¢0.5000"
+ * formatCost(0.25) // returns "¢25.00"
+ * formatCost(1.99) // returns "$1.99"
  */
 export function formatCost(cost: number | undefined): string {
   if (cost === undefined) return 'N/A'
@@ -71,13 +83,33 @@ export function formatCost(cost: number | undefined): string {
 /**
  * Logs API call results in a standardized format across different LLM providers.
  * Includes token usage and cost calculations.
+ * 
+ * @param info - The LLM cost and usage details
+ * @param info.name - The name of the model used
+ * @param info.stopReason - The reason why the model request stopped
+ * @param info.tokenUsage - Contains token usage details
+ * @param info.tokenUsage.input - Number of input tokens used
+ * @param info.tokenUsage.output - Number of output tokens generated
+ * @param info.tokenUsage.total - Total number of tokens involved in the request
  */
-export function logLLMCost(info: LogLLMCost) {
+export function logLLMCost(info: {
+  name: string
+  stopReason: string
+  tokenUsage: {
+    input: number | undefined
+    output: number | undefined
+    total: number | undefined
+  }
+}) {
   const { name, stopReason, tokenUsage } = info
   const { input, output, total } = tokenUsage
 
-  // Inline logic for finding modelConfig
-  let modelConfig: ModelConfig | undefined
+  let modelConfig: {
+    modelId: string
+    modelName: string
+    inputCostPer1M: number
+    outputCostPer1M: number
+  } | undefined
   for (const service of Object.values(LLM_SERVICES_CONFIG)) {
     for (const model of service.models) {
       if (

@@ -26,7 +26,7 @@ interface RequestData {
   url?: string
   prompts?: string[]
   transcriptModel?: string
-  transcriptionService?: string
+  transcriptServices?: string
   speakerLabels?: boolean
   llm?: LLMProvider
   llmModel?: string
@@ -52,7 +52,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'assembly',
+      transcriptServices: 'assembly',
       transcriptModel: 'best',
       assemblyApiKey: ASSEMBLY_API_KEY,
     },
@@ -64,7 +64,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'assembly',
+      transcriptServices: 'assembly',
       transcriptModel: 'nano',
       assemblyApiKey: ASSEMBLY_API_KEY,
     },
@@ -76,7 +76,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'deepgram',
+      transcriptServices: 'deepgram',
       transcriptModel: 'nova-2',
       deepgramApiKey: DEEPGRAM_API_KEY,
     },
@@ -88,7 +88,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'deepgram',
+      transcriptServices: 'deepgram',
       transcriptModel: 'base',
       deepgramApiKey: DEEPGRAM_API_KEY,
     },
@@ -100,7 +100,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'deepgram',
+      transcriptServices: 'deepgram',
       transcriptModel: 'enhanced',
       deepgramApiKey: DEEPGRAM_API_KEY,
     },

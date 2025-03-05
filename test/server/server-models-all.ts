@@ -26,7 +26,7 @@ interface RequestData {
   url?: string
   prompts?: string[]
   whisperModel?: string
-  transcriptionService?: string
+  transcriptServices?: string
   speakerLabels?: boolean
   llm?: LLMProvider
   llmModel?: string
@@ -65,7 +65,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'deepgram',
+      transcriptServices: 'deepgram',
       whisperModel: 'nova-2',
       deepgramApiKey: DEEPGRAM_API_KEY,
       llm: 'chatgpt',
@@ -79,7 +79,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'deepgram',
+      transcriptServices: 'deepgram',
       whisperModel: 'nova-2',
       deepgramApiKey: DEEPGRAM_API_KEY,
       llm: 'chatgpt',
@@ -93,7 +93,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'deepgram',
+      transcriptServices: 'deepgram',
       whisperModel: 'nova-2',
       deepgramApiKey: DEEPGRAM_API_KEY,
       llm: 'chatgpt',
@@ -107,7 +107,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'deepgram',
+      transcriptServices: 'deepgram',
       whisperModel: 'nova-2',
       deepgramApiKey: DEEPGRAM_API_KEY,
       llm: 'chatgpt',
@@ -121,7 +121,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'deepgram',
+      transcriptServices: 'deepgram',
       whisperModel: 'nova-2',
       deepgramApiKey: DEEPGRAM_API_KEY,
       llm: 'claude',
@@ -135,7 +135,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'deepgram',
+      transcriptServices: 'deepgram',
       whisperModel: 'nova-2',
       deepgramApiKey: DEEPGRAM_API_KEY,
       llm: 'claude',
@@ -149,7 +149,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'deepgram',
+      transcriptServices: 'deepgram',
       whisperModel: 'nova-2',
       deepgramApiKey: DEEPGRAM_API_KEY,
       llm: 'claude',
@@ -163,7 +163,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'deepgram',
+      transcriptServices: 'deepgram',
       whisperModel: 'nova-2',
       deepgramApiKey: DEEPGRAM_API_KEY,
       llm: 'gemini',
@@ -177,7 +177,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'deepgram',
+      transcriptServices: 'deepgram',
       whisperModel: 'nova-2',
       deepgramApiKey: DEEPGRAM_API_KEY,
       llm: 'gemini',
@@ -191,7 +191,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'deepgram',
+      transcriptServices: 'deepgram',
       whisperModel: 'nova-2',
       deepgramApiKey: DEEPGRAM_API_KEY,
       llm: 'gemini',
@@ -205,7 +205,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'deepgram',
+      transcriptServices: 'deepgram',
       whisperModel: 'nova-2',
       deepgramApiKey: DEEPGRAM_API_KEY,
       llm: 'gemini',
@@ -219,7 +219,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'deepgram',
+      transcriptServices: 'deepgram',
       whisperModel: 'nova-2',
       deepgramApiKey: DEEPGRAM_API_KEY,
       llm: 'gemini',
@@ -233,7 +233,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'deepgram',
+      transcriptServices: 'deepgram',
       whisperModel: 'nova-2',
       deepgramApiKey: DEEPGRAM_API_KEY,
       llm: 'deepseek',
@@ -247,7 +247,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'deepgram',
+      transcriptServices: 'deepgram',
       whisperModel: 'nova-2',
       deepgramApiKey: DEEPGRAM_API_KEY,
       llm: 'deepseek',
@@ -261,7 +261,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'deepgram',
+      transcriptServices: 'deepgram',
       whisperModel: 'nova-2',
       deepgramApiKey: DEEPGRAM_API_KEY,
       llm: 'fireworks',
@@ -275,7 +275,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'deepgram',
+      transcriptServices: 'deepgram',
       whisperModel: 'nova-2',
       deepgramApiKey: DEEPGRAM_API_KEY,
       llm: 'fireworks',
@@ -289,7 +289,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'deepgram',
+      transcriptServices: 'deepgram',
       whisperModel: 'nova-2',
       deepgramApiKey: DEEPGRAM_API_KEY,
       llm: 'fireworks',
@@ -303,7 +303,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'deepgram',
+      transcriptServices: 'deepgram',
       whisperModel: 'nova-2',
       deepgramApiKey: DEEPGRAM_API_KEY,
       llm: 'fireworks',
@@ -317,7 +317,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'deepgram',
+      transcriptServices: 'deepgram',
       whisperModel: 'nova-2',
       deepgramApiKey: DEEPGRAM_API_KEY,
       llm: 'fireworks',
@@ -331,7 +331,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'deepgram',
+      transcriptServices: 'deepgram',
       whisperModel: 'nova-2',
       deepgramApiKey: DEEPGRAM_API_KEY,
       llm: 'together',
@@ -345,7 +345,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'deepgram',
+      transcriptServices: 'deepgram',
       whisperModel: 'nova-2',
       deepgramApiKey: DEEPGRAM_API_KEY,
       llm: 'together',
@@ -359,7 +359,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'deepgram',
+      transcriptServices: 'deepgram',
       whisperModel: 'nova-2',
       deepgramApiKey: DEEPGRAM_API_KEY,
       llm: 'together',
@@ -373,7 +373,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'deepgram',
+      transcriptServices: 'deepgram',
       whisperModel: 'nova-2',
       deepgramApiKey: DEEPGRAM_API_KEY,
       llm: 'together',
@@ -387,7 +387,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'deepgram',
+      transcriptServices: 'deepgram',
       whisperModel: 'nova-2',
       deepgramApiKey: DEEPGRAM_API_KEY,
       llm: 'together',
@@ -401,7 +401,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'deepgram',
+      transcriptServices: 'deepgram',
       whisperModel: 'nova-2',
       deepgramApiKey: DEEPGRAM_API_KEY,
       llm: 'together',
@@ -415,7 +415,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'deepgram',
+      transcriptServices: 'deepgram',
       whisperModel: 'nova-2',
       deepgramApiKey: DEEPGRAM_API_KEY,
       llm: 'together',
@@ -429,7 +429,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'deepgram',
+      transcriptServices: 'deepgram',
       whisperModel: 'nova-2',
       deepgramApiKey: DEEPGRAM_API_KEY,
       llm: 'together',
@@ -445,7 +445,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'deepgram',
+      transcriptServices: 'deepgram',
       whisperModel: 'base',
       deepgramApiKey: DEEPGRAM_API_KEY,
       llm: 'chatgpt',
@@ -459,7 +459,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'deepgram',
+      transcriptServices: 'deepgram',
       whisperModel: 'base',
       deepgramApiKey: DEEPGRAM_API_KEY,
       llm: 'chatgpt',
@@ -473,7 +473,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'deepgram',
+      transcriptServices: 'deepgram',
       whisperModel: 'base',
       deepgramApiKey: DEEPGRAM_API_KEY,
       llm: 'chatgpt',
@@ -487,7 +487,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'deepgram',
+      transcriptServices: 'deepgram',
       whisperModel: 'base',
       deepgramApiKey: DEEPGRAM_API_KEY,
       llm: 'chatgpt',
@@ -501,7 +501,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'deepgram',
+      transcriptServices: 'deepgram',
       whisperModel: 'base',
       deepgramApiKey: DEEPGRAM_API_KEY,
       llm: 'claude',
@@ -515,7 +515,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'deepgram',
+      transcriptServices: 'deepgram',
       whisperModel: 'base',
       deepgramApiKey: DEEPGRAM_API_KEY,
       llm: 'claude',
@@ -529,7 +529,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'deepgram',
+      transcriptServices: 'deepgram',
       whisperModel: 'base',
       deepgramApiKey: DEEPGRAM_API_KEY,
       llm: 'claude',
@@ -543,7 +543,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'deepgram',
+      transcriptServices: 'deepgram',
       whisperModel: 'base',
       deepgramApiKey: DEEPGRAM_API_KEY,
       llm: 'gemini',
@@ -557,7 +557,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'deepgram',
+      transcriptServices: 'deepgram',
       whisperModel: 'base',
       deepgramApiKey: DEEPGRAM_API_KEY,
       llm: 'gemini',
@@ -571,7 +571,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'deepgram',
+      transcriptServices: 'deepgram',
       whisperModel: 'base',
       deepgramApiKey: DEEPGRAM_API_KEY,
       llm: 'gemini',
@@ -585,7 +585,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'deepgram',
+      transcriptServices: 'deepgram',
       whisperModel: 'base',
       deepgramApiKey: DEEPGRAM_API_KEY,
       llm: 'gemini',
@@ -599,7 +599,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'deepgram',
+      transcriptServices: 'deepgram',
       whisperModel: 'base',
       deepgramApiKey: DEEPGRAM_API_KEY,
       llm: 'gemini',
@@ -613,7 +613,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'deepgram',
+      transcriptServices: 'deepgram',
       whisperModel: 'base',
       deepgramApiKey: DEEPGRAM_API_KEY,
       llm: 'deepseek',
@@ -627,7 +627,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'deepgram',
+      transcriptServices: 'deepgram',
       whisperModel: 'base',
       deepgramApiKey: DEEPGRAM_API_KEY,
       llm: 'deepseek',
@@ -641,7 +641,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'deepgram',
+      transcriptServices: 'deepgram',
       whisperModel: 'base',
       deepgramApiKey: DEEPGRAM_API_KEY,
       llm: 'fireworks',
@@ -655,7 +655,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'deepgram',
+      transcriptServices: 'deepgram',
       whisperModel: 'base',
       deepgramApiKey: DEEPGRAM_API_KEY,
       llm: 'fireworks',
@@ -669,7 +669,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'deepgram',
+      transcriptServices: 'deepgram',
       whisperModel: 'base',
       deepgramApiKey: DEEPGRAM_API_KEY,
       llm: 'fireworks',
@@ -683,7 +683,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'deepgram',
+      transcriptServices: 'deepgram',
       whisperModel: 'base',
       deepgramApiKey: DEEPGRAM_API_KEY,
       llm: 'fireworks',
@@ -697,7 +697,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'deepgram',
+      transcriptServices: 'deepgram',
       whisperModel: 'base',
       deepgramApiKey: DEEPGRAM_API_KEY,
       llm: 'fireworks',
@@ -711,7 +711,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'deepgram',
+      transcriptServices: 'deepgram',
       whisperModel: 'base',
       deepgramApiKey: DEEPGRAM_API_KEY,
       llm: 'together',
@@ -725,7 +725,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'deepgram',
+      transcriptServices: 'deepgram',
       whisperModel: 'base',
       deepgramApiKey: DEEPGRAM_API_KEY,
       llm: 'together',
@@ -739,7 +739,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'deepgram',
+      transcriptServices: 'deepgram',
       whisperModel: 'base',
       deepgramApiKey: DEEPGRAM_API_KEY,
       llm: 'together',
@@ -753,7 +753,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'deepgram',
+      transcriptServices: 'deepgram',
       whisperModel: 'base',
       deepgramApiKey: DEEPGRAM_API_KEY,
       llm: 'together',
@@ -767,7 +767,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'deepgram',
+      transcriptServices: 'deepgram',
       whisperModel: 'base',
       deepgramApiKey: DEEPGRAM_API_KEY,
       llm: 'together',
@@ -781,7 +781,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'deepgram',
+      transcriptServices: 'deepgram',
       whisperModel: 'base',
       deepgramApiKey: DEEPGRAM_API_KEY,
       llm: 'together',
@@ -795,7 +795,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'deepgram',
+      transcriptServices: 'deepgram',
       whisperModel: 'base',
       deepgramApiKey: DEEPGRAM_API_KEY,
       llm: 'together',
@@ -809,7 +809,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'deepgram',
+      transcriptServices: 'deepgram',
       whisperModel: 'base',
       deepgramApiKey: DEEPGRAM_API_KEY,
       llm: 'together',
@@ -825,7 +825,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'deepgram',
+      transcriptServices: 'deepgram',
       whisperModel: 'enhanced',
       deepgramApiKey: DEEPGRAM_API_KEY,
       llm: 'chatgpt',
@@ -839,7 +839,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'deepgram',
+      transcriptServices: 'deepgram',
       whisperModel: 'enhanced',
       deepgramApiKey: DEEPGRAM_API_KEY,
       llm: 'chatgpt',
@@ -853,7 +853,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'deepgram',
+      transcriptServices: 'deepgram',
       whisperModel: 'enhanced',
       deepgramApiKey: DEEPGRAM_API_KEY,
       llm: 'chatgpt',
@@ -867,7 +867,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'deepgram',
+      transcriptServices: 'deepgram',
       whisperModel: 'enhanced',
       deepgramApiKey: DEEPGRAM_API_KEY,
       llm: 'chatgpt',
@@ -881,7 +881,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'deepgram',
+      transcriptServices: 'deepgram',
       whisperModel: 'enhanced',
       deepgramApiKey: DEEPGRAM_API_KEY,
       llm: 'claude',
@@ -895,7 +895,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'deepgram',
+      transcriptServices: 'deepgram',
       whisperModel: 'enhanced',
       deepgramApiKey: DEEPGRAM_API_KEY,
       llm: 'claude',
@@ -909,7 +909,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'deepgram',
+      transcriptServices: 'deepgram',
       whisperModel: 'enhanced',
       deepgramApiKey: DEEPGRAM_API_KEY,
       llm: 'claude',
@@ -923,7 +923,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'deepgram',
+      transcriptServices: 'deepgram',
       whisperModel: 'enhanced',
       deepgramApiKey: DEEPGRAM_API_KEY,
       llm: 'gemini',
@@ -937,7 +937,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'deepgram',
+      transcriptServices: 'deepgram',
       whisperModel: 'enhanced',
       deepgramApiKey: DEEPGRAM_API_KEY,
       llm: 'gemini',
@@ -951,7 +951,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'deepgram',
+      transcriptServices: 'deepgram',
       whisperModel: 'enhanced',
       deepgramApiKey: DEEPGRAM_API_KEY,
       llm: 'gemini',
@@ -965,7 +965,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'deepgram',
+      transcriptServices: 'deepgram',
       whisperModel: 'enhanced',
       deepgramApiKey: DEEPGRAM_API_KEY,
       llm: 'gemini',
@@ -979,7 +979,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'deepgram',
+      transcriptServices: 'deepgram',
       whisperModel: 'enhanced',
       deepgramApiKey: DEEPGRAM_API_KEY,
       llm: 'gemini',
@@ -993,7 +993,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'deepgram',
+      transcriptServices: 'deepgram',
       whisperModel: 'enhanced',
       deepgramApiKey: DEEPGRAM_API_KEY,
       llm: 'deepseek',
@@ -1007,7 +1007,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'deepgram',
+      transcriptServices: 'deepgram',
       whisperModel: 'enhanced',
       deepgramApiKey: DEEPGRAM_API_KEY,
       llm: 'deepseek',
@@ -1021,7 +1021,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'deepgram',
+      transcriptServices: 'deepgram',
       whisperModel: 'enhanced',
       deepgramApiKey: DEEPGRAM_API_KEY,
       llm: 'fireworks',
@@ -1035,7 +1035,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'deepgram',
+      transcriptServices: 'deepgram',
       whisperModel: 'enhanced',
       deepgramApiKey: DEEPGRAM_API_KEY,
       llm: 'fireworks',
@@ -1049,7 +1049,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'deepgram',
+      transcriptServices: 'deepgram',
       whisperModel: 'enhanced',
       deepgramApiKey: DEEPGRAM_API_KEY,
       llm: 'fireworks',
@@ -1063,7 +1063,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'deepgram',
+      transcriptServices: 'deepgram',
       whisperModel: 'enhanced',
       deepgramApiKey: DEEPGRAM_API_KEY,
       llm: 'fireworks',
@@ -1077,7 +1077,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'deepgram',
+      transcriptServices: 'deepgram',
       whisperModel: 'enhanced',
       deepgramApiKey: DEEPGRAM_API_KEY,
       llm: 'fireworks',
@@ -1091,7 +1091,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'deepgram',
+      transcriptServices: 'deepgram',
       whisperModel: 'enhanced',
       deepgramApiKey: DEEPGRAM_API_KEY,
       llm: 'together',
@@ -1105,7 +1105,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'deepgram',
+      transcriptServices: 'deepgram',
       whisperModel: 'enhanced',
       deepgramApiKey: DEEPGRAM_API_KEY,
       llm: 'together',
@@ -1119,7 +1119,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'deepgram',
+      transcriptServices: 'deepgram',
       whisperModel: 'enhanced',
       deepgramApiKey: DEEPGRAM_API_KEY,
       llm: 'together',
@@ -1133,7 +1133,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'deepgram',
+      transcriptServices: 'deepgram',
       whisperModel: 'enhanced',
       deepgramApiKey: DEEPGRAM_API_KEY,
       llm: 'together',
@@ -1147,7 +1147,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'deepgram',
+      transcriptServices: 'deepgram',
       whisperModel: 'enhanced',
       deepgramApiKey: DEEPGRAM_API_KEY,
       llm: 'together',
@@ -1161,7 +1161,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'deepgram',
+      transcriptServices: 'deepgram',
       whisperModel: 'enhanced',
       deepgramApiKey: DEEPGRAM_API_KEY,
       llm: 'together',
@@ -1175,7 +1175,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'deepgram',
+      transcriptServices: 'deepgram',
       whisperModel: 'enhanced',
       deepgramApiKey: DEEPGRAM_API_KEY,
       llm: 'together',
@@ -1189,7 +1189,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'deepgram',
+      transcriptServices: 'deepgram',
       whisperModel: 'enhanced',
       deepgramApiKey: DEEPGRAM_API_KEY,
       llm: 'together',
@@ -1205,7 +1205,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'assembly',
+      transcriptServices: 'assembly',
       whisperModel: 'best',
       assemblyApiKey: ASSEMBLY_API_KEY,
       llm: 'chatgpt',
@@ -1219,7 +1219,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'assembly',
+      transcriptServices: 'assembly',
       whisperModel: 'best',
       assemblyApiKey: ASSEMBLY_API_KEY,
       llm: 'chatgpt',
@@ -1233,7 +1233,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'assembly',
+      transcriptServices: 'assembly',
       whisperModel: 'best',
       assemblyApiKey: ASSEMBLY_API_KEY,
       llm: 'chatgpt',
@@ -1247,7 +1247,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'assembly',
+      transcriptServices: 'assembly',
       whisperModel: 'best',
       assemblyApiKey: ASSEMBLY_API_KEY,
       llm: 'chatgpt',
@@ -1261,7 +1261,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'assembly',
+      transcriptServices: 'assembly',
       whisperModel: 'best',
       assemblyApiKey: ASSEMBLY_API_KEY,
       llm: 'claude',
@@ -1275,7 +1275,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'assembly',
+      transcriptServices: 'assembly',
       whisperModel: 'best',
       assemblyApiKey: ASSEMBLY_API_KEY,
       llm: 'claude',
@@ -1289,7 +1289,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'assembly',
+      transcriptServices: 'assembly',
       whisperModel: 'best',
       assemblyApiKey: ASSEMBLY_API_KEY,
       llm: 'claude',
@@ -1303,7 +1303,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'assembly',
+      transcriptServices: 'assembly',
       whisperModel: 'best',
       assemblyApiKey: ASSEMBLY_API_KEY,
       llm: 'gemini',
@@ -1317,7 +1317,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'assembly',
+      transcriptServices: 'assembly',
       whisperModel: 'best',
       assemblyApiKey: ASSEMBLY_API_KEY,
       llm: 'gemini',
@@ -1331,7 +1331,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'assembly',
+      transcriptServices: 'assembly',
       whisperModel: 'best',
       assemblyApiKey: ASSEMBLY_API_KEY,
       llm: 'gemini',
@@ -1345,7 +1345,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'assembly',
+      transcriptServices: 'assembly',
       whisperModel: 'best',
       assemblyApiKey: ASSEMBLY_API_KEY,
       llm: 'gemini',
@@ -1359,7 +1359,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'assembly',
+      transcriptServices: 'assembly',
       whisperModel: 'best',
       assemblyApiKey: ASSEMBLY_API_KEY,
       llm: 'gemini',
@@ -1373,7 +1373,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'assembly',
+      transcriptServices: 'assembly',
       whisperModel: 'best',
       assemblyApiKey: ASSEMBLY_API_KEY,
       llm: 'deepseek',
@@ -1387,7 +1387,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'assembly',
+      transcriptServices: 'assembly',
       whisperModel: 'best',
       assemblyApiKey: ASSEMBLY_API_KEY,
       llm: 'deepseek',
@@ -1401,7 +1401,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'assembly',
+      transcriptServices: 'assembly',
       whisperModel: 'best',
       assemblyApiKey: ASSEMBLY_API_KEY,
       llm: 'fireworks',
@@ -1415,7 +1415,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'assembly',
+      transcriptServices: 'assembly',
       whisperModel: 'best',
       assemblyApiKey: ASSEMBLY_API_KEY,
       llm: 'fireworks',
@@ -1429,7 +1429,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'assembly',
+      transcriptServices: 'assembly',
       whisperModel: 'best',
       assemblyApiKey: ASSEMBLY_API_KEY,
       llm: 'fireworks',
@@ -1443,7 +1443,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'assembly',
+      transcriptServices: 'assembly',
       whisperModel: 'best',
       assemblyApiKey: ASSEMBLY_API_KEY,
       llm: 'fireworks',
@@ -1457,7 +1457,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'assembly',
+      transcriptServices: 'assembly',
       whisperModel: 'best',
       assemblyApiKey: ASSEMBLY_API_KEY,
       llm: 'fireworks',
@@ -1471,7 +1471,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'assembly',
+      transcriptServices: 'assembly',
       whisperModel: 'best',
       assemblyApiKey: ASSEMBLY_API_KEY,
       llm: 'together',
@@ -1485,7 +1485,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'assembly',
+      transcriptServices: 'assembly',
       whisperModel: 'best',
       assemblyApiKey: ASSEMBLY_API_KEY,
       llm: 'together',
@@ -1499,7 +1499,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'assembly',
+      transcriptServices: 'assembly',
       whisperModel: 'best',
       assemblyApiKey: ASSEMBLY_API_KEY,
       llm: 'together',
@@ -1513,7 +1513,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'assembly',
+      transcriptServices: 'assembly',
       whisperModel: 'best',
       assemblyApiKey: ASSEMBLY_API_KEY,
       llm: 'together',
@@ -1527,7 +1527,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'assembly',
+      transcriptServices: 'assembly',
       whisperModel: 'best',
       assemblyApiKey: ASSEMBLY_API_KEY,
       llm: 'together',
@@ -1541,7 +1541,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'assembly',
+      transcriptServices: 'assembly',
       whisperModel: 'best',
       assemblyApiKey: ASSEMBLY_API_KEY,
       llm: 'together',
@@ -1555,7 +1555,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'assembly',
+      transcriptServices: 'assembly',
       whisperModel: 'best',
       assemblyApiKey: ASSEMBLY_API_KEY,
       llm: 'together',
@@ -1569,7 +1569,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'assembly',
+      transcriptServices: 'assembly',
       whisperModel: 'best',
       assemblyApiKey: ASSEMBLY_API_KEY,
       llm: 'together',
@@ -1585,7 +1585,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'assembly',
+      transcriptServices: 'assembly',
       whisperModel: 'nano',
       assemblyApiKey: ASSEMBLY_API_KEY,
       llm: 'chatgpt',
@@ -1599,7 +1599,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'assembly',
+      transcriptServices: 'assembly',
       whisperModel: 'nano',
       assemblyApiKey: ASSEMBLY_API_KEY,
       llm: 'chatgpt',
@@ -1613,7 +1613,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'assembly',
+      transcriptServices: 'assembly',
       whisperModel: 'nano',
       assemblyApiKey: ASSEMBLY_API_KEY,
       llm: 'chatgpt',
@@ -1627,7 +1627,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'assembly',
+      transcriptServices: 'assembly',
       whisperModel: 'nano',
       assemblyApiKey: ASSEMBLY_API_KEY,
       llm: 'chatgpt',
@@ -1641,7 +1641,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'assembly',
+      transcriptServices: 'assembly',
       whisperModel: 'nano',
       assemblyApiKey: ASSEMBLY_API_KEY,
       llm: 'claude',
@@ -1655,7 +1655,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'assembly',
+      transcriptServices: 'assembly',
       whisperModel: 'nano',
       assemblyApiKey: ASSEMBLY_API_KEY,
       llm: 'claude',
@@ -1669,7 +1669,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'assembly',
+      transcriptServices: 'assembly',
       whisperModel: 'nano',
       assemblyApiKey: ASSEMBLY_API_KEY,
       llm: 'claude',
@@ -1683,7 +1683,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'assembly',
+      transcriptServices: 'assembly',
       whisperModel: 'nano',
       assemblyApiKey: ASSEMBLY_API_KEY,
       llm: 'gemini',
@@ -1697,7 +1697,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'assembly',
+      transcriptServices: 'assembly',
       whisperModel: 'nano',
       assemblyApiKey: ASSEMBLY_API_KEY,
       llm: 'gemini',
@@ -1711,7 +1711,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'assembly',
+      transcriptServices: 'assembly',
       whisperModel: 'nano',
       assemblyApiKey: ASSEMBLY_API_KEY,
       llm: 'gemini',
@@ -1725,7 +1725,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'assembly',
+      transcriptServices: 'assembly',
       whisperModel: 'nano',
       assemblyApiKey: ASSEMBLY_API_KEY,
       llm: 'gemini',
@@ -1739,7 +1739,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'assembly',
+      transcriptServices: 'assembly',
       whisperModel: 'nano',
       assemblyApiKey: ASSEMBLY_API_KEY,
       llm: 'gemini',
@@ -1753,7 +1753,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'assembly',
+      transcriptServices: 'assembly',
       whisperModel: 'nano',
       assemblyApiKey: ASSEMBLY_API_KEY,
       llm: 'deepseek',
@@ -1767,7 +1767,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'assembly',
+      transcriptServices: 'assembly',
       whisperModel: 'nano',
       assemblyApiKey: ASSEMBLY_API_KEY,
       llm: 'deepseek',
@@ -1781,7 +1781,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'assembly',
+      transcriptServices: 'assembly',
       whisperModel: 'nano',
       assemblyApiKey: ASSEMBLY_API_KEY,
       llm: 'fireworks',
@@ -1795,7 +1795,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'assembly',
+      transcriptServices: 'assembly',
       whisperModel: 'nano',
       assemblyApiKey: ASSEMBLY_API_KEY,
       llm: 'fireworks',
@@ -1809,7 +1809,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'assembly',
+      transcriptServices: 'assembly',
       whisperModel: 'nano',
       assemblyApiKey: ASSEMBLY_API_KEY,
       llm: 'fireworks',
@@ -1823,7 +1823,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'assembly',
+      transcriptServices: 'assembly',
       whisperModel: 'nano',
       assemblyApiKey: ASSEMBLY_API_KEY,
       llm: 'fireworks',
@@ -1837,7 +1837,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'assembly',
+      transcriptServices: 'assembly',
       whisperModel: 'nano',
       assemblyApiKey: ASSEMBLY_API_KEY,
       llm: 'fireworks',
@@ -1851,7 +1851,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'assembly',
+      transcriptServices: 'assembly',
       whisperModel: 'nano',
       assemblyApiKey: ASSEMBLY_API_KEY,
       llm: 'together',
@@ -1865,7 +1865,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'assembly',
+      transcriptServices: 'assembly',
       whisperModel: 'nano',
       assemblyApiKey: ASSEMBLY_API_KEY,
       llm: 'together',
@@ -1879,7 +1879,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'assembly',
+      transcriptServices: 'assembly',
       whisperModel: 'nano',
       assemblyApiKey: ASSEMBLY_API_KEY,
       llm: 'together',
@@ -1893,7 +1893,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'assembly',
+      transcriptServices: 'assembly',
       whisperModel: 'nano',
       assemblyApiKey: ASSEMBLY_API_KEY,
       llm: 'together',
@@ -1907,7 +1907,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'assembly',
+      transcriptServices: 'assembly',
       whisperModel: 'nano',
       assemblyApiKey: ASSEMBLY_API_KEY,
       llm: 'together',
@@ -1921,7 +1921,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'assembly',
+      transcriptServices: 'assembly',
       whisperModel: 'nano',
       assemblyApiKey: ASSEMBLY_API_KEY,
       llm: 'together',
@@ -1935,7 +1935,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'assembly',
+      transcriptServices: 'assembly',
       whisperModel: 'nano',
       assemblyApiKey: ASSEMBLY_API_KEY,
       llm: 'together',
@@ -1949,7 +1949,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'assembly',
+      transcriptServices: 'assembly',
       whisperModel: 'nano',
       assemblyApiKey: ASSEMBLY_API_KEY,
       llm: 'together',

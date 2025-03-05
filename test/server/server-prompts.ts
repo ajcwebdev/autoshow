@@ -17,7 +17,7 @@ interface RequestData {
   url?: string
   prompts?: string[]
   whisperModel?: string
-  transcriptionService?: string
+  transcriptServices?: string
   speakerLabels?: boolean
   llm?: LLMProvider
   llmModel?: string

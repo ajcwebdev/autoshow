@@ -25,7 +25,6 @@ interface RequestData {
   url?: string
   prompts?: string[]
   whisperModel?: string
-  transcriptionService?: string
   transcriptServices?: TranscriptService
   speakerLabels?: boolean
   llm?: LLMProvider
@@ -69,7 +68,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'whisper',
+      transcriptServices: 'whisper',
     },
     endpoint: '/api/process',
     outputFiles: ['FILE_03.md'],

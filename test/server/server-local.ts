@@ -13,7 +13,7 @@ interface RequestData {
   url?: string;
   prompts?: string[];
   whisperModel?: string;
-  transcriptionService?: string;
+  transcriptServices?: string;
 }
 
 interface Request {
@@ -45,7 +45,7 @@ const requests: Request[] = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      transcriptionService: 'whisper',
+      transcriptServices: 'whisper',
       prompts: ['titles', 'summary'],
     },
     endpoint: '/api/process',

@@ -11,7 +11,7 @@ import { runLLM } from '../process-steps/05-run-llm'
 import { l, err, logSeparator, logInitialFunctionCall } from '../utils/logging'
 import { parser } from '../utils/node-utils'
 
-import type { ProcessingOptions, ShowNote } from '../utils/types'
+import type { ProcessingOptions, ShowNoteMetadata } from '../utils/types'
 
 /**
  * Fetches and parses an RSS feed (URL or local file path), then applies filtering via {@link filterRSSItems}.
@@ -180,7 +180,7 @@ export async function processRSS(
           frontMatter,
           selectedPrompts,
           transcript,
-          metadata as ShowNote,
+          metadata as ShowNoteMetadata,
           llmServices
         )
         if (!options.saveAudio) {

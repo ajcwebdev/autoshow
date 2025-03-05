@@ -41,17 +41,17 @@ export interface DatabaseService {
  * All methods are implemented but have no effect
  */
 export class NoOpDatabaseService implements DatabaseService {
-  async insertShowNote(_showNote: ShowNote): Promise<void> {
+  async insertShowNote(_showNote: ShowNote) {
     l.dim('\n  CLI mode: Database operations disabled - skipping show note insertion')
     return Promise.resolve()
   }
   
-  async getShowNote(_id: number): Promise<any> {
+  async getShowNote(_id: number) {
     l.dim('\n  CLI mode: Database operations disabled - cannot retrieve show notes')
     return Promise.resolve(null)
   }
   
-  async getShowNotes(): Promise<any[]> {
+  async getShowNotes() {
     l.dim('\n  CLI mode: Database operations disabled - cannot retrieve show notes')
     return Promise.resolve([])
   }
@@ -87,7 +87,7 @@ export class PrismaDatabaseService implements DatabaseService {
     
     return this
   }
-  async insertShowNote(showNote: ShowNote): Promise<void> {
+  async insertShowNote(showNote: ShowNote) {
     if (!this.initialized) await this.init()
     if (!this.prismaClient) {
       l.dim('\n  Database unavailable - skipping show note insertion')
@@ -124,7 +124,8 @@ export class PrismaDatabaseService implements DatabaseService {
       l.dim(`    - Failed to insert show note: ${(error as Error).message}\n`)
     }
   }
-  async getShowNote(id: number): Promise<any> {
+
+  async getShowNote(id: number) {
     if (!this.initialized) await this.init()
     if (!this.prismaClient) return null
     try {
@@ -138,7 +139,8 @@ export class PrismaDatabaseService implements DatabaseService {
       return null
     }
   }
-  async getShowNotes(): Promise<any[]> {
+
+  async getShowNotes() {
     if (!this.initialized) await this.init()
     if (!this.prismaClient) return []
     try {
@@ -157,7 +159,7 @@ export class PrismaDatabaseService implements DatabaseService {
 /**
  * Determines if we're running in server mode or CLI mode
  */
-function isServerMode(): boolean {
+function isServerMode() {
   return env['DATABASE_URL'] !== undefined ||
          env['PGHOST'] !== undefined ||
          env['SERVER_MODE'] === 'true'

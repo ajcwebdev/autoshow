@@ -5,7 +5,7 @@ import { retryLLMCall, LLM_FUNCTIONS, getModelIdOrDefault } from './05-run-llm-u
 import { l, err, logInitialFunctionCall } from '../utils/logging'
 import { writeFile, env } from '../utils/node-utils'
 
-import type { ProcessingOptions, ShowNote } from '../utils/types'
+import type { ProcessingOptions, ShowNoteMetadata } from '../utils/types'
 
 /**
  * Processes a transcript using a specified Language Model service.
@@ -30,7 +30,7 @@ import type { ProcessingOptions, ShowNote } from '../utils/types'
  * @param {string} frontMatter - YAML front matter content to include in the output
  * @param {string} prompt - Optional prompt or instructions to process
  * @param {string} transcript - The transcript content
- * @param {ShowNote} metadata - The metadata object
+ * @param {ShowNoteMetadata} metadata - The metadata object
  * @param {string} [llmServices] - The LLM service to use
  * @returns {Promise<string>} Resolves with the LLM output, or an empty string if no LLM is selected
  */
@@ -40,7 +40,7 @@ export async function runLLM(
   frontMatter: string,
   prompt: string,
   transcript: string,
-  metadata: ShowNote,
+  metadata: ShowNoteMetadata,
   llmServices?: string,
 ) {
   l.step(`\nStep 5 - Run Language Model\n`)

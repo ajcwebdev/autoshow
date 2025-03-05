@@ -21,6 +21,18 @@ export type ShowNote = {
   mnemonic?: string
 }
 
+export type ShowNoteMetadata = {
+  showLink?: string
+  channel?: string
+  channelURL?: string
+  title: string
+  description?: string
+  publishDate: string
+  coverImage?: string
+  walletAddress?: string
+  mnemonic?: string
+}
+
 /**
  * Processing options passed through command-line arguments.
  */

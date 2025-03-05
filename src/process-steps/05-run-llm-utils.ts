@@ -13,7 +13,7 @@ import { l, err } from '../utils/logging'
 import { readFile } from '../utils/node-utils'
 import { LLM_SERVICES_CONFIG } from '../../shared/constants'
 
-import type { ProcessingOptions, ShowNote } from '../utils/types'
+import type { ProcessingOptions, ShowNoteMetadata } from '../utils/types'
 
 /**
  * Formats a cost value to show cents as "¢1", fractions of a cent as "¢0.5", etc.
@@ -273,7 +273,7 @@ function parsePromptFile(fileContent: string) {
   let frontMatter = ''
   let prompt = ''
   let transcript = ''
-  let metadata: ShowNote = {
+  let metadata: ShowNoteMetadata = {
     title: '',
     publishDate: ''
   }

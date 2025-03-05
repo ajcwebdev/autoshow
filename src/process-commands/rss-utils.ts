@@ -2,7 +2,7 @@
 
 import { l, err } from '../utils/logging'
 
-import type { ProcessingOptions, ShowNote, HandlerFunction } from '../utils/types'
+import type { ProcessingOptions, ShowNoteMetadata, HandlerFunction } from '../utils/types'
 
 /**
  * Validates RSS flags (e.g., --last, --skip, --order, --date, --lastDays) without requiring feed data.
@@ -86,7 +86,7 @@ export async function filterRSSItems(
   channelImage?: string
 ) {
   const defaultDate = new Date().toISOString().substring(0, 10)
-  const unfilteredItems: ShowNote[] = (feedItemsArray || [])
+  const unfilteredItems: ShowNoteMetadata[] = (feedItemsArray || [])
     .filter((item: any) => {
       if (!item.enclosure || !item.enclosure.type) return false
       const audioVideoTypes = ['audio/', 'video/']
@@ -112,7 +112,7 @@ export async function filterRSSItems(
       }
     })
 
-  let itemsToProcess: ShowNote[] = []
+  let itemsToProcess = []
 
   if (options.item && options.item.length > 0) {
     itemsToProcess = unfilteredItems.filter((it) =>

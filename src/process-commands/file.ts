@@ -8,7 +8,7 @@ import { selectPrompts } from '../process-steps/04-select-prompt'
 import { runLLM } from '../process-steps/05-run-llm'
 import { l, err, logInitialFunctionCall } from '../utils/logging'
 
-import type { ProcessingOptions, ShowNote } from '../utils/types'
+import type { ProcessingOptions, ShowNoteMetadata } from '../utils/types'
 
 /**
  * Processes a local audio or video file through a series of operations:
@@ -57,7 +57,7 @@ export async function processFile(
       frontMatter,
       selectedPrompts,
       transcript,
-      metadata as ShowNote,
+      metadata as ShowNoteMetadata,
       llmServices
     )
 

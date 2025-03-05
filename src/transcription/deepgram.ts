@@ -1,10 +1,10 @@
 // src/transcription/deepgram.ts
 
-import { readFile } from 'node:fs/promises'
-import { env } from 'node:process'
-import { l, err } from '../utils/logging'
 import { logTranscriptionCost, formatDeepgramTranscript } from '../process-steps/03-run-transcription-utils'
+import { l, err } from '../utils/logging'
+import { readFile, env } from '../utils/node-utils'
 import { TRANSCRIPTION_SERVICES_CONFIG } from '../../shared/constants'
+
 import type { ProcessingOptions } from '../utils/types'
 
 /**

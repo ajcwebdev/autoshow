@@ -1,9 +1,9 @@
 // src/process-steps/01-generate-markdown.ts
 
-import { basename, extname } from 'node:path'
-import { execFilePromise } from '../utils/validation/cli'
 import { sanitizeTitle, buildFrontMatter } from './01-generate-markdown-utils'
 import { l, err, logInitialFunctionCall } from '../utils/logging'
+import { execFilePromise, basename, extname } from '../utils/node-utils'
+
 import type { ProcessingOptions, ShowNote } from '../utils/types'
 
 /**

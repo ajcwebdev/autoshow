@@ -1,9 +1,9 @@
 // src/process-commands/playlist.ts
 
 import { processVideo } from './video'
-import { execFilePromise } from '../utils/validation/cli'
 import { saveInfo } from '../process-steps/01-generate-markdown-utils'
 import { l, err, logSeparator, logInitialFunctionCall } from '../utils/logging'
+import { execFilePromise } from '../utils/node-utils'
 
 import type { ProcessingOptions } from '../utils/types'
 

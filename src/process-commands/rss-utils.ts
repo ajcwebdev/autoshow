@@ -242,3 +242,38 @@ export function logRSSProcessingStatus(
     l.dim(`  - Processing ${processing} item(s) after skipping ${options.skip || 0}.\n`)
   }
 }
+
+/**
+ * Retries a given RSS fetch with an exponential backoff of 7 attempts (1s initial delay).
+ * 
+ * @param {() => Promise<Response>} fn - The function to execute for the RSS fetch
+ * @returns {Promise<Response>} Resolves with the Response object if successful
+ * @throws {Error} If fetch fails after all attempts
+ */
+export async function retryRSSFetch(
+  fn: () => Promise<Response>
+) {
+  const maxRetries = 7
+  let attempt = 0
+
+  while (attempt < maxRetries) {
+    try {
+      attempt++
+      l.dim(`  Attempt ${attempt} - Fetching RSS...\n`)
+      const response = await fn()
+      l.dim(`\n  RSS fetch succeeded on attempt ${attempt}.`)
+      return response
+    } catch (error) {
+      err(`  Attempt ${attempt} failed: ${(error as Error).message}`)
+      if (attempt >= maxRetries) {
+        err(`  Max retries (${maxRetries}) reached. Aborting RSS fetch.`)
+        throw error
+      }
+      const delayMs = 1000 * 2 ** (attempt - 1)
+      l.dim(`  Retrying in ${delayMs / 1000} seconds...`)
+      await new Promise((resolve) => setTimeout(resolve, delayMs))
+    }
+  }
+
+  throw new Error('RSS fetch failed after maximum retries.')
+}

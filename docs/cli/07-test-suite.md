@@ -1,28 +1,14 @@
-# Test Suite
+# CLI Test Suite
 
-## Outline
-
-- [Prompt Tests](#prompt-tests)
-- [CLI Tests](#cli-tests)
-- [Server Tests](#server-tests)
-- [LLM Tests](#llm-tests)
-- [Transcription Tests](#transcription-tests)
-
-## Prompt Tests
-
-Test all prompts on a single video or audio file.
-
-## CLI Tests
-
-```bash
-npm run cli-prompts-test
-```
+## Local Tests
 
 Local services test, only uses Whisper for transcription and Ollama for LLM operations.
 
 ```bash
 npm run cli-local-test
 ```
+
+## Third Party Tests
 
 Test all process commands and third party services.
 
@@ -33,13 +19,18 @@ Test all process commands and third party services.
 npm run cli-all-test
 ```
 
-## Server Tests
-
-Server tests with Docker container, also uses Whisper for transcription but in a Docker container.
+Integrated LLM and transcription model test.
 
 ```bash
-npm run server-local-test
-npm run server-all-test
+npm run cli-models-test
+```
+
+## Prompt Tests
+
+Test all prompts on a single video or audio file.
+
+```bash
+npm run cli-prompts-test
 ```
 
 ## LLM Tests

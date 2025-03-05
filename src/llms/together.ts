@@ -1,8 +1,8 @@
 // src/llms/together.ts
 
-import { env } from 'node:process'
-import { LLM_SERVICES_CONFIG } from '../../shared/constants'
 import { err, logLLMCost } from '../utils/logging'
+import { env } from '../utils/node-utils'
+import { LLM_SERVICES_CONFIG } from '../../shared/constants'
 
 /**
  * Type union of all `.modelId` fields for Together models in {@link LLM_SERVICES_CONFIG}.

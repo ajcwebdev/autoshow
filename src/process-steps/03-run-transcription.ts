@@ -3,8 +3,8 @@
 import { callWhisper } from '../transcription/whisper'
 import { callDeepgram } from '../transcription/deepgram'
 import { callAssembly } from '../transcription/assembly'
+import { retryTranscriptionCall } from './03-run-transcription-utils'
 import { l, err, logInitialFunctionCall } from '../utils/logging'
-import { retryTranscriptionCall } from '../utils/validation/retry'
 
 import type { ProcessingOptions } from '../utils/types'
 
@@ -37,9 +37,7 @@ export async function runTranscription(
                                         deepgramModel as 'NOVA_2' | 'BASE' | 'ENHANCED'
         
         const deepgramTranscript = await retryTranscriptionCall(
-          () => callDeepgram(options, finalPath, normalizedDeepgramModel),
-          5,
-          5000
+          () => callDeepgram(options, finalPath, normalizedDeepgramModel)
         )
         l.dim('\n  Deepgram transcription completed successfully.\n')
         l.dim(`\n    - deepgramModel: ${deepgramModel}`)
@@ -53,9 +51,7 @@ export async function runTranscription(
                                         assemblyModel as 'BEST' | 'NANO'
         
         const assemblyTranscript = await retryTranscriptionCall(
-          () => callAssembly(options, finalPath, normalizedAssemblyModel),
-          5,
-          5000
+          () => callAssembly(options, finalPath, normalizedAssemblyModel)
         )
         l.dim('\n  AssemblyAI transcription completed successfully.\n')
         l.dim(`\n    - assemblyModel: ${assemblyModel}`)
@@ -63,9 +59,7 @@ export async function runTranscription(
 
       case 'whisper':
         const whisperTranscript = await retryTranscriptionCall(
-          () => callWhisper(options, finalPath),
-          5,
-          5000
+          () => callWhisper(options, finalPath)
         )
         l.dim('\n  Whisper transcription completed successfully.\n')
         return whisperTranscript

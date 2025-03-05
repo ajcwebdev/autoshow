@@ -1,11 +1,10 @@
 // src/process-steps/05-run-llm.ts
 
-import { writeFile } from 'node:fs/promises'
 import { dbService } from '../db'
-import { l, err, logInitialFunctionCall, getModelIdOrDefault } from '../utils/logging'
-import { retryLLMCall } from '../utils/validation/retry'
+import { retryLLMCall } from './05-run-llm-utils'
 import { LLM_FUNCTIONS } from './05-run-llm-utils'
-import { env } from 'node:process'
+import { l, err, logInitialFunctionCall, getModelIdOrDefault } from '../utils/logging'
+import { writeFile, env } from '../utils/node-utils'
 
 import type { ProcessingOptions, ShowNote } from '../utils/types'
 
@@ -71,9 +70,7 @@ export async function runLLM(
         async () => {
           showNotes = await llmFunction(prompt, transcript, userModel)
           return showNotes
-        },
-        5,
-        5000
+        }
       )
 
       const outputFilename = `${finalPath}-${llmServices}-shownotes.md`

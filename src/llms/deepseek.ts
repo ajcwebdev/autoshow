@@ -1,8 +1,8 @@
 // src/llms/deepseek.ts
 
-import { env } from 'node:process'
 import { OpenAI } from 'openai'
 import { err, logLLMCost } from '../utils/logging'
+import { env } from '../utils/node-utils'
 import { LLM_SERVICES_CONFIG } from '../../shared/constants'
 
 /**

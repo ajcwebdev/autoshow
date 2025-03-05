@@ -1,8 +1,7 @@
 // src/llms/ollama.ts
 
-import { env } from 'node:process'
-import { spawn } from 'node:child_process'
 import { l, err, logLLMCost } from '../utils/logging'
+import { env, spawn } from '../utils/node-utils'
 import { LLM_SERVICES_CONFIG } from '../../shared/constants'
 
 /**

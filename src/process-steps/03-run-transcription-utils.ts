@@ -1,12 +1,44 @@
 // src/process-steps/03-run-transcription-utils.ts
 
-import { existsSync } from 'node:fs'
 import { l, err } from '../utils/logging'
+import { execPromise, existsSync } from '../utils/node-utils'
 import { TRANSCRIPTION_SERVICES_CONFIG } from '../../shared/constants'
-import { execPromise } from '../utils/validation/cli'
 
-import type { ProcessingOptions } from '../utils/types'
-import type { WhisperOutput } from '../../shared/constants'
+import type { ProcessingOptions, WhisperOutput } from '../utils/types'
+
+/**
+ * Retries a given transcription call with an exponential backoff of 7 attempts (1s initial delay).
+ * 
+ * @param {() => Promise<string>} fn - The function to execute for the transcription call
+ * @returns {Promise<string>} Resolves when the function succeeds or rejects after 7 attempts
+ * @throws {Error} If the function fails after all attempts
+ */
+export async function retryTranscriptionCall(
+  fn: () => Promise<string>
+) {
+  const maxRetries = 7
+  let attempt = 0
+
+  while (attempt < maxRetries) {
+    try {
+      attempt++
+      const transcript = await fn()
+      l.dim(`  Transcription call completed successfully on attempt ${attempt}.`)
+      return transcript
+    } catch (error) {
+      err(`  Attempt ${attempt} failed: ${(error as Error).message}`)
+      if (attempt >= maxRetries) {
+        err(`  Max retries (${maxRetries}) reached. Aborting transcription.`)
+        throw error
+      }
+      const delayMs = 1000 * 2 ** (attempt - 1)
+      l.dim(`  Retrying in ${delayMs / 1000} seconds...`)
+      await new Promise((resolve) => setTimeout(resolve, delayMs))
+    }
+  }
+
+  throw new Error('Transcription call failed after maximum retries.')
+}
 
 /**
  * Asynchronously logs the estimated transcription cost based on audio duration and per-minute cost.

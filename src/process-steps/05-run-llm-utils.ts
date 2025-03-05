@@ -1,7 +1,5 @@
 // src/process-steps/05-run-llm-utils.ts
 
-import { readFile } from 'node:fs/promises'
-import { l, err, logLLMCost } from '../utils/logging'
 import { runLLM } from './05-run-llm'
 import { callOllama } from '../llms/ollama'
 import { callChatGPT } from '../llms/chatgpt'
@@ -10,8 +8,45 @@ import { callGemini } from '../llms/gemini'
 import { callDeepSeek } from '../llms/deepseek'
 import { callFireworks } from '../llms/fireworks'
 import { callTogether } from '../llms/together'
+import { l, err, logLLMCost } from '../utils/logging'
+import { readFile } from '../utils/node-utils'
 
 import type { ProcessingOptions, ShowNote } from '../utils/types'
+
+/**
+ * Retries a given LLM call with an exponential backoff of 7 attempts (1s initial delay).
+ * 
+ * @template T
+ * @param {() => Promise<T>} fn - The function to execute for the LLM call
+ * @returns {Promise<T>} Resolves when the function succeeds or rejects after 7 attempts
+ * @throws {Error} If the function fails after all attempts
+ */
+export async function retryLLMCall<T>(
+  fn: () => Promise<T>
+) {
+  const maxRetries = 7
+  let attempt = 0
+
+  while (attempt < maxRetries) {
+    try {
+      attempt++
+      l.dim(`  Attempt ${attempt} - Processing LLM call...\n`)
+      const result = await fn()
+      l.dim(`\n  LLM call completed successfully on attempt ${attempt}.`)
+      return result
+    } catch (error) {
+      err(`  Attempt ${attempt} failed: ${(error as Error).message}`)
+      if (attempt >= maxRetries) {
+        err(`  Max retries (${maxRetries}) reached. Aborting LLM processing.`)
+        throw error
+      }
+      const delayMs = 1000 * 2 ** (attempt - 1)
+      l.dim(`  Retrying in ${delayMs / 1000} seconds...`)
+      await new Promise((resolve) => setTimeout(resolve, delayMs))
+    }
+  }
+  throw new Error('LLM call failed after maximum retries.')
+}
 
 // Type for LLM function signatures
 type LLMFunction = (prompt: string, transcript: string, options: any) => Promise<string>;

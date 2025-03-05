@@ -1,10 +1,9 @@
 // src/process-steps/02-download-audio.ts
 
-import { readFile, access } from 'node:fs/promises'
 import { fileTypeFromBuffer } from 'file-type'
+import { executeWithRetry } from './02-download-audio-utils'
 import { l, err, logInitialFunctionCall } from '../utils/logging'
-import { executeWithRetry } from '../utils/validation/retry'
-import { execPromise } from '../utils/validation/cli'
+import { execPromise, readFile, access } from '../utils/node-utils'
 
 import type { ProcessingOptions } from '../utils/types'
 
@@ -91,8 +90,7 @@ export async function downloadAudio(
           '--no-playlist',
           '-o', outputPath,
           input,
-        ],
-        5
+        ]
       )
     } catch (error) {
       err(`Error downloading audio: ${error instanceof Error ? error.message : String(error)}`)

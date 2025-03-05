@@ -1,28 +1,22 @@
 // src/utils/validation/cli.ts
 
-import { exec, execFile } from 'node:child_process'
-import { promisify } from 'node:util'
-import { exit } from 'node:process'
-import { err } from '../logging'
-import { validateRSSAction } from '../../process-commands/rss-utils'
-import { estimateTranscriptCost } from '../../process-steps/03-run-transcription-utils'
-import { selectPrompts } from '../../process-steps/04-select-prompt'
-import { estimateLLMCost, runLLMFromPromptFile } from '../../process-steps/05-run-llm-utils'
-import { createEmbeddingsAndSQLite } from '../embeddings/create-embed'
-import { queryEmbeddings } from '../embeddings/query-embed'
-import { LLM_SERVICES_CONFIG } from '../../../shared/constants'
+import { processVideo } from './process-commands/video'
+import { processPlaylist } from './process-commands/playlist'
+import { processChannel } from './process-commands/channel'
+import { processURLs } from './process-commands/urls'
+import { processFile } from './process-commands/file'
+import { processRSS } from './process-commands/rss'
+import { validateRSSAction } from './process-commands/rss-utils'
+import { estimateTranscriptCost } from './process-steps/03-run-transcription-utils'
+import { selectPrompts } from './process-steps/04-select-prompt'
+import { estimateLLMCost, runLLMFromPromptFile } from './process-steps/05-run-llm-utils'
+import { createEmbeds } from './utils/embeddings/create-embed'
+import { queryEmbeddings } from './utils/embeddings/query-embed'
+import { err } from './utils/logging'
+import { exit } from './utils/node-utils'
+import { LLM_SERVICES_CONFIG } from '../shared/constants'
 
-import type { ProcessingOptions, HandlerFunction } from '../types'
-
-export const execPromise = promisify(exec)
-export const execFilePromise = promisify(execFile)
-
-import { processVideo } from '../../../src/process-commands/video'
-import { processPlaylist } from '../../../src/process-commands/playlist'
-import { processChannel } from '../../../src/process-commands/channel'
-import { processURLs } from '../../../src/process-commands/urls'
-import { processFile } from '../../../src/process-commands/file'
-import { processRSS } from '../../../src/process-commands/rss'
+import type { ProcessingOptions, HandlerFunction } from './utils/types'
 
 /**
  * Maps action names to their corresponding handler function.
@@ -227,7 +221,7 @@ export async function handleEarlyExitIfNeeded(options: ProcessingOptions): Promi
   // If the user wants to create embeddings, do that and exit
   if (options['createEmbeddings']) {
     try {
-      await createEmbeddingsAndSQLite(cliDirectory)
+      await createEmbeds(cliDirectory)
       console.log('Embeddings created successfully.')
     } catch (error) {
       err(`Error creating embeddings: ${(error as Error).message}`)

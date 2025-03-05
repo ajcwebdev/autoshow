@@ -1,20 +1,18 @@
 // src/fastify.ts
 
-import { env } from 'node:process'
 import Fastify from 'fastify'
 import cors from '@fastify/cors'
 import { dbService } from './db'
 import { processVideo } from './process-commands/video'
 import { processFile } from './process-commands/file'
-import { l, err } from './utils/logging'
 import { estimateTranscriptCost } from './process-steps/03-run-transcription-utils'
 import { estimateLLMCost, runLLMFromPromptFile } from './process-steps/05-run-llm-utils'
-import { createEmbeddingsAndSQLite } from './utils/embeddings/create-embed'
+import { createEmbeds } from './utils/embeddings/create-embed'
 import { queryEmbeddings } from './utils/embeddings/query-embed'
-import { join } from 'node:path'
-import { writeFile } from 'node:fs/promises'
-import { ENV_VARS_MAP, TRANSCRIPTION_SERVICES_CONFIG, LLM_SERVICES_CONFIG } from '../shared/constants'
 import { submitShowNoteDoc } from './utils/dash-documents'
+import { l, err } from './utils/logging'
+import { env, join, writeFile } from './utils/node-utils'
+import { ENV_VARS_MAP, TRANSCRIPTION_SERVICES_CONFIG, LLM_SERVICES_CONFIG } from '../shared/constants'
 
 import type { FastifyRequest, FastifyReply } from 'fastify'
 import type { ProcessingOptions } from './utils/types'
@@ -324,7 +322,7 @@ export const handleProcessRequest = async (
          * @returns {Promise<void>} - Responds with a success message once embeddings are created
          */
         const directory = requestData['directory'] as string | undefined
-        await createEmbeddingsAndSQLite(directory)
+        await createEmbeds(directory)
         reply.send({ message: 'Embeddings created successfully' })
         break
       }

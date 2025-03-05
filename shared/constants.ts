@@ -43,48 +43,6 @@ export const PROMPT_CHOICES: Array<{ name: string; value: string }> = [
   { name: 'Social Post (LinkedIn)', value: 'linkedin' },
 ]
 
-export type WhisperOutput = {
-  systeminfo: string
-  model: {
-    type: string
-    multilingual: boolean
-    vocab: number
-    audio: {
-      ctx: number
-      state: number
-      head: number
-      layer: number
-    }
-    text: {
-      ctx: number
-      state: number
-      head: number
-      layer: number
-    }
-    mels: number
-    ftype: number
-  }
-  params: {
-    model: string
-    language: string
-    translate: boolean
-  }
-  result: {
-    language: string
-  }
-  transcription: Array<{
-    timestamps: {
-      from: string
-      to: string
-    }
-    offsets: {
-      from: number
-      to: number
-    }
-    text: string
-  }>
-}
-
 /**
  * A single consolidated constant for all user-facing transcription services, including
  * relevant model lists, display labels, optional cost data, and whisper model `.bin` references.

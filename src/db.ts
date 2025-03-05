@@ -8,7 +8,7 @@
  */
 
 import { l } from './utils/logging'
-import { env } from 'node:process'
+import { env } from './utils/node-utils'
 
 import type { ShowNote } from './utils/types'
 

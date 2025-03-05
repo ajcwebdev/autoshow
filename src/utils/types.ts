@@ -110,6 +110,48 @@ export type ProcessingOptions = {
   [key: string]: any
 }
 
+export type WhisperOutput = {
+  systeminfo: string
+  model: {
+    type: string
+    multilingual: boolean
+    vocab: number
+    audio: {
+      ctx: number
+      state: number
+      head: number
+      layer: number
+    }
+    text: {
+      ctx: number
+      state: number
+      head: number
+      layer: number
+    }
+    mels: number
+    ftype: number
+  }
+  params: {
+    model: string
+    language: string
+    translate: boolean
+  }
+  result: {
+    language: string
+  }
+  transcription: Array<{
+    timestamps: {
+      from: string
+      to: string
+    }
+    offsets: {
+      from: number
+      to: number
+    }
+    text: string
+  }>
+}
+
 /**
  * Handler function for processing different actions (e.g., video, playlist).
  * 

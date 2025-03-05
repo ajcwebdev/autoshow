@@ -1,8 +1,7 @@
 // src/process-steps/01-generate-markdown-utils.ts
 
-import { writeFile } from 'node:fs/promises'
-import { execFilePromise } from '../utils/validation/cli'
 import { l, err } from '../utils/logging'
+import { execFilePromise, writeFile } from '../utils/node-utils'
 
 import type { VideoInfo, ShowNote } from '../utils/types'
 

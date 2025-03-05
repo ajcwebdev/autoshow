@@ -1,4 +1,4 @@
-// test/models/all.test.ts
+// test/cli/cli-models.test.ts
 
 import test from 'node:test'
 import { strictEqual } from 'node:assert/strict'
@@ -26,9 +26,6 @@ import { join } from 'node:path'
  * The test will run all commands sequentially and check for file creation and renaming.
  */
 
-// -------------------------------
-// Assembly commands
-// -------------------------------
 const assemblyCommands = [
   {
     // Process multiple YouTube videos from URLs with title prompts, Assembly default model, and ChatGPT default model.
@@ -52,79 +49,6 @@ const assemblyCommands = [
   },
 ]
 
-// -------------------------------
-// ChatGPT commands
-// -------------------------------
-/*
-  LLM_SERVICES_CONFIG.chatgpt.models:
-    - gpt-4.5-preview
-    - gpt-4o
-    - gpt-4o-mini
-    - o1-mini
-*/
-const chatgptCommands = [
-  {
-    cmd: 'npm run as -- --file "content/audio.mp3" --chatgpt',
-    expectedFile: 'audio-chatgpt-shownotes.md',
-    newName: '01-chatgpt-default.md'
-  },
-  {
-    cmd: 'npm run as -- --file "content/audio.mp3" --chatgpt gpt-4.5-preview',
-    expectedFile: 'audio-chatgpt-shownotes.md',
-    newName: '02-chatgpt-gpt-4.5-preview.md'
-  },
-  {
-    cmd: 'npm run as -- --file "content/audio.mp3" --chatgpt gpt-4o',
-    expectedFile: 'audio-chatgpt-shownotes.md',
-    newName: '03-chatgpt-gpt-4o.md'
-  },
-  {
-    cmd: 'npm run as -- --file "content/audio.mp3" --chatgpt gpt-4o-mini',
-    expectedFile: 'audio-chatgpt-shownotes.md',
-    newName: '04-chatgpt-gpt-4o-mini.md'
-  },
-  {
-    cmd: 'npm run as -- --file "content/audio.mp3" --chatgpt o1-mini',
-    expectedFile: 'audio-chatgpt-shownotes.md',
-    newName: '05-chatgpt-o1-mini.md'
-  },
-]
-
-// -------------------------------
-// Claude commands
-// -------------------------------
-/*
-  LLM_SERVICES_CONFIG.claude.models:
-    - claude-3-7-sonnet-latest
-    - claude-3-5-haiku-latest
-    - claude-3-opus-latest
-*/
-const claudeCommands = [
-  {
-    cmd: 'npm run as -- --file "content/audio.mp3" --claude',
-    expectedFile: 'audio-claude-shownotes.md',
-    newName: '01-claude-default.md'
-  },
-  {
-    cmd: 'npm run as -- --file "content/audio.mp3" --claude claude-3-7-sonnet-latest',
-    expectedFile: 'audio-claude-shownotes.md',
-    newName: '02-claude-3-7-sonnet-latest.md'
-  },
-  {
-    cmd: 'npm run as -- --file "content/audio.mp3" --claude claude-3-5-haiku-latest',
-    expectedFile: 'audio-claude-shownotes.md',
-    newName: '03-claude-3-5-haiku-latest.md'
-  },
-  {
-    cmd: 'npm run as -- --file "content/audio.mp3" --claude claude-3-opus-latest',
-    expectedFile: 'audio-claude-shownotes.md',
-    newName: '04-claude-3-opus-latest.md'
-  },
-]
-
-// -------------------------------
-// Deepgram commands
-// -------------------------------
 const deepgramCommands = [
   {
     // Process multiple YouTube videos from URLs with title prompts, Deepgram default model, and ChatGPT default model.
@@ -154,9 +78,71 @@ const deepgramCommands = [
   },
 ]
 
-// -------------------------------
-// DeepSeek commands
-// -------------------------------
+/*
+  LLM_SERVICES_CONFIG.chatgpt.models:
+    - gpt-4.5-preview
+    - gpt-4o
+    - gpt-4o-mini
+    - o1-mini
+*/
+const chatgptCommands = [
+  {
+    cmd: 'npm run as -- --file "content/audio.mp3" --chatgpt',
+    expectedFile: 'audio-chatgpt-shownotes.md',
+    newName: '01-chatgpt-default.md'
+  },
+  // TOO EXPENSIVE TO TEST FREQUENTLY COME ON SAM
+  // {
+  //   cmd: 'npm run as -- --file "content/audio.mp3" --chatgpt gpt-4.5-preview',
+  //   expectedFile: 'audio-chatgpt-shownotes.md',
+  //   newName: '02-chatgpt-gpt-4.5-preview.md'
+  // },
+  {
+    cmd: 'npm run as -- --file "content/audio.mp3" --chatgpt gpt-4o',
+    expectedFile: 'audio-chatgpt-shownotes.md',
+    newName: '03-chatgpt-gpt-4o.md'
+  },
+  {
+    cmd: 'npm run as -- --file "content/audio.mp3" --chatgpt gpt-4o-mini',
+    expectedFile: 'audio-chatgpt-shownotes.md',
+    newName: '04-chatgpt-gpt-4o-mini.md'
+  },
+  {
+    cmd: 'npm run as -- --file "content/audio.mp3" --chatgpt o1-mini',
+    expectedFile: 'audio-chatgpt-shownotes.md',
+    newName: '05-chatgpt-o1-mini.md'
+  },
+]
+
+/*
+  LLM_SERVICES_CONFIG.claude.models:
+    - claude-3-7-sonnet-latest
+    - claude-3-5-haiku-latest
+    - claude-3-opus-latest
+*/
+const claudeCommands = [
+  {
+    cmd: 'npm run as -- --file "content/audio.mp3" --claude',
+    expectedFile: 'audio-claude-shownotes.md',
+    newName: '01-claude-default.md'
+  },
+  {
+    cmd: 'npm run as -- --file "content/audio.mp3" --claude claude-3-7-sonnet-latest',
+    expectedFile: 'audio-claude-shownotes.md',
+    newName: '02-claude-3-7-sonnet-latest.md'
+  },
+  {
+    cmd: 'npm run as -- --file "content/audio.mp3" --claude claude-3-5-haiku-latest',
+    expectedFile: 'audio-claude-shownotes.md',
+    newName: '03-claude-3-5-haiku-latest.md'
+  },
+  {
+    cmd: 'npm run as -- --file "content/audio.mp3" --claude claude-3-opus-latest',
+    expectedFile: 'audio-claude-shownotes.md',
+    newName: '04-claude-3-opus-latest.md'
+  },
+]
+
 /*
   LLM_SERVICES_CONFIG.deepseek.models:
     - deepseek-chat
@@ -180,9 +166,6 @@ const deepseekCommands = [
   },
 ]
 
-// -------------------------------
-// Fireworks commands
-// -------------------------------
 /*
   LLM_SERVICES_CONFIG.fireworks.models:
     - accounts/fireworks/models/llama-v3p1-405b-instruct
@@ -224,9 +207,6 @@ const fireworksCommands = [
   },
 ]
 
-// -------------------------------
-// Gemini commands
-// -------------------------------
 /*
   LLM_SERVICES_CONFIG.gemini.models:
     - gemini-1.5-pro
@@ -268,9 +248,6 @@ const geminiCommands = [
   },
 ]
 
-// -------------------------------
-// Ollama commands
-// -------------------------------
 /*
   LLM_SERVICES_CONFIG.ollama.models:
     - qwen2.5:0.5b
@@ -330,9 +307,6 @@ const ollamaCommands = [
   },
 ]
 
-// -------------------------------
-// Together commands
-// -------------------------------
 /*
   LLM_SERVICES_CONFIG.together.models:
     - meta-llama/Llama-3.2-3B-Instruct-Turbo
@@ -392,7 +366,6 @@ const togetherCommands = [
   },
 ]
 
-// Combine all commands into a single array
 const allCommands = [
   ...assemblyCommands,
   ...chatgptCommands,
@@ -407,12 +380,8 @@ const allCommands = [
 
 test('All Models Command Tests', async (t) => {
   for (const [index, command] of allCommands.entries()) {
-    // Provide a label for each subtest
     await t.test(`Command #${index + 1}: ${command.cmd}`, async () => {
-      // Run the command
       execSync(command.cmd, { stdio: 'inherit' })
-
-      // Check if the command expects multiple output files or just one
       if (Array.isArray(command.expectedFile)) {
         for (const { file, newName } of command.expectedFile) {
           const filePath = join('content', file)

@@ -40,7 +40,7 @@ test('CLI Prompts Command Tests', async (t) => {
       )
 
       // const generatedFile = join('content', '2021-05-10-thoughts-on-lambda-school-layoffs-deepseek-shownotes.md')
-      const generatedFile = join('content', '2024-09-24-ep0-fsjam-podcast-deepseek-shownotes.md')
+      const generatedFile = join('content', 'audio-deepseek-shownotes.md')
       const renamedFile = join('content', renamed)
 
       strictEqual(existsSync(generatedFile), true, `Expected file ${generatedFile} was not created`)

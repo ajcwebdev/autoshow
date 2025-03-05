@@ -136,26 +136,19 @@ Example commands for all available CLI options can be found in [`docs/examples.m
   - `package.json`: Contains project dependencies, scripts, and metadata.
   - `.env.example`: Example environment variables file for configuration.
   - `.dockerignore`: Specifies files/folders ignored by Docker during builds.
+
 - Database Schema (`prisma`)
   - `prisma/schema.prisma`: Defines the Prisma ORM schema for database structure and models.
+  - `prisma/migrations/20250303081347_shownotes/migration.sql`: SQL script detailing schema migrations for Prisma.
+
 - Shared Resources (`shared`)
   - `shared/constants.ts`: Globally shared constants across multiple modules.
-- GitHub Setup and Docker Configuration (`.github`)
-  - `postgres-pgvector.Dockerfile`: Dockerfile for PostgreSQL with PGVector extension.
-  - `Dockerfile`: Main Dockerfile for containerizing the application.
-  - `docker-compose.yml`: Docker Compose configuration for local development.
-- Setup Scripts (`.github/setup`):
-  - `00-cleanup.sh`: Cleans previous build or setup environments.
-  - `01-npm-and-env-vars.sh`: Installs npm packages and sets environment variables.
-  - `02-homebrew.sh`: Installs dependencies using Homebrew.
-  - `03-ollama.sh`: Installs and configures Ollama.
-  - `04-whisper.sh`: Installs and configures Whisper transcription service.
-  - `setup.sh`: Master script executing all setup scripts sequentially.
 
 ### Node CLI and Server Backend
 
 - Main Entry Points (`src`)
   - `commander.ts`: CLI setup using Commander.js.
+  - `commander-utils.ts`: Helper functions for CLI usage.
   - `db.ts`: Initializes the database connection via Prisma.
   - `fastify.ts`: Sets up and configures the Fastify web server.
 
@@ -167,13 +160,20 @@ Example commands for all available CLI options can be found in [`docs/examples.m
   - `urls.ts`: Processes videos listed in a URL file.
   - `playlist.ts`: Processes YouTube playlists.
   - `channel.ts`: Processes all videos from YouTube channels.
+  - `channel-utils.ts`: Helpers specific to YouTube channel processing.
   - `rss.ts`: Processes podcast RSS feeds.
+  - `rss-utils.ts`: Helpers for RSS feed processing.
+
 - Process Steps (`src/process-steps`)
   - `01-generate-markdown.ts`: Creates initial markdown file with metadata.
+  - `01-generate-markdown-utils.ts`: Utility functions for the markdown generation step.
   - `02-download-audio.ts`: Downloads audio from YouTube videos.
+  - `02-download-audio-utils.ts`: Utility functions for the audio download step.
   - `03-run-transcription.ts`: Manages transcription processes.
+  - `03-run-transcription-utils.ts`: Utility functions for the transcription step.
   - `04-select-prompt.ts`: Defines prompts for summarization and chapter creation.
   - `05-run-llm.ts`: Runs language model processes based on prompts.
+  - `05-run-llm-utils.ts`: Utility functions for running language models.
 
 ### Transcription and LLM Services
 
@@ -181,6 +181,7 @@ Example commands for all available CLI options can be found in [`docs/examples.m
   - `whisper.ts`: Implements transcription with Whisper.cpp.
   - `deepgram.ts`: Integration with Deepgram API for transcription.
   - `assembly.ts`: Integration with AssemblyAI API for transcription.
+
 - Language Models (`src/llms`)
   - `ollama.ts`: Integration with local Ollama models.
   - `chatgpt.ts`: Integration with OpenAI's GPT models.
@@ -196,12 +197,13 @@ Example commands for all available CLI options can be found in [`docs/examples.m
   - `create-clips.ts`: Utility to create video/audio clips.
   - `logging.ts`: Reusable logging utilities using Chalk for colorized output.
   - `types.ts`: Commonly used TypeScript types.
-- Command-specific Utilities (`src/utils/command-utils`)
-  - `channel-utils.ts`: Helpers specific to YouTube channel processing.
-  - `rss-utils.ts`: Helpers for RSS feed processing.
+  - `dash-documents.ts`: Helpers or scripts related to Dash payments.
+  - `node-utils.ts`: Node.js-specific utilities.
+
 - Embeddings Utilities (`src/utils/embeddings`)
   - `create-embed.ts`: Functions for creating embeddings.
   - `query-embed.ts`: Functions for querying embeddings.
+
 - Image Generation Utilities (`src/utils/images`)
   - `black-forest-labs-generator.ts`: Integration for image generation with Black Forest Labs.
   - `dalle-generator.ts`: Integration for OpenAI's DALL·E image generation.
@@ -209,16 +211,6 @@ Example commands for all available CLI options can be found in [`docs/examples.m
   - `combined-generator.ts`: Combines multiple image generators.
   - `utils.ts`: Common image-related helper functions.
   - `index.ts`: Centralized exports for image utilities.
-- Step-specific Utilities (`src/utils/step-utils`)
-  - `01-markdown-utils.ts`: Helpers for markdown generation step.
-  - `02-save-audio.ts`: Helpers for saving downloaded audio.
-  - `03-transcription-utils.ts`: Helpers for managing transcription outputs.
-  - `04-prompts.ts`: Helpers for managing and selecting prompts.
-  - `05-llm-utils.ts`: Helpers for interacting with language models.
-- Validation Utilities (`src/utils/validation`)
-  - `cli.ts`: CLI options validation and error handling.
-  - `requests.ts`: Validation for incoming API requests.
-  - `retry.ts`: Utility functions for retry logic and error handling.
 
 ### Astro Web Frontend
 

@@ -5,7 +5,7 @@ import { argv, env, exit } from 'node:process'
 import { fileURLToPath } from 'node:url'
 import { existsSync, writeFileSync, readFileSync, mkdirSync } from 'node:fs'
 import { exec, execFile, spawn } from 'node:child_process'
-import { readFile, readdir, writeFile, access, unlink } from 'node:fs/promises'
+import { readFile, readdir, writeFile, access, unlink, rename } from 'node:fs/promises'
 import { basename, extname, join, dirname, isAbsolute, resolve, relative } from 'node:path'
 
 import { XMLParser } from 'fast-xml-parser'
@@ -36,6 +36,7 @@ export {
   resolve,
   relative,
   unlink,
+  rename,
   existsSync,
   writeFileSync,
   readFileSync,

@@ -3,7 +3,7 @@
 import { fileTypeFromBuffer } from 'file-type'
 import { executeWithRetry } from './02-download-audio-utils'
 import { l, err, logInitialFunctionCall } from '../utils/logging'
-import { execPromise, readFile, access } from '../utils/node-utils'
+import { execPromise, readFile, access, rename } from '../utils/node-utils'
 
 import type { ProcessingOptions } from '../utils/types'
 
@@ -76,6 +76,16 @@ export async function downloadAudio(
 
   const finalPath = `content/${filename}`
   const outputPath = `${finalPath}.wav`
+
+  // Edge case fix: If a WAV file already exists with the same name, rename it to avoid a hang during conversion
+  try {
+    await access(outputPath)
+    const renamedPath = `${finalPath}-renamed.wav`
+    await rename(outputPath, renamedPath)
+    l.dim(`    - Existing file found at ${outputPath}. Renamed to ${renamedPath}`)
+  } catch {
+    // If we reach here, the file doesn't exist. Proceed as normal.
+  }
 
   if (options.video || options.playlist || options.urls || options.rss || options.channel) {
     try {

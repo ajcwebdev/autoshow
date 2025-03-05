@@ -35,7 +35,7 @@ test('CLI Prompts Command Tests', async (t) => {
     await t.test(`should generate ${prompt} successfully`, async () => {
       execSync(
         // `npm run as -- --rss https://ajcwebdev.substack.com/feed --prompt ${prompt} --whisper tiny --deepseek`,
-        `npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --prompt ${prompt} --whisper turbo --deepseek`,
+        `npm run as -- --file "content/audio.mp3" --prompt ${prompt} --whisper tiny --deepseek`,
         { stdio: 'inherit' }
       )
 

@@ -27,7 +27,7 @@
     "serve": "npm run tsx:base -- --watch src/fastify.ts",
     "server-local-test": "npm run tsx:base -- test/server/server-local.ts",
     "server-all-test": "npm run tsx:base -- test/server/server-all.ts",
-    "server-prompts-test": "npm run tsx:base -- test/server/server-prompts.test.ts",
+    "server-prompts-test": "npm run tsx:base -- test/server/server-prompts.ts",
     "server-models-test": "npm run tsx:base -- test/server/server-models.ts",
     "docker-up": "docker-compose -f .github/docker-compose.yml --env-file .env up -d --build",
     "up": "docker-compose -f .github/docker-compose.yml --env-file .env up -d --build",

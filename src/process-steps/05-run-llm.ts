@@ -1,9 +1,8 @@
 // src/process-steps/05-run-llm.ts
 
 import { dbService } from '../db'
-import { retryLLMCall } from './05-run-llm-utils'
-import { LLM_FUNCTIONS } from './05-run-llm-utils'
-import { l, err, logInitialFunctionCall, getModelIdOrDefault } from '../utils/logging'
+import { retryLLMCall, LLM_FUNCTIONS, getModelIdOrDefault } from './05-run-llm-utils'
+import { l, err, logInitialFunctionCall } from '../utils/logging'
 import { writeFile, env } from '../utils/node-utils'
 
 import type { ProcessingOptions, ShowNote } from '../utils/types'

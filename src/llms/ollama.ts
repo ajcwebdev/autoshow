@@ -1,6 +1,7 @@
 // src/llms/ollama.ts
 
-import { l, err, logLLMCost } from '../utils/logging'
+import { logLLMCost } from '../process-steps/05-run-llm-utils'
+import { l, err } from '../utils/logging'
 import { env, spawn } from '../utils/node-utils'
 import { LLM_SERVICES_CONFIG } from '../../shared/constants'
 

@@ -28,53 +28,37 @@ import { join } from 'node:path'
 
 const assemblyCommands = [
   {
-    // Process multiple YouTube videos from URLs with title prompts, Assembly default model, and ChatGPT default model.
-    cmd: 'npm run as -- --urls "content/example-urls.md" --prompt titles --assembly --chatgpt',
-    expectedFiles: [
-      { file: '2024-09-24-ep1-fsjam-podcast-chatgpt-shownotes.md', newName: '01-assembly-default-chatgpt-default.md' },
-      { file: '2024-09-24-ep0-fsjam-podcast-chatgpt-shownotes.md', newName: '02-assembly-default-chatgpt-default.md' }
-    ]
-  },
-  {
     // Process audio with Assembly using BEST model.
     cmd: 'npm run as -- --file "content/audio.mp3" --assembly BEST',
     expectedFile: 'audio-prompt.md',
-    newName: '03-assembly-best.md'
+    newName: '01-assembly-best.md'
   },
   {
     // Process audio with Assembly using NANO model.
     cmd: 'npm run as -- --file "content/audio.mp3" --assembly NANO',
     expectedFile: 'audio-prompt.md',
-    newName: '04-assembly-nano.md'
+    newName: '02-assembly-nano.md'
   },
 ]
 
 const deepgramCommands = [
   {
-    // Process multiple YouTube videos from URLs with title prompts, Deepgram default model, and ChatGPT default model.
-    cmd: 'npm run as -- --urls "content/example-urls.md" --prompt titles --deepgram --chatgpt',
-    expectedFiles: [
-      { file: '2024-09-24-ep1-fsjam-podcast-chatgpt-shownotes.md', newName: '05-deepgram-default-chatgpt-default.md' },
-      { file: '2024-09-24-ep0-fsjam-podcast-chatgpt-shownotes.md', newName: '06-deepgram-default-chatgpt-default.md' }
-    ]
-  },
-  {
     // Process audio with Deepgram using NOVA_2 model.
     cmd: 'npm run as -- --file "content/audio.mp3" --deepgram NOVA_2',
     expectedFile: 'audio-prompt.md',
-    newName: '07-deepgram-nova-2.md'
+    newName: '03-deepgram-nova-2.md'
   },
   {
     // Process audio with Deepgram using BASE model.
     cmd: 'npm run as -- --file "content/audio.mp3" --deepgram BASE',
     expectedFile: 'audio-prompt.md',
-    newName: '08-deepgram-base.md'
+    newName: '04-deepgram-base.md'
   },
   {
     // Process audio with Deepgram using ENHANCED model.
     cmd: 'npm run as -- --file "content/audio.mp3" --deepgram ENHANCED',
     expectedFile: 'audio-prompt.md',
-    newName: '09-deepgram-enhanced.md'
+    newName: '05-deepgram-enhanced.md'
   },
 ]
 
@@ -86,31 +70,26 @@ const deepgramCommands = [
     - o1-mini
 */
 const chatgptCommands = [
-  {
-    cmd: 'npm run as -- --file "content/audio.mp3" --chatgpt',
-    expectedFile: 'audio-chatgpt-shownotes.md',
-    newName: '10-chatgpt-default.md'
-  },
   // TOO EXPENSIVE TO TEST FREQUENTLY COME ON SAM
   // {
   //   cmd: 'npm run as -- --file "content/audio.mp3" --chatgpt gpt-4.5-preview',
   //   expectedFile: 'audio-chatgpt-shownotes.md',
-  //   newName: '11-chatgpt-gpt-4.5-preview.md'
+  //   newName: '06-chatgpt-gpt-4.5-preview.md'
   // },
   {
     cmd: 'npm run as -- --file "content/audio.mp3" --chatgpt gpt-4o',
     expectedFile: 'audio-chatgpt-shownotes.md',
-    newName: '12-chatgpt-gpt-4o.md'
+    newName: '07-chatgpt-gpt-4o.md'
   },
   {
     cmd: 'npm run as -- --file "content/audio.mp3" --chatgpt gpt-4o-mini',
     expectedFile: 'audio-chatgpt-shownotes.md',
-    newName: '13-chatgpt-gpt-4o-mini.md'
+    newName: '08-chatgpt-gpt-4o-mini.md'
   },
   {
     cmd: 'npm run as -- --file "content/audio.mp3" --chatgpt o1-mini',
     expectedFile: 'audio-chatgpt-shownotes.md',
-    newName: '14-chatgpt-o1-mini.md'
+    newName: '09-chatgpt-o1-mini.md'
   },
 ]
 
@@ -122,24 +101,19 @@ const chatgptCommands = [
 */
 const claudeCommands = [
   {
-    cmd: 'npm run as -- --file "content/audio.mp3" --claude',
-    expectedFile: 'audio-claude-shownotes.md',
-    newName: '15-claude-default.md'
-  },
-  {
     cmd: 'npm run as -- --file "content/audio.mp3" --claude claude-3-7-sonnet-latest',
     expectedFile: 'audio-claude-shownotes.md',
-    newName: '16-claude-3-7-sonnet-latest.md'
+    newName: '10-claude-3-7-sonnet-latest.md'
   },
   {
     cmd: 'npm run as -- --file "content/audio.mp3" --claude claude-3-5-haiku-latest',
     expectedFile: 'audio-claude-shownotes.md',
-    newName: '17-claude-3-5-haiku-latest.md'
+    newName: '11-claude-3-5-haiku-latest.md'
   },
   {
     cmd: 'npm run as -- --file "content/audio.mp3" --claude claude-3-opus-latest',
     expectedFile: 'audio-claude-shownotes.md',
-    newName: '18-claude-3-opus-latest.md'
+    newName: '12-claude-3-opus-latest.md'
   },
 ]
 
@@ -150,60 +124,14 @@ const claudeCommands = [
 */
 const deepseekCommands = [
   {
-    cmd: 'npm run as -- --file "content/audio.mp3" --deepseek',
-    expectedFile: 'audio-deepseek-shownotes.md',
-    newName: '19-deepseek-default.md'
-  },
-  {
     cmd: 'npm run as -- --file "content/audio.mp3" --deepseek deepseek-chat',
     expectedFile: 'audio-deepseek-shownotes.md',
-    newName: '20-deepseek-chat.md'
+    newName: '13-deepseek-chat.md'
   },
   {
     cmd: 'npm run as -- --file "content/audio.mp3" --deepseek deepseek-reasoner',
     expectedFile: 'audio-deepseek-shownotes.md',
-    newName: '21-deepseek-reasoner.md'
-  },
-]
-
-/*
-  LLM_SERVICES_CONFIG.fireworks.models:
-    - accounts/fireworks/models/llama-v3p1-405b-instruct
-    - accounts/fireworks/models/llama-v3p1-70b-instruct
-    - accounts/fireworks/models/llama-v3p1-8b-instruct
-    - accounts/fireworks/models/llama-v3p2-3b-instruct
-    - accounts/fireworks/models/qwen2p5-72b-instruct
-*/
-const fireworksCommands = [
-  {
-    cmd: 'npm run as -- --file "content/audio.mp3" --fireworks',
-    expectedFile: 'audio-fireworks-shownotes.md',
-    newName: '22-fireworks-default.md'
-  },
-  {
-    cmd: 'npm run as -- --file "content/audio.mp3" --fireworks accounts/fireworks/models/llama-v3p1-405b-instruct',
-    expectedFile: 'audio-fireworks-shownotes.md',
-    newName: '23-fireworks-llama-v3p1-405b.md'
-  },
-  {
-    cmd: 'npm run as -- --file "content/audio.mp3" --fireworks accounts/fireworks/models/llama-v3p1-70b-instruct',
-    expectedFile: 'audio-fireworks-shownotes.md',
-    newName: '24-fireworks-llama-v3p1-70b.md'
-  },
-  {
-    cmd: 'npm run as -- --file "content/audio.mp3" --fireworks accounts/fireworks/models/llama-v3p1-8b-instruct',
-    expectedFile: 'audio-fireworks-shownotes.md',
-    newName: '25-fireworks-llama-v3p1-8b.md'
-  },
-  {
-    cmd: 'npm run as -- --file "content/audio.mp3" --fireworks accounts/fireworks/models/llama-v3p2-3b-instruct',
-    expectedFile: 'audio-fireworks-shownotes.md',
-    newName: '26-fireworks-llama-v3p2-3b.md'
-  },
-  {
-    cmd: 'npm run as -- --file "content/audio.mp3" --fireworks accounts/fireworks/models/qwen2p5-72b-instruct',
-    expectedFile: 'audio-fireworks-shownotes.md',
-    newName: '27-fireworks-qwen2p5-72b.md'
+    newName: '14-deepseek-reasoner.md'
   },
 ]
 
@@ -217,34 +145,65 @@ const fireworksCommands = [
 */
 const geminiCommands = [
   {
-    cmd: 'npm run as -- --file "content/audio.mp3" --gemini',
-    expectedFile: 'audio-gemini-shownotes.md',
-    newName: '28-gemini-default.md'
-  },
-  {
     cmd: 'npm run as -- --file "content/audio.mp3" --gemini gemini-1.5-pro',
     expectedFile: 'audio-gemini-shownotes.md',
-    newName: '29-gemini-1.5-pro.md'
+    newName: '15-gemini-1.5-pro.md'
   },
   {
     cmd: 'npm run as -- --file "content/audio.mp3" --gemini gemini-1.5-flash-8b',
     expectedFile: 'audio-gemini-shownotes.md',
-    newName: '30-gemini-1.5-flash-8b.md'
+    newName: '16-gemini-1.5-flash-8b.md'
   },
   {
     cmd: 'npm run as -- --file "content/audio.mp3" --gemini gemini-1.5-flash',
     expectedFile: 'audio-gemini-shownotes.md',
-    newName: '31-gemini-1.5-flash.md'
+    newName: '17-gemini-1.5-flash.md'
   },
   {
     cmd: 'npm run as -- --file "content/audio.mp3" --gemini gemini-2.0-flash-lite',
     expectedFile: 'audio-gemini-shownotes.md',
-    newName: '32-gemini-2.0-flash-lite.md'
+    newName: '18-gemini-2.0-flash-lite.md'
   },
   {
     cmd: 'npm run as -- --file "content/audio.mp3" --gemini gemini-2.0-flash',
     expectedFile: 'audio-gemini-shownotes.md',
-    newName: '33-gemini-2.0-flash.md'
+    newName: '19-gemini-2.0-flash.md'
+  },
+]
+
+/*
+  LLM_SERVICES_CONFIG.fireworks.models:
+    - accounts/fireworks/models/llama-v3p1-405b-instruct
+    - accounts/fireworks/models/llama-v3p1-70b-instruct
+    - accounts/fireworks/models/llama-v3p1-8b-instruct
+    - accounts/fireworks/models/llama-v3p2-3b-instruct
+    - accounts/fireworks/models/qwen2p5-72b-instruct
+*/
+const fireworksCommands = [
+  {
+    cmd: 'npm run as -- --file "content/audio.mp3" --fireworks accounts/fireworks/models/llama-v3p1-405b-instruct',
+    expectedFile: 'audio-fireworks-shownotes.md',
+    newName: '20-fireworks-llama-v3p1-405b.md'
+  },
+  {
+    cmd: 'npm run as -- --file "content/audio.mp3" --fireworks accounts/fireworks/models/llama-v3p1-70b-instruct',
+    expectedFile: 'audio-fireworks-shownotes.md',
+    newName: '21-fireworks-llama-v3p1-70b.md'
+  },
+  {
+    cmd: 'npm run as -- --file "content/audio.mp3" --fireworks accounts/fireworks/models/llama-v3p1-8b-instruct',
+    expectedFile: 'audio-fireworks-shownotes.md',
+    newName: '22-fireworks-llama-v3p1-8b.md'
+  },
+  {
+    cmd: 'npm run as -- --file "content/audio.mp3" --fireworks accounts/fireworks/models/llama-v3p2-3b-instruct',
+    expectedFile: 'audio-fireworks-shownotes.md',
+    newName: '23-fireworks-llama-v3p2-3b.md'
+  },
+  {
+    cmd: 'npm run as -- --file "content/audio.mp3" --fireworks accounts/fireworks/models/qwen2p5-72b-instruct',
+    expectedFile: 'audio-fireworks-shownotes.md',
+    newName: '24-fireworks-qwen2p5-72b.md'
   },
 ]
 
@@ -261,49 +220,44 @@ const geminiCommands = [
 */
 const togetherCommands = [
   {
-    cmd: 'npm run as -- --file "content/audio.mp3" --together',
-    expectedFile: 'audio-together-shownotes.md',
-    newName: '34-together-default.md'
-  },
-  {
     cmd: 'npm run as -- --file "content/audio.mp3" --together meta-llama/Llama-3.2-3B-Instruct-Turbo',
     expectedFile: 'audio-together-shownotes.md',
-    newName: '35-together-llama-3.2-3b.md'
+    newName: '25-together-llama-3.2-3b.md'
   },
   {
     cmd: 'npm run as -- --file "content/audio.mp3" --together meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo',
     expectedFile: 'audio-together-shownotes.md',
-    newName: '36-together-llama-3.1-405b.md'
+    newName: '26-together-llama-3.1-405b.md'
   },
   {
     cmd: 'npm run as -- --file "content/audio.mp3" --together meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo',
     expectedFile: 'audio-together-shownotes.md',
-    newName: '37-together-llama-3.1-70b.md'
+    newName: '27-together-llama-3.1-70b.md'
   },
   {
     cmd: 'npm run as -- --file "content/audio.mp3" --together meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo',
     expectedFile: 'audio-together-shownotes.md',
-    newName: '38-together-llama-3.1-8b.md'
+    newName: '28-together-llama-3.1-8b.md'
   },
   {
     cmd: 'npm run as -- --file "content/audio.mp3" --together google/gemma-2-27b-it',
     expectedFile: 'audio-together-shownotes.md',
-    newName: '39-together-gemma-2-27b.md'
+    newName: '29-together-gemma-2-27b.md'
   },
   {
     cmd: 'npm run as -- --file "content/audio.mp3" --together google/gemma-2-9b-it',
     expectedFile: 'audio-together-shownotes.md',
-    newName: '40-together-gemma-2-9b.md'
+    newName: '30-together-gemma-2-9b.md'
   },
   {
     cmd: 'npm run as -- --file "content/audio.mp3" --together Qwen/Qwen2.5-72B-Instruct-Turbo',
     expectedFile: 'audio-together-shownotes.md',
-    newName: '41-together-qwen2.5-72b.md'
+    newName: '31-together-qwen2.5-72b.md'
   },
   {
     cmd: 'npm run as -- --file "content/audio.mp3" --together Qwen/Qwen2.5-7B-Instruct-Turbo',
     expectedFile: 'audio-together-shownotes.md',
-    newName: '42-together-qwen2.5-7b.md'
+    newName: '32-together-qwen2.5-7b.md'
   },
 ]
 

@@ -1,21 +1,126 @@
 // src/fastify.ts
 
-import { env } from 'node:process'
 import Fastify from 'fastify'
 import cors from '@fastify/cors'
 import { dbService } from './db'
 import { processVideo } from './process-commands/video'
 import { processFile } from './process-commands/file'
-import { l, err } from './utils/logging'
-import { validateRequest, validateServerProcessAction, envVarsServerMap } from './utils/validation/requests'
 import { estimateTranscriptCost } from './process-steps/03-run-transcription-utils'
 import { estimateLLMCost, runLLMFromPromptFile } from './process-steps/05-run-llm-utils'
-import { createEmbeddingsAndSQLite } from './utils/embeddings/create-embed'
+import { createEmbeds } from './utils/embeddings/create-embed'
 import { queryEmbeddings } from './utils/embeddings/query-embed'
-import { join } from 'node:path'
-import { writeFile } from 'node:fs/promises'
+import { submitShowNoteDoc } from './utils/dash-documents'
+import { l, err } from './utils/logging'
+import { env, join, writeFile } from './utils/node-utils'
+import { ENV_VARS_MAP, TRANSCRIPTION_SERVICES_CONFIG, LLM_SERVICES_CONFIG } from '../shared/constants'
 
 import type { FastifyRequest, FastifyReply } from 'fastify'
+import type { ProcessingOptions } from './utils/types'
+
+/**
+ * Validates the process type from the request body to ensure that it is a recognized
+ * process type supported by the application. Throws an error if the type is invalid.
+ *
+ * @param type - The process type string from the request body
+ * @returns The valid process type as a string if validation passes
+ * @throws Error if the type is not valid or is missing
+ */
+export function validateServerProcessAction(type: string) {
+  if (!['video', 'file', 'transcriptCost', 'llmCost', 'runLLM', 'createEmbeddings', 'queryEmbeddings'].includes(type)) {
+    throw new Error('Invalid or missing process type')
+  }
+  return type
+}
+
+/**
+ * Maps the incoming request data to typed processing options, determining which LLM
+ * and transcription service (if any) to use. Returns an object with the `options`
+ * plus optional `llmServices` and `transcriptServices` if they are defined.
+ *
+ * @param requestData - The raw request body
+ * @returns An object containing processing options and optionally LLM or transcript service.
+ */
+export function validateRequest(requestData: Record<string, unknown>) {
+  const options: ProcessingOptions = {}
+
+  // Variables to hold selected services
+  let llmServices: string | undefined
+  let transcriptServices: 'whisper' | 'deepgram' | 'assembly' | undefined
+
+  // Collect all valid LLM service values from LLM_SERVICES_CONFIG (excluding null/skip)
+  const validLlmValues = Object.values(LLM_SERVICES_CONFIG)
+    .map((service) => service.value)
+    .filter((v) => v !== null) as string[]
+
+  // Check if a valid LLM service is provided
+  const llm = requestData['llm']
+  if (typeof llm === 'string' && validLlmValues.includes(llm)) {
+    llmServices = llm
+    if (llmServices) {
+      const llmModel = requestData['llmModel']
+      options[llmServices] = (typeof llmModel === 'string' ? llmModel : true)
+    }
+  }
+
+  // Collect valid transcription service values
+  const validTranscriptValues = Object.values(TRANSCRIPTION_SERVICES_CONFIG).map(s => s.value) as Array<'whisper'|'deepgram'|'assembly'>
+  const transcriptServicesValue = requestData['transcriptServices'] as unknown
+
+  // Resolve transcriptServices to 'whisper', 'deepgram', or 'assembly'
+  transcriptServices = (typeof transcriptServicesValue === 'string'
+    && validTranscriptValues.includes(transcriptServicesValue as 'whisper'|'deepgram'|'assembly'))
+    ? transcriptServicesValue as 'whisper'|'deepgram'|'assembly'
+    : 'whisper'
+
+  // Pick whichever model was passed in
+  const transcriptModelRaw =
+    (typeof requestData['transcriptModel'] === 'string' ? requestData['transcriptModel'] : undefined)
+    || (typeof requestData[`${transcriptServices}Model`] === 'string' ? requestData[`${transcriptServices}Model`] : undefined)
+  const transcriptModel = transcriptModelRaw as string | undefined
+
+  if (transcriptServices === 'whisper') {
+    options.whisper = transcriptModel || 'base'
+  } else if (transcriptServices === 'deepgram') {
+    options.deepgram = transcriptModel || true
+  } else if (transcriptServices === 'assembly') {
+    options.assembly = transcriptModel || true
+  }
+
+  // Map additional options from the request data
+  for (const opt of otherOptions) {
+    if (requestData[opt] !== undefined) {
+      options[opt] = requestData[opt]
+    }
+  }
+
+  // Build our return object conditionally for exactOptionalPropertyTypes:
+  const result: { 
+    options: ProcessingOptions; 
+    llmServices?: string; 
+    transcriptServices?: 'whisper' | 'deepgram' | 'assembly'
+  } = { options }
+
+  if (llmServices !== undefined) {
+    result.llmServices = llmServices
+  }
+  if (transcriptServices !== undefined) {
+    result.transcriptServices = transcriptServices
+  }
+
+  return result
+}
+
+/**
+ * Additional CLI flags or options that can be enabled.
+ */
+export const otherOptions: string[] = [
+  'speakerLabels',
+  'prompt',
+  'saveAudio',
+  'info',
+  'walletAddress',
+  'mnemonic'
+]
 
 // Set server port from environment variable or default to 3000
 const port = Number(env['PORT']) || 3000
@@ -40,10 +145,12 @@ export const handleProcessRequest = async (
 
   try {
     // Access parsed request body
-    const requestData = request.body as any
+    const requestData = request.body as Record<string, unknown>
     l('\nParsed request body:', requestData)
 
-    const { type, walletAddress, mnemonic } = requestData
+    const type = requestData['type'] as string
+    const walletAddress = requestData['walletAddress'] as string | undefined
+    const mnemonic = requestData['mnemonic'] as string | undefined
     l(`walletAddress from request: ${walletAddress}, mnemonic from request: ${mnemonic}`)
 
     try {
@@ -69,7 +176,9 @@ export const handleProcessRequest = async (
     // Process based on type
     switch (type) {
       case 'video': {
-        const { url } = requestData
+        const url = requestData['url'] as string
+        const identityId = requestData['identityId'] as string
+        const contractId = requestData['contractId'] as string
         if (!url) {
           reply.status(400).send({ error: 'YouTube URL is required' })
           return
@@ -86,17 +195,37 @@ export const handleProcessRequest = async (
         const outputPath = join(contentDir, `video-${timestamp}.json`)
         await writeFile(outputPath, JSON.stringify(result, null, 2), 'utf8')
 
+        // If identityId and contractId were provided, also submit the resulting show note to Dash
+        let dashDocumentId = ''
+        if (identityId && contractId) {
+          try {
+            dashDocumentId = await submitShowNoteDoc(
+              identityId,
+              contractId,
+              result.frontMatter,
+              result.prompt,
+              result.llmOutput,
+              result.transcript,
+              options['mnemonic']
+            )
+            l(`Dash document created with ID: ${dashDocumentId}`)
+          } catch (subErr) {
+            err('Error creating Dash document after video processing:', subErr)
+          }
+        }
+
         reply.send({
           frontMatter: result.frontMatter,
           prompt: result.prompt,
           llmOutput: result.llmOutput,
           transcript: result.transcript,
+          dashDocumentId
         })
         break
       }
 
       case 'file': {
-        const { filePath } = requestData
+        const filePath = requestData['filePath'] as string
         if (!filePath) {
           reply.status(400).send({ error: 'File path is required' })
           return
@@ -127,7 +256,7 @@ export const handleProcessRequest = async (
        * Accepts "filePath" and "transcriptServices" from the request body
        */
       case 'transcriptCost': {
-        const { filePath } = requestData
+        const filePath = requestData['filePath'] as string
         if (!filePath) {
           reply.status(400).send({ error: 'File path is required' })
           return
@@ -147,7 +276,7 @@ export const handleProcessRequest = async (
        * Accepts "filePath" (combined prompt+transcript) and "llm"
        */
       case 'llmCost': {
-        const { filePath } = requestData
+        const filePath = requestData['filePath'] as string
         if (!filePath) {
           reply.status(400).send({ error: 'File path is required' })
           return
@@ -167,7 +296,7 @@ export const handleProcessRequest = async (
        * Accepts "filePath" and "llm"
        */
       case 'runLLM': {
-        const { filePath } = requestData
+        const filePath = requestData['filePath'] as string
         if (!filePath) {
           reply.status(400).send({ error: 'File path is required' })
           return
@@ -192,8 +321,8 @@ export const handleProcessRequest = async (
          * @param {string} [directory] - An optional directory path to scan for markdown files
          * @returns {Promise<void>} - Responds with a success message once embeddings are created
          */
-        const { directory } = requestData
-        await createEmbeddingsAndSQLite(directory)
+        const directory = requestData['directory'] as string | undefined
+        await createEmbeds(directory)
         reply.send({ message: 'Embeddings created successfully' })
         break
       }
@@ -208,7 +337,8 @@ export const handleProcessRequest = async (
          * @param {string} [directory] - Optional directory path used to locate .md files
          * @returns {Promise<void>} - Responds with a success message once query is complete
          */
-        const { question, directory } = requestData
+        const question = requestData['question'] as string
+        const directory = requestData['directory'] as string | undefined
         if (!question) {
           reply.status(400).send({ error: 'A question is required to query embeddings' })
           return
@@ -268,7 +398,7 @@ async function start() {
   fastify.addHook('preHandler', async (request) => {
     const body = request.body
     if (body) {
-      Object.entries(envVarsServerMap).forEach(([bodyKey, envKey]) => {
+      Object.entries(ENV_VARS_MAP).forEach(([bodyKey, envKey]) => {
         const value = (body as Record<string, string | undefined>)[bodyKey]
         if (value) {
           process.env[envKey as string] = value

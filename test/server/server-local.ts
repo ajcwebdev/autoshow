@@ -7,7 +7,22 @@ import { l, err } from '../../src/utils/logging'
 const BASE_URL = 'http://localhost:3000'
 const OUTPUT_DIR = 'content'
 
-const requests = [
+interface RequestData {
+  type: 'file' | 'video';
+  filePath?: string;
+  url?: string;
+  prompts?: string[];
+  whisperModel?: string;
+  transcriptServices?: string;
+}
+
+interface Request {
+  data: RequestData;
+  endpoint: string;
+  outputFiles: string[];
+}
+
+const requests: Request[] = [
   // File Endpoint Requests
   {
     data: {
@@ -30,12 +45,11 @@ const requests = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
+      transcriptServices: 'whisper',
       prompts: ['titles', 'summary'],
-      whisperModel: 'tiny',
-      llm: 'ollama',
     },
     endpoint: '/api/process',
-    outputFiles: ['03-file-ollama-shownotes.md'],
+    outputFiles: ['03-file-prompts.md'],
   },
   // Video Endpoint Requests
   {
@@ -58,12 +72,12 @@ const requests = [
   },
 ]
 
-const fetchRequest = async (request: any, index: number) => {
+const fetchRequest = async (request: Request, index: number): Promise<void> => {
   try {
     // Get list of files before the request
-    const filesBefore = await fs.readdir(OUTPUT_DIR)
+    const filesBefore: string[] = await fs.readdir(OUTPUT_DIR)
 
-    const response = await fetch(`${BASE_URL}${request.endpoint}`, {
+    const response: Response = await fetch(`${BASE_URL}${request.endpoint}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -74,28 +88,28 @@ const fetchRequest = async (request: any, index: number) => {
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`)
     }
-    const result = await response.json()
+    const result: { message: string } = await response.json()
     l(`Request ${index + 1} result: ${result.message}`)
 
     // Wait briefly to ensure files are written
     await new Promise((resolve) => setTimeout(resolve, 1000))
 
     // Get list of files after the request
-    const filesAfter = await fs.readdir(OUTPUT_DIR)
+    const filesAfter: string[] = await fs.readdir(OUTPUT_DIR)
 
     // Identify new files
-    const newFiles = filesAfter.filter((f) => !filesBefore.includes(f))
+    const newFiles: string[] = filesAfter.filter((f) => !filesBefore.includes(f))
 
     // Sort new files to ensure consistent ordering
     newFiles.sort()
 
-    const outputFiles = request.outputFiles
+    const outputFiles: string[] = request.outputFiles
 
     if (newFiles.length > 0) {
       for (let i = 0; i < newFiles.length; i++) {
-        const oldFilePath = path.join(OUTPUT_DIR, newFiles[i] as any)
-        const newFileName = outputFiles[i]
-        const newFilePath = path.join(OUTPUT_DIR, newFileName)
+        const oldFilePath: string = path.join(OUTPUT_DIR, newFiles[i]!)
+        const newFileName: string = outputFiles[i] ?? `output_${i}.md`
+        const newFilePath: string = path.join(OUTPUT_DIR, newFileName)
         await fs.rename(oldFilePath, newFilePath)
         l(`\nFile renamed:\n  - Old: ${oldFilePath}\n  - New: ${newFilePath}`)
       }
@@ -109,7 +123,10 @@ const fetchRequest = async (request: any, index: number) => {
 
 const runAllRequests = async () => {
   for (let i = 0; i < requests.length; i++) {
-    await fetchRequest(requests[i], i)
+    const request = requests[i];
+    if (request) {
+      await fetchRequest(request, i);
+    }
   }
 }
 

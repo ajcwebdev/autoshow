@@ -1,7 +1,6 @@
 // src/process-steps/05-run-llm-utils.ts
 
-import { readFile } from 'node:fs/promises'
-import { l, err, logLLMCost } from '../utils/logging'
+import chalk from 'chalk'
 import { runLLM } from './05-run-llm'
 import { callOllama } from '../llms/ollama'
 import { callChatGPT } from '../llms/chatgpt'
@@ -10,8 +9,249 @@ import { callGemini } from '../llms/gemini'
 import { callDeepSeek } from '../llms/deepseek'
 import { callFireworks } from '../llms/fireworks'
 import { callTogether } from '../llms/together'
+import { l, err } from '../utils/logging'
+import { readFile } from '../utils/node-utils'
+import { LLM_SERVICES_CONFIG } from '../../shared/constants'
 
-import type { ProcessingOptions, ShowNote } from '../utils/types'
+import type { ProcessingOptions, ShowNoteMetadata } from '../utils/types'
+
+/**
+ * Formats a cost value to show cents as "¢1", fractions of a cent as "¢0.5", etc.
+ *
+ * @param cost - The cost value to format, in dollars
+ * @returns A formatted string representation of the cost:
+ *  - If cost is undefined => "N/A"
+ *  - If cost is exactly 0 => "0¢"
+ *  - If cost is less than one cent => e.g. "¢0.5000"
+ *  - If cost is less than one dollar => e.g. "¢25.00"
+ *  - Otherwise, format in dollars => e.g. "$1.99"
+ * @example
+ * formatCost(undefined) // returns "N/A"
+ * formatCost(0) // returns "0¢"
+ * formatCost(0.005) // returns "¢0.5000"
+ * formatCost(0.25) // returns "¢25.00"
+ * formatCost(1.99) // returns "$1.99"
+ */
+export function formatCost(cost: number | undefined): string {
+  if (cost === undefined) return 'N/A'
+  if (cost === 0) return '0¢'
+
+  const costInCents = cost * 100
+
+  // If total cost in cents is below 1, display fraction of a cent.
+  if (costInCents < 1) {
+    // e.g. $0.005 => "¢0.5000"
+    return `¢${costInCents.toFixed(4)}`
+  }
+
+  // If total cost is below $1, show in cents with two decimal places.
+  if (cost < 1) {
+    return `¢${costInCents.toFixed(2)}`
+  }
+
+  // Otherwise, display in dollars.
+  return `$${cost.toFixed(2)}`
+}
+
+/**
+ * Logs API call results in a standardized format across different LLM providers.
+ * Includes token usage and cost calculations.
+ * 
+ * @param info - The LLM cost and usage details
+ * @param info.name - The name of the model used
+ * @param info.stopReason - The reason why the model request stopped
+ * @param info.tokenUsage - Contains token usage details
+ * @param info.tokenUsage.input - Number of input tokens used
+ * @param info.tokenUsage.output - Number of output tokens generated
+ * @param info.tokenUsage.total - Total number of tokens involved in the request
+ */
+export function logLLMCost(info: {
+  name: string
+  stopReason: string
+  tokenUsage: {
+    input: number | undefined
+    output: number | undefined
+    total: number | undefined
+  }
+}) {
+  const { name, stopReason, tokenUsage } = info
+  const { input, output, total } = tokenUsage
+
+  let modelConfig: {
+    modelId: string
+    modelName: string
+    inputCostPer1M?: number
+    outputCostPer1M?: number
+    inputCostPer1MCents?: number
+    outputCostPer1MCents?: number
+  } | undefined
+  for (const service of Object.values(LLM_SERVICES_CONFIG)) {
+    for (const model of service.models) {
+      if (
+        model.modelId === name ||
+        model.modelId.toLowerCase() === name.toLowerCase()
+      ) {
+        modelConfig = model
+        break
+      }
+    }
+    if (modelConfig) break
+  }
+
+  // Destructure out of modelConfig if it was found
+  const {
+    modelName,
+    inputCostPer1M,
+    outputCostPer1M,
+    inputCostPer1MCents,
+    outputCostPer1MCents
+  } = modelConfig ?? {}
+
+  // Use model label if available, else fallback to the original name
+  const displayName = modelName ?? name
+
+  // Log stop/finish reason and model
+  l.dim(`  - ${stopReason ? `${stopReason} Reason` : 'Status'}: ${stopReason}\n  - Model: ${displayName}`)
+
+  // Prepare token usage lines
+  const tokenLines: string[] = []
+  if (input) tokenLines.push(`${input} input tokens`)
+  if (output) tokenLines.push(`${output} output tokens`)
+  if (total) tokenLines.push(`${total} total tokens`)
+
+  // Log token usage if there's any data
+  if (tokenLines.length > 0) {
+    l.dim(`  - Token Usage:\n    - ${tokenLines.join('\n    - ')}`)
+  }
+
+  // Calculate costs
+  let inputCost: number | undefined
+  let outputCost: number | undefined
+  let totalCost: number | undefined
+
+  if (!modelConfig) {
+    // Warn if we have no cost information
+    console.warn(`Warning: Could not find cost configuration for model: ${modelName}`)
+  } else {
+    // Convert cents to dollars if available, otherwise fallback to old fields
+    const inCost = (typeof inputCostPer1MCents === 'number')
+      ? inputCostPer1MCents / 100
+      : (inputCostPer1M || 0)
+
+    const outCost = (typeof outputCostPer1MCents === 'number')
+      ? outputCostPer1MCents / 100
+      : (outputCostPer1M || 0)
+
+    // If both are effectively 0, treat them as zero
+    if (inCost < 0.0000001 && outCost < 0.0000001) {
+      inputCost = 0
+      outputCost = 0
+      totalCost = 0
+    } else {
+      if (input) {
+        const rawInputCost = (input / 1_000_000) * inCost
+        inputCost = Math.abs(rawInputCost) < 0.00001 ? 0 : rawInputCost
+      }
+      if (output) {
+        outputCost = (output / 1_000_000) * outCost
+      }
+      if (inputCost !== undefined && outputCost !== undefined) {
+        totalCost = inputCost + outputCost
+      }
+    }
+  }
+
+  // Gather cost lines to log
+  const costLines: string[] = []
+  if (inputCost !== undefined) {
+    costLines.push(`Input cost: ${formatCost(inputCost)}`)
+  }
+  if (outputCost !== undefined) {
+    costLines.push(`Output cost: ${formatCost(outputCost)}`)
+  }
+  if (totalCost !== undefined) {
+    costLines.push(`Total cost: ${chalk.bold(formatCost(totalCost))}`)
+  }
+
+  // Log cost breakdown
+  if (costLines.length > 0) {
+    l.dim(`  - Cost Breakdown:\n    - ${costLines.join('\n    - ')}`)
+  }
+}
+
+/**
+ * Gets the model ID for the specified LLM service, using either the user-supplied value or the default.
+ *
+ * @param serviceKey - The key identifying the LLM service (e.g., 'chatgpt', 'claude')
+ * @param userValue - The model value provided by the user, which could be a string, boolean, or undefined
+ * @returns The resolved model ID string to use with the LLM service
+ * @throws Error if the service is not supported or no models are found for the service
+ * @throws Error if the user specified a model that doesn't exist for the given service
+ */
+export function getModelIdOrDefault(serviceKey: string, userValue: unknown): string {
+  const serviceConfig = LLM_SERVICES_CONFIG[serviceKey as keyof typeof LLM_SERVICES_CONFIG]
+
+  if (!serviceConfig) {
+    // e.g. user typed --llmServices=foo but you have no 'foo' in LLM_SERVICES_CONFIG
+    throw new Error(`Unsupported LLM service '${serviceKey}'`)
+  }
+
+  // If userValue is boolean true (meaning just --claude, with no model),
+  // or an empty string, or undefined, pick the first model in that service.
+  if (typeof userValue !== 'string' || userValue === 'true' || userValue.trim() === '') {
+    const defaultModel = serviceConfig.models[0]
+    if (!defaultModel) {
+      // The service might have zero models (like 'skip'?). Fallback or return empty.
+      throw new Error(`No models found for LLM service '${serviceKey}'`)
+    }
+    return defaultModel.modelId // e.g. 'gpt-4o-mini' or 'claude-3-sonnet-20240229'
+  }
+
+  // Otherwise userValue is a string with some model name.
+  // You may want to check if it matches one of the known .modelId fields:
+  const match = serviceConfig.models.find((m) => m.modelId === userValue)
+  if (!match) {
+    // If user typed a model that doesn't exist in your config, either throw or fallback:
+    throw new Error(`Unknown model '${userValue}' for service '${serviceKey}'`)
+  }
+
+  return match.modelId
+}
+
+/**
+ * Retries a given LLM call with an exponential backoff of 7 attempts (1s initial delay).
+ * 
+ * @template T
+ * @param {() => Promise<T>} fn - The function to execute for the LLM call
+ * @returns {Promise<T>} Resolves when the function succeeds or rejects after 7 attempts
+ * @throws {Error} If the function fails after all attempts
+ */
+export async function retryLLMCall<T>(
+  fn: () => Promise<T>
+) {
+  const maxRetries = 7
+  let attempt = 0
+
+  while (attempt < maxRetries) {
+    try {
+      attempt++
+      l.dim(`  Attempt ${attempt} - Processing LLM call...\n`)
+      const result = await fn()
+      l.dim(`\n  LLM call completed successfully on attempt ${attempt}.`)
+      return result
+    } catch (error) {
+      err(`  Attempt ${attempt} failed: ${(error as Error).message}`)
+      if (attempt >= maxRetries) {
+        err(`  Max retries (${maxRetries}) reached. Aborting LLM processing.`)
+        throw error
+      }
+      const delayMs = 1000 * 2 ** (attempt - 1)
+      l.dim(`  Retrying in ${delayMs / 1000} seconds...`)
+      await new Promise((resolve) => setTimeout(resolve, delayMs))
+    }
+  }
+  throw new Error('LLM call failed after maximum retries.')
+}
 
 // Type for LLM function signatures
 type LLMFunction = (prompt: string, transcript: string, options: any) => Promise<string>;
@@ -26,14 +266,6 @@ export const LLM_FUNCTIONS: Record<string, LLMFunction> = {
   fireworks: callFireworks,
   together: callTogether,
 }
-
-/**
- * @typedef {Object} ParsedPromptFile
- * @property {string} frontMatter - The extracted front matter (including --- lines).
- * @property {string} prompt - The prompt text to be processed.
- * @property {string} transcript - The transcript text to be processed (if any).
- * @property {ShowNote} metadata - The metadata object parsed from front matter.
- */
 
 /**
  * Utility function to parse a markdown file that may contain front matter,
@@ -52,7 +284,7 @@ function parsePromptFile(fileContent: string) {
   let frontMatter = ''
   let prompt = ''
   let transcript = ''
-  let metadata: ShowNote = {
+  let metadata: ShowNoteMetadata = {
     title: '',
     publishDate: ''
   }
@@ -217,11 +449,11 @@ export async function estimateLLMCost(
       userModel = 'meta-llama/Llama-3.2-3B-Instruct-Turbo'
     }
     // If still nothing is set, use the service name as a last resort
-    const modelName = userModel || llmService
+    const name = userModel || llmService
 
     // Log cost using the same function that logs LLM usage after real calls
     logLLMCost({
-      modelName,
+      name,
       stopReason: 'n/a',
       tokenUsage: {
         input: tokenCount,

@@ -7,8 +7,46 @@ import { l, err } from '../../src/utils/logging'
 const BASE_URL = 'http://localhost:3000'
 const OUTPUT_DIR = 'content'
 
-const requests = [
-  // File Endpoint Requests
+const {
+  DEEPGRAM_API_KEY,
+  ASSEMBLY_API_KEY,
+  OPENAI_API_KEY,
+  ANTHROPIC_API_KEY,
+  GEMINI_API_KEY,
+  DEEPSEEK_API_KEY,
+} = process.env
+
+type LLMProvider = 'chatgpt' | 'claude' | 'gemini' | 'deepseek' | 'fireworks' | 'together'
+type TranscriptService = 'deepgram' | 'assembly' | 'whisper'
+
+interface RequestData {
+  type: 'file' | 'video'
+  filePath?: string
+  url?: string
+  prompts?: string[]
+  whisperModel?: string
+  transcriptServices?: TranscriptService
+  speakerLabels?: boolean
+  llm?: LLMProvider
+  llmModel?: string
+  openaiApiKey?: string | undefined
+  anthropicApiKey?: string | undefined
+  geminiApiKey?: string | undefined
+  deepseekApiKey?: string | undefined
+  deepgramApiKey?: string | undefined
+  assemblyApiKey?: string | undefined
+  togetherApiKey?: string | undefined
+  fireworksApiKey?: string | undefined
+}
+
+interface Request {
+  data: RequestData
+  endpoint: string
+  outputFiles: string[]
+}
+
+const requests: Request[] = [
+  // --- FILE ENDPOINT REQUESTS ---
   {
     data: {
       type: 'file',
@@ -30,8 +68,7 @@ const requests = [
     data: {
       type: 'file',
       filePath: 'content/audio.mp3',
-      whisperModel: 'tiny',
-      llm: 'ollama',
+      transcriptServices: 'whisper',
     },
     endpoint: '/api/process',
     outputFiles: ['FILE_03.md'],
@@ -42,12 +79,12 @@ const requests = [
       filePath: 'content/audio.mp3',
       prompts: ['titles'],
       whisperModel: 'tiny',
-      llm: 'ollama',
     },
     endpoint: '/api/process',
     outputFiles: ['FILE_04.md'],
   },
-  // Video Endpoint Requests
+
+  // --- VIDEO ENDPOINT REQUESTS ---
   {
     data: {
       type: 'video',
@@ -61,7 +98,6 @@ const requests = [
       type: 'video',
       url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
       whisperModel: 'tiny',
-      llm: 'ollama',
     },
     endpoint: '/api/process',
     outputFiles: ['FILE_06.md'],
@@ -71,6 +107,7 @@ const requests = [
       type: 'video',
       url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
       llm: 'chatgpt',
+      openaiApiKey: OPENAI_API_KEY,
     },
     endpoint: '/api/process',
     outputFiles: ['FILE_07.md'],
@@ -79,8 +116,8 @@ const requests = [
     data: {
       type: 'video',
       url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
-      llm: 'chatgpt',
-      llmModel: 'gpt-4o-mini',
+      llm: 'claude',
+      anthropicApiKey: ANTHROPIC_API_KEY,
     },
     endpoint: '/api/process',
     outputFiles: ['FILE_08.md'],
@@ -89,7 +126,8 @@ const requests = [
     data: {
       type: 'video',
       url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
-      llm: 'claude',
+      llm: 'gemini',
+      geminiApiKey: GEMINI_API_KEY,
     },
     endpoint: '/api/process',
     outputFiles: ['FILE_09.md'],
@@ -98,8 +136,8 @@ const requests = [
     data: {
       type: 'video',
       url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
-      llm: 'claude',
-      llmModel: 'claude-3-sonnet-20240229',
+      llm: 'deepseek',
+      deepseekApiKey: DEEPSEEK_API_KEY,
     },
     endpoint: '/api/process',
     outputFiles: ['FILE_10.md'],
@@ -108,7 +146,7 @@ const requests = [
     data: {
       type: 'video',
       url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
-      llm: 'gemini',
+      whisperModel: 'tiny',
     },
     endpoint: '/api/process',
     outputFiles: ['FILE_11.md'],
@@ -117,8 +155,8 @@ const requests = [
     data: {
       type: 'video',
       url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
-      llm: 'gemini',
-      llmModel: 'gemini-1.5-flash',
+      transcriptServices: 'deepgram',
+      deepgramApiKey: DEEPGRAM_API_KEY,
     },
     endpoint: '/api/process',
     outputFiles: ['FILE_12.md'],
@@ -127,7 +165,8 @@ const requests = [
     data: {
       type: 'video',
       url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
-      llm: 'deepseek',
+      transcriptServices: 'assembly',
+      assemblyApiKey: ASSEMBLY_API_KEY,
     },
     endpoint: '/api/process',
     outputFiles: ['FILE_13.md'],
@@ -135,108 +174,21 @@ const requests = [
   {
     data: {
       type: 'video',
-      url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
-      whisperModel: 'tiny',
+      url: 'https://ajc.pics/audio/fsjam-short.mp3',
+      transcriptServices: 'assembly',
+      speakerLabels: true,
+      assemblyApiKey: ASSEMBLY_API_KEY,
     },
     endpoint: '/api/process',
     outputFiles: ['FILE_14.md'],
   },
-  {
-    data: {
-      type: 'video',
-      url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
-      transcriptServices: 'deepgram',
-    },
-    endpoint: '/api/process',
-    outputFiles: ['FILE_15.md'],
-  },
-  {
-    data: {
-      type: 'video',
-      url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
-      transcriptServices: 'deepgram',
-      llm: 'ollama',
-    },
-    endpoint: '/api/process',
-    outputFiles: ['FILE_16.md'],
-  },
-  {
-    data: {
-      type: 'video',
-      url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
-      transcriptServices: 'assembly',
-    },
-    endpoint: '/api/process',
-    outputFiles: ['FILE_17.md'],
-  },
-  {
-    data: {
-      type: 'video',
-      url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
-      transcriptServices: 'assembly',
-      llm: 'ollama',
-    },
-    endpoint: '/api/process',
-    outputFiles: ['FILE_18.md'],
-  },
-  {
-    data: {
-      type: 'video',
-      url: 'https://ajc.pics/audio/fsjam-short.mp3',
-      transcriptServices: 'assembly',
-      speakerLabels: true,
-    },
-    endpoint: '/api/process',
-    outputFiles: ['FILE_19.md'],
-  },
-  {
-    data: {
-      type: 'video',
-      url: 'https://ajc.pics/audio/fsjam-short.mp3',
-      transcriptServices: 'assembly',
-      speakerLabels: true,
-      llm: 'ollama',
-    },
-    endpoint: '/api/process',
-    outputFiles: ['FILE_20.md'],
-  },
-  {
-    data: {
-      type: 'video',
-      url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
-      prompts: ['titles', 'mediumChapters'],
-    },
-    endpoint: '/api/process',
-    outputFiles: ['FILE_21.md'],
-  },
-  {
-    data: {
-      type: 'video',
-      url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
-      prompts: ['titles', 'summary', 'shortChapters', 'takeaways', 'questions'],
-    },
-    endpoint: '/api/process',
-    outputFiles: ['FILE_22.md'],
-  },
-  {
-    data: {
-      type: 'video',
-      url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
-      prompts: ['titles', 'summary', 'shortChapters', 'takeaways', 'questions'],
-      whisperModel: 'tiny',
-      llm: 'ollama',
-    },
-    endpoint: '/api/process',
-    outputFiles: ['FILE_23.md'],
-  },
 ]
 
-const fetchRequest = async (request: any, index: number) => {
+const fetchRequest = async (request: Request, index: number): Promise<void> => {
   try {
-    // Get list of files before the request
-    const filesBefore = await fs.readdir(OUTPUT_DIR)
+    const filesBefore: string[] = await fs.readdir(OUTPUT_DIR)
 
-    const response = await fetch(`${BASE_URL}${request.endpoint}`, {
+    const response: Response = await fetch(`${BASE_URL}${request.endpoint}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -247,30 +199,25 @@ const fetchRequest = async (request: any, index: number) => {
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`)
     }
-    const result = await response.json()
+
+    const result: { message: string } = await response.json()
     l(`Request ${index + 1} result: ${result.message}`)
 
-    // Wait briefly to ensure files are written
     await new Promise((resolve) => setTimeout(resolve, 1000))
 
-    // Get list of files after the request
-    const filesAfter = await fs.readdir(OUTPUT_DIR)
-
-    // Identify new files
-    const newFiles = filesAfter.filter((f) => !filesBefore.includes(f))
-
-    // Sort new files to ensure consistent ordering
+    const filesAfter: string[] = await fs.readdir(OUTPUT_DIR)
+    const newFiles: string[] = filesAfter.filter((f) => !filesBefore.includes(f))
     newFiles.sort()
 
     const outputFiles = request.outputFiles
 
     if (newFiles.length > 0) {
-      for (let i = 0; i < newFiles.length; i++) {
-        const oldFilePath = path.join(OUTPUT_DIR, newFiles[i] as any)
-        const newFileName = outputFiles[i]
+      for (let i = 0; i < Math.min(newFiles.length, outputFiles.length); i++) {
+        const oldFilePath = path.join(OUTPUT_DIR, newFiles[i]!)
+        const newFileName = outputFiles[i]!
         const newFilePath = path.join(OUTPUT_DIR, newFileName)
         await fs.rename(oldFilePath, newFilePath)
-        l(`\nFile renamed:\n  - Old: ${oldFilePath}\n  - New: ${newFilePath}`)
+        l(`File renamed: ${oldFilePath} --> ${newFilePath}`)
       }
     } else {
       l('No new files to rename for this request.')
@@ -280,9 +227,9 @@ const fetchRequest = async (request: any, index: number) => {
   }
 }
 
-const runAllRequests = async () => {
-  for (let i = 0; i < requests.length; i++) {
-    await fetchRequest(requests[i], i)
+const runAllRequests = async (): Promise<void> => {
+  for (const [i, request] of requests.entries()) {
+    await fetchRequest(request, i)
   }
 }
 

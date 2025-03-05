@@ -1,9 +1,9 @@
 // src/process-commands/urls.ts
 
-import { readFile } from 'node:fs/promises'
 import { processVideo } from './video'
 import { saveInfo } from '../process-steps/01-generate-markdown-utils'
 import { l, err, logSeparator, logInitialFunctionCall } from '../utils/logging'
+import { readFile } from '../utils/node-utils'
 
 import type { ProcessingOptions } from '../utils/types'
 

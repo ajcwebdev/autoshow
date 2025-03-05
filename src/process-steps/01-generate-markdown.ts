@@ -1,10 +1,10 @@
 // src/process-steps/01-generate-markdown.ts
 
-import { basename, extname } from 'node:path'
-import { execFilePromise } from '../utils/validation/cli'
 import { sanitizeTitle, buildFrontMatter } from './01-generate-markdown-utils'
 import { l, err, logInitialFunctionCall } from '../utils/logging'
-import type { ProcessingOptions, ShowNote } from '../utils/types'
+import { execFilePromise, basename, extname } from '../utils/node-utils'
+
+import type { ProcessingOptions, ShowNoteMetadata } from '../utils/types'
 
 /**
  * Generates markdown content with front matter based on the provided options and input.
@@ -17,7 +17,7 @@ import type { ProcessingOptions, ShowNote } from '../utils/types'
  * 
  * @param {ProcessingOptions} options - The processing options specifying the type of content to generate.
  *                                     Valid options include: video, playlist, urls, file, and rss.
- * @param {string | ShowNote} input - The input data to process:
+ * @param {string | ShowNoteMetadata} input - The input data to process:
  *                                   - For video/playlist/urls: A URL string
  *                                   - For file: A file path string
  *                                   - For RSS: An RSSItem object containing feed item details
@@ -46,7 +46,7 @@ import type { ProcessingOptions, ShowNote } from '../utils/types'
  */
 export async function generateMarkdown(
   options: ProcessingOptions,
-  input: string | ShowNote
+  input: string | ShowNoteMetadata
 ) {
   l.step(`\nStep 1 - Generate Markdown\n`)
   logInitialFunctionCall('generateMarkdown', { options, input })
@@ -119,7 +119,7 @@ export async function generateMarkdown(
 
       case !!options.rss:
         l.dim('\n  Generating markdown for an RSS item...\n')
-        const item = input as ShowNote
+        const item = input as ShowNoteMetadata
         const {
           publishDate,
           title: rssTitle,

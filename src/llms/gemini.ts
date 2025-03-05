@@ -1,14 +1,15 @@
 // src/llms/gemini.ts
 
-import { env } from 'node:process'
 import { GoogleGenerativeAI } from '@google/generative-ai'
+import { logLLMCost } from '../process-steps/05-run-llm-utils'
+import { err } from '../utils/logging'
+import { env } from '../utils/node-utils'
 import { LLM_SERVICES_CONFIG } from '../../shared/constants'
-import { err, logLLMCost } from '../utils/logging'
 
 /**
- * Type union of all possible `.value` fields for Gemini models in {@link LLM_SERVICES_CONFIG}.
+ * Type union of all possible `.modelId` fields for Gemini models in {@link LLM_SERVICES_CONFIG}.
  */
-type GeminiModelValue = (typeof LLM_SERVICES_CONFIG.gemini.models)[number]['value']
+type GeminiModelValue = (typeof LLM_SERVICES_CONFIG.gemini.models)[number]['modelId']
 
 /**
  * Simple utility function to introduce a delay.
@@ -60,7 +61,7 @@ export async function callGemini(
       } = usageMetadata ?? {}
 
       logLLMCost({
-        modelName: modelValue,
+        name: modelValue,
         stopReason: 'complete',
         tokenUsage: {
           input: promptTokenCount,

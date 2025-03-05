@@ -1,10 +1,9 @@
 // src/process-steps/02-download-audio.ts
 
-import { readFile, access } from 'node:fs/promises'
 import { fileTypeFromBuffer } from 'file-type'
+import { executeWithRetry } from './02-download-audio-utils'
 import { l, err, logInitialFunctionCall } from '../utils/logging'
-import { executeWithRetry } from '../utils/validation/retry'
-import { execPromise } from '../utils/validation/cli'
+import { execPromise, readFile, access, rename } from '../utils/node-utils'
 
 import type { ProcessingOptions } from '../utils/types'
 
@@ -78,6 +77,16 @@ export async function downloadAudio(
   const finalPath = `content/${filename}`
   const outputPath = `${finalPath}.wav`
 
+  // Edge case fix: If a WAV file already exists with the same name, rename it to avoid a hang during conversion
+  try {
+    await access(outputPath)
+    const renamedPath = `${finalPath}-renamed.wav`
+    await rename(outputPath, renamedPath)
+    l.dim(`    - Existing file found at ${outputPath}. Renamed to ${renamedPath}`)
+  } catch {
+    // If we reach here, the file doesn't exist. Proceed as normal.
+  }
+
   if (options.video || options.playlist || options.urls || options.rss || options.channel) {
     try {
       await executeWithRetry(
@@ -91,8 +100,7 @@ export async function downloadAudio(
           '--no-playlist',
           '-o', outputPath,
           input,
-        ],
-        5
+        ]
       )
     } catch (error) {
       err(`Error downloading audio: ${error instanceof Error ? error.message : String(error)}`)

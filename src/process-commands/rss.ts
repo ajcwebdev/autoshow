@@ -1,24 +1,17 @@
 // src/process-commands/rss.ts
 
-import { XMLParser } from 'fast-xml-parser'
+import { logRSSProcessingStatus, filterRSSItems, retryRSSFetch } from './rss-utils'
 import { generateMarkdown } from '../process-steps/01-generate-markdown'
+import { saveInfo } from '../process-steps/01-generate-markdown-utils'
 import { downloadAudio } from '../process-steps/02-download-audio'
 import { saveAudio } from '../process-steps/02-download-audio-utils'
 import { runTranscription } from '../process-steps/03-run-transcription'
 import { selectPrompts } from '../process-steps/04-select-prompt'
 import { runLLM } from '../process-steps/05-run-llm'
-import { saveInfo } from '../process-steps/01-generate-markdown-utils'
 import { l, err, logSeparator, logInitialFunctionCall } from '../utils/logging'
-import { logRSSProcessingStatus, filterRSSItems } from './rss-utils'
-import { retryRSSFetch } from '../utils/validation/retry'
+import { parser } from '../utils/node-utils'
 
-import type { ProcessingOptions, ShowNote } from '../utils/types'
-
-export const parser = new XMLParser({
-  ignoreAttributes: false,
-  attributeNamePrefix: '',
-  allowBooleanAttributes: true,
-})
+import type { ProcessingOptions, ShowNoteMetadata } from '../utils/types'
 
 /**
  * Fetches and parses an RSS feed (URL or local file path), then applies filtering via {@link filterRSSItems}.
@@ -71,9 +64,7 @@ export async function selectRSSItemsToProcess(
         method: 'GET',
         headers: { Accept: 'application/rss+xml' },
         signal: controller.signal,
-      }),
-      5,
-      5000
+      })
     )
     clearTimeout(timeout)
 
@@ -189,7 +180,7 @@ export async function processRSS(
           frontMatter,
           selectedPrompts,
           transcript,
-          metadata as ShowNote,
+          metadata as ShowNoteMetadata,
           llmServices
         )
         if (!options.saveAudio) {

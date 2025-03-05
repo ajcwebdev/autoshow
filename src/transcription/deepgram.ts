@@ -1,32 +1,24 @@
 // src/transcription/deepgram.ts
 
-// This file manages transcription using the Deepgram API service.
-// Steps:
-// 1. Read the local WAV file.
-// 2. Send it to Deepgram for transcription with chosen parameters (model, formatting, punctuation, etc.).
-// 3. Check for successful response and extract the transcription results.
-// 4. Format the returned words array using formatDeepgramTranscript to add timestamps and newlines.
-// 5. Return the formatted transcript.
-
-import { readFile } from 'node:fs/promises'
-import { env } from 'node:process'
-import { l, err } from '../utils/logging'
 import { logTranscriptionCost, formatDeepgramTranscript } from '../process-steps/03-run-transcription-utils'
-import { DEEPGRAM_MODELS } from '../../shared/constants'
+import { l, err } from '../utils/logging'
+import { readFile, env } from '../utils/node-utils'
+import { TRANSCRIPTION_SERVICES_CONFIG } from '../../shared/constants'
+
 import type { ProcessingOptions } from '../utils/types'
 
 /**
  * Main function to handle transcription using Deepgram API.
  * @param {ProcessingOptions} options - Additional processing options (e.g., speaker labels)
  * @param {string} finalPath - The base filename (without extension) for input/output files
- * @param {string} [model] - The Deepgram model to use (default is 'NOVA_2')
+ * @param {string} [model] - The Deepgram model to use (default is 'Nova-2')
  * @returns {Promise<string>} - The formatted transcript content
  * @throws {Error} If any step of the process fails (upload, transcription request, formatting)
  */
 export async function callDeepgram(
   _options: ProcessingOptions,
   finalPath: string,
-  model: keyof typeof DEEPGRAM_MODELS = 'NOVA_2'
+  model: string = 'Nova-2'
 ) {
   l.dim('\n  callDeepgram called with arguments:')
   l.dim(`    - finalPath: ${finalPath}`)
@@ -37,17 +29,19 @@ export async function callDeepgram(
   }
 
   try {
-    const modelInfo = DEEPGRAM_MODELS[model] || DEEPGRAM_MODELS['NOVA_2']
+    const modelInfo =
+    TRANSCRIPTION_SERVICES_CONFIG.deepgram.models.find(m => m.modelId.toLowerCase() === model.toLowerCase())
+      || TRANSCRIPTION_SERVICES_CONFIG.deepgram.models.find(m => m.modelId === 'nova-2')
 
     if (!modelInfo) {
       throw new Error(`Model information for model ${model} is not defined.`)
     }
 
-    const { name, costPerMinute } = modelInfo
+    const { name, costPerMinuteCents } = modelInfo
 
     await logTranscriptionCost({
       modelName: name,
-      costPerMinute,
+      costPerMinuteCents,
       filePath: `${finalPath}.wav`
     })
 

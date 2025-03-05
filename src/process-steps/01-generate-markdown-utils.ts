@@ -1,10 +1,9 @@
 // src/process-steps/01-generate-markdown-utils.ts
 
-import { writeFile } from 'node:fs/promises'
-import { execFilePromise } from '../utils/validation/cli'
 import { l, err } from '../utils/logging'
+import { execFilePromise, writeFile } from '../utils/node-utils'
 
-import type { VideoInfo, ShowNote } from '../utils/types'
+import type { VideoInfo, ShowNoteMetadata } from '../utils/types'
 
 /**
  * Saves metadata or feed information to a JSON file, consolidating the logic from the original
@@ -14,18 +13,18 @@ import type { VideoInfo, ShowNote } from '../utils/types'
  * @param data - The actual data to process and save:
  *   - For 'playlist' or 'urls': an array of string URLs
  *   - For 'channel': an array of VideoInfo objects
- *   - For 'rss': an array of ShowNote objects
+ *   - For 'rss': an array of ShowNoteMetadata objects
  * @param title - The title or name associated with the data (e.g., a playlist/channel title)
  * @returns A Promise that resolves when the file has been written successfully
  */
 export async function saveInfo(
   type: 'playlist' | 'urls' | 'channel' | 'rss',
-  data: string[] | VideoInfo[] | ShowNote[],
+  data: string[] | VideoInfo[] | ShowNoteMetadata[],
   title?: string
 ) {
   // Handle RSS items
   if (type === 'rss') {
-    const items = data as ShowNote[]
+    const items = data as ShowNoteMetadata[]
     const jsonContent = JSON.stringify(items, null, 2)
     const sanitizedTitle = sanitizeTitle(title || '')
     const jsonFilePath = `content/${sanitizedTitle}_info.json`
@@ -86,7 +85,7 @@ export async function saveInfo(
           description: '',
           publishDate,
           coverImage,
-        } as ShowNote
+        } as ShowNoteMetadata
       } catch (error) {
         err(
           `Error extracting metadata for ${url}: ${
@@ -99,7 +98,7 @@ export async function saveInfo(
   )
 
   const validMetadata = metadataList.filter(
-    (metadata): metadata is ShowNote => metadata !== null
+    (metadata): metadata is ShowNoteMetadata => metadata !== null
   )
 
   const jsonContent = JSON.stringify(validMetadata, null, 2)

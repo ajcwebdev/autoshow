@@ -1,20 +1,59 @@
 // src/process-steps/03-run-transcription-utils.ts
 
-import { existsSync } from 'node:fs'
 import { l, err } from '../utils/logging'
-import { DEEPGRAM_MODELS, ASSEMBLY_MODELS } from '../../shared/constants'
-import { execPromise } from '../utils/validation/cli'
+import { execPromise, existsSync } from '../utils/node-utils'
+import { TRANSCRIPTION_SERVICES_CONFIG } from '../../shared/constants'
 
-import type { ProcessingOptions } from '../utils/types'
-import type { WhisperOutput, TranscriptionCostInfo }from '../../shared/constants'
+import type { ProcessingOptions, WhisperOutput } from '../utils/types'
+
+/**
+ * Retries a given transcription call with an exponential backoff of 7 attempts (1s initial delay).
+ * 
+ * @param {() => Promise<string>} fn - The function to execute for the transcription call
+ * @returns {Promise<string>} Resolves when the function succeeds or rejects after 7 attempts
+ * @throws {Error} If the function fails after all attempts
+ */
+export async function retryTranscriptionCall(
+  fn: () => Promise<string>
+) {
+  const maxRetries = 7
+  let attempt = 0
+
+  while (attempt < maxRetries) {
+    try {
+      attempt++
+      const transcript = await fn()
+      l.dim(`  Transcription call completed successfully on attempt ${attempt}.`)
+      return transcript
+    } catch (error) {
+      err(`  Attempt ${attempt} failed: ${(error as Error).message}`)
+      if (attempt >= maxRetries) {
+        err(`  Max retries (${maxRetries}) reached. Aborting transcription.`)
+        throw error
+      }
+      const delayMs = 1000 * 2 ** (attempt - 1)
+      l.dim(`  Retrying in ${delayMs / 1000} seconds...`)
+      await new Promise((resolve) => setTimeout(resolve, delayMs))
+    }
+  }
+
+  throw new Error('Transcription call failed after maximum retries.')
+}
 
 /**
  * Asynchronously logs the estimated transcription cost based on audio duration and per-minute cost.
  * Internally calculates the audio file duration using ffprobe.
- * @param info - Object containing the model name, cost per minute, and path to the audio file.
+ * @param info - Object containing transcription information with the following properties:
+ * @param info.modelName - The name of the model being used
+ * @param info.costPerMinuteCents - The new cost (in cents) per minute
+ * @param info.filePath - The file path to the audio file
  * @throws {Error} If ffprobe fails or returns invalid data.
  */
-export async function logTranscriptionCost(info: TranscriptionCostInfo) {
+export async function logTranscriptionCost(info: {
+  modelName: string;
+  costPerMinuteCents?: number;
+  filePath: string;
+}) {
   const cmd = `ffprobe -v error -show_entries format=duration -of csv=p=0 "${info.filePath}"`
   const { stdout } = await execPromise(cmd)
   const seconds = parseFloat(stdout.trim())
@@ -22,12 +61,13 @@ export async function logTranscriptionCost(info: TranscriptionCostInfo) {
     throw new Error(`Could not parse audio duration for file: ${info.filePath}`)
   }
   const minutes = seconds / 60
-  const cost = info.costPerMinute * minutes
+  const costPerMin = info.costPerMinuteCents ?? 0
+  const cost = costPerMin * minutes
 
   l.dim(
     `  - Estimated Transcription Cost for ${info.modelName}:\n` +
     `    - Audio Length: ${minutes.toFixed(2)} minutes\n` +
-    `    - Cost: $${cost.toFixed(4)}`
+    `    - Cost: ¢${cost.toFixed(5)}`
   )
 }
 
@@ -43,39 +83,30 @@ export async function estimateTranscriptCost(
   transcriptServices: string
 ) {
   const filePath = options.transcriptCost
-  if (!filePath) {
-    throw new Error('No file path provided to estimate transcription cost.')
+  if (!filePath) throw new Error('No file path provided to estimate transcription cost.')
+
+  if (transcriptServices === 'whisper') {
+    return l.wait('\nNo cost data available for Whisper.\n')
   }
 
-  switch (transcriptServices) {
-    case 'deepgram': {
-      const deepgramModel = typeof options.deepgram === 'string' ? options.deepgram : 'NOVA_2'
-      const { name, costPerMinute } = DEEPGRAM_MODELS[deepgramModel] || DEEPGRAM_MODELS.NOVA_2
-      await logTranscriptionCost({
-        modelName: name,
-        costPerMinute,
-        filePath
-      })
-      break
-    }
-    case 'assembly': {
-      const assemblyModel = typeof options.assembly === 'string' ? options.assembly : 'NANO'
-      const { name, costPerMinute } = ASSEMBLY_MODELS[assemblyModel] || ASSEMBLY_MODELS.NANO
-      await logTranscriptionCost({
-        modelName: name,
-        costPerMinute,
-        filePath
-      })
-      break
-    }
-    case 'whisper': {
-      l.wait('\nNo cost data available for Whisper.\n')
-      break
-    }
-    default: {
-      throw new Error(`Unsupported transcription service for cost estimation: ${transcriptServices}`)
-    }
+  if (!['deepgram', 'assembly'].includes(transcriptServices)) {
+    throw new Error(`Unsupported transcription service: ${transcriptServices}`)
   }
+  
+  const config = TRANSCRIPTION_SERVICES_CONFIG[transcriptServices as 'deepgram' | 'assembly']
+  const optionValue = options[transcriptServices as 'deepgram' | 'assembly'] as string
+  const defaultModelId = transcriptServices === 'deepgram' ? 'NOVA_2' : 'NANO'
+  const modelInput = typeof optionValue === 'string' ? optionValue : defaultModelId
+  const normalizedModelId = modelInput.toLowerCase()
+  const model = config.models.find(m => m.modelId.toLowerCase() === normalizedModelId)
+
+  if (!model) throw new Error(`Model not found for: ${modelInput}`)
+
+  await logTranscriptionCost({
+    modelName: model.name,
+    costPerMinuteCents: model.costPerMinuteCents,
+    filePath
+  })
 }
 
 /**
@@ -201,64 +232,59 @@ export async function checkWhisperDirAndModel(
   whisperModel: string,
   modelGGMLName: string
 ) {
-  if (whisperModel === 'turbo') {
-    whisperModel = 'large-v3-turbo'
-  }
+  if (whisperModel === 'turbo') whisperModel = 'large-v3-turbo'
 
-  // Ensure whisper.cpp is cloned and built if not present
-  if (!existsSync('./whisper.cpp')) {
+  const whisperDir = './whisper.cpp'
+  const whisperCliPath = `${whisperDir}/build/bin/whisper-cli`
+  const modelPath = `${whisperDir}/models/${modelGGMLName}`
+  
+  // Clone and build whisper.cpp if missing
+  if (!existsSync(whisperDir)) {
     l.dim(`\n  No whisper.cpp repo found, cloning and compiling...\n`)
     try {
       await execPromise(
-        'git clone https://github.com/ggerganov/whisper.cpp.git ' +
-        '&& cmake -B whisper.cpp/build -S whisper.cpp ' +
-        '&& cmake --build whisper.cpp/build --config Release'
+        `git clone https://github.com/ggerganov/whisper.cpp.git && ` +
+        `cmake -B ${whisperDir}/build -S ${whisperDir} && ` +
+        `cmake --build ${whisperDir}/build --config Release`
       )
       l.dim(`\n    - whisper.cpp clone and compilation complete.\n`)
-    } catch (cloneError) {
-      err(`Error cloning/building whisper.cpp: ${(cloneError as Error).message}`)
-      throw cloneError
+    } catch (error) {
+      err(`Error cloning/building whisper.cpp: ${(error as Error).message}`)
+      throw error
     }
   } else {
-    l.dim(`\n  Whisper.cpp repo is already available at:\n    - ./whisper.cpp\n`)
-  }
-
-  // Check for whisper-cli binary
-  const whisperCliPath = './whisper.cpp/build/bin/whisper-cli'
-  if (!existsSync(whisperCliPath)) {
-    l.dim(`\n  No whisper-cli binary found, rebuilding...\n`)
-    try {
-      await execPromise(
-        'cmake -B whisper.cpp/build -S whisper.cpp ' +
-        '&& cmake --build whisper.cpp/build --config Release'
-      )
-      l.dim(`\n    - whisper.cpp build completed.\n`)
-    } catch (buildError) {
-      err(`Error (re)building whisper.cpp: ${(buildError as Error).message}`)
-      throw buildError
+    // Rebuild if binary is missing
+    l.dim(`\n  Whisper.cpp repo is already available at:\n    - ${whisperDir}\n`)
+    if (!existsSync(whisperCliPath)) {
+      l.dim(`\n  No whisper-cli binary found, rebuilding...\n`)
+      try {
+        await execPromise(
+          `cmake -B ${whisperDir}/build -S ${whisperDir} && ` +
+          `cmake --build ${whisperDir}/build --config Release`
+        )
+        l.dim(`\n    - whisper.cpp build completed.\n`)
+      } catch (error) {
+        err(`Error rebuilding whisper.cpp: ${(error as Error).message}`)
+        throw error
+      }
+    } else {
+      l.dim(`  Found whisper-cli at:\n    - ${whisperCliPath}\n`)
     }
-  } else {
-    l.dim(`  Found whisper-cli at:\n    - ${whisperCliPath}\n`)
   }
-
-  // Check if the chosen model file is present
-  const modelPath = `./whisper.cpp/models/${modelGGMLName}`
+  // Download model if missing
   if (!existsSync(modelPath)) {
     l.dim(`\n  Model not found locally, attempting download...\n    - ${whisperModel}\n`)
     try {
       await execPromise(
-        `bash ./whisper.cpp/models/download-ggml-model.sh ${whisperModel}`,
+        `bash ${whisperDir}/models/download-ggml-model.sh ${whisperModel}`,
         { maxBuffer: 10000 * 1024 }
       )
       l.dim('    - Model download completed.\n')
-    } catch (modelError) {
-      err(`Error downloading model: ${(modelError as Error).message}`)
-      throw modelError
+    } catch (error) {
+      err(`Error downloading model: ${(error as Error).message}`)
+      throw error
     }
   } else {
-    l.dim(
-      `  Model "${whisperModel}" is already available at:\n` +
-      `    - ${modelPath}\n`
-    )
+    l.dim(`  Model "${whisperModel}" is already available at:\n    - ${modelPath}\n`)
   }
 }

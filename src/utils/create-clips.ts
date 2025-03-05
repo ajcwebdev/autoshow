@@ -10,9 +10,7 @@
  *    tsx src/utils/create-clips.ts content/2021-05-10-thoughts-on-lambda-school-layoffs-chatgpt-shownotes.md content/2021-05-10-thoughts-on-lambda-school-layoffs.wav
  */
 
-import fs from 'fs'
-import { exec } from 'child_process'
-import path from 'path'
+import { exec, readFileSync, existsSync, mkdirSync, basename, extname } from '../utils/node-utils'
 
 // Check for correct number of arguments
 if (process.argv.length !== 4) {
@@ -32,7 +30,7 @@ const titles: string[] = []
 const lineRegex = /^###\s+(\d{1,2}:\d{2}(?::\d{2})?)\s*-\s*(.*)$/
 
 // Read the markdown file line by line
-const lines = fs.readFileSync(markdownFile, 'utf-8').split('\n')
+const lines = readFileSync(markdownFile, 'utf-8').split('\n')
 for (const line of lines) {
   const match = line.match(lineRegex)
   if (match) {
@@ -50,11 +48,11 @@ if (timestamps.length === 0) {
 }
 
 // Derive directory name from markdown file
-const baseName = path.basename(markdownFile, path.extname(markdownFile))
+const baseName = basename(markdownFile, extname(markdownFile))
 const sanitizedBaseName = sanitizeTitle(baseName)
 const directoryPath = `content/${sanitizedBaseName}`
-if (!fs.existsSync(directoryPath)) {
-  fs.mkdirSync(directoryPath, { recursive: true })
+if (!existsSync(directoryPath)) {
+  mkdirSync(directoryPath, { recursive: true })
 }
 
 /**

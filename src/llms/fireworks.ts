@@ -1,13 +1,14 @@
 // src/llms/fireworks.ts
 
-import { env } from 'node:process'
+import { env } from '../utils/node-utils'
+import { logLLMCost } from '../process-steps/05-run-llm-utils'
+import { err } from '../utils/logging'
 import { LLM_SERVICES_CONFIG } from '../../shared/constants'
-import { err, logLLMCost } from '../utils/logging'
 
 /**
- * Type union of all `.value` fields for Fireworks models in {@link LLM_SERVICES_CONFIG}.
+ * Type union of all `.modelId` fields for Fireworks models in {@link LLM_SERVICES_CONFIG}.
  */
-type FireworksModelValue = (typeof LLM_SERVICES_CONFIG.fireworks.models)[number]['value']
+type FireworksModelValue = (typeof LLM_SERVICES_CONFIG.fireworks.models)[number]['modelId']
 
 /**
  * Calls the Fireworks AI API and returns generated text.
@@ -55,7 +56,7 @@ export async function callFireworks(
     }
 
     logLLMCost({
-      modelName: modelValue,
+      name: modelValue,
       stopReason: data.choices?.[0]?.finish_reason ?? 'unknown',
       tokenUsage: {
         input: data.usage?.prompt_tokens,

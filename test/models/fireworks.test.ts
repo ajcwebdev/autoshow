@@ -6,74 +6,60 @@ import { execSync } from 'node:child_process'
 import { existsSync, renameSync } from 'node:fs'
 import { join } from 'node:path'
 
+/*
+  LLM_SERVICES_CONFIG.fireworks.models:
+    - accounts/fireworks/models/llama-v3p1-405b-instruct
+    - accounts/fireworks/models/llama-v3p1-70b-instruct
+    - accounts/fireworks/models/llama-v3p1-8b-instruct
+    - accounts/fireworks/models/llama-v3p2-3b-instruct
+    - accounts/fireworks/models/qwen2p5-72b-instruct
+*/
+
 const commands = [
+  // Default
   {
-    // Process multiple YouTube videos from URLs with title prompts using default Fireworks model
-    cmd: 'npm run as -- --urls "content/example-urls.md" --prompt titles --whisper tiny --fireworks',
-    expectedFiles: [
-      { file: '2024-09-24-ep1-fsjam-podcast-fireworks-shownotes.md', newName: '01-fireworks-default.md' },
-      { file: '2024-09-24-ep0-fsjam-podcast-fireworks-shownotes.md', newName: '02-fireworks-default.md' }
-    ]
+    cmd: 'npm run as -- --file "content/audio.mp3" --fireworks',
+    expectedFile: 'audio-fireworks-shownotes.md',
+    newName: '01-fireworks-default.md'
   },
   {
-    // Process video with LLAMA 3 1 405B model
-    cmd: 'npm run as -- --file "content/audio.mp3" --fireworks LLAMA_3_1_405B',
+    cmd: 'npm run as -- --file "content/audio.mp3" --fireworks accounts/fireworks/models/llama-v3p1-405b-instruct',
     expectedFile: 'audio-fireworks-shownotes.md',
-    newName: '03-fireworks-llama-3-1-405b.md'
+    newName: '02-fireworks-llama-v3p1-405b.md'
   },
   {
-    // Process video with LLAMA 3 1 70B model
-    cmd: 'npm run as -- --file "content/audio.mp3" --fireworks LLAMA_3_1_70B',
+    cmd: 'npm run as -- --file "content/audio.mp3" --fireworks accounts/fireworks/models/llama-v3p1-70b-instruct',
     expectedFile: 'audio-fireworks-shownotes.md',
-    newName: '04-fireworks-llama-3-1-70b.md'
+    newName: '03-fireworks-llama-v3p1-70b.md'
   },
   {
-    // Process video with LLAMA 3 1 8B model
-    cmd: 'npm run as -- --file "content/audio.mp3" --fireworks LLAMA_3_1_8B',
+    cmd: 'npm run as -- --file "content/audio.mp3" --fireworks accounts/fireworks/models/llama-v3p1-8b-instruct',
     expectedFile: 'audio-fireworks-shownotes.md',
-    newName: '05-fireworks-llama-3-1-8b.md'
+    newName: '04-fireworks-llama-v3p1-8b.md'
   },
   {
-    // Process video with LLAMA 3 2 3B model
-    cmd: 'npm run as -- --file "content/audio.mp3" --fireworks LLAMA_3_2_3B',
+    cmd: 'npm run as -- --file "content/audio.mp3" --fireworks accounts/fireworks/models/llama-v3p2-3b-instruct',
     expectedFile: 'audio-fireworks-shownotes.md',
-    newName: '06-fireworks-llama-3-2-3b.md'
+    newName: '05-fireworks-llama-v3p2-3b.md'
   },
   {
-    // Process video with LLAMA 3 2 1B model
-    cmd: 'npm run as -- --file "content/audio.mp3" --fireworks LLAMA_3_2_1B',
+    cmd: 'npm run as -- --file "content/audio.mp3" --fireworks accounts/fireworks/models/qwen2p5-72b-instruct',
     expectedFile: 'audio-fireworks-shownotes.md',
-    newName: '07-fireworks-llama-3-2-1b.md'
+    newName: '06-fireworks-qwen2p5-72b.md'
   },
-  {
-    // Process video with QWEN 2 5 72B model
-    cmd: 'npm run as -- --file "content/audio.mp3" --fireworks QWEN_2_5_72B',
-    expectedFile: 'audio-fireworks-shownotes.md',
-    newName: '08-fireworks-qwen-2-5-72b.md'
-  }
 ]
 
-test(' Fireworks Command Tests', async (t) => {
+test('Fireworks Command Tests', async (t) => {
   for (const [index, command] of commands.entries()) {
-    await t.test(`should run command ${index + 1} successfully`, async () => {
-      // Run the command
+    await t.test(`Fireworks test #${index + 1}`, async () => {
       execSync(command.cmd, { stdio: 'inherit' })
-      
-      if (Array.isArray(command.expectedFiles)) {
-        for (const { file, newName } of command.expectedFiles) {
-          const filePath = join('content', file)
-          strictEqual(existsSync(filePath), true, `Expected file ${file} was not created`)
-          const newPath = join('content', newName)
-          renameSync(filePath, newPath)
-          strictEqual(existsSync(newPath), true, `File was not renamed to ${newName}`)
-        }
-      } else {
-        const filePath = join('content', command.expectedFile as string)
-        strictEqual(existsSync(filePath), true, `Expected file ${command.expectedFile} was not created`)
-        const newPath = join('content', command.newName as string)
-        renameSync(filePath, newPath)
-        strictEqual(existsSync(newPath), true, `File was not renamed to ${command.newName}`)
-      }
+
+      const filePath = join('content', command.expectedFile)
+      strictEqual(existsSync(filePath), true, `Expected file ${command.expectedFile} was not created`)
+
+      const newPath = join('content', command.newName)
+      renameSync(filePath, newPath)
+      strictEqual(existsSync(newPath), true, `File was not renamed to ${command.newName}`)
     })
   }
 })

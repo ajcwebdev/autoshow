@@ -1,8 +1,9 @@
-# Prompt Options
+# CLI Prompt Options
 
 ## Outline
 
 - [Default Prompt](#default-prompt)
+- [Prompt Categories](#prompt-categories)
   - [Summaries, Chapters, and Titles](#summaries-chapters-and-titles)
   - [Takeaways, Questions, Quotes, and FAQ](#takeaways-questions-quotes-and-faq)
   - [Social Media Content, Blog Posts, and Songs](#social-media-content-blog-posts-and-songs)
@@ -23,6 +24,8 @@ Is the equivalent to including two options (`summary` and `longChapters`) to `--
 npm run as -- --rss "https://ajcwebdev.substack.com/feed" \
   --prompt summary longChapters
 ```
+
+## Prompt Categories
 
 ### Summaries, Chapters, and Titles
 

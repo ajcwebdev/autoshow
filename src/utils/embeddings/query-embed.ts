@@ -1,10 +1,9 @@
 // src/utils/embeddings/query-embed.ts
 
-import path from 'path'
-import { fileURLToPath } from 'url'
-import fs from 'fs'
-import { env } from 'node:process'
 import { PrismaClient } from '@prisma/client'
+import {
+  env, fileURLToPath, readFileSync, join, dirname, isAbsolute, resolve
+} from '../node-utils'
 
 /**
  * Queries the previously created embeddings in Postgres to find the top matches
@@ -31,17 +30,17 @@ export async function queryEmbeddings(question: string, customDir?: string): Pro
   }
 
   const __filename = fileURLToPath(import.meta.url)
-  const __dirname = path.dirname(__filename)
+  const __dirname = dirname(__filename)
 
   // Determine the base directory for reading files if customDir is provided.
   // Otherwise default to the "content" directory, matching create-embed behavior.
   let baseDir: string
   if (customDir) {
-    baseDir = path.isAbsolute(customDir)
+    baseDir = isAbsolute(customDir)
       ? customDir
-      : path.resolve(process.cwd(), customDir)
+      : resolve(process.cwd(), customDir)
   } else {
-    baseDir = path.resolve(__dirname, '..', '..', '..', 'content')
+    baseDir = resolve(__dirname, '..', '..', '..', 'content')
   }
 
   const db = new PrismaClient()
@@ -77,13 +76,13 @@ export async function queryEmbeddings(question: string, customDir?: string): Pro
        * Otherwise, join it with baseDir (the directory used during embedding).
        */
       const filename = row.filename
-      const fileAbsolutePath = path.isAbsolute(filename)
+      const fileAbsolutePath = isAbsolute(filename)
         ? filename
-        : path.join(baseDir, filename)
+        : join(baseDir, filename)
 
       let fileContent = ''
       try {
-        fileContent = fs.readFileSync(fileAbsolutePath, 'utf8')
+        fileContent = readFileSync(fileAbsolutePath, 'utf8')
       } catch (err) {
         console.error(`Error reading file for context: ${fileAbsolutePath}`, err)
       }

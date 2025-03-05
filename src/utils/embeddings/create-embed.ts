@@ -1,11 +1,9 @@
 // src/utils/embeddings/create-embed.ts
 
-import path from 'path'
-import { fileURLToPath } from 'url'
-import { readdir, readFile } from 'fs/promises'
-import fs from 'fs'
-import { env } from 'node:process'
 import { PrismaClient } from '@prisma/client'
+import {
+  env, fileURLToPath, readdir, readFile, join, dirname, isAbsolute, resolve, relative, writeFileSync
+} from '../node-utils'
 
 /**
  * Recursively finds all .md files in the specified directory and any nested subdirectories.
@@ -21,7 +19,7 @@ async function getAllMarkdownFiles(dir: string): Promise<string[]> {
   const mdFiles: string[] = []
 
   for (const entry of dirEntries) {
-    const fullPath = path.join(dir, entry.name)
+    const fullPath = join(dir, entry.name)
     if (entry.isDirectory()) {
       const nestedFiles = await getAllMarkdownFiles(fullPath)
       mdFiles.push(...nestedFiles)
@@ -39,25 +37,25 @@ async function getAllMarkdownFiles(dir: string): Promise<string[]> {
  * in both a JSON file and in the Postgres table using pgvector.
  *
  * @async
- * @function createEmbeddingsAndSQLite
+ * @function createEmbeds
  * @param {string} [customDir] - An optional directory path to recursively scan for .md files
  * @returns {Promise<void>} Promise that resolves when embeddings are created and stored
  * @throws {Error} If the OPENAI_API_KEY is missing or an error occurs in file reading/writing
  */
-export async function createEmbeddingsAndSQLite(customDir?: string): Promise<void> {
+export async function createEmbeds(customDir?: string): Promise<void> {
   const __filename = fileURLToPath(import.meta.url)
-  const __dirname = path.dirname(__filename)
+  const __dirname = dirname(__filename)
 
   // Determine the directory to scan
   let baseDir: string
   if (customDir) {
     // If customDir is absolute, use it directly; otherwise resolve from current working directory
-    baseDir = path.isAbsolute(customDir)
+    baseDir = isAbsolute(customDir)
       ? customDir
-      : path.resolve(process.cwd(), customDir)
+      : resolve(process.cwd(), customDir)
   } else {
     // Default to the "content" directory if no custom path is provided
-    baseDir = path.resolve(__dirname, '..', '..', '..', 'content')
+    baseDir = resolve(__dirname, '..', '..', '..', 'content')
   }
 
   const openaiApiKey = env['OPENAI_API_KEY']
@@ -79,7 +77,7 @@ export async function createEmbeddingsAndSQLite(customDir?: string): Promise<voi
   const embeddings: Record<string, number[]> = {}
   for (const filePath of mdFiles) {
     const content = await readFile(filePath, 'utf8')
-    const fileNameForLog = path.relative(process.cwd(), filePath)
+    const fileNameForLog = relative(process.cwd(), filePath)
     try {
       const response = await fetch('https://api.openai.com/v1/embeddings', {
         method: 'POST',
@@ -104,7 +102,7 @@ export async function createEmbeddingsAndSQLite(customDir?: string): Promise<voi
     }
   }
 
-  fs.writeFileSync('embeddings.json', JSON.stringify(embeddings, null, 2), 'utf8')
+  writeFileSync('embeddings.json', JSON.stringify(embeddings, null, 2), 'utf8')
   console.log(`Saved embeddings to "embeddings.json"`)
 
   const db = new PrismaClient()

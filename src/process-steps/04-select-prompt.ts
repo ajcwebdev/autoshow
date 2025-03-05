@@ -1,8 +1,8 @@
 // src/process-steps/04-select-prompt.ts
 
-import { readFile } from 'fs/promises'
 import { sections } from '../prompts/sections'
 import { err, l, logInitialFunctionCall } from '../utils/logging'
+import { readFile } from '../utils/node-utils'
 import { PROMPT_CHOICES } from '../../shared/constants'
 
 import type { ProcessingOptions } from '../utils/types'

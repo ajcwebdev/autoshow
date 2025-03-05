@@ -117,9 +117,10 @@ npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --ollama
 Use 3rd party LLM providers.
 
 ```bash
-npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --chatgpt gpt-4o-mini
-npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --claude CLAUDE_3_5_SONNET
-npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --gemini GEMINI_1_5_PRO
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --chatgpt
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --claude
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --gemini
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --deepseek
 npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --fireworks
 npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --together
 ```

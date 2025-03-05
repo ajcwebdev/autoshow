@@ -16,6 +16,7 @@ embeddings.json
 new-llm.md
 new-llm-*.md
 new-llm*.md
+test.md
 
 setup-*.log
 setup.log

@@ -11,7 +11,7 @@ import type { ProcessingOptions } from '../utils/types'
  * Main function to handle transcription using Deepgram API.
  * @param {ProcessingOptions} options - Additional processing options (e.g., speaker labels)
  * @param {string} finalPath - The base filename (without extension) for input/output files
- * @param {string} [model] - The Deepgram model to use (default is 'NOVA_2')
+ * @param {string} [model] - The Deepgram model to use (default is 'Nova-2')
  * @returns {Promise<string>} - The formatted transcript content
  * @throws {Error} If any step of the process fails (upload, transcription request, formatting)
  */
@@ -37,11 +37,11 @@ export async function callDeepgram(
       throw new Error(`Model information for model ${model} is not defined.`)
     }
 
-    const { name, costPerMinute } = modelInfo
+    const { name, costPerMinuteCents } = modelInfo
 
     await logTranscriptionCost({
       modelName: name,
-      costPerMinute,
+      costPerMinuteCents,
       filePath: `${finalPath}.wav`
     })
 

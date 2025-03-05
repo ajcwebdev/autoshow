@@ -1,4 +1,4 @@
-// src/utils/validation/cli.ts
+// src/commander-utils.ts
 
 import { processVideo } from './process-commands/video'
 import { processPlaylist } from './process-commands/playlist'

@@ -22,7 +22,7 @@ import type { ProcessingOptions, ShowNoteMetadata } from '../utils/types'
  * @returns A formatted string representation of the cost:
  *  - If cost is undefined => "N/A"
  *  - If cost is exactly 0 => "0¢"
- *  - If cost is less than one cent => e.g. "¢0.5" 
+ *  - If cost is less than one cent => e.g. "¢0.5000"
  *  - If cost is less than one dollar => e.g. "¢25.00"
  *  - Otherwise, format in dollars => e.g. "$1.99"
  * @example
@@ -40,7 +40,7 @@ export function formatCost(cost: number | undefined): string {
 
   // If total cost in cents is below 1, display fraction of a cent.
   if (costInCents < 1) {
-    // e.g. $0.005 => "¢0.50"
+    // e.g. $0.005 => "¢0.5000"
     return `¢${costInCents.toFixed(4)}`
   }
 
@@ -80,8 +80,10 @@ export function logLLMCost(info: {
   let modelConfig: {
     modelId: string
     modelName: string
-    inputCostPer1M: number
-    outputCostPer1M: number
+    inputCostPer1M?: number
+    outputCostPer1M?: number
+    inputCostPer1MCents?: number
+    outputCostPer1MCents?: number
   } | undefined
   for (const service of Object.values(LLM_SERVICES_CONFIG)) {
     for (const model of service.models) {
@@ -97,7 +99,13 @@ export function logLLMCost(info: {
   }
 
   // Destructure out of modelConfig if it was found
-  const { modelName, inputCostPer1M, outputCostPer1M } = modelConfig ?? {}
+  const {
+    modelName,
+    inputCostPer1M,
+    outputCostPer1M,
+    inputCostPer1MCents,
+    outputCostPer1MCents
+  } = modelConfig ?? {}
 
   // Use model label if available, else fallback to the original name
   const displayName = modelName ?? name
@@ -124,29 +132,32 @@ export function logLLMCost(info: {
   if (!modelConfig) {
     // Warn if we have no cost information
     console.warn(`Warning: Could not find cost configuration for model: ${modelName}`)
-  } else if (
-    inputCostPer1M !== undefined &&
-    outputCostPer1M !== undefined &&
-    inputCostPer1M < 0.0000001 &&
-    outputCostPer1M < 0.0000001
-  ) {
-    // If both costs per million are effectively zero, treat them as zero
-    inputCost = 0
-    outputCost = 0
-    totalCost = 0
-  } else if (
-    typeof inputCostPer1M === 'number' &&
-    typeof outputCostPer1M === 'number'
-  ) {
-    if (input) {
-      const rawInputCost = (input / 1_000_000) * inputCostPer1M
-      inputCost = Math.abs(rawInputCost) < 0.00001 ? 0 : rawInputCost
-    }
-    if (output) {
-      outputCost = (output / 1_000_000) * outputCostPer1M
-    }
-    if (inputCost !== undefined && outputCost !== undefined) {
-      totalCost = inputCost + outputCost
+  } else {
+    // Convert cents to dollars if available, otherwise fallback to old fields
+    const inCost = (typeof inputCostPer1MCents === 'number')
+      ? inputCostPer1MCents / 100
+      : (inputCostPer1M || 0)
+
+    const outCost = (typeof outputCostPer1MCents === 'number')
+      ? outputCostPer1MCents / 100
+      : (outputCostPer1M || 0)
+
+    // If both are effectively 0, treat them as zero
+    if (inCost < 0.0000001 && outCost < 0.0000001) {
+      inputCost = 0
+      outputCost = 0
+      totalCost = 0
+    } else {
+      if (input) {
+        const rawInputCost = (input / 1_000_000) * inCost
+        inputCost = Math.abs(rawInputCost) < 0.00001 ? 0 : rawInputCost
+      }
+      if (output) {
+        outputCost = (output / 1_000_000) * outCost
+      }
+      if (inputCost !== undefined && outputCost !== undefined) {
+        totalCost = inputCost + outputCost
+      }
     }
   }
 

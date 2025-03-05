@@ -48,11 +48,11 @@ export async function callAssembly(
       throw new Error(`Model information for model ${model} is not available.`)
     }
 
-    const { name, costPerMinute } = modelInfo
+    const { name, costPerMinuteCents } = modelInfo
 
     await logTranscriptionCost({
       modelName: name,
-      costPerMinute,
+      costPerMinuteCents,
       filePath: audioFilePath
     })
 

@@ -116,7 +116,16 @@ npm run as -- --rss "https://feeds.transistor.fm/fsjam-podcast" --last 3
 Process a single specific episode from a podcast RSS feed by providing the episode's audio URL with the `--item` option:
 
 ```bash
-npm run as -- --rss "https://ajcwebdev.substack.com/feed" --item "https://api.substack.com/feed/podcast/36236609/fd1f1532d9842fe1178de1c920442541.mp3"
+npm run as -- --rss "https://ajcwebdev.substack.com/feed" --item \
+  "https://api.substack.com/feed/podcast/36236609/fd1f1532d9842fe1178de1c920442541.mp3"
+```
+
+Process multiple items from a podcast RSS feed:
+
+```bash
+npm run as -- --rss "https://feeds.transistor.fm/fsjam-podcast" --item \
+  "https://media.transistor.fm/256c1066/f2c5924d.mp3" \
+  "https://media.transistor.fm/bf0b148c/90171c94.mp3"
 ```
 
 Run on a podcast RSS feed and generate JSON info file with markdown metadata of each item:

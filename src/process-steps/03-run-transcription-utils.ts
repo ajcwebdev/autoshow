@@ -45,13 +45,13 @@ export async function retryTranscriptionCall(
  * Internally calculates the audio file duration using ffprobe.
  * @param info - Object containing transcription information with the following properties:
  * @param info.modelName - The name of the model being used
- * @param info.costPerMinute - The cost (in USD) per minute for the model
+ * @param info.costPerMinuteCents - The new cost (in cents) per minute
  * @param info.filePath - The file path to the audio file
  * @throws {Error} If ffprobe fails or returns invalid data.
  */
 export async function logTranscriptionCost(info: {
   modelName: string;
-  costPerMinute: number;
+  costPerMinuteCents?: number;
   filePath: string;
 }) {
   const cmd = `ffprobe -v error -show_entries format=duration -of csv=p=0 "${info.filePath}"`
@@ -61,12 +61,13 @@ export async function logTranscriptionCost(info: {
     throw new Error(`Could not parse audio duration for file: ${info.filePath}`)
   }
   const minutes = seconds / 60
-  const cost = info.costPerMinute * minutes
+  const costPerMin = info.costPerMinuteCents ?? 0
+  const cost = costPerMin * minutes
 
   l.dim(
     `  - Estimated Transcription Cost for ${info.modelName}:\n` +
     `    - Audio Length: ${minutes.toFixed(2)} minutes\n` +
-    `    - Cost: $${cost.toFixed(4)}`
+    `    - Cost: ¢${cost.toFixed(5)}`
   )
 }
 
@@ -103,7 +104,7 @@ export async function estimateTranscriptCost(
 
   await logTranscriptionCost({
     modelName: model.name,
-    costPerMinute: model.costPerMinute,
+    costPerMinuteCents: model.costPerMinuteCents,
     filePath
   })
 }

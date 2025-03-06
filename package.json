@@ -31,7 +31,7 @@
     "docker-up": "docker-compose -f .github/docker-compose.yml --env-file .env up -d --build",
     "up": "docker-compose -f .github/docker-compose.yml --env-file .env up -d --build",
     "web": "npm run up && cd web && npm i && npm run dev",
-    "start": "npx prisma migrate deploy --schema=/usr/src/app/prisma/schema.prisma && npx run tsx:base src/fastify.ts",
+    "start": "npx prisma migrate deploy --schema=/usr/src/app/prisma/schema.prisma && npx tsx --no-warnings src/fastify.ts",
     "docker-info": "docker images && docker-compose -f .github/docker-compose.yml images && docker ps && docker-compose -f .github/docker-compose.yml ps && docker volume ls",
     "docker-inspect": "docker network inspect autoshow-network && docker inspect autoshow-service && docker inspect autoshow-postgres",
     "docker-logs": "docker logs autoshow-service && docker-compose -f .github/docker-compose.yml logs",

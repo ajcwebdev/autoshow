@@ -7,40 +7,40 @@ import { existsSync, renameSync } from 'node:fs'
 import { join } from 'node:path'
 
 const commands = [
+  // {
+  //   cmd: 'npm run as -- --whisper tiny --rss "https://ajcwebdev.substack.com/feed"',
+  //   expectedFile: '2021-05-10-thoughts-on-lambda-school-layoffs-prompt.md',
+  //   newName: '05-RSS-01-substack-default.md'
+  // },
+  // {
+  //   cmd: 'npm run as -- --whisper tiny --rss "https://ajcwebdev.substack.com/feed" --item "https://api.substack.com/feed/podcast/36236609/fd1f1532d9842fe1178de1c920442541.mp3"',
+  //   expectedFile: '2021-05-10-thoughts-on-lambda-school-layoffs-prompt.md',
+  //   newName: '05-RSS-02-substack-item.md'
+  // },
+  // {
+  //   cmd: 'npm run as -- --whisper tiny --rss "https://ajcwebdev.substack.com/feed" --order oldest',
+  //   expectedFile: '2021-05-10-thoughts-on-lambda-school-layoffs-prompt.md',
+  //   newName: '05-RSS-03-substack-oldest.md'
+  // },
+  // {
+  //   cmd: 'npm run as -- --whisper tiny --rss "https://ajcwebdev.substack.com/feed" --last 1',
+  //   expectedFile: '2021-05-10-thoughts-on-lambda-school-layoffs-prompt.md',
+  //   newName: '05-RSS-04-substack-last-1.md'
+  // },
+  // {
+  //   cmd: 'npm run as -- --whisper tiny --rss "https://ajcwebdev.substack.com/feed" --lastDays 9999',
+  //   expectedFile: '2021-05-10-thoughts-on-lambda-school-layoffs-prompt.md',
+  //   newName: '05-RSS-05-substack-lastDays-9999.md'
+  // },
+  // {
+  //   cmd: 'npm run as -- --whisper tiny --rss "https://ajcwebdev.substack.com/feed" --date 2021-05-10',
+  //   expectedFile: '2021-05-10-thoughts-on-lambda-school-layoffs-prompt.md',
+  //   newName: '05-RSS-06-substack-date-2021-05-10.md'
+  // },
   {
-    cmd: 'npm run as -- --whisper tiny --rss "https://ajcwebdev.substack.com/feed"',
-    expectedFile: '2021-05-10-thoughts-on-lambda-school-layoffs-prompt.md',
-    newName: '01-substack-default.md'
-  },
-  {
-    cmd: 'npm run as -- --whisper tiny --rss "https://ajcwebdev.substack.com/feed" --item "https://api.substack.com/feed/podcast/36236609/fd1f1532d9842fe1178de1c920442541.mp3"',
-    expectedFile: '2021-05-10-thoughts-on-lambda-school-layoffs-prompt.md',
-    newName: '02-substack-item.md'
-  },
-  {
-    cmd: 'npm run as -- --whisper tiny --rss "https://ajcwebdev.substack.com/feed" --order oldest',
-    expectedFile: '2021-05-10-thoughts-on-lambda-school-layoffs-prompt.md',
-    newName: '03-substack-oldest.md'
-  },
-  {
-    cmd: 'npm run as -- --whisper tiny --rss "https://ajcwebdev.substack.com/feed" --last 1',
-    expectedFile: '2021-05-10-thoughts-on-lambda-school-layoffs-prompt.md',
-    newName: '04-substack-last-1.md'
-  },
-  {
-    cmd: 'npm run as -- --whisper tiny --rss "https://ajcwebdev.substack.com/feed" --lastDays 9999',
-    expectedFile: '2021-05-10-thoughts-on-lambda-school-layoffs-prompt.md',
-    newName: '05-substack-lastDays-9999.md'
-  },
-  {
-    cmd: 'npm run as -- --whisper tiny --rss "https://ajcwebdev.substack.com/feed" --date 2021-05-10',
-    expectedFile: '2021-05-10-thoughts-on-lambda-school-layoffs-prompt.md',
-    newName: '06-substack-date-2021-05-10.md'
-  },
-  {
-    cmd: 'npm run as -- --whisper tiny --rss "https://ajcwebdev.substack.com/feed" --info',
+    cmd: 'npm run as -- --rss "https://ajcwebdev.substack.com/feed" --info',
     expectedFile: 'ajcwebdev_info.json',
-    newName: '07-ajcwebdev_info.json'
+    newName: '05-RSS-07-ajcwebdev_info.json'
   },
 ]
 

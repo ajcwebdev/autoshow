@@ -93,13 +93,13 @@ npm run as -- --playlist "https://www.youtube.com/playlist?list=PLCVnrVv4KhXPz0S
 Run on a list of arbitrary URLs.
 
 ```bash
-npm run as -- --urls "content/example-urls.md"
+npm run as -- --urls "content/examples/example-urls.md"
 ```
 
 Run on a local audio or video file.
 
 ```bash
-npm run as -- --file "content/audio.mp3"
+npm run as -- --file "content/examples/audio.mp3"
 ```
 
 Run on a podcast RSS feed.

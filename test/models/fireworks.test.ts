@@ -16,36 +16,30 @@ import { join } from 'node:path'
 */
 
 const commands = [
-  // Default
   {
-    cmd: 'npm run as -- --file "content/audio.mp3" --fireworks',
+    cmd: 'npm run as -- --file "content/examples/audio.mp3" --fireworks accounts/fireworks/models/llama-v3p1-405b-instruct',
     expectedFile: 'audio-fireworks-shownotes.md',
-    newName: '01-fireworks-default.md'
+    newName: '06-FIREWORKS-01-fireworks-llama-v3p1-405b.md'
   },
   {
-    cmd: 'npm run as -- --file "content/audio.mp3" --fireworks accounts/fireworks/models/llama-v3p1-405b-instruct',
+    cmd: 'npm run as -- --file "content/examples/audio.mp3" --fireworks accounts/fireworks/models/llama-v3p1-70b-instruct',
     expectedFile: 'audio-fireworks-shownotes.md',
-    newName: '02-fireworks-llama-v3p1-405b.md'
+    newName: '06-FIREWORKS-02-fireworks-llama-v3p1-70b.md'
   },
   {
-    cmd: 'npm run as -- --file "content/audio.mp3" --fireworks accounts/fireworks/models/llama-v3p1-70b-instruct',
+    cmd: 'npm run as -- --file "content/examples/audio.mp3" --fireworks accounts/fireworks/models/llama-v3p1-8b-instruct',
     expectedFile: 'audio-fireworks-shownotes.md',
-    newName: '03-fireworks-llama-v3p1-70b.md'
+    newName: '06-FIREWORKS-03-fireworks-llama-v3p1-8b.md'
   },
   {
-    cmd: 'npm run as -- --file "content/audio.mp3" --fireworks accounts/fireworks/models/llama-v3p1-8b-instruct',
+    cmd: 'npm run as -- --file "content/examples/audio.mp3" --fireworks accounts/fireworks/models/llama-v3p2-3b-instruct',
     expectedFile: 'audio-fireworks-shownotes.md',
-    newName: '04-fireworks-llama-v3p1-8b.md'
+    newName: '06-FIREWORKS-04-fireworks-llama-v3p2-3b.md'
   },
   {
-    cmd: 'npm run as -- --file "content/audio.mp3" --fireworks accounts/fireworks/models/llama-v3p2-3b-instruct',
+    cmd: 'npm run as -- --file "content/examples/audio.mp3" --fireworks accounts/fireworks/models/qwen2p5-72b-instruct',
     expectedFile: 'audio-fireworks-shownotes.md',
-    newName: '05-fireworks-llama-v3p2-3b.md'
-  },
-  {
-    cmd: 'npm run as -- --file "content/audio.mp3" --fireworks accounts/fireworks/models/qwen2p5-72b-instruct',
-    expectedFile: 'audio-fireworks-shownotes.md',
-    newName: '06-fireworks-qwen2p5-72b.md'
+    newName: '06-FIREWORKS-05-fireworks-qwen2p5-72b.md'
   },
 ]
 

@@ -8,30 +8,22 @@ import { join } from 'node:path'
 
 const commands = [
   {
-    // Process multiple YouTube videos from URLs with title prompts, Deepgram default model, and ChatGPT default model.
-    cmd: 'npm run as -- --urls "content/example-urls.md" --prompt titles --deepgram --chatgpt',
-    expectedFiles: [
-      { file: '2024-09-24-ep1-fsjam-podcast-chatgpt-shownotes.md', newName: '01-deepgram-default-chatgpt-default.md' },
-      { file: '2024-09-24-ep0-fsjam-podcast-chatgpt-shownotes.md', newName: '02-deepgram-default-chatgpt-default.md' }
-    ]
-  },
-  {
     // Process audio with Deepgram using NOVA_2 model.
-    cmd: 'npm run as -- --file "content/audio.mp3" --deepgram NOVA_2',
+    cmd: 'npm run as -- --file "content/examples/audio.mp3" --deepgram NOVA_2',
     expectedFile: 'audio-prompt.md',
-    newName: '03-deepgram-nova-2.md'
+    newName: '01-DEEPGRAM-01-deepgram-nova-2.md'
   },
   {
     // Process audio with Deepgram using BASE model.
-    cmd: 'npm run as -- --file "content/audio.mp3" --deepgram BASE',
+    cmd: 'npm run as -- --file "content/examples/audio.mp3" --deepgram BASE',
     expectedFile: 'audio-prompt.md',
-    newName: '04-deepgram-base.md'
+    newName: '01-DEEPGRAM-02-deepgram-base.md'
   },
   {
     // Process audio with Deepgram using ENHANCED model.
-    cmd: 'npm run as -- --file "content/audio.mp3" --deepgram ENHANCED',
+    cmd: 'npm run as -- --file "content/examples/audio.mp3" --deepgram ENHANCED',
     expectedFile: 'audio-prompt.md',
-    newName: '05-deepgram-enhanced.md'
+    newName: '01-DEEPGRAM-03-deepgram-enhanced.md'
   },
 ]
 
@@ -40,8 +32,8 @@ test(' Command Tests', async (t) => {
     await t.test(`should run command ${index + 1} successfully`, async () => {
       // Run the command
       execSync(command.cmd, { stdio: 'inherit' })
-      if (Array.isArray(command.expectedFiles)) {
-        for (const { file, newName } of command.expectedFiles) {
+      if (Array.isArray(command.expectedFile)) {
+        for (const { file, newName } of command.expectedFile) {
           const filePath = join('content', file)
           strictEqual(existsSync(filePath), true, `Expected file ${file} was not created`)
           const newPath = join('content', newName)

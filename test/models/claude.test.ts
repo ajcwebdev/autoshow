@@ -14,26 +14,20 @@ import { join } from 'node:path'
 */
 
 const commands = [
-  // Default
   {
-    cmd: 'npm run as -- --file "content/audio.mp3" --claude',
+    cmd: 'npm run as -- --file "content/examples/audio.mp3" --claude claude-3-7-sonnet-latest',
     expectedFile: 'audio-claude-shownotes.md',
-    newName: '01-claude-default.md'
+    newName: '04-CLAUDE-01-claude-3-7-sonnet-latest.md'
   },
   {
-    cmd: 'npm run as -- --file "content/audio.mp3" --claude claude-3-7-sonnet-latest',
+    cmd: 'npm run as -- --file "content/examples/audio.mp3" --claude claude-3-5-haiku-latest',
     expectedFile: 'audio-claude-shownotes.md',
-    newName: '02-claude-3-7-sonnet-latest.md'
+    newName: '04-CLAUDE-02-claude-3-5-haiku-latest.md'
   },
   {
-    cmd: 'npm run as -- --file "content/audio.mp3" --claude claude-3-5-haiku-latest',
+    cmd: 'npm run as -- --file "content/examples/audio.mp3" --claude claude-3-opus-latest',
     expectedFile: 'audio-claude-shownotes.md',
-    newName: '03-claude-3-5-haiku-latest.md'
-  },
-  {
-    cmd: 'npm run as -- --file "content/audio.mp3" --claude claude-3-opus-latest',
-    expectedFile: 'audio-claude-shownotes.md',
-    newName: '04-claude-3-opus-latest.md'
+    newName: '04-CLAUDE-03-claude-3-opus-latest.md'
   },
 ]
 

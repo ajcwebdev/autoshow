@@ -260,6 +260,6 @@ curl --json '{
   "type": "audio",
   "file": "content/audio.mp3",
   "prompts": [],
-  "customPrompt": "content/custom-prompt.md"
+  "customPrompt": "content/examples/custom-prompt.md"
 }' http://localhost:3000/api/process
 ```

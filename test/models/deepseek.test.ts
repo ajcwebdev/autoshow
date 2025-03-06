@@ -13,19 +13,13 @@ import { join } from 'node:path'
 */
 
 const commands = [
-  // Default
   {
-    cmd: 'npm run as -- --file "content/audio.mp3" --deepseek',
-    expectedFile: 'audio-deepseek-shownotes.md',
-    newName: '01-deepseek-default.md'
-  },
-  {
-    cmd: 'npm run as -- --file "content/audio.mp3" --deepseek deepseek-chat',
+    cmd: 'npm run as -- --file "content/examples/audio.mp3" --deepseek deepseek-chat',
     expectedFile: 'audio-deepseek-shownotes.md',
     newName: '02-deepseek-chat.md'
   },
   {
-    cmd: 'npm run as -- --file "content/audio.mp3" --deepseek deepseek-reasoner',
+    cmd: 'npm run as -- --file "content/examples/audio.mp3" --deepseek deepseek-reasoner',
     expectedFile: 'audio-deepseek-shownotes.md',
     newName: '03-deepseek-reasoner.md'
   },

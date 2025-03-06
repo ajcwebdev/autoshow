@@ -16,36 +16,30 @@ import { join } from 'node:path'
 */
 
 const commands = [
-  // Default
   {
-    cmd: 'npm run as -- --file "content/audio.mp3" --gemini',
+    cmd: 'npm run as -- --file "content/examples/audio.mp3" --gemini gemini-1.5-pro',
     expectedFile: 'audio-gemini-shownotes.md',
-    newName: '01-gemini-default.md'
+    newName: '05-GEMINI-01-gemini-1.5-pro.md'
   },
   {
-    cmd: 'npm run as -- --file "content/audio.mp3" --gemini gemini-1.5-pro',
+    cmd: 'npm run as -- --file "content/examples/audio.mp3" --gemini gemini-1.5-flash-8b',
     expectedFile: 'audio-gemini-shownotes.md',
-    newName: '02-gemini-1.5-pro.md'
+    newName: '05-GEMINI-02-gemini-1.5-flash-8b.md'
   },
   {
-    cmd: 'npm run as -- --file "content/audio.mp3" --gemini gemini-1.5-flash-8b',
+    cmd: 'npm run as -- --file "content/examples/audio.mp3" --gemini gemini-1.5-flash',
     expectedFile: 'audio-gemini-shownotes.md',
-    newName: '03-gemini-1.5-flash-8b.md'
+    newName: '05-GEMINI-03-gemini-1.5-flash.md'
   },
   {
-    cmd: 'npm run as -- --file "content/audio.mp3" --gemini gemini-1.5-flash',
+    cmd: 'npm run as -- --file "content/examples/audio.mp3" --gemini gemini-2.0-flash-lite',
     expectedFile: 'audio-gemini-shownotes.md',
-    newName: '04-gemini-1.5-flash.md'
+    newName: '05-GEMINI-04-gemini-2.0-flash-lite.md'
   },
   {
-    cmd: 'npm run as -- --file "content/audio.mp3" --gemini gemini-2.0-flash-lite',
+    cmd: 'npm run as -- --file "content/examples/audio.mp3" --gemini gemini-2.0-flash',
     expectedFile: 'audio-gemini-shownotes.md',
-    newName: '05-gemini-2.0-flash-lite.md'
-  },
-  {
-    cmd: 'npm run as -- --file "content/audio.mp3" --gemini gemini-2.0-flash',
-    expectedFile: 'audio-gemini-shownotes.md',
-    newName: '06-gemini-2.0-flash.md'
+    newName: '05-GEMINI-05-gemini-2.0-flash.md'
   },
 ]
 

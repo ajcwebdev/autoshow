@@ -19,51 +19,50 @@ import { join } from 'node:path'
 */
 
 const commands = [
-  // Default
   {
-    cmd: 'npm run as -- --file "content/audio.mp3" --ollama',
+    cmd: 'npm run as -- --file "content/examples/audio.mp3" --ollama',
     expectedFile: 'audio-ollama-shownotes.md',
-    newName: '01-ollama-default.md',
+    newName: '08-OLLAMA-01-ollama-default.md',
   },
   {
-    cmd: 'npm run as -- --file "content/audio.mp3" --ollama qwen2.5:0.5b',
+    cmd: 'npm run as -- --file "content/examples/audio.mp3" --ollama qwen2.5:0.5b',
     expectedFile: 'audio-ollama-shownotes.md',
-    newName: '02-ollama-qwen2.5-0.5b.md'
+    newName: '08-OLLAMA-02-ollama-qwen2.5-0.5b.md'
   },
   {
-    cmd: 'npm run as -- --file "content/audio.mp3" --ollama qwen2.5:1.5b',
+    cmd: 'npm run as -- --file "content/examples/audio.mp3" --ollama qwen2.5:1.5b',
     expectedFile: 'audio-ollama-shownotes.md',
-    newName: '03-ollama-qwen2.5-1.5b.md'
+    newName: '08-OLLAMA-03-ollama-qwen2.5-1.5b.md'
   },
   {
-    cmd: 'npm run as -- --file "content/audio.mp3" --ollama qwen2.5:3b',
+    cmd: 'npm run as -- --file "content/examples/audio.mp3" --ollama qwen2.5:3b',
     expectedFile: 'audio-ollama-shownotes.md',
-    newName: '04-ollama-qwen2.5-3b.md'
+    newName: '08-OLLAMA-04-ollama-qwen2.5-3b.md'
   },
   {
-    cmd: 'npm run as -- --file "content/audio.mp3" --ollama llama3.2:1b',
+    cmd: 'npm run as -- --file "content/examples/audio.mp3" --ollama llama3.2:1b',
     expectedFile: 'audio-ollama-shownotes.md',
-    newName: '05-ollama-llama3.2-1b.md'
+    newName: '08-OLLAMA-05-ollama-llama3.2-1b.md'
   },
   {
-    cmd: 'npm run as -- --file "content/audio.mp3" --ollama llama3.2:3b',
+    cmd: 'npm run as -- --file "content/examples/audio.mp3" --ollama llama3.2:3b',
     expectedFile: 'audio-ollama-shownotes.md',
-    newName: '06-ollama-llama3.2-3b.md'
+    newName: '08-OLLAMA-06-ollama-llama3.2-3b.md'
   },
   {
-    cmd: 'npm run as -- --file "content/audio.mp3" --ollama gemma2:2b',
+    cmd: 'npm run as -- --file "content/examples/audio.mp3" --ollama gemma2:2b',
     expectedFile: 'audio-ollama-shownotes.md',
-    newName: '07-ollama-gemma2-2b.md'
+    newName: '08-OLLAMA-07-ollama-gemma2-2b.md'
   },
   {
-    cmd: 'npm run as -- --file "content/audio.mp3" --ollama phi3.5:3.8b',
+    cmd: 'npm run as -- --file "content/examples/audio.mp3" --ollama phi3.5:3.8b',
     expectedFile: 'audio-ollama-shownotes.md',
-    newName: '08-ollama-phi3.5-3.8b.md'
+    newName: '08-OLLAMA-08-ollama-phi3.5-3.8b.md'
   },
   {
-    cmd: 'npm run as -- --file "content/audio.mp3" --ollama deepseek-r1:1.5b',
+    cmd: 'npm run as -- --file "content/examples/audio.mp3" --ollama deepseek-r1:1.5b',
     expectedFile: 'audio-ollama-shownotes.md',
-    newName: '09-ollama-deepseek-r1-1.5b.md'
+    newName: '08-OLLAMA-09-ollama-deepseek-r1-1.5b.md'
   },
 ]
 

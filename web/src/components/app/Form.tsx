@@ -33,7 +33,7 @@ const Alert: React.FC<AlertProps> = ({ message, variant }) => (
 const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
   const [processType, setProcessType] = useState<ProcessTypeEnum>('video')
   const [url, setUrl] = useState<string>('https://www.youtube.com/watch?v=MORMZXEaONk')
-  const [filePath, setFilePath] = useState<string>('content/audio.mp3')
+  const [filePath, setFilePath] = useState<string>('content/examples/audio.mp3')
   const [transcriptionService, setTranscriptionService] = useState<string>('whisper')
   const [whisperModel, setWhisperModel] = useState<string>('tiny')
   const [llmService, setLlmService] = useState<string>('none')

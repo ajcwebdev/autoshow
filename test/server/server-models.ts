@@ -51,7 +51,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'assembly',
       transcriptModel: 'best',
       assemblyApiKey: ASSEMBLY_API_KEY,
@@ -63,7 +63,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'assembly',
       transcriptModel: 'nano',
       assemblyApiKey: ASSEMBLY_API_KEY,
@@ -75,7 +75,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'deepgram',
       transcriptModel: 'nova-2',
       deepgramApiKey: DEEPGRAM_API_KEY,
@@ -87,7 +87,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'deepgram',
       transcriptModel: 'base',
       deepgramApiKey: DEEPGRAM_API_KEY,
@@ -99,7 +99,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'deepgram',
       transcriptModel: 'enhanced',
       deepgramApiKey: DEEPGRAM_API_KEY,
@@ -112,7 +112,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       llm: 'chatgpt',
       llmModel: 'gpt-4.5-preview',
       openaiApiKey: OPENAI_API_KEY,
@@ -124,7 +124,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       llm: 'chatgpt',
       llmModel: 'gpt-4o',
       openaiApiKey: OPENAI_API_KEY,
@@ -136,7 +136,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       llm: 'chatgpt',
       llmModel: 'gpt-4o-mini',
       openaiApiKey: OPENAI_API_KEY,
@@ -148,7 +148,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       llm: 'chatgpt',
       llmModel: 'o1-mini',
       openaiApiKey: OPENAI_API_KEY,
@@ -161,7 +161,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       llm: 'claude',
       llmModel: 'claude-3-7-sonnet-latest',
       anthropicApiKey: ANTHROPIC_API_KEY,
@@ -173,7 +173,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       llm: 'claude',
       llmModel: 'claude-3-5-haiku-latest',
       anthropicApiKey: ANTHROPIC_API_KEY,
@@ -185,7 +185,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       llm: 'claude',
       llmModel: 'claude-3-opus-latest',
       anthropicApiKey: ANTHROPIC_API_KEY,
@@ -198,7 +198,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       llm: 'deepseek',
       llmModel: 'deepseek-chat',
       deepseekApiKey: DEEPSEEK_API_KEY,
@@ -210,7 +210,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       llm: 'deepseek',
       llmModel: 'deepseek-reasoner',
       deepseekApiKey: DEEPSEEK_API_KEY,
@@ -223,7 +223,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       llm: 'gemini',
       llmModel: 'gemini-1.5-pro',
       geminiApiKey: GEMINI_API_KEY,
@@ -235,7 +235,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       llm: 'gemini',
       llmModel: 'gemini-1.5-flash-8b',
       geminiApiKey: GEMINI_API_KEY,
@@ -247,7 +247,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       llm: 'gemini',
       llmModel: 'gemini-1.5-flash',
       geminiApiKey: GEMINI_API_KEY,
@@ -259,7 +259,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       llm: 'gemini',
       llmModel: 'gemini-2.0-flash-lite',
       geminiApiKey: GEMINI_API_KEY,
@@ -271,7 +271,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       llm: 'gemini',
       llmModel: 'gemini-2.0-flash',
       geminiApiKey: GEMINI_API_KEY,
@@ -284,7 +284,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       llm: 'fireworks',
       llmModel: 'accounts/fireworks/models/llama-v3p1-405b-instruct',
       fireworksApiKey: FIREWORKS_API_KEY,
@@ -296,7 +296,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       llm: 'fireworks',
       llmModel: 'accounts/fireworks/models/llama-v3p1-70b-instruct',
       fireworksApiKey: FIREWORKS_API_KEY,
@@ -308,7 +308,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       llm: 'fireworks',
       llmModel: 'accounts/fireworks/models/llama-v3p1-8b-instruct',
       fireworksApiKey: FIREWORKS_API_KEY,
@@ -320,7 +320,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       llm: 'fireworks',
       llmModel: 'accounts/fireworks/models/llama-v3p2-3b-instruct',
       fireworksApiKey: FIREWORKS_API_KEY,
@@ -332,7 +332,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       llm: 'fireworks',
       llmModel: 'accounts/fireworks/models/qwen2p5-72b-instruct',
       fireworksApiKey: FIREWORKS_API_KEY,
@@ -345,7 +345,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       llm: 'together',
       llmModel: 'meta-llama/Llama-3.2-3B-Instruct-Turbo',
       togetherApiKey: TOGETHER_API_KEY,
@@ -357,7 +357,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       llm: 'together',
       llmModel: 'meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo',
       togetherApiKey: TOGETHER_API_KEY,
@@ -369,7 +369,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       llm: 'together',
       llmModel: 'meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo',
       togetherApiKey: TOGETHER_API_KEY,
@@ -381,7 +381,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       llm: 'together',
       llmModel: 'meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo',
       togetherApiKey: TOGETHER_API_KEY,
@@ -393,7 +393,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       llm: 'together',
       llmModel: 'google/gemma-2-27b-it',
       togetherApiKey: TOGETHER_API_KEY,
@@ -405,7 +405,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       llm: 'together',
       llmModel: 'google/gemma-2-9b-it',
       togetherApiKey: TOGETHER_API_KEY,
@@ -417,7 +417,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       llm: 'together',
       llmModel: 'Qwen/Qwen2.5-72B-Instruct-Turbo',
       togetherApiKey: TOGETHER_API_KEY,
@@ -429,7 +429,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       llm: 'together',
       llmModel: 'Qwen/Qwen2.5-7B-Instruct-Turbo',
       togetherApiKey: TOGETHER_API_KEY,

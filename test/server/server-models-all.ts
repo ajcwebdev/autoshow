@@ -51,7 +51,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       llm: 'chatgpt',
       llmModel: 'gpt-4o-mini',
       openaiApiKey: OPENAI_API_KEY,
@@ -64,7 +64,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'deepgram',
       whisperModel: 'nova-2',
       deepgramApiKey: DEEPGRAM_API_KEY,
@@ -78,7 +78,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'deepgram',
       whisperModel: 'nova-2',
       deepgramApiKey: DEEPGRAM_API_KEY,
@@ -92,7 +92,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'deepgram',
       whisperModel: 'nova-2',
       deepgramApiKey: DEEPGRAM_API_KEY,
@@ -106,7 +106,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'deepgram',
       whisperModel: 'nova-2',
       deepgramApiKey: DEEPGRAM_API_KEY,
@@ -120,7 +120,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'deepgram',
       whisperModel: 'nova-2',
       deepgramApiKey: DEEPGRAM_API_KEY,
@@ -134,7 +134,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'deepgram',
       whisperModel: 'nova-2',
       deepgramApiKey: DEEPGRAM_API_KEY,
@@ -148,7 +148,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'deepgram',
       whisperModel: 'nova-2',
       deepgramApiKey: DEEPGRAM_API_KEY,
@@ -162,7 +162,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'deepgram',
       whisperModel: 'nova-2',
       deepgramApiKey: DEEPGRAM_API_KEY,
@@ -176,7 +176,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'deepgram',
       whisperModel: 'nova-2',
       deepgramApiKey: DEEPGRAM_API_KEY,
@@ -190,7 +190,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'deepgram',
       whisperModel: 'nova-2',
       deepgramApiKey: DEEPGRAM_API_KEY,
@@ -204,7 +204,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'deepgram',
       whisperModel: 'nova-2',
       deepgramApiKey: DEEPGRAM_API_KEY,
@@ -218,7 +218,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'deepgram',
       whisperModel: 'nova-2',
       deepgramApiKey: DEEPGRAM_API_KEY,
@@ -232,7 +232,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'deepgram',
       whisperModel: 'nova-2',
       deepgramApiKey: DEEPGRAM_API_KEY,
@@ -246,7 +246,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'deepgram',
       whisperModel: 'nova-2',
       deepgramApiKey: DEEPGRAM_API_KEY,
@@ -260,7 +260,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'deepgram',
       whisperModel: 'nova-2',
       deepgramApiKey: DEEPGRAM_API_KEY,
@@ -274,7 +274,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'deepgram',
       whisperModel: 'nova-2',
       deepgramApiKey: DEEPGRAM_API_KEY,
@@ -288,7 +288,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'deepgram',
       whisperModel: 'nova-2',
       deepgramApiKey: DEEPGRAM_API_KEY,
@@ -302,7 +302,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'deepgram',
       whisperModel: 'nova-2',
       deepgramApiKey: DEEPGRAM_API_KEY,
@@ -316,7 +316,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'deepgram',
       whisperModel: 'nova-2',
       deepgramApiKey: DEEPGRAM_API_KEY,
@@ -330,7 +330,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'deepgram',
       whisperModel: 'nova-2',
       deepgramApiKey: DEEPGRAM_API_KEY,
@@ -344,7 +344,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'deepgram',
       whisperModel: 'nova-2',
       deepgramApiKey: DEEPGRAM_API_KEY,
@@ -358,7 +358,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'deepgram',
       whisperModel: 'nova-2',
       deepgramApiKey: DEEPGRAM_API_KEY,
@@ -372,7 +372,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'deepgram',
       whisperModel: 'nova-2',
       deepgramApiKey: DEEPGRAM_API_KEY,
@@ -386,7 +386,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'deepgram',
       whisperModel: 'nova-2',
       deepgramApiKey: DEEPGRAM_API_KEY,
@@ -400,7 +400,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'deepgram',
       whisperModel: 'nova-2',
       deepgramApiKey: DEEPGRAM_API_KEY,
@@ -414,7 +414,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'deepgram',
       whisperModel: 'nova-2',
       deepgramApiKey: DEEPGRAM_API_KEY,
@@ -428,7 +428,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'deepgram',
       whisperModel: 'nova-2',
       deepgramApiKey: DEEPGRAM_API_KEY,
@@ -444,7 +444,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'deepgram',
       whisperModel: 'base',
       deepgramApiKey: DEEPGRAM_API_KEY,
@@ -458,7 +458,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'deepgram',
       whisperModel: 'base',
       deepgramApiKey: DEEPGRAM_API_KEY,
@@ -472,7 +472,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'deepgram',
       whisperModel: 'base',
       deepgramApiKey: DEEPGRAM_API_KEY,
@@ -486,7 +486,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'deepgram',
       whisperModel: 'base',
       deepgramApiKey: DEEPGRAM_API_KEY,
@@ -500,7 +500,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'deepgram',
       whisperModel: 'base',
       deepgramApiKey: DEEPGRAM_API_KEY,
@@ -514,7 +514,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'deepgram',
       whisperModel: 'base',
       deepgramApiKey: DEEPGRAM_API_KEY,
@@ -528,7 +528,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'deepgram',
       whisperModel: 'base',
       deepgramApiKey: DEEPGRAM_API_KEY,
@@ -542,7 +542,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'deepgram',
       whisperModel: 'base',
       deepgramApiKey: DEEPGRAM_API_KEY,
@@ -556,7 +556,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'deepgram',
       whisperModel: 'base',
       deepgramApiKey: DEEPGRAM_API_KEY,
@@ -570,7 +570,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'deepgram',
       whisperModel: 'base',
       deepgramApiKey: DEEPGRAM_API_KEY,
@@ -584,7 +584,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'deepgram',
       whisperModel: 'base',
       deepgramApiKey: DEEPGRAM_API_KEY,
@@ -598,7 +598,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'deepgram',
       whisperModel: 'base',
       deepgramApiKey: DEEPGRAM_API_KEY,
@@ -612,7 +612,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'deepgram',
       whisperModel: 'base',
       deepgramApiKey: DEEPGRAM_API_KEY,
@@ -626,7 +626,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'deepgram',
       whisperModel: 'base',
       deepgramApiKey: DEEPGRAM_API_KEY,
@@ -640,7 +640,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'deepgram',
       whisperModel: 'base',
       deepgramApiKey: DEEPGRAM_API_KEY,
@@ -654,7 +654,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'deepgram',
       whisperModel: 'base',
       deepgramApiKey: DEEPGRAM_API_KEY,
@@ -668,7 +668,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'deepgram',
       whisperModel: 'base',
       deepgramApiKey: DEEPGRAM_API_KEY,
@@ -682,7 +682,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'deepgram',
       whisperModel: 'base',
       deepgramApiKey: DEEPGRAM_API_KEY,
@@ -696,7 +696,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'deepgram',
       whisperModel: 'base',
       deepgramApiKey: DEEPGRAM_API_KEY,
@@ -710,7 +710,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'deepgram',
       whisperModel: 'base',
       deepgramApiKey: DEEPGRAM_API_KEY,
@@ -724,7 +724,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'deepgram',
       whisperModel: 'base',
       deepgramApiKey: DEEPGRAM_API_KEY,
@@ -738,7 +738,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'deepgram',
       whisperModel: 'base',
       deepgramApiKey: DEEPGRAM_API_KEY,
@@ -752,7 +752,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'deepgram',
       whisperModel: 'base',
       deepgramApiKey: DEEPGRAM_API_KEY,
@@ -766,7 +766,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'deepgram',
       whisperModel: 'base',
       deepgramApiKey: DEEPGRAM_API_KEY,
@@ -780,7 +780,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'deepgram',
       whisperModel: 'base',
       deepgramApiKey: DEEPGRAM_API_KEY,
@@ -794,7 +794,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'deepgram',
       whisperModel: 'base',
       deepgramApiKey: DEEPGRAM_API_KEY,
@@ -808,7 +808,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'deepgram',
       whisperModel: 'base',
       deepgramApiKey: DEEPGRAM_API_KEY,
@@ -824,7 +824,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'deepgram',
       whisperModel: 'enhanced',
       deepgramApiKey: DEEPGRAM_API_KEY,
@@ -838,7 +838,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'deepgram',
       whisperModel: 'enhanced',
       deepgramApiKey: DEEPGRAM_API_KEY,
@@ -852,7 +852,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'deepgram',
       whisperModel: 'enhanced',
       deepgramApiKey: DEEPGRAM_API_KEY,
@@ -866,7 +866,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'deepgram',
       whisperModel: 'enhanced',
       deepgramApiKey: DEEPGRAM_API_KEY,
@@ -880,7 +880,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'deepgram',
       whisperModel: 'enhanced',
       deepgramApiKey: DEEPGRAM_API_KEY,
@@ -894,7 +894,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'deepgram',
       whisperModel: 'enhanced',
       deepgramApiKey: DEEPGRAM_API_KEY,
@@ -908,7 +908,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'deepgram',
       whisperModel: 'enhanced',
       deepgramApiKey: DEEPGRAM_API_KEY,
@@ -922,7 +922,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'deepgram',
       whisperModel: 'enhanced',
       deepgramApiKey: DEEPGRAM_API_KEY,
@@ -936,7 +936,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'deepgram',
       whisperModel: 'enhanced',
       deepgramApiKey: DEEPGRAM_API_KEY,
@@ -950,7 +950,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'deepgram',
       whisperModel: 'enhanced',
       deepgramApiKey: DEEPGRAM_API_KEY,
@@ -964,7 +964,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'deepgram',
       whisperModel: 'enhanced',
       deepgramApiKey: DEEPGRAM_API_KEY,
@@ -978,7 +978,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'deepgram',
       whisperModel: 'enhanced',
       deepgramApiKey: DEEPGRAM_API_KEY,
@@ -992,7 +992,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'deepgram',
       whisperModel: 'enhanced',
       deepgramApiKey: DEEPGRAM_API_KEY,
@@ -1006,7 +1006,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'deepgram',
       whisperModel: 'enhanced',
       deepgramApiKey: DEEPGRAM_API_KEY,
@@ -1020,7 +1020,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'deepgram',
       whisperModel: 'enhanced',
       deepgramApiKey: DEEPGRAM_API_KEY,
@@ -1034,7 +1034,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'deepgram',
       whisperModel: 'enhanced',
       deepgramApiKey: DEEPGRAM_API_KEY,
@@ -1048,7 +1048,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'deepgram',
       whisperModel: 'enhanced',
       deepgramApiKey: DEEPGRAM_API_KEY,
@@ -1062,7 +1062,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'deepgram',
       whisperModel: 'enhanced',
       deepgramApiKey: DEEPGRAM_API_KEY,
@@ -1076,7 +1076,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'deepgram',
       whisperModel: 'enhanced',
       deepgramApiKey: DEEPGRAM_API_KEY,
@@ -1090,7 +1090,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'deepgram',
       whisperModel: 'enhanced',
       deepgramApiKey: DEEPGRAM_API_KEY,
@@ -1104,7 +1104,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'deepgram',
       whisperModel: 'enhanced',
       deepgramApiKey: DEEPGRAM_API_KEY,
@@ -1118,7 +1118,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'deepgram',
       whisperModel: 'enhanced',
       deepgramApiKey: DEEPGRAM_API_KEY,
@@ -1132,7 +1132,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'deepgram',
       whisperModel: 'enhanced',
       deepgramApiKey: DEEPGRAM_API_KEY,
@@ -1146,7 +1146,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'deepgram',
       whisperModel: 'enhanced',
       deepgramApiKey: DEEPGRAM_API_KEY,
@@ -1160,7 +1160,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'deepgram',
       whisperModel: 'enhanced',
       deepgramApiKey: DEEPGRAM_API_KEY,
@@ -1174,7 +1174,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'deepgram',
       whisperModel: 'enhanced',
       deepgramApiKey: DEEPGRAM_API_KEY,
@@ -1188,7 +1188,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'deepgram',
       whisperModel: 'enhanced',
       deepgramApiKey: DEEPGRAM_API_KEY,
@@ -1204,7 +1204,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'assembly',
       whisperModel: 'best',
       assemblyApiKey: ASSEMBLY_API_KEY,
@@ -1218,7 +1218,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'assembly',
       whisperModel: 'best',
       assemblyApiKey: ASSEMBLY_API_KEY,
@@ -1232,7 +1232,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'assembly',
       whisperModel: 'best',
       assemblyApiKey: ASSEMBLY_API_KEY,
@@ -1246,7 +1246,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'assembly',
       whisperModel: 'best',
       assemblyApiKey: ASSEMBLY_API_KEY,
@@ -1260,7 +1260,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'assembly',
       whisperModel: 'best',
       assemblyApiKey: ASSEMBLY_API_KEY,
@@ -1274,7 +1274,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'assembly',
       whisperModel: 'best',
       assemblyApiKey: ASSEMBLY_API_KEY,
@@ -1288,7 +1288,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'assembly',
       whisperModel: 'best',
       assemblyApiKey: ASSEMBLY_API_KEY,
@@ -1302,7 +1302,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'assembly',
       whisperModel: 'best',
       assemblyApiKey: ASSEMBLY_API_KEY,
@@ -1316,7 +1316,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'assembly',
       whisperModel: 'best',
       assemblyApiKey: ASSEMBLY_API_KEY,
@@ -1330,7 +1330,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'assembly',
       whisperModel: 'best',
       assemblyApiKey: ASSEMBLY_API_KEY,
@@ -1344,7 +1344,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'assembly',
       whisperModel: 'best',
       assemblyApiKey: ASSEMBLY_API_KEY,
@@ -1358,7 +1358,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'assembly',
       whisperModel: 'best',
       assemblyApiKey: ASSEMBLY_API_KEY,
@@ -1372,7 +1372,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'assembly',
       whisperModel: 'best',
       assemblyApiKey: ASSEMBLY_API_KEY,
@@ -1386,7 +1386,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'assembly',
       whisperModel: 'best',
       assemblyApiKey: ASSEMBLY_API_KEY,
@@ -1400,7 +1400,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'assembly',
       whisperModel: 'best',
       assemblyApiKey: ASSEMBLY_API_KEY,
@@ -1414,7 +1414,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'assembly',
       whisperModel: 'best',
       assemblyApiKey: ASSEMBLY_API_KEY,
@@ -1428,7 +1428,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'assembly',
       whisperModel: 'best',
       assemblyApiKey: ASSEMBLY_API_KEY,
@@ -1442,7 +1442,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'assembly',
       whisperModel: 'best',
       assemblyApiKey: ASSEMBLY_API_KEY,
@@ -1456,7 +1456,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'assembly',
       whisperModel: 'best',
       assemblyApiKey: ASSEMBLY_API_KEY,
@@ -1470,7 +1470,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'assembly',
       whisperModel: 'best',
       assemblyApiKey: ASSEMBLY_API_KEY,
@@ -1484,7 +1484,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'assembly',
       whisperModel: 'best',
       assemblyApiKey: ASSEMBLY_API_KEY,
@@ -1498,7 +1498,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'assembly',
       whisperModel: 'best',
       assemblyApiKey: ASSEMBLY_API_KEY,
@@ -1512,7 +1512,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'assembly',
       whisperModel: 'best',
       assemblyApiKey: ASSEMBLY_API_KEY,
@@ -1526,7 +1526,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'assembly',
       whisperModel: 'best',
       assemblyApiKey: ASSEMBLY_API_KEY,
@@ -1540,7 +1540,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'assembly',
       whisperModel: 'best',
       assemblyApiKey: ASSEMBLY_API_KEY,
@@ -1554,7 +1554,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'assembly',
       whisperModel: 'best',
       assemblyApiKey: ASSEMBLY_API_KEY,
@@ -1568,7 +1568,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'assembly',
       whisperModel: 'best',
       assemblyApiKey: ASSEMBLY_API_KEY,
@@ -1584,7 +1584,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'assembly',
       whisperModel: 'nano',
       assemblyApiKey: ASSEMBLY_API_KEY,
@@ -1598,7 +1598,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'assembly',
       whisperModel: 'nano',
       assemblyApiKey: ASSEMBLY_API_KEY,
@@ -1612,7 +1612,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'assembly',
       whisperModel: 'nano',
       assemblyApiKey: ASSEMBLY_API_KEY,
@@ -1626,7 +1626,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'assembly',
       whisperModel: 'nano',
       assemblyApiKey: ASSEMBLY_API_KEY,
@@ -1640,7 +1640,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'assembly',
       whisperModel: 'nano',
       assemblyApiKey: ASSEMBLY_API_KEY,
@@ -1654,7 +1654,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'assembly',
       whisperModel: 'nano',
       assemblyApiKey: ASSEMBLY_API_KEY,
@@ -1668,7 +1668,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'assembly',
       whisperModel: 'nano',
       assemblyApiKey: ASSEMBLY_API_KEY,
@@ -1682,7 +1682,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'assembly',
       whisperModel: 'nano',
       assemblyApiKey: ASSEMBLY_API_KEY,
@@ -1696,7 +1696,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'assembly',
       whisperModel: 'nano',
       assemblyApiKey: ASSEMBLY_API_KEY,
@@ -1710,7 +1710,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'assembly',
       whisperModel: 'nano',
       assemblyApiKey: ASSEMBLY_API_KEY,
@@ -1724,7 +1724,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'assembly',
       whisperModel: 'nano',
       assemblyApiKey: ASSEMBLY_API_KEY,
@@ -1738,7 +1738,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'assembly',
       whisperModel: 'nano',
       assemblyApiKey: ASSEMBLY_API_KEY,
@@ -1752,7 +1752,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'assembly',
       whisperModel: 'nano',
       assemblyApiKey: ASSEMBLY_API_KEY,
@@ -1766,7 +1766,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'assembly',
       whisperModel: 'nano',
       assemblyApiKey: ASSEMBLY_API_KEY,
@@ -1780,7 +1780,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'assembly',
       whisperModel: 'nano',
       assemblyApiKey: ASSEMBLY_API_KEY,
@@ -1794,7 +1794,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'assembly',
       whisperModel: 'nano',
       assemblyApiKey: ASSEMBLY_API_KEY,
@@ -1808,7 +1808,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'assembly',
       whisperModel: 'nano',
       assemblyApiKey: ASSEMBLY_API_KEY,
@@ -1822,7 +1822,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'assembly',
       whisperModel: 'nano',
       assemblyApiKey: ASSEMBLY_API_KEY,
@@ -1836,7 +1836,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'assembly',
       whisperModel: 'nano',
       assemblyApiKey: ASSEMBLY_API_KEY,
@@ -1850,7 +1850,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'assembly',
       whisperModel: 'nano',
       assemblyApiKey: ASSEMBLY_API_KEY,
@@ -1864,7 +1864,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'assembly',
       whisperModel: 'nano',
       assemblyApiKey: ASSEMBLY_API_KEY,
@@ -1878,7 +1878,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'assembly',
       whisperModel: 'nano',
       assemblyApiKey: ASSEMBLY_API_KEY,
@@ -1892,7 +1892,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'assembly',
       whisperModel: 'nano',
       assemblyApiKey: ASSEMBLY_API_KEY,
@@ -1906,7 +1906,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'assembly',
       whisperModel: 'nano',
       assemblyApiKey: ASSEMBLY_API_KEY,
@@ -1920,7 +1920,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'assembly',
       whisperModel: 'nano',
       assemblyApiKey: ASSEMBLY_API_KEY,
@@ -1934,7 +1934,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'assembly',
       whisperModel: 'nano',
       assemblyApiKey: ASSEMBLY_API_KEY,
@@ -1948,7 +1948,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'assembly',
       whisperModel: 'nano',
       assemblyApiKey: ASSEMBLY_API_KEY,

@@ -16,12 +16,12 @@ const commands = [
   {
     cmd: 'npm run as -- --file "content/examples/audio.mp3" --deepseek deepseek-chat',
     expectedFile: 'audio-deepseek-shownotes.md',
-    newName: '02-deepseek-chat.md'
+    newName: '06-DEEPSEEK-01-deepseek-chat.md'
   },
   {
     cmd: 'npm run as -- --file "content/examples/audio.mp3" --deepseek deepseek-reasoner',
     expectedFile: 'audio-deepseek-shownotes.md',
-    newName: '03-deepseek-reasoner.md'
+    newName: '06-DEEPSEEK-02-deepseek-reasoner.md'
   },
 ]
 

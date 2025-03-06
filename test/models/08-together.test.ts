@@ -22,42 +22,42 @@ const commands = [
   {
     cmd: 'npm run as -- --file "content/examples/audio.mp3" --together meta-llama/Llama-3.2-3B-Instruct-Turbo',
     expectedFile: 'audio-together-shownotes.md',
-    newName: '07-TOGETHER-01-together-llama-3.2-3b.md'
+    newName: '08-TOGETHER-01-together-llama-3.2-3b.md'
   },
   {
     cmd: 'npm run as -- --file "content/examples/audio.mp3" --together meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo',
     expectedFile: 'audio-together-shownotes.md',
-    newName: '07-TOGETHER-02-together-llama-3.1-405b.md'
+    newName: '08-TOGETHER-02-together-llama-3.1-405b.md'
   },
   {
     cmd: 'npm run as -- --file "content/examples/audio.mp3" --together meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo',
     expectedFile: 'audio-together-shownotes.md',
-    newName: '07-TOGETHER-03-together-llama-3.1-70b.md'
+    newName: '08-TOGETHER-03-together-llama-3.1-70b.md'
   },
   {
     cmd: 'npm run as -- --file "content/examples/audio.mp3" --together meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo',
     expectedFile: 'audio-together-shownotes.md',
-    newName: '07-TOGETHER-04-together-llama-3.1-8b.md'
+    newName: '08-TOGETHER-04-together-llama-3.1-8b.md'
   },
   {
     cmd: 'npm run as -- --file "content/examples/audio.mp3" --together google/gemma-2-27b-it',
     expectedFile: 'audio-together-shownotes.md',
-    newName: '07-TOGETHER-05-together-gemma-2-27b.md'
+    newName: '08-TOGETHER-05-together-gemma-2-27b.md'
   },
   {
     cmd: 'npm run as -- --file "content/examples/audio.mp3" --together google/gemma-2-9b-it',
     expectedFile: 'audio-together-shownotes.md',
-    newName: '07-TOGETHER-06-together-gemma-2-9b.md'
+    newName: '08-TOGETHER-06-together-gemma-2-9b.md'
   },
   {
     cmd: 'npm run as -- --file "content/examples/audio.mp3" --together Qwen/Qwen2.5-72B-Instruct-Turbo',
     expectedFile: 'audio-together-shownotes.md',
-    newName: '07-TOGETHER-07-together-qwen2.5-72b.md'
+    newName: '08-TOGETHER-07-together-qwen2.5-72b.md'
   },
   {
     cmd: 'npm run as -- --file "content/examples/audio.mp3" --together Qwen/Qwen2.5-7B-Instruct-Turbo',
     expectedFile: 'audio-together-shownotes.md',
-    newName: '07-TOGETHER-08-together-qwen2.5-7b.md'
+    newName: '08-TOGETHER-08-together-qwen2.5-7b.md'
   },
 ]
 

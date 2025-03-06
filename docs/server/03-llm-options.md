@@ -59,15 +59,6 @@ curl --json '{
 }' http://localhost:3000/api/process
 ```
 
-```bash
-curl --json '{
-  "type": "video",
-  "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
-  "llm": "claude",
-  "llmModel": "CLAUDE_3_SONNET"
-}' http://localhost:3000/api/process
-```
-
 ## Gemini
 
 ```bash

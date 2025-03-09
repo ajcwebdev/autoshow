@@ -27,7 +27,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
     },
     endpoint: '/api/process',
     outputFiles: ['01-file-default.md'],
@@ -35,7 +35,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       whisperModel: 'tiny',
     },
     endpoint: '/api/process',
@@ -44,7 +44,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       transcriptServices: 'whisper',
       prompts: ['titles', 'summary'],
     },

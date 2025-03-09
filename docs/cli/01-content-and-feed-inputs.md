@@ -22,7 +22,7 @@ npm run as -- \
 Run on `audio.mp3` on the `content` directory:
 
 ```bash
-npm run as -- --file "content/audio.mp3"
+npm run as -- --file "content/examples/audio.mp3"
 ```
 
 ## video - Process Single Video URLs
@@ -38,13 +38,13 @@ npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk"
 Run on an arbitrary list of URLs in `example-urls.md`.
 
 ```bash
-npm run as -- --urls "content/example-urls.md"
+npm run as -- --urls "content/examples/example-urls.md"
 ```
 
 Run on URLs file and generate JSON info file with markdown metadata of each video:
 
 ```bash
-npm run as -- --info --urls "content/example-urls.md"
+npm run as -- --info --urls "content/examples/example-urls.md"
 ```
 
 ## playlist - Process Multiple Videos in YouTube Playlist
@@ -143,7 +143,7 @@ npm run as -- --rss "https://ajcwebdev.substack.com/feed" "https://feeds.transis
 Process multiple RSS feeds listed in a `.md` file:
 
 ```bash
-npm run as -- --rss "content/example-rss-feeds.md" --last 2
+npm run as -- --rss "content/examples/example-rss-feeds.md" --last 2
 ```
 
 Download episodes from a specific number of previous days, for example to download episodes from the last 7 days:

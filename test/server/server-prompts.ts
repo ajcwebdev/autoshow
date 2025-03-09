@@ -41,7 +41,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       prompts: ['titles'],
       llm: 'deepseek',
       deepseekApiKey: DEEPSEEK_API_KEY,
@@ -52,7 +52,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       prompts: ['summary'],
       llm: 'deepseek',
       deepseekApiKey: DEEPSEEK_API_KEY,
@@ -63,7 +63,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       prompts: ['shortSummary'],
       llm: 'deepseek',
       deepseekApiKey: DEEPSEEK_API_KEY,
@@ -74,7 +74,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       prompts: ['longSummary'],
       llm: 'deepseek',
       deepseekApiKey: DEEPSEEK_API_KEY,
@@ -85,7 +85,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       prompts: ['bulletPoints'],
       llm: 'deepseek',
       deepseekApiKey: DEEPSEEK_API_KEY,
@@ -96,7 +96,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       prompts: ['quotes'],
       llm: 'deepseek',
       deepseekApiKey: DEEPSEEK_API_KEY,
@@ -107,7 +107,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       prompts: ['chapterTitlesAndQuotes'],
       llm: 'deepseek',
       deepseekApiKey: DEEPSEEK_API_KEY,
@@ -118,7 +118,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       prompts: ['x'],
       llm: 'deepseek',
       deepseekApiKey: DEEPSEEK_API_KEY,
@@ -129,7 +129,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       prompts: ['facebook'],
       llm: 'deepseek',
       deepseekApiKey: DEEPSEEK_API_KEY,
@@ -140,7 +140,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       prompts: ['linkedin'],
       llm: 'deepseek',
       deepseekApiKey: DEEPSEEK_API_KEY,
@@ -151,7 +151,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       prompts: ['chapterTitles'],
       llm: 'deepseek',
       deepseekApiKey: DEEPSEEK_API_KEY,
@@ -162,7 +162,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       prompts: ['shortChapters'],
       llm: 'deepseek',
       deepseekApiKey: DEEPSEEK_API_KEY,
@@ -173,7 +173,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       prompts: ['mediumChapters'],
       llm: 'deepseek',
       deepseekApiKey: DEEPSEEK_API_KEY,
@@ -184,7 +184,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       prompts: ['longChapters'],
       llm: 'deepseek',
       deepseekApiKey: DEEPSEEK_API_KEY,
@@ -195,7 +195,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       prompts: ['takeaways'],
       llm: 'deepseek',
       deepseekApiKey: DEEPSEEK_API_KEY,
@@ -206,7 +206,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       prompts: ['questions'],
       llm: 'deepseek',
       deepseekApiKey: DEEPSEEK_API_KEY,
@@ -217,7 +217,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       prompts: ['faq'],
       llm: 'deepseek',
       deepseekApiKey: DEEPSEEK_API_KEY,
@@ -228,7 +228,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       prompts: ['blog'],
       llm: 'deepseek',
       deepseekApiKey: DEEPSEEK_API_KEY,
@@ -239,7 +239,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       prompts: ['rapSong'],
       llm: 'deepseek',
       deepseekApiKey: DEEPSEEK_API_KEY,
@@ -250,7 +250,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       prompts: ['rockSong'],
       llm: 'deepseek',
       deepseekApiKey: DEEPSEEK_API_KEY,
@@ -261,7 +261,7 @@ const requests: Request[] = [
   {
     data: {
       type: 'file',
-      filePath: 'content/audio.mp3',
+      filePath: 'content/examples/audio.mp3',
       prompts: ['countrySong'],
       llm: 'deepseek',
       deepseekApiKey: DEEPSEEK_API_KEY,

@@ -33,7 +33,7 @@ const Alert: React.FC<AlertProps> = ({ message, variant }) => (
 const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
   const [processType, setProcessType] = useState<ProcessTypeEnum>('video')
   const [url, setUrl] = useState<string>('https://www.youtube.com/watch?v=MORMZXEaONk')
-  const [filePath, setFilePath] = useState<string>('content/audio.mp3')
+  const [filePath, setFilePath] = useState<string>('content/examples/audio.mp3')
   const [transcriptionService, setTranscriptionService] = useState<string>('whisper')
   const [whisperModel, setWhisperModel] = useState<string>('tiny')
   const [llmService, setLlmService] = useState<string>('none')
@@ -54,6 +54,30 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
    * @type {[string, React.Dispatch<React.SetStateAction<string>>]}
    */
   const [mnemonic, setMnemonic] = useState<string>('')
+
+  /**
+   * Stores the user's transcription API key.
+   * @type {[string, React.Dispatch<React.SetStateAction<string>>]}
+   */
+  const [transcriptionApiKey, setTranscriptionApiKey] = useState<string>('')
+
+  /**
+   * Stores the selected transcription API key service.
+   * @type {[string, React.Dispatch<React.SetStateAction<string>>]}
+   */
+  const [selectedTranscriptionApiKeyService, setSelectedTranscriptionApiKeyService] = useState<string>('assembly')
+
+  /**
+   * Stores the user's LLM API key.
+   * @type {[string, React.Dispatch<React.SetStateAction<string>>]}
+   */
+  const [llmApiKey, setLlmApiKey] = useState<string>('')
+
+  /**
+   * Stores the selected LLM API key service.
+   * @type {[string, React.Dispatch<React.SetStateAction<string>>]}
+   */
+  const [selectedLlmApiKeyService, setSelectedLlmApiKeyService] = useState<string>('chatgpt')
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -92,6 +116,28 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
       // Include walletAddress and mnemonic in the request body
       requestBody.walletAddress = walletAddress
       requestBody.mnemonic = mnemonic
+
+      // Map transcription API key to the correct field
+      if (selectedTranscriptionApiKeyService === 'assembly') {
+        requestBody.assemblyApiKey = transcriptionApiKey
+      } else if (selectedTranscriptionApiKeyService === 'deepgram') {
+        requestBody.deepgramApiKey = transcriptionApiKey
+      }
+
+      // Map LLM API key to the correct field
+      if (selectedLlmApiKeyService === 'chatgpt') {
+        requestBody.openaiApiKey = llmApiKey
+      } else if (selectedLlmApiKeyService === 'claude') {
+        requestBody.anthropicApiKey = llmApiKey
+      } else if (selectedLlmApiKeyService === 'gemini') {
+        requestBody.geminiApiKey = llmApiKey
+      } else if (selectedLlmApiKeyService === 'deepseek') {
+        requestBody.deepseekApiKey = llmApiKey
+      } else if (selectedLlmApiKeyService === 'together') {
+        requestBody.togetherApiKey = llmApiKey
+      } else if (selectedLlmApiKeyService === 'fireworks') {
+        requestBody.fireworksApiKey = llmApiKey
+      }
 
       const response = await fetch('http://localhost:3000/api/process', {
         method: 'POST',
@@ -147,6 +193,46 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
           id="mnemonic"
           value={mnemonic}
           onChange={(e) => setMnemonic(e.target.value)}
+        />
+
+        <label htmlFor="transcriptionApiKeyService">Transcription API Key Service</label>
+        <select
+          id="transcriptionApiKeyService"
+          value={selectedTranscriptionApiKeyService}
+          onChange={(e) => setSelectedTranscriptionApiKeyService(e.target.value)}
+        >
+          <option value="assembly">Assembly</option>
+          <option value="deepgram">Deepgram</option>
+        </select>
+
+        <label htmlFor="transcriptionApiKey">Transcription API Key</label>
+        <input
+          type="text"
+          id="transcriptionApiKey"
+          value={transcriptionApiKey}
+          onChange={(e) => setTranscriptionApiKey(e.target.value)}
+        />
+
+        <label htmlFor="llmApiKeyService">LLM API Key Service</label>
+        <select
+          id="llmApiKeyService"
+          value={selectedLlmApiKeyService}
+          onChange={(e) => setSelectedLlmApiKeyService(e.target.value)}
+        >
+          <option value="chatgpt">ChatGPT</option>
+          <option value="claude">Claude</option>
+          <option value="gemini">Gemini</option>
+          <option value="deepseek">Deepseek</option>
+          <option value="together">Together</option>
+          <option value="fireworks">Fireworks</option>
+        </select>
+
+        <label htmlFor="llmApiKey">LLM API Key</label>
+        <input
+          type="text"
+          id="llmApiKey"
+          value={llmApiKey}
+          onChange={(e) => setLlmApiKey(e.target.value)}
         />
 
         <ProcessType

@@ -8,28 +8,24 @@ import { join } from 'node:path'
 
 const commands = [
   // {
-  //   // 1) Process a YouTube channel with default settings.
   //   cmd: 'npm run as -- --channel "https://www.youtube.com/@ajcwebdev"',
   //   expectedFile: '',
-  //   newName: '01-channel-default.md'
+  //   newName: '06-CHANNEL-01-channel-default.md'
   // },
   // {
-  //   // 2) Process the channel with oldest ordering.
   //   cmd: 'npm run as -- --channel "https://www.youtube.com/@ajcwebdev" --order oldest',
   //   expectedFile: '',
-  //   newName: '02-channel-oldest.md'
+  //   newName: '06-CHANNEL-02-channel-oldest.md'
   // },
   // {
-  //   // 3) Process the channel, getting only the last 1 video.
   //   cmd: 'npm run as -- --channel "https://www.youtube.com/@ajcwebdev" --last 1',
   //   expectedFile: '',
-  //   newName: '03-channel-last-1.md'
+  //   newName: '06-CHANNEL-03-channel-last-1.md'
   // },
   {
-    // 4) Download channel metadata (JSON) only.
     cmd: 'npm run as -- --channel "https://www.youtube.com/@ajcwebdev" --info',
     expectedFile: 'channel_info.json',
-    newName: '04-channel_info.json'
+    newName: '06-CHANNEL-04-channel_info.json'
   },
 ]
 

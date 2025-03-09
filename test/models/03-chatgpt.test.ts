@@ -15,31 +15,25 @@ import { join } from 'node:path'
 */
 
 const commands = [
-  // Default
+  // {
+  //   cmd: 'npm run as -- --file "content/examples/audio.mp3" --chatgpt gpt-4.5-preview',
+  //   expectedFile: 'audio-chatgpt-shownotes.md',
+  //   newName: '03-CHATGPT-01-chatgpt-gpt-4.5-preview.md'
+  // },
   {
-    cmd: 'npm run as -- --file "content/audio.mp3" --chatgpt',
+    cmd: 'npm run as -- --file "content/examples/audio.mp3" --chatgpt gpt-4o',
     expectedFile: 'audio-chatgpt-shownotes.md',
-    newName: '01-chatgpt-default.md'
+    newName: '03-CHATGPT-02-chatgpt-gpt-4o.md'
   },
   {
-    cmd: 'npm run as -- --file "content/audio.mp3" --chatgpt gpt-4.5-preview',
+    cmd: 'npm run as -- --file "content/examples/audio.mp3" --chatgpt gpt-4o-mini',
     expectedFile: 'audio-chatgpt-shownotes.md',
-    newName: '02-chatgpt-gpt-4.5-preview.md'
+    newName: '03-CHATGPT-03-chatgpt-gpt-4o-mini.md'
   },
   {
-    cmd: 'npm run as -- --file "content/audio.mp3" --chatgpt gpt-4o',
+    cmd: 'npm run as -- --file "content/examples/audio.mp3" --chatgpt o1-mini',
     expectedFile: 'audio-chatgpt-shownotes.md',
-    newName: '03-chatgpt-gpt-4o.md'
-  },
-  {
-    cmd: 'npm run as -- --file "content/audio.mp3" --chatgpt gpt-4o-mini',
-    expectedFile: 'audio-chatgpt-shownotes.md',
-    newName: '04-chatgpt-gpt-4o-mini.md'
-  },
-  {
-    cmd: 'npm run as -- --file "content/audio.mp3" --chatgpt o1-mini',
-    expectedFile: 'audio-chatgpt-shownotes.md',
-    newName: '05-chatgpt-o1-mini.md'
+    newName: '03-CHATGPT-04-chatgpt-o1-mini.md'
   },
 ]
 

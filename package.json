@@ -21,6 +21,7 @@
     "check": "npx tsc",
     "as": "npm run tsx:base -- src/commander.ts",
     "test:base": "tsx --test --env-file=.env --test-reporter=spec --test-reporter-destination=spec.log --test-concurrency=1",
+    "test:cli-local": "npm run test:base -- test/cli/cli-local.test.ts",
     "test:cli": "npm run test:base -- test/cli/*.test.ts",
     "test:models": "npm run test:base -- test/models/*.test.ts",
     "serve": "npm run tsx:base -- --watch src/fastify.ts",

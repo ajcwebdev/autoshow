@@ -36,7 +36,7 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
   const [filePath, setFilePath] = useState<string>('content/examples/audio.mp3')
   const [transcriptionService, setTranscriptionService] = useState<string>('whisper')
   const [whisperModel, setWhisperModel] = useState<string>('tiny')
-  const [llmService, setLlmService] = useState<string>('none')
+  const [llmService, setLlmService] = useState<string>('chatgpt')
   const [llmModel, setLlmModel] = useState<string>('')
   const [selectedPrompts, setSelectedPrompts] = useState<string[]>(['shortSummary'])
   const [result, setResult] = useState<ResultType | null>(null)
@@ -65,7 +65,7 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
    * Stores the selected transcription API key service.
    * @type {[string, React.Dispatch<React.SetStateAction<string>>]}
    */
-  const [selectedTranscriptionApiKeyService, setSelectedTranscriptionApiKeyService] = useState<string>('assembly')
+  const [selectedTranscriptionApiKeyService, setSelectedTranscriptionApiKeyService] = useState<string>('')
 
   /**
    * Stores the user's LLM API key.
@@ -195,46 +195,6 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
           onChange={(e) => setMnemonic(e.target.value)}
         />
 
-        <label htmlFor="transcriptionApiKeyService">Transcription API Key Service</label>
-        <select
-          id="transcriptionApiKeyService"
-          value={selectedTranscriptionApiKeyService}
-          onChange={(e) => setSelectedTranscriptionApiKeyService(e.target.value)}
-        >
-          <option value="assembly">Assembly</option>
-          <option value="deepgram">Deepgram</option>
-        </select>
-
-        <label htmlFor="transcriptionApiKey">Transcription API Key</label>
-        <input
-          type="text"
-          id="transcriptionApiKey"
-          value={transcriptionApiKey}
-          onChange={(e) => setTranscriptionApiKey(e.target.value)}
-        />
-
-        <label htmlFor="llmApiKeyService">LLM API Key Service</label>
-        <select
-          id="llmApiKeyService"
-          value={selectedLlmApiKeyService}
-          onChange={(e) => setSelectedLlmApiKeyService(e.target.value)}
-        >
-          <option value="chatgpt">ChatGPT</option>
-          <option value="claude">Claude</option>
-          <option value="gemini">Gemini</option>
-          <option value="deepseek">Deepseek</option>
-          <option value="together">Together</option>
-          <option value="fireworks">Fireworks</option>
-        </select>
-
-        <label htmlFor="llmApiKey">LLM API Key</label>
-        <input
-          type="text"
-          id="llmApiKey"
-          value={llmApiKey}
-          onChange={(e) => setLlmApiKey(e.target.value)}
-        />
-
         <ProcessType
           processType={processType}
           setProcessType={setProcessType}
@@ -249,6 +209,10 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
           setTranscriptionService={setTranscriptionService}
           whisperModel={whisperModel}
           setWhisperModel={setWhisperModel}
+          transcriptionApiKey={transcriptionApiKey}
+          setTranscriptionApiKey={setTranscriptionApiKey}
+          selectedTranscriptionApiKeyService={selectedTranscriptionApiKeyService}
+          setSelectedTranscriptionApiKeyService={setSelectedTranscriptionApiKeyService}
         />
 
         <LLMService
@@ -257,6 +221,10 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
           setLlmService={setLlmService}
           llmModel={llmModel}
           setLlmModel={setLlmModel}
+          llmApiKey={llmApiKey}
+          setLlmApiKey={setLlmApiKey}
+          selectedLlmApiKeyService={selectedLlmApiKeyService}
+          setSelectedLlmApiKeyService={setSelectedLlmApiKeyService}
         />
 
         <Prompts

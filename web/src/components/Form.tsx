@@ -1,10 +1,10 @@
-// web/src/components/app/Form.tsx
+// web/src/components/Form.tsx
 
 import React, { useState } from 'react'
-import { ProcessType } from '@/components/app/groups/ProcessType'
-import { TranscriptionService } from '@/components/app/groups/TranscriptionService'
-import { LLMService } from '@/components/app/groups/LLMService'
-import { Prompts } from '@/components/app/groups/Prompts'
+import { ProcessType } from '@/components/groups/ProcessType'
+import { TranscriptionService } from '@/components/groups/TranscriptionService'
+import { LLMService } from '@/components/groups/LLMService'
+import { Prompts } from '@/components/groups/Prompts'
 
 import type {
   AlertProps, ResultType, FormProps, ProcessTypeEnum

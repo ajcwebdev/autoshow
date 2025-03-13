@@ -1,8 +1,8 @@
-// web/src/components/app/App.tsx
+// web/src/components/App.tsx
 
 import React, { useState } from 'react'
-import Form from '@/components/app/Form'
-import { ShowNotes } from '@/components/app/ShowNotes'
+import Form from '@/components/Form'
+import { ShowNotes } from '@/components/ShowNotes'
 import '@/styles'
 
 /**

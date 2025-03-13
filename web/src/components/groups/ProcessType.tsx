@@ -1,7 +1,7 @@
-// web/src/components/app/groups/ProcessType.tsx
+// web/src/components/groups/ProcessType.tsx
 
 import React from 'react'
-import { PROCESS_TYPES } from '../../../../../shared/constants'
+import { PROCESS_TYPES } from '../../../../shared/constants'
 
 import type { ProcessTypeEnum } from '@/types'
 

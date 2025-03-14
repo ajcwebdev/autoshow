@@ -1,10 +1,64 @@
-// src/utils/images/black-forest-labs-generator.js
+// src/utils/images/black-forest-labs-generator.ts
 
 import { writeFile, mkdir } from 'fs/promises'
 import { dirname } from 'path'
-import { generateUniqueFilename, sleep } from './utils.js'
+import { generateUniqueFilename, sleep } from './utils'
 
-async function generateImageWithBlackForestLabs(prompt, outputPath, options = {}) {
+/**
+ * Successful image generation result
+ */
+interface GenerateImageSuccess {
+  success: true
+  path: string
+  taskId?: string
+  imageUrl?: string
+  seed?: number
+  /**
+   * Used specifically by DALL-E (if returned by the API),
+   * but shared in a single interface to avoid type errors
+   */
+  prompt_used?: string
+  /**
+   * Used specifically by Stability AI (if returned by the API),
+   * but shared in a single interface to avoid type errors
+   */
+  finishReason?: string
+}
+
+/**
+ * Failed image generation result
+ */
+interface GenerateImageFailure {
+  success: false
+  error: string
+  details?: string
+}
+
+/**
+ * Union of success or failure for an image generation
+ */
+export type GenerateImageResponse = GenerateImageSuccess | GenerateImageFailure
+
+/**
+ * Configuration options for Black Forest Labs image generation
+ */
+interface BflOptions {
+  width?: number
+  height?: number
+  prompt_upsampling?: boolean
+  seed?: number
+  safety_tolerance?: number
+  output_format?: string
+}
+
+/**
+ * Generate an image with Black Forest Labs using the specified prompt and options
+ * @param prompt - The text prompt to generate the image from
+ * @param outputPath - The optional filesystem path where the generated image will be saved
+ * @param options - Additional configuration options
+ * @returns A promise resolving with the generation result
+ */
+async function generateImageWithBlackForestLabs(prompt: string, outputPath?: string, options: BflOptions = {}): Promise<GenerateImageResponse> {
   try {
     console.log('Generating image with Black Forest Labs...')
     
@@ -12,7 +66,7 @@ async function generateImageWithBlackForestLabs(prompt, outputPath, options = {}
     const uniqueOutputPath = outputPath || generateUniqueFilename('blackforest', 'jpg')
     
     // Validate API key
-    if (!process.env.BFL_API_KEY) {
+    if (!process.env['BFL_API_KEY']) {
       throw new Error('BFL_API_KEY environment variable is missing')
     }
     
@@ -36,7 +90,7 @@ async function generateImageWithBlackForestLabs(prompt, outputPath, options = {}
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-Key': process.env.BFL_API_KEY
+          'X-Key': process.env['BFL_API_KEY']
         },
         body: JSON.stringify({
           prompt: prompt,
@@ -49,7 +103,7 @@ async function generateImageWithBlackForestLabs(prompt, outputPath, options = {}
         })
       }
     ).catch(error => {
-      throw new Error(`Network error during submission: ${error.message}`)
+      throw new Error(`Network error during submission: ${(error as Error).message}`)
     })
     
     if (!submitResponse.ok) {
@@ -72,7 +126,7 @@ async function generateImageWithBlackForestLabs(prompt, outputPath, options = {}
     }
     
     const submitData = await submitResponse.json().catch(error => {
-      throw new Error(`Error parsing API submission response: ${error.message}`)
+      throw new Error(`Error parsing API submission response: ${(error as Error).message}`)
     })
     
     if (!submitData.id) {
@@ -97,11 +151,11 @@ async function generateImageWithBlackForestLabs(prompt, outputPath, options = {}
         `https://api.bfl.ml/v1/get_result?id=${taskId}`,
         {
           headers: {
-            'X-Key': process.env.BFL_API_KEY
+            'X-Key': process.env['BFL_API_KEY']
           }
         }
       ).catch(error => {
-        console.warn(`Network error when checking status (attempt ${attempts}): ${error.message}`)
+        console.warn(`Network error when checking status (attempt ${attempts}): ${(error as Error).message}`)
         // Continue polling despite temporary network errors
         return null
       })
@@ -123,7 +177,7 @@ async function generateImageWithBlackForestLabs(prompt, outputPath, options = {}
       }
       
       const statusData = await statusResponse.json().catch(error => {
-        console.warn(`Error parsing status response (attempt ${attempts}): ${error.message}`)
+        console.warn(`Error parsing status response (attempt ${attempts}): ${(error as Error).message}`)
         // Continue polling despite temporary JSON parsing errors
         return null
       })
@@ -150,7 +204,7 @@ async function generateImageWithBlackForestLabs(prompt, outputPath, options = {}
     // Step 3: Download the image
     console.log('Downloading generated image...')
     const imageResponse = await fetch(imageUrl).catch(error => {
-      throw new Error(`Error downloading image: ${error.message}`)
+      throw new Error(`Error downloading image: ${(error as Error).message}`)
     })
     
     if (!imageResponse.ok) {
@@ -158,7 +212,7 @@ async function generateImageWithBlackForestLabs(prompt, outputPath, options = {}
     }
     
     const imageBuffer = await imageResponse.arrayBuffer().catch(error => {
-      throw new Error(`Error reading image data: ${error.message}`)
+      throw new Error(`Error reading image data: ${(error as Error).message}`)
     })
     
     // Create the output directory if it doesn't exist
@@ -167,7 +221,7 @@ async function generateImageWithBlackForestLabs(prompt, outputPath, options = {}
       await mkdir(outputDir, { recursive: true })
     } catch (err) {
       // Directory might already exist
-      if (err.code !== 'EEXIST') throw err
+      if ((err as NodeJS.ErrnoException).code !== 'EEXIST') throw err
     }
     
     // Save the image
@@ -182,11 +236,11 @@ async function generateImageWithBlackForestLabs(prompt, outputPath, options = {}
       seed: config.seed
     }
   } catch (error) {
-    console.error('Error generating image with Black Forest Labs:', error.message)
+    console.error('Error generating image with Black Forest Labs:', (error as Error).message)
     return {
       success: false,
-      error: error.message,
-      details: error.stack
+      error: (error as Error).message,
+      details: (error as Error).stack
     }
   }
 }

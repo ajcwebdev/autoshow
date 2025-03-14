@@ -1,31 +1,33 @@
-// src/utils/images/index.js
+// src/utils/images/index.ts
 
-import { generateComparisonImages } from './src/combined-generator.js'
-import { generateImageWithDallE } from './src/dalle-generator.js'
-import { generateImageWithStabilityAI } from './src/stability-ai-generator.js'
-import { generateImageWithBlackForestLabs } from './src/black-forest-labs-generator.js'
+import { generateComparisonImages } from './combined-generator'
+import { generateImageWithDallE } from './dalle-generator'
+import { generateImageWithStabilityAI } from './stability-ai-generator'
+import { generateImageWithBlackForestLabs } from './black-forest-labs-generator'
 
-// Check which command was provided
 const command = process.argv[2]
 const prompt = process.argv[3] || 'A beautiful landscape with mountains and a lake at sunset'
 
+/**
+ * Main entry point for the image generation CLI tool
+ */
 async function main() {
   console.log('Image Generation API Tool')
   console.log('------------------------')
   
   try {
     // Validate environment variables
-    if (command === 'dalle' && !process.env.OPENAI_API_KEY) {
+    if (command === 'dalle' && !process.env['OPENAI_API_KEY']) {
       console.error('Error: OPENAI_API_KEY environment variable is missing')
       process.exit(1)
     }
     
-    if (command === 'stability' && !process.env.STABILITY_API_KEY) {
+    if (command === 'stability' && !process.env['STABILITY_API_KEY']) {
       console.error('Error: STABILITY_API_KEY environment variable is missing')
       process.exit(1)
     }
     
-    if (command === 'blackforest' && !process.env.BFL_API_KEY) {
+    if (command === 'blackforest' && !process.env['BFL_API_KEY']) {
       console.error('Error: BFL_API_KEY environment variable is missing')
       process.exit(1)
     }
@@ -65,8 +67,8 @@ async function main() {
     console.log('Result:')
     console.log(JSON.stringify(result, null, 2))
   } catch (error) {
-    console.error('Fatal error:', error.message)
-    console.error(error.stack)
+    console.error('Fatal error:', (error as Error).message)
+    console.error((error as Error).stack)
     process.exit(1)
   }
 }

@@ -2,7 +2,6 @@
 
 import chalk from 'chalk'
 import { runLLM } from './05-run-llm'
-import { callOllama } from '../llms/ollama'
 import { callChatGPT } from '../llms/chatgpt'
 import { callClaude } from '../llms/claude'
 import { callGemini } from '../llms/gemini'
@@ -248,7 +247,6 @@ type LLMFunction = (prompt: string, transcript: string, options: any) => Promise
 
 // Map of available LLM service handlers
 export const LLM_FUNCTIONS: Record<string, LLMFunction> = {
-  ollama: callOllama,
   chatgpt: callChatGPT,
   claude: callClaude,
   gemini: callGemini,
@@ -389,7 +387,7 @@ function approximateTokens(text: string) {
  * 4. Logging the estimated cost to the console
  *
  * @param {ProcessingOptions} options - The command-line options (must include `llmCost` file path)
- * @param {string} llmService - The selected LLM service (e.g., 'chatgpt', 'ollama', 'claude', etc.)
+ * @param {string} llmService - The selected LLM service (e.g., 'chatgpt', 'claude', etc.)
  * @returns {Promise<number>} The total cost (in dollars) or 0 if cost not found
  */
 export async function estimateLLMCost(

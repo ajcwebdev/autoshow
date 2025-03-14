@@ -53,7 +53,6 @@ program
   .option('--transcriptCost <filePath>', 'Estimate transcription cost for the given file')
   .option('--llmCost <filePath>', 'Estimate LLM cost for the given prompt and transcript file')
   // LLM service options
-  .option('--ollama [model]', 'Use Ollama for processing with optional model specification')
   .option('--chatgpt [model]', 'Use ChatGPT for processing with optional model specification')
   .option('--claude [model]', 'Use Claude for processing with optional model specification')
   .option('--gemini [model]', 'Use Gemini for processing with optional model specification')

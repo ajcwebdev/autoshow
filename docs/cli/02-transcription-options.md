@@ -38,8 +38,8 @@ npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --deepgram
 Select model:
 
 ```bash
-npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --deepgram BASE
-npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --deepgram ENHANCED
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --deepgram base
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --deepgram enhanced
 npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --deepgram nova-2
 ```
 

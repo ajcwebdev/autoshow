@@ -1,6 +1,6 @@
 # Language Model (LLM) Options
 
-This project supports multiple LLM service providers, each with various models. Below is a guide to using each service/model, including skipping LLM processing, local inference with Ollama, and third-party APIs.
+This project supports multiple LLM service providers, each with various models. Below is a guide to using each service/model, including skipping LLM processing and third-party APIs.
 
 ## Outline
 
@@ -8,7 +8,6 @@ This project supports multiple LLM service providers, each with various models. 
 - [Run Only LLM Step](#run-only-llm-step)
 - [Get LLM Cost](#get-llm-cost)
 - [Skip LLM Processing](#skip-llm-processing)
-- [Local Inference (Ollama)](#local-inference-ollama)
 - [OpenAI ChatGPT](#openai-chatgpt)
 - [Anthropic Claude](#anthropic-claude)
 - [Google Gemini](#google-gemini)
@@ -46,47 +45,6 @@ npm run as -- --llmCost "content/audio-prompt.md" --gemini
 ```
 
 No LLM model will be called, and no LLM-based output file is generated.
-
-## Local Inference (Ollama)
-
-Run local models on your machine via [Ollama](https://github.com/jmorganca/ollama). For instance:
-
-```bash
-npm run as -- --video "https://www.youtube.com/watch?v=abc123" --ollama
-```
-
-1. **QWEN 2 5 0B** (`qwen2.5:0.5b`)
-   ```bash
-   npm run as -- --video "https://www.youtube.com/watch?v=abc123" --ollama qwen2.5:0.5b
-   ```
-2. **QWEN 2.5 1.5B** (`qwen2.5:1.5b`)
-   ```bash
-   npm run as -- --video "https://www.youtube.com/watch?v=abc123" --ollama qwen2.5:1.5b
-   ```
-3. **QWEN 2.5 3B** (`qwen2.5:3b`)
-   ```bash
-   npm run as -- --video "https://www.youtube.com/watch?v=abc123" --ollama qwen2.5:3b
-   ```
-4. **LLAMA 3.2 1B** (`llama3.2:1b`)
-   ```bash
-   npm run as -- --video "https://www.youtube.com/watch?v=abc123" --ollama llama3.2:1b
-   ```
-5. **LLAMA 3.2 3B** (`llama3.2:3b`)
-   ```bash
-   npm run as -- --video "https://www.youtube.com/watch?v=abc123" --ollama llama3.2:3b
-   ```
-6. **GEMMA 2 2B** (`gemma2:2b`)
-   ```bash
-   npm run as -- --video "https://www.youtube.com/watch?v=abc123" --ollama gemma2:2b
-   ```
-7. **PHI 3.5** (`phi3.5:3.8b`)
-   ```bash
-   npm run as -- --video "https://www.youtube.com/watch?v=abc123" --ollama phi3.5:3.8b
-   ```
-8. **DEEPSEEK R1 1.5B** (`deepseek-r1:1.5b`)
-   ```bash
-   npm run as -- --video "https://www.youtube.com/watch?v=abc123" --ollama deepseek-r1:1.5b
-   ```
 
 ## OpenAI ChatGPT
 

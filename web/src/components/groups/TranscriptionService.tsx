@@ -67,8 +67,8 @@ export const TranscriptionService: React.FC<{
            onChange={(e) => setWhisperModel(e.target.value)}
          >
            {TRANSCRIPTION_SERVICES_CONFIG.whisper.models.map((model) => (
-             <option key={model.label} value={model.label}>
-               {model.value}
+             <option key={model.modelId} value={model.modelId}>
+               {model.modelId}
              </option>
            ))}
          </select>

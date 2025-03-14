@@ -9,13 +9,13 @@ import { join } from 'node:path'
 const commands = [
   {
     // Process audio with Assembly using BEST model.
-    cmd: 'npm run as -- --file "content/examples/audio.mp3" --assembly BEST',
+    cmd: 'npm run as -- --file "content/examples/audio.mp3" --assembly best',
     expectedFile: 'audio-prompt.md',
     newName: '01-ASSEMBLY-01-assembly-best.md'
   },
   {
     // Process audio with Assembly using NANO model.
-    cmd: 'npm run as -- --file "content/examples/audio.mp3" --assembly NANO',
+    cmd: 'npm run as -- --file "content/examples/audio.mp3" --assembly nano',
     expectedFile: 'audio-prompt.md',
     newName: '01-ASSEMBLY-02-assembly-nano.md'
   },

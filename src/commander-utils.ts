@@ -260,7 +260,7 @@ export async function handleEarlyExitIfNeeded(options: ProcessingOptions): Promi
     const llmService = validateLLM(options)
 
     if (!llmService) {
-      err('Please specify which LLM service to use (e.g., --chatgpt, --claude, --ollama, etc.).')
+      err('Please specify which LLM service to use (e.g., --chatgpt, --claude, etc.).')
       exit(1)
     }
 
@@ -273,7 +273,7 @@ export async function handleEarlyExitIfNeeded(options: ProcessingOptions): Promi
     const llmService = validateLLM(options)
 
     if (!llmService) {
-      err('Please specify which LLM service to use (e.g., --chatgpt, --claude, --ollama, etc.).')
+      err('Please specify which LLM service to use (e.g., --chatgpt, --claude, etc.).')
       exit(1)
     }
 

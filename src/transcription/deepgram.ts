@@ -1,6 +1,7 @@
 // src/transcription/deepgram.ts
 
-import { logTranscriptionCost, formatDeepgramTranscript } from '../process-steps/03-run-transcription-utils'
+import { logTranscriptionCost } from '../process-steps/03-run-transcription-utils'
+import { formatDeepgramTranscript } from './deepgram-utils'
 import { l, err } from '../utils/logging'
 import { readFile, env } from '../utils/node-utils'
 import { TRANSCRIPTION_SERVICES_CONFIG } from '../../shared/constants'
@@ -30,17 +31,17 @@ export async function callDeepgram(
 
   try {
     const modelInfo =
-    TRANSCRIPTION_SERVICES_CONFIG.deepgram.models.find(m => m.modelId.toLowerCase() === model.toLowerCase())
+      TRANSCRIPTION_SERVICES_CONFIG.deepgram.models.find(m => m.modelId.toLowerCase() === model.toLowerCase())
       || TRANSCRIPTION_SERVICES_CONFIG.deepgram.models.find(m => m.modelId === 'nova-2')
 
     if (!modelInfo) {
       throw new Error(`Model information for model ${model} is not defined.`)
     }
 
-    const { name, costPerMinuteCents } = modelInfo
+    const { modelId, costPerMinuteCents } = modelInfo
 
     await logTranscriptionCost({
-      modelName: name,
+      modelId,
       costPerMinuteCents,
       filePath: `${finalPath}.wav`
     })
@@ -48,7 +49,7 @@ export async function callDeepgram(
     const apiUrl = new URL('https://api.deepgram.com/v1/listen')
 
     // Set query parameters for the chosen model and formatting
-    apiUrl.searchParams.append('model', modelInfo.modelId)
+    apiUrl.searchParams.append('model', modelId)
     apiUrl.searchParams.append('smart_format', 'true')
     apiUrl.searchParams.append('punctuate', 'true')
     apiUrl.searchParams.append('diarize', 'false')

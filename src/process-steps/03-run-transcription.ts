@@ -5,6 +5,7 @@ import { callDeepgram } from '../transcription/deepgram'
 import { callAssembly } from '../transcription/assembly'
 import { retryTranscriptionCall } from './03-run-transcription-utils'
 import { l, err, logInitialFunctionCall } from '../utils/logging'
+import { TRANSCRIPTION_SERVICES_CONFIG } from '../../shared/constants'
 
 import type { ProcessingOptions } from '../utils/types'
 
@@ -28,41 +29,41 @@ export async function runTranscription(
 
   try {
     switch (transcriptServices) {
-      case 'deepgram':
-        const deepgramModel = typeof options.deepgram === 'string' ? options.deepgram : 'nova-2'
-        // Convert string model to enum key if needed
-        const normalizedDeepgramModel = deepgramModel === 'nova-2' || deepgramModel === 'Nova-2' ? 'nova-2' :
-                                        deepgramModel === 'base' || deepgramModel === 'Base' ? 'BASE' :
-                                        deepgramModel === 'enhanced' || deepgramModel === 'Enhanced' ? 'ENHANCED' : 
-                                        deepgramModel as 'nova-2' | 'BASE' | 'ENHANCED'
-        
+      case 'deepgram': {
+        const defaultDeepgramModel = TRANSCRIPTION_SERVICES_CONFIG.deepgram.models.find(m => m.modelId === 'nova-2')?.modelId || 'nova-2'
+        const deepgramModel = typeof options.deepgram === 'string'
+          ? options.deepgram
+          : defaultDeepgramModel
+
         const deepgramTranscript = await retryTranscriptionCall(
-          () => callDeepgram(options, finalPath, normalizedDeepgramModel)
+          () => callDeepgram(options, finalPath, deepgramModel)
         )
         l.dim('\n  Deepgram transcription completed successfully.\n')
         l.dim(`\n    - deepgramModel: ${deepgramModel}`)
         return deepgramTranscript
+      }
 
-      case 'assembly':
-        const assemblyModel = typeof options.assembly === 'string' ? options.assembly : 'NANO'
-        // Convert string model to enum key if needed
-        const normalizedAssemblyModel = assemblyModel === 'best' || assemblyModel === 'Best' ? 'BEST' :
-                                        assemblyModel === 'nano' || assemblyModel === 'Nano' ? 'NANO' : 
-                                        assemblyModel as 'BEST' | 'NANO'
-        
+      case 'assembly': {
+        const defaultAssemblyModel = TRANSCRIPTION_SERVICES_CONFIG.assembly.models.find(m => m.modelId === 'best')?.modelId || 'best'
+        const assemblyModel = typeof options.assembly === 'string'
+          ? options.assembly
+          : defaultAssemblyModel
+
         const assemblyTranscript = await retryTranscriptionCall(
-          () => callAssembly(options, finalPath, normalizedAssemblyModel)
+          () => callAssembly(options, finalPath, assemblyModel)
         )
         l.dim('\n  AssemblyAI transcription completed successfully.\n')
         l.dim(`\n    - assemblyModel: ${assemblyModel}`)
         return assemblyTranscript
+      }
 
-      case 'whisper':
+      case 'whisper': {
         const whisperTranscript = await retryTranscriptionCall(
           () => callWhisper(options, finalPath)
         )
         l.dim('\n  Whisper transcription completed successfully.\n')
         return whisperTranscript
+      }
 
       default:
         throw new Error(`Unknown transcription service: ${transcriptServices}`)

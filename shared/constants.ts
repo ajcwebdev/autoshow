@@ -70,18 +70,16 @@ export const PROMPT_CHOICES: Array<{ name: string; value: string }> = [
 /**
  * Configuration object for an individual transcription model.
  *
- * @typedef {Object} TranscriptionModel
- * @property {string} [name] - (Optional) Display name of the model
- * @property {string} modelId - Unique identifier for the model
- * @property {number} [costPerMinuteCents] - New cost-per-minute in cents
+ * @typedef {object} TranscriptionModel
+ * @property {string} modelId - The model's unique identifier (e.g., 'tiny', 'nova-2')
+ * @property {number} costPerMinuteCents - The cost per minute in cents
  */
 
 /**
  * Configuration object for transcription service providers, including their available models
- * and relevant cost data. Dollar-based fields remain for backward compatibility; new `cents` fields
- * should be used for all cost calculations going forward.
+ * and relevant cost data.
  *
- * @typedef {Object} TranscriptionServiceConfig
+ * @typedef {object} TranscriptionServiceConfig
  * @property {string} serviceName - The service's display name
  * @property {string} value - The internal value or key for the service
  * @property {string} label - The user-facing label for the service
@@ -93,18 +91,18 @@ export const TRANSCRIPTION_SERVICES_CONFIG = {
     value: 'whisper',
     label: 'Whisper.cpp',
     models: [
-      { value: 'ggml-tiny.bin', label: 'tiny' },
-      { value: 'ggml-tiny.en.bin', label: 'tiny.en' },
-      { value: 'ggml-base.bin', label: 'base' },
-      { value: 'ggml-base.en.bin', label: 'base.en' },
-      { value: 'ggml-small.bin', label: 'small' },
-      { value: 'ggml-small.en.bin', label: 'small.en' },
-      { value: 'ggml-medium.bin', label: 'medium' },
-      { value: 'ggml-medium.en.bin', label: 'medium.en' },
-      { value: 'ggml-large-v1.bin', label: 'large-v1' },
-      { value: 'ggml-large-v2.bin', label: 'large-v2' },
-      { value: 'ggml-large-v3-turbo.bin', label: 'large-v3-turbo' },
-      { value: 'ggml-large-v3-turbo.bin', label: 'turbo' },
+      { modelId: 'tiny', costPerMinuteCents: 0 },
+      { modelId: 'tiny.en', costPerMinuteCents: 0 },
+      { modelId: 'base', costPerMinuteCents: 0 },
+      { modelId: 'base.en', costPerMinuteCents: 0 },
+      { modelId: 'small', costPerMinuteCents: 0 },
+      { modelId: 'small.en', costPerMinuteCents: 0 },
+      { modelId: 'medium', costPerMinuteCents: 0 },
+      { modelId: 'medium.en', costPerMinuteCents: 0 },
+      { modelId: 'large-v1', costPerMinuteCents: 0 },
+      { modelId: 'large-v2', costPerMinuteCents: 0 },
+      { modelId: 'large-v3-turbo', costPerMinuteCents: 0 },
+      { modelId: 'turbo', costPerMinuteCents: 0 },
     ]
   },
   deepgram: {
@@ -112,9 +110,9 @@ export const TRANSCRIPTION_SERVICES_CONFIG = {
     value: 'deepgram',
     label: 'Deepgram',
     models: [
-      { name: 'Nova-2', modelId: 'nova-2', costPerMinuteCents: 0.43 },
-      { name: 'Base', modelId: 'base', costPerMinuteCents: 1.25 },
-      { name: 'Enhanced', modelId: 'enhanced', costPerMinuteCents: 1.45 },
+      { modelId: 'nova-2', costPerMinuteCents: 0.43 },
+      { modelId: 'base', costPerMinuteCents: 1.25 },
+      { modelId: 'enhanced', costPerMinuteCents: 1.45 },
     ]
   },
   assembly: {
@@ -122,8 +120,8 @@ export const TRANSCRIPTION_SERVICES_CONFIG = {
     value: 'assembly',
     label: 'AssemblyAI',
     models: [
-      { name: 'Best', modelId: 'best', costPerMinuteCents: 0.62 },
-      { name: 'Nano', modelId: 'nano', costPerMinuteCents: 0.2 },
+      { modelId: 'best', costPerMinuteCents: 0.62 },
+      { modelId: 'nano', costPerMinuteCents: 0.2 },
     ]
   },
 } as const
@@ -158,21 +156,6 @@ export const LLM_SERVICES_CONFIG = {
     label: 'Skip LLM Processing',
     models: []
   },
-  // ollama: {
-  //   serviceName: 'Ollama (local inference)',
-  //   value: 'ollama',
-  //   label: 'Ollama',
-  //   models: [
-  //     { modelName: 'QWEN 2 5 0B', modelId: 'qwen2.5:0.5b', inputCostPer1M: 0, outputCostPer1M: 0, inputCostPer1MCents: 0, outputCostPer1MCents: 0 },
-  //     { modelName: 'QWEN 2.5 1.5B', modelId: 'qwen2.5:1.5b', inputCostPer1M: 0, outputCostPer1M: 0, inputCostPer1MCents: 0, outputCostPer1MCents: 0 },
-  //     { modelName: 'QWEN 2.5 3B', modelId: 'qwen2.5:3b', inputCostPer1M: 0, outputCostPer1M: 0, inputCostPer1MCents: 0, outputCostPer1MCents: 0 },
-  //     { modelName: 'LLAMA 3.2 1B', modelId: 'llama3.2:1b', inputCostPer1M: 0, outputCostPer1M: 0, inputCostPer1MCents: 0, outputCostPer1MCents: 0 },
-  //     { modelName: 'LLAMA 3.2 3B', modelId: 'llama3.2:3b', inputCostPer1M: 0, outputCostPer1M: 0, inputCostPer1MCents: 0, outputCostPer1MCents: 0 },
-  //     { modelName: 'GEMMA 2 2B', modelId: 'gemma2:2b', inputCostPer1M: 0, outputCostPer1M: 0, inputCostPer1MCents: 0, outputCostPer1MCents: 0 },
-  //     { modelName: 'PHI 3.5', modelId: 'phi3.5:3.8b', inputCostPer1M: 0, outputCostPer1M: 0, inputCostPer1MCents: 0, outputCostPer1MCents: 0 },
-  //     { modelName: 'DEEPSEEK R1 1.5B', modelId: 'deepseek-r1:1.5b', inputCostPer1M: 0, outputCostPer1M: 0, inputCostPer1MCents: 0, outputCostPer1MCents: 0 },
-  //   ]
-  // },
   chatgpt: {
     serviceName: 'OpenAI ChatGPT',
     value: 'chatgpt',

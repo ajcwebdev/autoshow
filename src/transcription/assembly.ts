@@ -1,6 +1,7 @@
 // src/transcription/assembly.ts
 
-import { logTranscriptionCost, formatAssemblyTranscript } from '../process-steps/03-run-transcription-utils'
+import { logTranscriptionCost } from '../process-steps/03-run-transcription-utils'
+import { formatAssemblyTranscript } from './assembly-utils'
 import { l, err } from '../utils/logging'
 import { readFile, env } from '../utils/node-utils'
 import { TRANSCRIPTION_SERVICES_CONFIG } from '../../shared/constants'
@@ -13,7 +14,7 @@ const BASE_URL = 'https://api.assemblyai.com/v2'
  * Main function to handle transcription using AssemblyAI.
  * @param options - Additional processing options (e.g., speaker labels)
  * @param finalPath - The base filename (without extension) for input/output files
- * @param model - The AssemblyAI model to use (default is 'NANO')
+ * @param model - The AssemblyAI model to use (default is 'Nano')
  * @returns Promise<string> - The formatted transcript content
  * @throws Error if any step of the process fails (upload, transcription request, polling, formatting)
  */
@@ -39,7 +40,6 @@ export async function callAssembly(
     const { speakerLabels } = options
     const audioFilePath = `${finalPath}.wav`
 
-    // const assemblyModels = TRANSCRIPTION_SERVICES_CONFIG.assembly.models
     const modelInfo = 
       TRANSCRIPTION_SERVICES_CONFIG.assembly.models.find(m => m.modelId.toLowerCase() === model.toLowerCase())
       || TRANSCRIPTION_SERVICES_CONFIG.assembly.models.find(m => m.modelId === 'nano')
@@ -48,10 +48,10 @@ export async function callAssembly(
       throw new Error(`Model information for model ${model} is not available.`)
     }
 
-    const { name, costPerMinuteCents } = modelInfo
+    const { modelId, costPerMinuteCents } = modelInfo
 
     await logTranscriptionCost({
-      modelName: name,
+      modelId,
       costPerMinuteCents,
       filePath: audioFilePath
     })
@@ -84,7 +84,7 @@ export async function callAssembly(
     // Step 2: Requesting the transcription
     const transcriptionOptions = {
       audio_url: upload_url,
-      speech_model: modelInfo.modelId as 'default' | 'nano',
+      speech_model: modelId as 'default' | 'nano',
       speaker_labels: speakerLabels || false
     }
 

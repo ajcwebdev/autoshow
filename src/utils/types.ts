@@ -77,8 +77,6 @@ export type ProcessingOptions = {
   fireworks?: string
   /** Together model to use (e.g., ''). */
   together?: string
-  /** Ollama model to use for local inference (e.g., 'LLAMA_3_2_1B'). */
-  ollama?: string
   /** Gemini model to use (e.g., 'gemini-1.5-flash'). */
   gemini?: string
   /** DeepSeek model to use (e.g., ''). */

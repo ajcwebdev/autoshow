@@ -1,6 +1,6 @@
 // src/transcription/whisper.ts
 
-import { checkWhisperDirAndModel, formatWhisperTranscript } from '../process-steps/03-run-transcription-utils'
+import { checkWhisperDirAndModel, formatWhisperTranscript } from './whisper-utils'
 import { l, err } from '../utils/logging'
 import { readFile, unlink, execPromise } from '../utils/node-utils'
 import { TRANSCRIPTION_SERVICES_CONFIG } from '../../shared/constants'
@@ -29,20 +29,22 @@ export async function callWhisper(
         : (() => { throw new Error('Invalid whisper option') })()
 
     const whisperModels = TRANSCRIPTION_SERVICES_CONFIG.whisper.models
-    const { label, value } = whisperModels.find(m => m.label === whisperModel)
+    const chosenModel = whisperModels.find(m => m.modelId === whisperModel)
       ?? (() => { throw new Error(`Unknown model type: ${whisperModel}`) })()
 
-    l.dim(`\n  Whisper model information:\n\n    - whisperModel: ${whisperModel}`)
-    l.dim(`    - modelGGMLName: ${value}`)
+    const { modelId, costPerMinuteCents } = chosenModel
 
-    await checkWhisperDirAndModel(label, value)
+    // Construct the .bin filename using the modelId
+    const modelGGMLName = `ggml-${modelId}.bin`
+
+    await checkWhisperDirAndModel(modelId, modelGGMLName)
 
     // Run whisper.cpp on the WAV file
     l.dim(`  Invoking whisper.cpp on file:\n    - ${finalPath}.wav`)
     try {
       await execPromise(
         `./whisper.cpp/build/bin/whisper-cli --no-gpu ` +
-        `-m "whisper.cpp/models/${value}" ` +
+        `-m "whisper.cpp/models/${modelGGMLName}" ` +
         `-f "${finalPath}.wav" ` +
         `-of "${finalPath}" ` +
         `-ml 1 ` +

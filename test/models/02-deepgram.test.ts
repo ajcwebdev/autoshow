@@ -14,14 +14,14 @@ const commands = [
     newName: '02-DEEPGRAM-01-deepgram-nova-2.md'
   },
   {
-    // Process audio with Deepgram using BASE model.
-    cmd: 'npm run as -- --file "content/examples/audio.mp3" --deepgram BASE',
+    // Process audio with Deepgram using base model.
+    cmd: 'npm run as -- --file "content/examples/audio.mp3" --deepgram base',
     expectedFile: 'audio-prompt.md',
     newName: '02-DEEPGRAM-02-deepgram-base.md'
   },
   {
-    // Process audio with Deepgram using ENHANCED model.
-    cmd: 'npm run as -- --file "content/examples/audio.mp3" --deepgram ENHANCED',
+    // Process audio with Deepgram using enhanced model.
+    cmd: 'npm run as -- --file "content/examples/audio.mp3" --deepgram enhanced',
     expectedFile: 'audio-prompt.md',
     newName: '02-DEEPGRAM-03-deepgram-enhanced.md'
   },

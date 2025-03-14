@@ -40,7 +40,7 @@ Select model:
 ```bash
 npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --deepgram BASE
 npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --deepgram ENHANCED
-npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --deepgram NOVA_2
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --deepgram nova-2
 ```
 
 Include Deepgram API key directly in CLI command instead of in `.env` file:

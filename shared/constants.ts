@@ -158,21 +158,21 @@ export const LLM_SERVICES_CONFIG = {
     label: 'Skip LLM Processing',
     models: []
   },
-  ollama: {
-    serviceName: 'Ollama (local inference)',
-    value: 'ollama',
-    label: 'Ollama',
-    models: [
-      { modelName: 'QWEN 2 5 0B', modelId: 'qwen2.5:0.5b', inputCostPer1M: 0, outputCostPer1M: 0, inputCostPer1MCents: 0, outputCostPer1MCents: 0 },
-      { modelName: 'QWEN 2.5 1.5B', modelId: 'qwen2.5:1.5b', inputCostPer1M: 0, outputCostPer1M: 0, inputCostPer1MCents: 0, outputCostPer1MCents: 0 },
-      { modelName: 'QWEN 2.5 3B', modelId: 'qwen2.5:3b', inputCostPer1M: 0, outputCostPer1M: 0, inputCostPer1MCents: 0, outputCostPer1MCents: 0 },
-      { modelName: 'LLAMA 3.2 1B', modelId: 'llama3.2:1b', inputCostPer1M: 0, outputCostPer1M: 0, inputCostPer1MCents: 0, outputCostPer1MCents: 0 },
-      { modelName: 'LLAMA 3.2 3B', modelId: 'llama3.2:3b', inputCostPer1M: 0, outputCostPer1M: 0, inputCostPer1MCents: 0, outputCostPer1MCents: 0 },
-      { modelName: 'GEMMA 2 2B', modelId: 'gemma2:2b', inputCostPer1M: 0, outputCostPer1M: 0, inputCostPer1MCents: 0, outputCostPer1MCents: 0 },
-      { modelName: 'PHI 3.5', modelId: 'phi3.5:3.8b', inputCostPer1M: 0, outputCostPer1M: 0, inputCostPer1MCents: 0, outputCostPer1MCents: 0 },
-      { modelName: 'DEEPSEEK R1 1.5B', modelId: 'deepseek-r1:1.5b', inputCostPer1M: 0, outputCostPer1M: 0, inputCostPer1MCents: 0, outputCostPer1MCents: 0 },
-    ]
-  },
+  // ollama: {
+  //   serviceName: 'Ollama (local inference)',
+  //   value: 'ollama',
+  //   label: 'Ollama',
+  //   models: [
+  //     { modelName: 'QWEN 2 5 0B', modelId: 'qwen2.5:0.5b', inputCostPer1M: 0, outputCostPer1M: 0, inputCostPer1MCents: 0, outputCostPer1MCents: 0 },
+  //     { modelName: 'QWEN 2.5 1.5B', modelId: 'qwen2.5:1.5b', inputCostPer1M: 0, outputCostPer1M: 0, inputCostPer1MCents: 0, outputCostPer1MCents: 0 },
+  //     { modelName: 'QWEN 2.5 3B', modelId: 'qwen2.5:3b', inputCostPer1M: 0, outputCostPer1M: 0, inputCostPer1MCents: 0, outputCostPer1MCents: 0 },
+  //     { modelName: 'LLAMA 3.2 1B', modelId: 'llama3.2:1b', inputCostPer1M: 0, outputCostPer1M: 0, inputCostPer1MCents: 0, outputCostPer1MCents: 0 },
+  //     { modelName: 'LLAMA 3.2 3B', modelId: 'llama3.2:3b', inputCostPer1M: 0, outputCostPer1M: 0, inputCostPer1MCents: 0, outputCostPer1MCents: 0 },
+  //     { modelName: 'GEMMA 2 2B', modelId: 'gemma2:2b', inputCostPer1M: 0, outputCostPer1M: 0, inputCostPer1MCents: 0, outputCostPer1MCents: 0 },
+  //     { modelName: 'PHI 3.5', modelId: 'phi3.5:3.8b', inputCostPer1M: 0, outputCostPer1M: 0, inputCostPer1MCents: 0, outputCostPer1MCents: 0 },
+  //     { modelName: 'DEEPSEEK R1 1.5B', modelId: 'deepseek-r1:1.5b', inputCostPer1M: 0, outputCostPer1M: 0, inputCostPer1MCents: 0, outputCostPer1MCents: 0 },
+  //   ]
+  // },
   chatgpt: {
     serviceName: 'OpenAI ChatGPT',
     value: 'chatgpt',

@@ -29,12 +29,12 @@ export async function runTranscription(
   try {
     switch (transcriptServices) {
       case 'deepgram':
-        const deepgramModel = typeof options.deepgram === 'string' ? options.deepgram : 'NOVA_2'
+        const deepgramModel = typeof options.deepgram === 'string' ? options.deepgram : 'nova-2'
         // Convert string model to enum key if needed
-        const normalizedDeepgramModel = deepgramModel === 'nova-2' || deepgramModel === 'Nova-2' ? 'NOVA_2' :
+        const normalizedDeepgramModel = deepgramModel === 'nova-2' || deepgramModel === 'Nova-2' ? 'nova-2' :
                                         deepgramModel === 'base' || deepgramModel === 'Base' ? 'BASE' :
                                         deepgramModel === 'enhanced' || deepgramModel === 'Enhanced' ? 'ENHANCED' : 
-                                        deepgramModel as 'NOVA_2' | 'BASE' | 'ENHANCED'
+                                        deepgramModel as 'nova-2' | 'BASE' | 'ENHANCED'
         
         const deepgramTranscript = await retryTranscriptionCall(
           () => callDeepgram(options, finalPath, normalizedDeepgramModel)

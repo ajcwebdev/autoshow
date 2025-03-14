@@ -8,8 +8,8 @@ import { join } from 'node:path'
 
 const commands = [
   {
-    // Process audio with Deepgram using NOVA_2 model.
-    cmd: 'npm run as -- --file "content/examples/audio.mp3" --deepgram NOVA_2',
+    // Process audio with Deepgram using nova-2 model.
+    cmd: 'npm run as -- --file "content/examples/audio.mp3" --deepgram nova-2',
     expectedFile: 'audio-prompt.md',
     newName: '02-DEEPGRAM-01-deepgram-nova-2.md'
   },

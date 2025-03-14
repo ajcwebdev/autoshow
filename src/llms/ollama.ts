@@ -8,7 +8,7 @@ import { LLM_SERVICES_CONFIG } from '../../shared/constants'
 /**
  * Type union of all `.modelId` fields for Ollama models in {@link LLM_SERVICES_CONFIG}.
  */
-type OllamaModelValue = (typeof LLM_SERVICES_CONFIG.ollama.models)[number]['modelId']
+// type OllamaModelValue = (typeof LLM_SERVICES_CONFIG.ollama.models)[number]['modelId']
 
 /**
  * Structure representing Ollama's tags endpoint response.
@@ -43,7 +43,7 @@ export type OllamaTagsResponse = {
 export async function callOllama(
   prompt: string,
   transcript: string,
-  modelValue: OllamaModelValue = 'qwen2.5:0.5b'
+  modelValue = 'qwen2.5:0.5b'
 ): Promise<string> {
   l.dim('\n[callOllama] Arguments:')
   l.dim(`  - modelValue: ${modelValue}`)
@@ -108,7 +108,7 @@ export async function callOllama(
 export async function checkOllamaServerAndModel(
   ollamaHost: string,
   ollamaPort: string,
-  ollamaModelName: OllamaModelValue
+  ollamaModelName: string
 ): Promise<void> {
   /**
    * Helper to check if Ollama server is responding at all.

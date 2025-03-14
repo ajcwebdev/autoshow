@@ -94,9 +94,9 @@ export function validateRequest(requestData: Record<string, unknown>) {
   }
 
   // Build our return object conditionally for exactOptionalPropertyTypes:
-  const result: { 
-    options: ProcessingOptions; 
-    llmServices?: string; 
+  const result: {
+    options: ProcessingOptions
+    llmServices?: string
     transcriptServices?: 'whisper' | 'deepgram' | 'assembly'
   } = { options }
 
@@ -266,8 +266,9 @@ export const handleProcessRequest = async (
           return
         }
         options.transcriptCost = filePath
-        await estimateTranscriptCost(options, transcriptServices)
-        reply.send({ message: 'Transcript cost estimated successfully' })
+        const cost = await estimateTranscriptCost(options, transcriptServices)
+        l(cost)
+        reply.send({ cost })
         break
       }
 
@@ -286,8 +287,9 @@ export const handleProcessRequest = async (
           return
         }
         options.llmCost = filePath
-        await estimateLLMCost(options, llmServices)
-        reply.send({ message: 'LLM cost estimated successfully' })
+        const cost = await estimateLLMCost(options, llmServices)
+        l(cost)
+        reply.send({ cost })
         break
       }
 

@@ -76,9 +76,6 @@ const url = new URL(Astro.request.url)
 		{/* Sitemap */}
 		<link href="/sitemap-index.xml" rel="sitemap" />
 
-		{/* RSS auto-discovery */}
-		<link href="/rss.xml" rel="alternate" title={siteConfig.title} type="application/rss+xml" />
-
 		<meta content={Astro.generator} name="generator" />
 	</head>
 	<body>

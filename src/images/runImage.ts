@@ -11,7 +11,7 @@ const prompt = process.argv[3] || 'A beautiful landscape with mountains and a la
 /**
  * Main entry point for the image generation CLI tool
  */
-async function main() {
+async function runImage() {
   console.log('Image Generation API Tool')
   console.log('------------------------')
   
@@ -73,7 +73,7 @@ async function main() {
   }
 }
 
-main().catch(error => {
+runImage().catch(error => {
   console.error('Unhandled error:', error)
   process.exit(1)
 })

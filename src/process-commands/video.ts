@@ -32,7 +32,6 @@ export async function processVideo(
   llmServices?: string,
   transcriptServices?: string
 ) {
-  // Log the processing parameters for debugging purposes
   logInitialFunctionCall('processVideo', { url, llmServices, transcriptServices })
 
   try {
@@ -43,12 +42,12 @@ export async function processVideo(
     await downloadAudio(options, url, filename)
 
     // Step 3 - Transcribe audio and read transcript
-    const transcript = await runTranscription(options, finalPath, transcriptServices)
+    const { transcript, transcriptionCost, modelId: transcriptionModel } = await runTranscription(options, finalPath, transcriptServices)
 
     // Step 4 - Selecting prompt
     const selectedPrompts = await selectPrompts(options)
 
-    // Step 5 - Running LLM processing on transcript (if applicable)...
+    // Step 5 - Running LLM processing on transcript (if applicable)
     const llmOutput = await runLLM(
       options,
       finalPath,
@@ -56,7 +55,10 @@ export async function processVideo(
       selectedPrompts,
       transcript,
       metadata as ShowNoteMetadata,
-      llmServices
+      llmServices,
+      transcriptServices,
+      transcriptionModel,
+      transcriptionCost
     )
 
     // Step 6 - Cleanup

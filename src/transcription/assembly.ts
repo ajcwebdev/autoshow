@@ -1,6 +1,5 @@
 // src/transcription/assembly.ts
 
-import { logTranscriptionCost } from '../process-steps/03-run-transcription-utils'
 import { formatAssemblyTranscript } from './assembly-utils'
 import { l, err } from '../utils/logging'
 import { readFile, env } from '../utils/node-utils'
@@ -14,8 +13,8 @@ const BASE_URL = 'https://api.assemblyai.com/v2'
  * Main function to handle transcription using AssemblyAI.
  * @param options - Additional processing options (e.g., speaker labels)
  * @param finalPath - The base filename (without extension) for input/output files
- * @returns Promise<string> - The formatted transcript content
- * @throws Error if any step of the process fails (upload, transcription request, polling, formatting)
+ * @returns {Promise<TranscriptionResult>}
+ * @throws {Error} If any step of the process fails (upload, transcription request, polling, formatting)
  */
 export async function callAssembly(
   options: ProcessingOptions,
@@ -52,14 +51,6 @@ export async function callAssembly(
 
     const { modelId, costPerMinuteCents } = modelInfo
 
-    await logTranscriptionCost({
-      modelId,
-      costPerMinuteCents,
-      filePath: audioFilePath
-    })
-
-    // Step 1: Uploading the audio file to AssemblyAI
-    l.dim('\n  Uploading audio file to AssemblyAI...')
     const fileBuffer = await readFile(audioFilePath)
 
     const uploadResponse = await fetch(`${BASE_URL}/upload`, {
@@ -81,9 +72,7 @@ export async function callAssembly(
     if (!upload_url) {
       throw new Error('Upload URL not returned by AssemblyAI.')
     }
-    l.dim('    - Audio file uploaded successfully.')
 
-    // Step 2: Requesting the transcription
     const transcriptionOptions = {
       audio_url: upload_url,
       speech_model: modelId as 'default' | 'nano',
@@ -102,16 +91,13 @@ export async function callAssembly(
 
     const transcriptData = await response.json()
 
-    // Step 3: Polling for transcription completion
     let transcript
     while (true) {
       const pollingResponse = await fetch(`${BASE_URL}/transcript/${transcriptData.id}`, { headers })
       transcript = await pollingResponse.json()
-
       if (transcript.status === 'completed' || transcript.status === 'error') {
         break
       }
-
       await new Promise(resolve => setTimeout(resolve, 3000))
     }
 
@@ -119,9 +105,12 @@ export async function callAssembly(
       throw new Error(`Transcription failed: ${transcript.error}`)
     }
 
-    // Step 4: Formatting the transcript
     const txtContent = formatAssemblyTranscript(transcript, speakerLabels || false)
-    return txtContent
+    return {
+      transcript: txtContent,
+      modelId,
+      costPerMinuteCents
+    }
   } catch (error) {
     err(`Error processing the transcription: ${(error as Error).message}`)
     throw error

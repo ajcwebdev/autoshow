@@ -1,7 +1,6 @@
 // src/llms/chatgpt.ts
 
 import { OpenAI } from 'openai'
-import { logLLMCost } from '../process-steps/05-run-llm-utils'
 import { err } from '../utils/logging'
 import { env } from '../utils/node-utils'
 import { LLM_SERVICES_CONFIG } from '../../shared/constants'
@@ -16,7 +15,7 @@ type ChatGPTModelValue = (typeof LLM_SERVICES_CONFIG.chatgpt.models)[number]['mo
  * @param {string} prompt
  * @param {string} transcript
  * @param {string} modelValue - e.g. "gpt-4o-mini"
- * @returns {Promise<string>}
+ * @returns {Promise<{ content: string, usage?: { stopReason: string, input?: number, output?: number, total?: number } }>}
  */
 export async function callChatGPT(
   prompt: string,
@@ -44,17 +43,15 @@ export async function callChatGPT(
 
     const content = firstChoice.message.content
 
-    logLLMCost({
-      name: modelValue,
-      stopReason: firstChoice.finish_reason ?? 'unknown',
-      tokenUsage: {
+    return {
+      content,
+      usage: {
+        stopReason: firstChoice.finish_reason ?? 'unknown',
         input: response.usage?.prompt_tokens,
         output: response.usage?.completion_tokens,
         total: response.usage?.total_tokens
       }
-    })
-
-    return content
+    }
   } catch (error) {
     err(`Error in callChatGPT: ${(error as Error).message}`)
     throw error

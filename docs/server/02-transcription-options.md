@@ -25,7 +25,8 @@ curl --json '{
   "type": "video",
   "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "transcriptServices": "deepgram",
-  "transcriptModel": "base"
+  "transcriptModel": "base",
+  "deepgramApiKey": ""
 }' http://localhost:3000/api/process
 ```
 

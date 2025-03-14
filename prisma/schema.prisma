@@ -12,20 +12,27 @@ generator client {
 }
 
 model show_notes {
-  id            Int     @id @default(autoincrement())
-  showLink      String?
-  channel       String?
-  channelURL    String?
-  title         String
-  description   String?
-  publishDate   String
-  coverImage    String?
-  frontmatter   String?
-  prompt        String?
-  transcript    String?
-  llmOutput     String?
-  walletAddress String?
-  mnemonic      String?
+  id                   Int     @id @default(autoincrement())
+  showLink             String?
+  channel              String?
+  channelURL           String?
+  title                String
+  description          String?
+  publishDate          String
+  coverImage           String?
+  frontmatter          String?
+  prompt               String?
+  transcript           String?
+  llmOutput            String?
+  walletAddress        String?
+  mnemonic             String?
+  llmService           String?
+  llmModel             String?
+  llmCost              Float?
+  transcriptionService String?
+  transcriptionModel   String?
+  transcriptionCost    Float?
+  finalCost            Float?
 }
 
 model embeddings {

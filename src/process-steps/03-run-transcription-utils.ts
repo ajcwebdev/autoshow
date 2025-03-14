@@ -9,12 +9,12 @@ import type { ProcessingOptions } from '../utils/types'
 /**
  * Retries a given transcription call with an exponential backoff of 7 attempts (1s initial delay).
  * 
- * @param {() => Promise<string>} fn - The function to execute for the transcription call
- * @returns {Promise<string>} Resolves when the function succeeds or rejects after 7 attempts
+ * @param {() => Promise<T>} fn - The function to execute for the transcription call
+ * @returns {Promise<T>} Resolves when the function succeeds or rejects after 7 attempts
  * @throws {Error} If the function fails after all attempts
  */
-export async function retryTranscriptionCall(
-  fn: () => Promise<string>
+export async function retryTranscriptionCall<T>(
+  fn: () => Promise<T>
 ) {
   const maxRetries = 7
   let attempt = 0
@@ -22,9 +22,9 @@ export async function retryTranscriptionCall(
   while (attempt < maxRetries) {
     try {
       attempt++
-      const transcript = await fn()
+      const result = await fn()
       l.dim(`  Transcription call completed successfully on attempt ${attempt}.`)
-      return transcript
+      return result
     } catch (error) {
       err(`  Attempt ${attempt} failed: ${(error as Error).message}`)
       if (attempt >= maxRetries) {

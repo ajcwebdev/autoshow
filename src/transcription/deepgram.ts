@@ -1,6 +1,5 @@
 // src/transcription/deepgram.ts
 
-import { logTranscriptionCost } from '../process-steps/03-run-transcription-utils'
 import { formatDeepgramTranscript } from './deepgram-utils'
 import { l, err } from '../utils/logging'
 import { readFile, env } from '../utils/node-utils'
@@ -16,7 +15,7 @@ import type { ProcessingOptions } from '../utils/types'
  *
  * @param {ProcessingOptions} options - Additional processing options (e.g., speaker labels)
  * @param {string} finalPath - The base filename (without extension) for input/output files
- * @returns {Promise<string>} - The formatted transcript content
+ * @returns {Promise<TranscriptionResult>}
  * @throws {Error} If any step of the process fails (upload, transcription request, formatting)
  */
 export async function callDeepgram(
@@ -46,25 +45,15 @@ export async function callDeepgram(
 
     const { modelId, costPerMinuteCents } = modelInfo
 
-    await logTranscriptionCost({
-      modelId,
-      costPerMinuteCents,
-      filePath: `${finalPath}.wav`
-    })
-
     const apiUrl = new URL('https://api.deepgram.com/v1/listen')
-
-    // Set query parameters for the chosen model and formatting
     apiUrl.searchParams.append('model', modelId)
     apiUrl.searchParams.append('smart_format', 'true')
     apiUrl.searchParams.append('punctuate', 'true')
     apiUrl.searchParams.append('diarize', options.speakerLabels ? 'true' : 'false')
     apiUrl.searchParams.append('paragraphs', 'true')
 
-    // Read the WAV file from disk
     const audioBuffer = await readFile(`${finalPath}.wav`)
 
-    // Send the WAV data to Deepgram for transcription
     const response = await fetch(apiUrl, {
       method: 'POST',
       headers: {
@@ -80,7 +69,6 @@ export async function callDeepgram(
 
     const result = await response.json()
 
-    // Extract the transcription results, Deepgram returns results in channels->alternatives->words
     const channel = result.results?.channels?.[0]
     const alternative = channel?.alternatives?.[0]
 
@@ -88,9 +76,12 @@ export async function callDeepgram(
       throw new Error('No transcription results found in Deepgram response')
     }
 
-    // Format the returned words array, optionally including speaker labels
     const txtContent = formatDeepgramTranscript(alternative.words, options.speakerLabels || false)
-    return txtContent
+    return {
+      transcript: txtContent,
+      modelId,
+      costPerMinuteCents
+    }
   } catch (error) {
     err(`Error processing the transcription: ${(error as Error).message}`)
     throw error

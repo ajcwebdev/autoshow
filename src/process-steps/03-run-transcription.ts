@@ -1,23 +1,18 @@
 // src/process-steps/03-run-transcription.ts
 
+/**
+ * Orchestrates the transcription process using the specified service.
+ * Now returns an object that includes both the transcript string and its calculated cost.
+ */
+
 import { callWhisper } from '../transcription/whisper'
 import { callDeepgram } from '../transcription/deepgram'
 import { callAssembly } from '../transcription/assembly'
-import { retryTranscriptionCall } from './03-run-transcription-utils'
+import { retryTranscriptionCall, logTranscriptionCost } from './03-run-transcription-utils'
 import { l, err, logInitialFunctionCall } from '../utils/logging'
 
-import type { ProcessingOptions } from '../utils/types'
+import type { ProcessingOptions, TranscriptionResult } from '../utils/types'
 
-/**
- * Orchestrates the transcription process using the specified service.
- * Routes the transcription request to the appropriate service handler
- * and manages the execution process.
- * 
- * @param {ProcessingOptions} options - Configuration options
- * @param {string} finalPath - Base path for input/output files
- * @param {string} [transcriptServices] - The transcription service to use
- * @returns {Promise<string>} The complete transcript
- */
 export async function runTranscription(
   options: ProcessingOptions,
   finalPath: string,
@@ -26,34 +21,60 @@ export async function runTranscription(
   l.step(`\nStep 3 - Run Transcription\n`)
   logInitialFunctionCall('runTranscription', { options, finalPath, transcriptServices })
 
+  let finalTranscript = ''
+  let finalModelId = ''
+  let finalCostPerMinuteCents = 0
+
   try {
     switch (transcriptServices) {
       case 'deepgram': {
-        const deepgramTranscript = await retryTranscriptionCall(
+        const result = await retryTranscriptionCall<TranscriptionResult>(
           () => callDeepgram(options, finalPath)
         )
         l.dim('\n  Deepgram transcription completed successfully.\n')
-        return deepgramTranscript
+        finalTranscript = result.transcript
+        finalModelId = result.modelId
+        finalCostPerMinuteCents = result.costPerMinuteCents
+        break
       }
 
       case 'assembly': {
-        const assemblyTranscript = await retryTranscriptionCall(
+        const result = await retryTranscriptionCall<TranscriptionResult>(
           () => callAssembly(options, finalPath)
         )
         l.dim('\n  AssemblyAI transcription completed successfully.\n')
-        return assemblyTranscript
+        finalTranscript = result.transcript
+        finalModelId = result.modelId
+        finalCostPerMinuteCents = result.costPerMinuteCents
+        break
       }
 
       case 'whisper': {
-        const whisperTranscript = await retryTranscriptionCall(
+        const result = await retryTranscriptionCall<TranscriptionResult>(
           () => callWhisper(options, finalPath)
         )
         l.dim('\n  Whisper transcription completed successfully.\n')
-        return whisperTranscript
+        finalTranscript = result.transcript
+        finalModelId = result.modelId
+        finalCostPerMinuteCents = result.costPerMinuteCents
+        break
       }
 
       default:
         throw new Error(`Unknown transcription service: ${transcriptServices}`)
+    }
+
+    const transcriptionCost = await logTranscriptionCost({
+      modelId: finalModelId,
+      costPerMinuteCents: finalCostPerMinuteCents,
+      filePath: `${finalPath}.wav`
+    })
+
+    return {
+      transcript: finalTranscript,
+      transcriptionCost,
+      modelId: finalModelId,
+      costPerMinuteCents: finalCostPerMinuteCents
     }
   } catch (error) {
     err(`Error during runTranscription: ${(error as Error).message}`)

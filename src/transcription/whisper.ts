@@ -11,7 +11,7 @@ import type { ProcessingOptions, WhisperOutput } from '../utils/types'
  * Main function to handle transcription using local Whisper.cpp.
  * @param {ProcessingOptions} options - Processing options that determine how transcription is run.
  * @param {string} finalPath - The base filename (without extension) for input and output files.
- * @returns {Promise<string>} - The formatted transcript content as a string.
+ * @returns {Promise<TranscriptionResult>}
  */
 export async function callWhisper(
   options: ProcessingOptions,
@@ -21,7 +21,6 @@ export async function callWhisper(
   l.opts(`    - finalPath: ${finalPath}`)
 
   try {
-    // Determine which model was requested (default to "base" if `--whisper` is passed with no model)
     const whisperModel = typeof options.whisper === 'string'
       ? options.whisper
       : options.whisper === true
@@ -34,12 +33,10 @@ export async function callWhisper(
 
     const { modelId, costPerMinuteCents } = chosenModel
 
-    // Construct the .bin filename using the modelId
     const modelGGMLName = `ggml-${modelId}.bin`
 
     await checkWhisperDirAndModel(modelId, modelGGMLName)
 
-    // Run whisper.cpp on the WAV file
     l.dim(`  Invoking whisper.cpp on file:\n    - ${finalPath}.wav`)
     try {
       await execPromise(
@@ -64,8 +61,11 @@ export async function callWhisper(
     const txtContent = formatWhisperTranscript(parsedJson)
     await unlink(`${finalPath}.json`)
 
-    // Return the transcript text
-    return txtContent
+    return {
+      transcript: txtContent,
+      modelId,
+      costPerMinuteCents
+    }
   } catch (error) {
     err('Error in callWhisper:', (error as Error).message)
     process.exit(1)

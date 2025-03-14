@@ -3,6 +3,8 @@
 /**
  * Represents a single show note record in the database.
  * Matches the Prisma model and underlying database schema.
+ *
+ * Added fields to store LLM and transcription details, including service, model, costs, and final cost.
  */
 export type ShowNote = {
   id?: number
@@ -19,6 +21,13 @@ export type ShowNote = {
   llmOutput?: string
   walletAddress?: string
   mnemonic?: string
+  llmService?: string
+  llmModel?: string
+  llmCost?: number
+  transcriptionService?: string
+  transcriptionModel?: string
+  transcriptionCost?: number
+  finalCost?: number
 }
 
 export type ShowNoteMetadata = {
@@ -184,6 +193,38 @@ export interface VideoInfo {
   uploadDate: string
   url: string
   date: Date
-  timestamp: number  // Unix timestamp for more precise sorting
-  isLive: boolean   // Flag to identify live streams
+  timestamp: number
+  isLive: boolean
 }
+
+/**
+ * Represents the result returned by any transcription call.
+ */
+export interface TranscriptionResult {
+  transcript: string
+  modelId: string
+  costPerMinuteCents: number
+}
+
+/**
+ * Represents usage details returned by an LLM call.
+ */
+export type LLMUsage = {
+  stopReason: string
+  input?: number
+  output?: number
+  total?: number
+}
+
+/**
+ * Represents the result of an LLM call, including the generated content and usage details.
+ */
+export type LLMResult = {
+  content: string
+  usage?: LLMUsage
+}
+
+/**
+ * Type for LLM function signatures, returning both content and usage details.
+ */
+export type LLMFunction = (prompt: string, transcript: string, options: any) => Promise<LLMResult>

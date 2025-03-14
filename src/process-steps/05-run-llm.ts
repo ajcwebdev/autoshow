@@ -1,39 +1,17 @@
 // src/process-steps/05-run-llm.ts
 
+/**
+ * Handles LLM processing and now takes transcription cost and model so final costs can be stored.
+ * Also computes the final cost (llm cost + transcription cost) and stores all new fields in the DB.
+ */
+
 import { dbService } from '../db'
-import { retryLLMCall, LLM_FUNCTIONS, getModelIdOrDefault } from './05-run-llm-utils'
+import { retryLLMCall, LLM_FUNCTIONS, getModelIdOrDefault, logLLMCost } from './05-run-llm-utils'
 import { l, err, logInitialFunctionCall } from '../utils/logging'
 import { writeFile, env } from '../utils/node-utils'
 
-import type { ProcessingOptions, ShowNoteMetadata } from '../utils/types'
+import type { ProcessingOptions, ShowNoteMetadata, LLMResult } from '../utils/types'
 
-/**
- * Processes a transcript using a specified Language Model service.
- * Handles the complete workflow from combining the transcript to generating
- * and saving the final markdown output for multiple LLM services.
- * 
- * The function performs these steps:
- * 1. Combines the transcript with a provided prompt (if any)
- * 2. Processes the content with the selected LLM
- * 3. Saves the results with front matter and transcript or prompt+transcript
- * 4. Inserts show notes into the database (when in server mode only)
- * 
- * If no LLM is selected, it writes the front matter, prompt, and transcript to a file.
- * If an LLM is selected, it writes the front matter, showNotes, and transcript to a file.
- * 
- * @param {ProcessingOptions} options - Configuration options including:
- *   - prompt: Array of prompt sections to include
- *   - LLM-specific options (e.g., chatgpt, claude, etc.)
- * @param {string} finalPath - Base path for input/output files:
- *   - Final output: `${finalPath}-${llmServices}-shownotes.md` (if LLM is used)
- *   - Otherwise: `${finalPath}-prompt.md`
- * @param {string} frontMatter - YAML front matter content to include in the output
- * @param {string} prompt - Optional prompt or instructions to process
- * @param {string} transcript - The transcript content
- * @param {ShowNoteMetadata} metadata - The metadata object
- * @param {string} [llmServices] - The LLM service to use
- * @returns {Promise<string>} Resolves with the LLM output, or an empty string if no LLM is selected
- */
 export async function runLLM(
   options: ProcessingOptions,
   finalPath: string,
@@ -42,6 +20,9 @@ export async function runLLM(
   transcript: string,
   metadata: ShowNoteMetadata,
   llmServices?: string,
+  transcriptionServices?: string,
+  transcriptionModel?: string,
+  transcriptionCost?: number
 ) {
   l.step(`\nStep 5 - Run Language Model\n`)
   logInitialFunctionCall('runLLM', { llmServices, metadata })
@@ -51,6 +32,8 @@ export async function runLLM(
 
   try {
     let showNotesResult = ''
+    let llmCost = 0
+
     if (llmServices) {
       l.dim(`\n  Preparing to process with '${llmServices}' Language Model...\n`)
       const llmFunction = LLM_FUNCTIONS[llmServices as keyof typeof LLM_FUNCTIONS]
@@ -58,13 +41,25 @@ export async function runLLM(
         throw new Error(`Invalid LLM option: ${llmServices}`)
       }
       const userModel = getModelIdOrDefault(llmServices, options[llmServices])
-      let showNotes = ''
-      await retryLLMCall<string>(
+
+      const showNotesData = await retryLLMCall<LLMResult>(
         async () => {
-          showNotes = await llmFunction(prompt, transcript, userModel)
-          return showNotes
+          return llmFunction(prompt, transcript, userModel)
         }
       )
+
+      const costBreakdown = logLLMCost({
+        name: userModel,
+        stopReason: showNotesData.usage?.stopReason ?? 'unknown',
+        tokenUsage: {
+          input: showNotesData.usage?.input,
+          output: showNotesData.usage?.output,
+          total: showNotesData.usage?.total
+        }
+      })
+
+      llmCost = costBreakdown.totalCost ?? 0
+      const showNotes = showNotesData.content
 
       const outputFilename = `${finalPath}-${llmServices}-shownotes.md`
       await writeFile(outputFilename, `${frontMatter}\n${showNotes}\n\n## Transcript\n\n${transcript}`)
@@ -77,7 +72,10 @@ export async function runLLM(
       await writeFile(noLLMFile, `${frontMatter}\n${prompt}\n## Transcript\n\n${transcript}`)
     }
 
+    const finalCost = (transcriptionCost || 0) + llmCost
+
     if (env['SERVER_MODE'] === 'true') {
+      const userModel = llmServices ? getModelIdOrDefault(llmServices, options[llmServices]) : ''
       await dbService.insertShowNote({
         showLink: metadata.showLink ?? '',
         channel: metadata.channel ?? '',
@@ -91,7 +89,14 @@ export async function runLLM(
         transcript,
         llmOutput: showNotesResult,
         walletAddress: metadata.walletAddress ?? '',
-        mnemonic: metadata.mnemonic ?? ''
+        mnemonic: metadata.mnemonic ?? '',
+        llmService: llmServices ?? '',
+        llmModel: userModel,
+        llmCost,
+        transcriptionService: transcriptionServices ?? '',
+        transcriptionModel: transcriptionModel ?? '',
+        transcriptionCost,
+        finalCost
       })
     } else {
       l.dim('\n  Skipping database insertion in CLI mode')

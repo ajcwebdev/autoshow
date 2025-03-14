@@ -17,6 +17,13 @@ CREATE TABLE "show_notes" (
     "llmOutput" TEXT,
     "walletAddress" TEXT,
     "mnemonic" TEXT,
+    "llmService" TEXT,
+    "llmModel" TEXT,
+    "llmCost" DOUBLE PRECISION,
+    "transcriptionService" TEXT,
+    "transcriptionModel" TEXT,
+    "transcriptionCost" DOUBLE PRECISION,
+    "finalCost" DOUBLE PRECISION,
 
     CONSTRAINT "show_notes_pkey" PRIMARY KEY ("id")
 );

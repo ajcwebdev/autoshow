@@ -46,14 +46,8 @@ export async function runLLM(
   l.step(`\nStep 5 - Run Language Model\n`)
   logInitialFunctionCall('runLLM', { llmServices, metadata })
 
-  l(`[runLLM] walletAddress from options: ${options['walletAddress']}`)
-  l(`[runLLM] mnemonic from options: ${options['mnemonic']}`)
-
   metadata.walletAddress = options['walletAddress'] || metadata.walletAddress
   metadata.mnemonic = options['mnemonic'] || metadata.mnemonic
-
-  l(`[runLLM] final metadata.walletAddress: ${metadata.walletAddress}`)
-  l(`[runLLM] final metadata.mnemonic: ${metadata.mnemonic}`)
 
   try {
     let showNotesResult = ''

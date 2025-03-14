@@ -5,7 +5,6 @@ import { callDeepgram } from '../transcription/deepgram'
 import { callAssembly } from '../transcription/assembly'
 import { retryTranscriptionCall } from './03-run-transcription-utils'
 import { l, err, logInitialFunctionCall } from '../utils/logging'
-import { TRANSCRIPTION_SERVICES_CONFIG } from '../../shared/constants'
 
 import type { ProcessingOptions } from '../utils/types'
 
@@ -30,30 +29,18 @@ export async function runTranscription(
   try {
     switch (transcriptServices) {
       case 'deepgram': {
-        const defaultDeepgramModel = TRANSCRIPTION_SERVICES_CONFIG.deepgram.models.find(m => m.modelId === 'nova-2')?.modelId || 'nova-2'
-        const deepgramModel = typeof options.deepgram === 'string'
-          ? options.deepgram
-          : defaultDeepgramModel
-
         const deepgramTranscript = await retryTranscriptionCall(
-          () => callDeepgram(options, finalPath, deepgramModel)
+          () => callDeepgram(options, finalPath)
         )
         l.dim('\n  Deepgram transcription completed successfully.\n')
-        l.dim(`\n    - deepgramModel: ${deepgramModel}`)
         return deepgramTranscript
       }
 
       case 'assembly': {
-        const defaultAssemblyModel = TRANSCRIPTION_SERVICES_CONFIG.assembly.models.find(m => m.modelId === 'best')?.modelId || 'best'
-        const assemblyModel = typeof options.assembly === 'string'
-          ? options.assembly
-          : defaultAssemblyModel
-
         const assemblyTranscript = await retryTranscriptionCall(
-          () => callAssembly(options, finalPath, assemblyModel)
+          () => callAssembly(options, finalPath)
         )
         l.dim('\n  AssemblyAI transcription completed successfully.\n')
-        l.dim(`\n    - assemblyModel: ${assemblyModel}`)
         return assemblyTranscript
       }
 

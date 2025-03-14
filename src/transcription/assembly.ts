@@ -14,18 +14,15 @@ const BASE_URL = 'https://api.assemblyai.com/v2'
  * Main function to handle transcription using AssemblyAI.
  * @param options - Additional processing options (e.g., speaker labels)
  * @param finalPath - The base filename (without extension) for input/output files
- * @param model - The AssemblyAI model to use (default is 'Nano')
  * @returns Promise<string> - The formatted transcript content
  * @throws Error if any step of the process fails (upload, transcription request, polling, formatting)
  */
 export async function callAssembly(
   options: ProcessingOptions,
-  finalPath: string,
-  model: string = 'Nano'
+  finalPath: string
 ) {
   l.dim('\n  callAssembly called with arguments:')
   l.dim(`    - finalPath: ${finalPath}`)
-  l.dim(`    - model: ${model}`)
 
   if (!env['ASSEMBLY_API_KEY']) {
     throw new Error('ASSEMBLY_API_KEY environment variable is not set. Please set it to your AssemblyAI API key.')
@@ -40,12 +37,17 @@ export async function callAssembly(
     const { speakerLabels } = options
     const audioFilePath = `${finalPath}.wav`
 
+    const defaultAssemblyModel = TRANSCRIPTION_SERVICES_CONFIG.assembly.models.find(m => m.modelId === 'best')?.modelId || 'best'
+    const assemblyModel = typeof options.assembly === 'string'
+      ? options.assembly
+      : defaultAssemblyModel
+
     const modelInfo = 
-      TRANSCRIPTION_SERVICES_CONFIG.assembly.models.find(m => m.modelId.toLowerCase() === model.toLowerCase())
-      || TRANSCRIPTION_SERVICES_CONFIG.assembly.models.find(m => m.modelId === 'nano')
+      TRANSCRIPTION_SERVICES_CONFIG.assembly.models.find(m => m.modelId.toLowerCase() === assemblyModel.toLowerCase())
+      || TRANSCRIPTION_SERVICES_CONFIG.assembly.models.find(m => m.modelId === 'best')
 
     if (!modelInfo) {
-      throw new Error(`Model information for model ${model} is not available.`)
+      throw new Error(`Model information for model ${assemblyModel} is not available.`)
     }
 
     const { modelId, costPerMinuteCents } = modelInfo

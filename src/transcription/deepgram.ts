@@ -12,30 +12,32 @@ import type { ProcessingOptions } from '../utils/types'
  * Main function to handle transcription using Deepgram API.
  * @param {ProcessingOptions} options - Additional processing options (e.g., speaker labels)
  * @param {string} finalPath - The base filename (without extension) for input/output files
- * @param {string} [model] - The Deepgram model to use (default is 'Nova-2')
  * @returns {Promise<string>} - The formatted transcript content
  * @throws {Error} If any step of the process fails (upload, transcription request, formatting)
  */
 export async function callDeepgram(
-  _options: ProcessingOptions,
-  finalPath: string,
-  model: string = 'Nova-2'
+  options: ProcessingOptions,
+  finalPath: string
 ) {
   l.dim('\n  callDeepgram called with arguments:')
   l.dim(`    - finalPath: ${finalPath}`)
-  l.dim(`    - model: ${model}`)
 
   if (!env['DEEPGRAM_API_KEY']) {
     throw new Error('DEEPGRAM_API_KEY environment variable is not set. Please set it to your Deepgram API key.')
   }
 
   try {
+    const defaultDeepgramModel = TRANSCRIPTION_SERVICES_CONFIG.deepgram.models.find(m => m.modelId === 'nova-2')?.modelId || 'nova-2'
+    const deepgramModel = typeof options.deepgram === 'string'
+      ? options.deepgram
+      : defaultDeepgramModel
+
     const modelInfo =
-      TRANSCRIPTION_SERVICES_CONFIG.deepgram.models.find(m => m.modelId.toLowerCase() === model.toLowerCase())
+      TRANSCRIPTION_SERVICES_CONFIG.deepgram.models.find(m => m.modelId.toLowerCase() === deepgramModel.toLowerCase())
       || TRANSCRIPTION_SERVICES_CONFIG.deepgram.models.find(m => m.modelId === 'nova-2')
 
     if (!modelInfo) {
-      throw new Error(`Model information for model ${model} is not defined.`)
+      throw new Error(`Model information for model ${deepgramModel} is not defined.`)
     }
 
     const { modelId, costPerMinuteCents } = modelInfo

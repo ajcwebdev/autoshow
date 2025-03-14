@@ -3,14 +3,39 @@
 /**
  * Handles LLM processing and now takes transcription cost and model so final costs can be stored.
  * Also computes the final cost (llm cost + transcription cost) and stores all new fields in the DB.
+ *
+ * @param {ProcessingOptions} options - The command-line options
+ * @param {string} finalPath - The file path (without extension) used for naming outputs
+ * @param {string} frontMatter - The front matter section of the markdown
+ * @param {string} prompt - The prompt text to be processed by the LLM
+ * @param {string} transcript - The transcribed text
+ * @param {ShowNoteMetadata} metadata - Additional metadata for the show note
+ * @param {string} [llmServices] - The LLM service to use (e.g., 'chatgpt', 'claude')
+ * @param {string} [transcriptionServices] - The transcription service used (e.g., 'whisper', 'deepgram')
+ * @param {string} [transcriptionModel] - The model used by the transcription service
+ * @param {number} [transcriptionCost] - The cost of the transcription step
+ * @returns {Promise<string>} - The show notes result from the LLM
  */
 
 import { dbService } from '../db'
-import { retryLLMCall, LLM_FUNCTIONS, getModelIdOrDefault, logLLMCost } from './05-run-llm-utils'
+import { retryLLMCall, logLLMCost } from './05-run-llm-utils'
 import { l, err, logInitialFunctionCall } from '../utils/logging'
 import { writeFile, env } from '../utils/node-utils'
+import { LLM_SERVICES_CONFIG } from '../../shared/constants'
+import { callChatGPT } from '../llms/chatgpt'
+import { callClaude } from '../llms/claude'
+import { callGemini } from '../llms/gemini'
+import { callDeepSeek } from '../llms/deepseek'
+import { callFireworks } from '../llms/fireworks'
+import { callTogether } from '../llms/together'
 
 import type { ProcessingOptions, ShowNoteMetadata, LLMResult } from '../utils/types'
+import type { ChatGPTModelValue } from '../llms/chatgpt'
+import type { ClaudeModelValue } from '../llms/claude'
+import type { GeminiModelValue } from '../llms/gemini'
+import type { DeepSeekModelValue } from '../llms/deepseek'
+import type { FireworksModelValue } from '../llms/fireworks'
+import type { TogetherModelValue } from '../llms/together'
 
 export async function runLLM(
   options: ProcessingOptions,
@@ -33,20 +58,64 @@ export async function runLLM(
   try {
     let showNotesResult = ''
     let llmCost = 0
+    let userModel = ''
 
     if (llmServices) {
       l.dim(`\n  Preparing to process with '${llmServices}' Language Model...\n`)
-      const llmFunction = LLM_FUNCTIONS[llmServices as keyof typeof LLM_FUNCTIONS]
-      if (!llmFunction) {
-        throw new Error(`Invalid LLM option: ${llmServices}`)
-      }
-      const userModel = getModelIdOrDefault(llmServices, options[llmServices])
 
-      const showNotesData = await retryLLMCall<LLMResult>(
-        async () => {
-          return llmFunction(prompt, transcript, userModel)
-        }
-      )
+      const config = LLM_SERVICES_CONFIG[llmServices as keyof typeof LLM_SERVICES_CONFIG]
+      if (!config) {
+        throw new Error(`Unknown LLM service: ${llmServices}`)
+      }
+
+      const optionValue = options[llmServices as keyof typeof options]
+      const defaultModelId = config.models[0]?.modelId ?? ''
+      const userModel = (typeof optionValue === 'string' && optionValue !== 'true' && optionValue.trim() !== '')
+        ? optionValue
+        : defaultModelId
+
+      let showNotesData: LLMResult
+
+      switch (llmServices) {
+        case 'chatgpt':
+          showNotesData = await retryLLMCall(
+            () => callChatGPT(prompt, transcript, userModel as ChatGPTModelValue)
+          )
+          break
+
+        case 'claude':
+          showNotesData = await retryLLMCall(
+            () => callClaude(prompt, transcript, userModel as ClaudeModelValue)
+          )
+          break
+
+        case 'gemini':
+          showNotesData = await retryLLMCall(
+            () => callGemini(prompt, transcript, userModel as GeminiModelValue)
+          )
+          break
+
+        case 'deepseek':
+          showNotesData = await retryLLMCall(
+            () => callDeepSeek(prompt, transcript, userModel as DeepSeekModelValue)
+          )
+          break
+
+        case 'fireworks':
+          showNotesData = await retryLLMCall(
+            () => callFireworks(prompt, transcript, userModel as FireworksModelValue)
+          )
+          break
+
+        case 'together':
+          showNotesData = await retryLLMCall(
+            () => callTogether(prompt, transcript, userModel as TogetherModelValue)
+          )
+          break
+
+        default:
+          throw new Error(`Unknown LLM service: ${llmServices}`)
+      }
 
       const costBreakdown = logLLMCost({
         name: userModel,
@@ -75,7 +144,6 @@ export async function runLLM(
     const finalCost = (transcriptionCost || 0) + llmCost
 
     if (env['SERVER_MODE'] === 'true') {
-      const userModel = llmServices ? getModelIdOrDefault(llmServices, options[llmServices]) : ''
       await dbService.insertShowNote({
         showLink: metadata.showLink ?? '',
         channel: metadata.channel ?? '',

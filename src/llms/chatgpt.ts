@@ -8,7 +8,7 @@ import { LLM_SERVICES_CONFIG } from '../../shared/constants'
 /**
  * Type union of all possible `.modelId` fields for ChatGPT models in {@link LLM_SERVICES_CONFIG}.
  */
-type ChatGPTModelValue = (typeof LLM_SERVICES_CONFIG.chatgpt.models)[number]['modelId']
+export type ChatGPTModelValue = (typeof LLM_SERVICES_CONFIG.chatgpt.models)[number]['modelId']
 
 /**
  * Main function to call ChatGPT API.

@@ -1,19 +1,27 @@
 // src/process-steps/05-run-llm-utils.ts
 
+/**
+ * Utilities for LLM-related actions such as cost logging, file-based prompt loading,
+ * and cost estimation.
+ *
+ * All references to `LLM_FUNCTIONS` and its type have been removed to reflect
+ * direct usage of LLM calls in `05-run-llm.ts`.
+ */
+
 import chalk from 'chalk'
 import { runLLM } from './05-run-llm'
-import { callChatGPT } from '../llms/chatgpt'
-import { callClaude } from '../llms/claude'
-import { callGemini } from '../llms/gemini'
-import { callDeepSeek } from '../llms/deepseek'
-import { callFireworks } from '../llms/fireworks'
-import { callTogether } from '../llms/together'
 import { l, err } from '../utils/logging'
 import { readFile } from '../utils/node-utils'
 import { LLM_SERVICES_CONFIG } from '../../shared/constants'
 
-import type { ProcessingOptions, ShowNoteMetadata, LLMFunction } from '../utils/types'
+import type { ProcessingOptions, ShowNoteMetadata } from '../utils/types'
 
+/**
+ * Returns a formatted cost string in cents or dollars based on magnitude.
+ *
+ * @param {number | undefined} cost - The cost in dollars
+ * @returns {string} - Formatted string representing the cost
+ */
 export function formatCost(cost: number | undefined): string {
   if (cost === undefined) return 'N/A'
   if (cost === 0) return '0¢'
@@ -31,6 +39,19 @@ export function formatCost(cost: number | undefined): string {
   return `$${cost.toFixed(2)}`
 }
 
+/**
+ * Logs the LLM cost breakdown (input, output, total) by matching the model name
+ * to entries in LLM_SERVICES_CONFIG.
+ *
+ * @param {object} info - The info containing the model name, stopReason, and token usage
+ * @param {string} info.name - The model name/ID
+ * @param {string} info.stopReason - The reason the LLM stopped generating
+ * @param {object} info.tokenUsage - The token usage details
+ * @param {number | undefined} info.tokenUsage.input - The input token count
+ * @param {number | undefined} info.tokenUsage.output - The output token count
+ * @param {number | undefined} info.tokenUsage.total - The total token count
+ * @returns {{ inputCost?: number, outputCost?: number, totalCost?: number }}
+ */
 export function logLLMCost(info: {
   name: string
   stopReason: string
@@ -141,29 +162,13 @@ export function logLLMCost(info: {
   return { inputCost, outputCost, totalCost }
 }
 
-export function getModelIdOrDefault(serviceKey: string, userValue: unknown): string {
-  const serviceConfig = LLM_SERVICES_CONFIG[serviceKey as keyof typeof LLM_SERVICES_CONFIG]
-
-  if (!serviceConfig) {
-    throw new Error(`Unsupported LLM service '${serviceKey}'`)
-  }
-
-  if (typeof userValue !== 'string' || userValue === 'true' || userValue.trim() === '') {
-    const defaultModel = serviceConfig.models[0]
-    if (!defaultModel) {
-      throw new Error(`No models found for LLM service '${serviceKey}'`)
-    }
-    return defaultModel.modelId
-  }
-
-  const match = serviceConfig.models.find((m) => m.modelId === userValue)
-  if (!match) {
-    throw new Error(`Unknown model '${userValue}' for service '${serviceKey}'`)
-  }
-
-  return match.modelId
-}
-
+/**
+ * A simple function to retry LLM calls with exponential backoff, up to 7 attempts.
+ *
+ * @param {() => Promise<T>} fn - The LLM call to be retried
+ * @returns {Promise<T>} - The result of the LLM call if successful
+ * @throws {Error} - If all attempts fail
+ */
 export async function retryLLMCall<T>(
   fn: () => Promise<T>
 ) {
@@ -191,15 +196,49 @@ export async function retryLLMCall<T>(
   throw new Error('LLM call failed after maximum retries.')
 }
 
-export const LLM_FUNCTIONS: Record<string, LLMFunction> = {
-  chatgpt: callChatGPT,
-  claude: callClaude,
-  gemini: callGemini,
-  deepseek: callDeepSeek,
-  fireworks: callFireworks,
-  together: callTogether,
+/**
+ * Reads a prompt markdown file and calls runLLM with the parsed data.
+ * This bypasses the earlier steps of front matter generation, audio download, and transcription.
+ *
+ * @param {string} filePath - Path to the markdown prompt file
+ * @param {ProcessingOptions} options - Configuration options for LLM processing
+ * @param {string} llmServices - The chosen LLM service
+ */
+export async function runLLMFromPromptFile(
+  filePath: string,
+  options: ProcessingOptions,
+  llmServices: string,
+) {
+  try {
+    const fileContent = await readFile(filePath, 'utf8')
+    const { frontMatter, prompt, transcript, metadata } = parsePromptFile(fileContent)
+
+    const finalPath = filePath.replace(/\.[^.]+$/, '')
+
+    await runLLM(
+      options,
+      finalPath,
+      frontMatter,
+      prompt,
+      transcript,
+      metadata,
+      llmServices,
+      undefined,
+      undefined,
+      0
+    )
+  } catch (error) {
+    err(`Error in runLLMFromPromptFile: ${(error as Error).message}`)
+    throw error
+  }
 }
 
+/**
+ * Parses a file containing front matter, prompt content, and transcript sections.
+ *
+ * @param {string} fileContent - The raw text content from the markdown file
+ * @returns {{ frontMatter: string, prompt: string, transcript: string, metadata: ShowNoteMetadata }}
+ */
 function parsePromptFile(fileContent: string) {
   let frontMatter = ''
   let prompt = ''
@@ -258,53 +297,12 @@ function parsePromptFile(fileContent: string) {
 }
 
 /**
- * Reads a prompt markdown file and runs Step 5 (LLM processing) directly,
- * bypassing the earlier steps of front matter generation, audio download, and transcription.
- * 
- * Updated to pass undefined transcription services/model and a cost of 0 to runLLM.
- */
-export async function runLLMFromPromptFile(
-  filePath: string,
-  options: ProcessingOptions,
-  llmServices: string,
-) {
-  try {
-    const fileContent = await readFile(filePath, 'utf8')
-    const { frontMatter, prompt, transcript, metadata } = parsePromptFile(fileContent)
-
-    const finalPath = filePath.replace(/\.[^.]+$/, '')
-
-    await runLLM(
-      options,
-      finalPath,
-      frontMatter,
-      prompt,
-      transcript,
-      metadata,
-      llmServices,
-      undefined,
-      undefined,
-      0
-    )
-  } catch (error) {
-    err(`Error in runLLMFromPromptFile: ${(error as Error).message}`)
-    throw error
-  }
-}
-
-function approximateTokens(text: string) {
-  const words = text.trim().split(/\s+/)
-  return Math.max(1, words.length)
-}
-
-/**
- * estimateLLMCost()
- * -----------------
- * Estimates the cost for an LLM-based model by:
- * 1. Reading a combined prompt + transcript file
- * 2. Approximating the token usage
- * 3. Looking up cost info from the LLM model config
- * 4. Logging the estimated cost to the console
+ * Estimates the cost for a given LLM by approximating token usage from a text file
+ * and matching it to LLM_SERVICES_CONFIG cost data.
+ *
+ * @param {ProcessingOptions} options - The command-line options (should include llmCost path)
+ * @param {string} llmService - The chosen LLM service
+ * @returns {Promise<number>} - The estimated cost in dollars
  */
 export async function estimateLLMCost(
   options: ProcessingOptions,
@@ -321,6 +319,7 @@ export async function estimateLLMCost(
     const content = await readFile(filePath, 'utf8')
     const tokenCount = approximateTokens(content)
 
+    // Default fallback model selection
     let userModel = typeof options[llmService] === 'string'
       ? options[llmService] as string
       : undefined
@@ -329,7 +328,7 @@ export async function estimateLLMCost(
       userModel = 'gpt-4o-mini'
     }
     if (llmService === 'claude' && (userModel === undefined || userModel === 'true')) {
-      userModel = 'claude-3-sonnet-20240229'
+      userModel = 'claude-3-5-haiku-latest'
     }
     if (llmService === 'gemini' && (userModel === undefined || userModel === 'true')) {
       userModel = 'gemini-1.5-flash'
@@ -361,4 +360,15 @@ export async function estimateLLMCost(
     err(`Error estimating LLM cost: ${(error as Error).message}`)
     throw error
   }
+}
+
+/**
+ * Approximates the token count by splitting the text content on whitespace.
+ *
+ * @param {string} text - The text to approximate tokens for
+ * @returns {number} - The approximate token count
+ */
+function approximateTokens(text: string) {
+  const words = text.trim().split(/\s+/)
+  return Math.max(1, words.length)
 }

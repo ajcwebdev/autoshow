@@ -8,7 +8,7 @@ import { LLM_SERVICES_CONFIG } from '../../shared/constants'
 /**
  * Type union of all possible `.modelId` fields for Gemini models in {@link LLM_SERVICES_CONFIG}.
  */
-type GeminiModelValue = (typeof LLM_SERVICES_CONFIG.gemini.models)[number]['modelId']
+export type GeminiModelValue = (typeof LLM_SERVICES_CONFIG.gemini.models)[number]['modelId']
 
 /**
  * Simple utility function to introduce a delay.

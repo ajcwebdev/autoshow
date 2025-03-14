@@ -7,7 +7,7 @@ import { LLM_SERVICES_CONFIG } from '../../shared/constants'
 /**
  * Type union of all `.modelId` fields for Together models in {@link LLM_SERVICES_CONFIG}.
  */
-type TogetherModelValue = (typeof LLM_SERVICES_CONFIG.together.models)[number]['modelId']
+export type TogetherModelValue = (typeof LLM_SERVICES_CONFIG.together.models)[number]['modelId']
 
 /**
  * Calls the Together AI API and returns generated text.

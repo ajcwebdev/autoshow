@@ -8,7 +8,7 @@ import { LLM_SERVICES_CONFIG } from '../../shared/constants'
 /**
  * Type union of all possible `.modelId` fields for Claude models in {@link LLM_SERVICES_CONFIG}.
  */
-type ClaudeModelValue = (typeof LLM_SERVICES_CONFIG.claude.models)[number]['modelId']
+export type ClaudeModelValue = (typeof LLM_SERVICES_CONFIG.claude.models)[number]['modelId']
 
 /**
  * Calls the Anthropic Claude API and returns generated text.

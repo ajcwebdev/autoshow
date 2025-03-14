@@ -8,7 +8,7 @@ import { LLM_SERVICES_CONFIG } from '../../shared/constants'
 /**
  * Type union of all possible `.modelId` fields for DeepSeek models in {@link LLM_SERVICES_CONFIG}.
  */
-type DeepSeekModelValue = (typeof LLM_SERVICES_CONFIG.deepseek.models)[number]['modelId']
+export type DeepSeekModelValue = (typeof LLM_SERVICES_CONFIG.deepseek.models)[number]['modelId']
 
 /**
  * Calls the DeepSeek API via an OpenAI-compatible endpoint and returns generated text.

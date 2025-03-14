@@ -7,7 +7,7 @@ import { LLM_SERVICES_CONFIG } from '../../shared/constants'
 /**
  * Type union of all `.modelId` fields for Fireworks models in {@link LLM_SERVICES_CONFIG}.
  */
-type FireworksModelValue = (typeof LLM_SERVICES_CONFIG.fireworks.models)[number]['modelId']
+export type FireworksModelValue = (typeof LLM_SERVICES_CONFIG.fireworks.models)[number]['modelId']
 
 /**
  * Calls the Fireworks AI API and returns generated text.

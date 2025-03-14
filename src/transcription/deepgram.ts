@@ -10,6 +10,10 @@ import type { ProcessingOptions } from '../utils/types'
 
 /**
  * Main function to handle transcription using Deepgram API.
+ * If `options.speakerLabels` is true, diarization will be enabled and the returned transcript
+ * will be formatted to include speaker labels. Otherwise, the transcript is returned as a
+ * plain text string without speaker labeling.
+ *
  * @param {ProcessingOptions} options - Additional processing options (e.g., speaker labels)
  * @param {string} finalPath - The base filename (without extension) for input/output files
  * @returns {Promise<string>} - The formatted transcript content
@@ -54,7 +58,7 @@ export async function callDeepgram(
     apiUrl.searchParams.append('model', modelId)
     apiUrl.searchParams.append('smart_format', 'true')
     apiUrl.searchParams.append('punctuate', 'true')
-    apiUrl.searchParams.append('diarize', 'false')
+    apiUrl.searchParams.append('diarize', options.speakerLabels ? 'true' : 'false')
     apiUrl.searchParams.append('paragraphs', 'true')
 
     // Read the WAV file from disk
@@ -84,8 +88,8 @@ export async function callDeepgram(
       throw new Error('No transcription results found in Deepgram response')
     }
 
-    // Format the returned words array
-    const txtContent = formatDeepgramTranscript(alternative.words)
+    // Format the returned words array, optionally including speaker labels
+    const txtContent = formatDeepgramTranscript(alternative.words, options.speakerLabels || false)
     return txtContent
   } catch (error) {
     err(`Error processing the transcription: ${(error as Error).message}`)

@@ -1,11 +1,11 @@
 // src/transcription/whisper.ts
 
-import { checkWhisperDirAndModel, formatWhisperTranscript } from './whisper-utils'
-import { l, err } from '../utils/logging'
-import { readFile, unlink, execPromise } from '../utils/node-utils'
-import { TRANSCRIPTION_SERVICES_CONFIG } from '../../shared/constants'
+import { checkWhisperDirAndModel, formatWhisperTranscript } from './whisper-utils.ts'
+import { l, err } from '../utils/logging.ts'
+import { readFile, unlink, execPromise } from '../utils/node-utils.ts'
+import { TRANSCRIPTION_SERVICES_CONFIG } from '../../shared/constants.ts'
 
-import type { ProcessingOptions, WhisperOutput } from '../utils/types'
+import type { ProcessingOptions, WhisperOutput } from '../utils/types.ts'
 
 /**
  * Main function to handle transcription using local Whisper.cpp.

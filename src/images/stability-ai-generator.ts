@@ -2,9 +2,9 @@
 
 import { writeFile, mkdir } from 'fs/promises'
 import { dirname } from 'path'
-import { generateUniqueFilename } from './utils'
+import { generateUniqueFilename } from './utils.ts'
 
-import type { GenerateImageResponse } from './black-forest-labs-generator'
+import type { GenerateImageResponse } from './black-forest-labs-generator.ts'
 
 /**
  * Configuration options for Stability AI image generation

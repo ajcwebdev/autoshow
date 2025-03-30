@@ -2,9 +2,9 @@
 
 import { writeFile, mkdir } from 'fs/promises'
 import { dirname } from 'path'
-import { generateUniqueFilename } from './utils'
+import { generateUniqueFilename } from './utils.ts'
 
-import type { GenerateImageResponse } from './black-forest-labs-generator'
+import type { GenerateImageResponse } from './black-forest-labs-generator.ts'
 
 /**
  * Generate an image with DALL-E 3 using a given prompt and optional output path

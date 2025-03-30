@@ -1,10 +1,10 @@
 // src/utils/images/combined-generator.ts
 
-import { generateImageWithDallE } from './dalle-generator'
-import { generateImageWithStabilityAI } from './stability-ai-generator'
-import { generateImageWithBlackForestLabs } from './black-forest-labs-generator'
+import { generateImageWithDallE } from './dalle-generator.ts'
+import { generateImageWithStabilityAI } from './stability-ai-generator.ts'
+import { generateImageWithBlackForestLabs } from './black-forest-labs-generator.ts'
 
-import type { GenerateImageResponse } from './black-forest-labs-generator'
+import type { GenerateImageResponse } from './black-forest-labs-generator.ts'
 
 /**
  * The result of generating the same prompt with all three services

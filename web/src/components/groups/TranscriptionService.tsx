@@ -1,7 +1,7 @@
 // web/src/components/groups/TranscriptionService.tsx
 
 import React from 'react'
-import { TRANSCRIPTION_SERVICES_CONFIG } from '../../../../shared/constants'
+import { TRANSCRIPTION_SERVICES_CONFIG } from '../../../../shared/constants.ts'
 
 /**
  * The TranscriptionService component provides a dropdown for selecting

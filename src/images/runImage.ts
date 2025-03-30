@@ -1,9 +1,9 @@
 // src/utils/images/index.ts
 
-import { generateComparisonImages } from './combined-generator'
-import { generateImageWithDallE } from './dalle-generator'
-import { generateImageWithStabilityAI } from './stability-ai-generator'
-import { generateImageWithBlackForestLabs } from './black-forest-labs-generator'
+import { generateComparisonImages } from './combined-generator.ts'
+import { generateImageWithDallE } from './dalle-generator.ts'
+import { generateImageWithStabilityAI } from './stability-ai-generator.ts'
+import { generateImageWithBlackForestLabs } from './black-forest-labs-generator.ts'
 
 const command = process.argv[2]
 const prompt = process.argv[3] || 'A beautiful landscape with mountains and a lake at sunset'

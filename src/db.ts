@@ -7,10 +7,10 @@
  * Added new fields to the create call inside insertShowNote to store LLM and transcription details and costs.
  */
 
-import { l } from './utils/logging'
-import { env } from './utils/node-utils'
+import { l } from './utils/logging.ts'
+import { env } from './utils/node-utils.ts'
 
-import type { ShowNote } from './utils/types'
+import type { ShowNote } from './utils/types.ts'
 
 /**
  * Interface for database operations

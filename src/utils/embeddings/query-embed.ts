@@ -3,7 +3,7 @@
 import { PrismaClient } from '@prisma/client'
 import {
   env, fileURLToPath, readFileSync, join, dirname, isAbsolute, resolve
-} from '../node-utils'
+} from '../node-utils.ts'
 
 /**
  * Queries the previously created embeddings in Postgres to find the top matches

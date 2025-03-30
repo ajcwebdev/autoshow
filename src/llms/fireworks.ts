@@ -1,8 +1,8 @@
 // src/llms/fireworks.ts
 
-import { env } from '../utils/node-utils'
-import { err } from '../utils/logging'
-import { LLM_SERVICES_CONFIG } from '../../shared/constants'
+import { env } from '../utils/node-utils.ts'
+import { err } from '../utils/logging.ts'
+import { LLM_SERVICES_CONFIG } from '../../shared/constants.ts'
 
 /**
  * Type union of all `.modelId` fields for Fireworks models in {@link LLM_SERVICES_CONFIG}.

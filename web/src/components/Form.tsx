@@ -10,7 +10,7 @@ import type {
   AlertProps, ResultType, FormProps, ProcessTypeEnum
 } from "@/types"
 
-import { TRANSCRIPTION_SERVICES_CONFIG, LLM_SERVICES_CONFIG } from '../../../shared/constants'
+import { TRANSCRIPTION_SERVICES_CONFIG, LLM_SERVICES_CONFIG } from '../../../shared/constants.ts'
 
 /**
  * Displays a styled alert message based on a variant type.

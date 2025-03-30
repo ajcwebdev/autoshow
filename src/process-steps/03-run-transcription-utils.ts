@@ -1,10 +1,10 @@
 // src/process-steps/03-run-transcription-utils.ts
 
-import { l, err } from '../utils/logging'
-import { execPromise } from '../utils/node-utils'
-import { TRANSCRIPTION_SERVICES_CONFIG } from '../../shared/constants'
+import { l, err } from '../utils/logging.ts'
+import { execPromise } from '../utils/node-utils.ts'
+import { TRANSCRIPTION_SERVICES_CONFIG } from '../../shared/constants.ts'
 
-import type { ProcessingOptions } from '../utils/types'
+import type { ProcessingOptions } from '../utils/types.ts'
 
 /**
  * Retries a given transcription call with an exponential backoff of 7 attempts (1s initial delay).

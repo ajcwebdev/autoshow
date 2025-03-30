@@ -2,20 +2,20 @@
 
 import Fastify from 'fastify'
 import cors from '@fastify/cors'
-import { dbService } from './db'
-import { processVideo } from './process-commands/video'
-import { processFile } from './process-commands/file'
-import { estimateTranscriptCost } from './process-steps/03-run-transcription-utils'
-import { estimateLLMCost, runLLMFromPromptFile } from './process-steps/05-run-llm-utils'
-import { createEmbeds } from './utils/embeddings/create-embed'
-import { queryEmbeddings } from './utils/embeddings/query-embed'
-import { submitShowNoteDoc } from './utils/dash-documents'
-import { l, err } from './utils/logging'
-import { env, join, writeFile } from './utils/node-utils'
-import { ENV_VARS_MAP, TRANSCRIPTION_SERVICES_CONFIG, LLM_SERVICES_CONFIG } from '../shared/constants'
+import { dbService } from './db.ts'
+import { processVideo } from './process-commands/video.ts'
+import { processFile } from './process-commands/file.ts'
+import { estimateTranscriptCost } from './process-steps/03-run-transcription-utils.ts'
+import { estimateLLMCost, runLLMFromPromptFile } from './process-steps/05-run-llm-utils.ts'
+import { createEmbeds } from './utils/embeddings/create-embed.ts'
+import { queryEmbeddings } from './utils/embeddings/query-embed.ts'
+import { submitShowNoteDoc } from './utils/dash-documents.ts'
+import { l, err } from './utils/logging.ts'
+import { env, join, writeFile } from './utils/node-utils.ts'
+import { ENV_VARS_MAP, TRANSCRIPTION_SERVICES_CONFIG, LLM_SERVICES_CONFIG } from '../shared/constants.ts'
 
 import type { FastifyRequest, FastifyReply } from 'fastify'
-import type { ProcessingOptions } from './utils/types'
+import type { ProcessingOptions } from './utils/types.ts'
 
 /**
  * Validates the process type from the request body to ensure that it is a recognized

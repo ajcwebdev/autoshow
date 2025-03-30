@@ -1,6 +1,6 @@
 // web/src/types.ts
 
-import { LLM_SERVICES_CONFIG } from '../../shared/constants'
+import { LLM_SERVICES_CONFIG } from '../../shared/constants.ts'
 
 export interface SiteConfig {
 	author: string;

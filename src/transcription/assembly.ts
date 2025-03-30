@@ -1,11 +1,11 @@
 // src/transcription/assembly.ts
 
-import { formatAssemblyTranscript } from './assembly-utils'
-import { l, err } from '../utils/logging'
-import { readFile, env } from '../utils/node-utils'
-import { TRANSCRIPTION_SERVICES_CONFIG } from '../../shared/constants'
+import { formatAssemblyTranscript } from './assembly-utils.ts'
+import { l, err } from '../utils/logging.ts'
+import { readFile, env } from '../utils/node-utils.ts'
+import { TRANSCRIPTION_SERVICES_CONFIG } from '../../shared/constants.ts'
 
-import type { ProcessingOptions } from '../utils/types'
+import type { ProcessingOptions } from '../utils/types.ts'
 
 const BASE_URL = 'https://api.assemblyai.com/v2'
 

@@ -7,7 +7,7 @@
  */
 
 import Dash from 'dash'
-import { err } from '../utils/logging'
+import { err } from '../utils/logging.ts'
 
 /**
  * Submits a "showNote" document to the given contractId and identityId, using the

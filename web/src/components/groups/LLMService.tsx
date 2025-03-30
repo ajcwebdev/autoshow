@@ -1,7 +1,7 @@
 // web/src/components/groups/LLMService.tsx
 
 import React from 'react'
-import { LLM_SERVICES_CONFIG } from '../../../../shared/constants'
+import { LLM_SERVICES_CONFIG } from '../../../../shared/constants.ts'
 
 // Define the LLMServiceKey type
 type LLMServiceKey = keyof typeof LLM_SERVICES_CONFIG;

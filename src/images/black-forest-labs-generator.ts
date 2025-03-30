@@ -2,7 +2,7 @@
 
 import { writeFile, mkdir } from 'fs/promises'
 import { dirname } from 'path'
-import { generateUniqueFilename, sleep } from './utils'
+import { generateUniqueFilename, sleep } from './utils.ts'
 
 /**
  * Successful image generation result

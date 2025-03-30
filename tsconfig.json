@@ -55,7 +55,9 @@
     },
 
     // **Experimental Features**
-    "isolatedModules": true                       // Ensure each file can be safely transpiled without relying on other imports
+    "isolatedModules": true,                      // Ensure each file can be safely transpiled without relying on other imports
+    "allowImportingTsExtensions": true,           // Allow importing TypeScript files with '.ts' extension
+    "noEmit": true,                               // Do not emit outputs
   },
   "include": [
     "src/**/*",                                   // Include all files in 'src' directory

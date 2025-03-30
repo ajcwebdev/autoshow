@@ -1,11 +1,11 @@
 // src/transcription/deepgram.ts
 
-import { formatDeepgramTranscript } from './deepgram-utils'
-import { l, err } from '../utils/logging'
-import { readFile, env } from '../utils/node-utils'
-import { TRANSCRIPTION_SERVICES_CONFIG } from '../../shared/constants'
+import { formatDeepgramTranscript } from './deepgram-utils.ts'
+import { l, err } from '../utils/logging.ts'
+import { readFile, env } from '../utils/node-utils.ts'
+import { TRANSCRIPTION_SERVICES_CONFIG } from '../../shared/constants.ts'
 
-import type { ProcessingOptions } from '../utils/types'
+import type { ProcessingOptions } from '../utils/types.ts'
 
 /**
  * Main function to handle transcription using Deepgram API.

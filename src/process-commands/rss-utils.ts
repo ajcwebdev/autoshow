@@ -1,8 +1,8 @@
 // src/process-commands/rss-utils.ts
 
-import { l, err } from '../utils/logging'
+import { l, err } from '../utils/logging.ts'
 
-import type { ProcessingOptions, ShowNoteMetadata, HandlerFunction } from '../utils/types'
+import type { ProcessingOptions, ShowNoteMetadata, HandlerFunction } from '../utils/types.ts'
 
 /**
  * Validates RSS flags (e.g., --last, --skip, --order, --date, --lastDays) without requiring feed data.

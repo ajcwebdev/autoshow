@@ -5,13 +5,13 @@
  * Now returns an object that includes both the transcript string and its calculated cost.
  */
 
-import { callWhisper } from '../transcription/whisper'
-import { callDeepgram } from '../transcription/deepgram'
-import { callAssembly } from '../transcription/assembly'
-import { retryTranscriptionCall, logTranscriptionCost } from './03-run-transcription-utils'
-import { l, err, logInitialFunctionCall } from '../utils/logging'
+import { callWhisper } from '../transcription/whisper.ts'
+import { callDeepgram } from '../transcription/deepgram.ts'
+import { callAssembly } from '../transcription/assembly.ts'
+import { retryTranscriptionCall, logTranscriptionCost } from './03-run-transcription-utils.ts'
+import { l, err, logInitialFunctionCall } from '../utils/logging.ts'
 
-import type { ProcessingOptions, TranscriptionResult } from '../utils/types'
+import type { ProcessingOptions, TranscriptionResult } from '../utils/types.ts'
 
 export async function runTranscription(
   options: ProcessingOptions,

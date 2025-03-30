@@ -3,7 +3,7 @@
 import { PrismaClient } from '@prisma/client'
 import {
   env, fileURLToPath, readdir, readFile, join, dirname, isAbsolute, resolve, relative, writeFileSync
-} from '../node-utils'
+} from '../node-utils.ts'
 
 /**
  * Recursively finds all .md files in the specified directory and any nested subdirectories.

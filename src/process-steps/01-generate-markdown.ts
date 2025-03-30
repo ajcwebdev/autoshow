@@ -1,10 +1,10 @@
 // src/process-steps/01-generate-markdown.ts
 
-import { sanitizeTitle, buildFrontMatter } from './01-generate-markdown-utils'
-import { l, err, logInitialFunctionCall } from '../utils/logging'
-import { execFilePromise, basename, extname } from '../utils/node-utils'
+import { sanitizeTitle, buildFrontMatter } from './01-generate-markdown-utils.ts'
+import { l, err, logInitialFunctionCall } from '../utils/logging.ts'
+import { execFilePromise, basename, extname } from '../utils/node-utils.ts'
 
-import type { ProcessingOptions, ShowNoteMetadata } from '../utils/types'
+import type { ProcessingOptions, ShowNoteMetadata } from '../utils/types.ts'
 
 /**
  * Generates markdown content with front matter based on the provided options and input.

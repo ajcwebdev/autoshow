@@ -17,25 +17,25 @@
  * @returns {Promise<string>} - The show notes result from the LLM
  */
 
-import { dbService } from '../db'
-import { retryLLMCall, logLLMCost } from './05-run-llm-utils'
-import { l, err, logInitialFunctionCall } from '../utils/logging'
-import { writeFile, env } from '../utils/node-utils'
-import { LLM_SERVICES_CONFIG } from '../../shared/constants'
-import { callChatGPT } from '../llms/chatgpt'
-import { callClaude } from '../llms/claude'
-import { callGemini } from '../llms/gemini'
-import { callDeepSeek } from '../llms/deepseek'
-import { callFireworks } from '../llms/fireworks'
-import { callTogether } from '../llms/together'
+import { dbService } from '../db.ts'
+import { retryLLMCall, logLLMCost } from './05-run-llm-utils.ts'
+import { l, err, logInitialFunctionCall } from '../utils/logging.ts'
+import { writeFile, env } from '../utils/node-utils.ts'
+import { LLM_SERVICES_CONFIG } from '../../shared/constants.ts'
+import { callChatGPT } from '../llms/chatgpt.ts'
+import { callClaude } from '../llms/claude.ts'
+import { callGemini } from '../llms/gemini.ts'
+import { callDeepSeek } from '../llms/deepseek.ts'
+import { callFireworks } from '../llms/fireworks.ts'
+import { callTogether } from '../llms/together.ts'
 
-import type { ProcessingOptions, ShowNoteMetadata, LLMResult } from '../utils/types'
-import type { ChatGPTModelValue } from '../llms/chatgpt'
-import type { ClaudeModelValue } from '../llms/claude'
-import type { GeminiModelValue } from '../llms/gemini'
-import type { DeepSeekModelValue } from '../llms/deepseek'
-import type { FireworksModelValue } from '../llms/fireworks'
-import type { TogetherModelValue } from '../llms/together'
+import type { ProcessingOptions, ShowNoteMetadata, LLMResult } from '../utils/types.ts'
+import type { ChatGPTModelValue } from '../llms/chatgpt.ts'
+import type { ClaudeModelValue } from '../llms/claude.ts'
+import type { GeminiModelValue } from '../llms/gemini.ts'
+import type { DeepSeekModelValue } from '../llms/deepseek.ts'
+import type { FireworksModelValue } from '../llms/fireworks.ts'
+import type { TogetherModelValue } from '../llms/together.ts'
 
 export async function runLLM(
   options: ProcessingOptions,

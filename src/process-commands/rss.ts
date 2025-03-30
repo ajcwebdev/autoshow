@@ -1,17 +1,17 @@
 // src/process-commands/rss.ts
 
-import { logRSSProcessingStatus, filterRSSItems, retryRSSFetch } from './rss-utils'
-import { generateMarkdown } from '../process-steps/01-generate-markdown'
-import { saveInfo } from '../process-steps/01-generate-markdown-utils'
-import { downloadAudio } from '../process-steps/02-download-audio'
-import { saveAudio } from '../process-steps/02-download-audio-utils'
-import { runTranscription } from '../process-steps/03-run-transcription'
-import { selectPrompts } from '../process-steps/04-select-prompt'
-import { runLLM } from '../process-steps/05-run-llm'
-import { l, err, logSeparator, logInitialFunctionCall } from '../utils/logging'
-import { parser } from '../utils/node-utils'
+import { logRSSProcessingStatus, filterRSSItems, retryRSSFetch } from './rss-utils.ts'
+import { generateMarkdown } from '../process-steps/01-generate-markdown.ts'
+import { saveInfo } from '../process-steps/01-generate-markdown-utils.ts'
+import { downloadAudio } from '../process-steps/02-download-audio.ts'
+import { saveAudio } from '../process-steps/02-download-audio-utils.ts'
+import { runTranscription } from '../process-steps/03-run-transcription.ts'
+import { selectPrompts } from '../process-steps/04-select-prompt.ts'
+import { runLLM } from '../process-steps/05-run-llm.ts'
+import { l, err, logSeparator, logInitialFunctionCall } from '../utils/logging.ts'
+import { parser } from '../utils/node-utils.ts'
 
-import type { ProcessingOptions, ShowNoteMetadata } from '../utils/types'
+import type { ProcessingOptions, ShowNoteMetadata } from '../utils/types.ts'
 
 /**
  * Fetches and parses an RSS feed (URL or local file path), then applies filtering via {@link filterRSSItems}.

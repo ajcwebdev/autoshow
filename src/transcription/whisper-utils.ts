@@ -1,9 +1,9 @@
 // src/transcription/whisper-utils.ts
 
-import { l, err } from '../utils/logging'
-import { execPromise, existsSync } from '../utils/node-utils'
+import { l, err } from '../utils/logging.ts'
+import { execPromise, existsSync } from '../utils/node-utils.ts'
 
-import type { WhisperOutput } from '../utils/types'
+import type { WhisperOutput } from '../utils/types.ts'
 
 export function formatTimestamp(timestamp: string) {
   const [timeWithoutMs] = timestamp.split(',') as [string]

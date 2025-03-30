@@ -15,9 +15,6 @@ RUN wget https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp \
     -O /usr/local/bin/yt-dlp \
  && chmod a+rx /usr/local/bin/yt-dlp
 
-# 4. Install tsx globally
-RUN npm install -g tsx
-
 # 5. Clone whisper.cpp
 RUN git clone --depth=1 https://github.com/ggerganov/whisper.cpp.git
 

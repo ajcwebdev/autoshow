@@ -9,12 +9,12 @@
  */
 
 import chalk from 'chalk'
-import { runLLM } from './05-run-llm'
-import { l, err } from '../utils/logging'
-import { readFile } from '../utils/node-utils'
-import { LLM_SERVICES_CONFIG } from '../../shared/constants'
+import { runLLM } from './05-run-llm.ts'
+import { l, err } from '../utils/logging.ts'
+import { readFile } from '../utils/node-utils.ts'
+import { LLM_SERVICES_CONFIG } from '../../shared/constants.ts'
 
-import type { ProcessingOptions, ShowNoteMetadata } from '../utils/types'
+import type { ProcessingOptions, ShowNoteMetadata } from '../utils/types.ts'
 
 /**
  * Returns a formatted cost string in cents or dollars based on magnitude.

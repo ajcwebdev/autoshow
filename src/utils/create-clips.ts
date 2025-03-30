@@ -10,7 +10,7 @@
  *    tsx src/utils/create-clips.ts content/2021-05-10-thoughts-on-lambda-school-layoffs-chatgpt-shownotes.md content/2021-05-10-thoughts-on-lambda-school-layoffs.wav
  */
 
-import { exec, readFileSync, existsSync, mkdirSync, basename, extname } from '../utils/node-utils'
+import { exec, readFileSync, existsSync, mkdirSync, basename, extname } from '../utils/node-utils.ts'
 
 // Check for correct number of arguments
 if (process.argv.length !== 4) {

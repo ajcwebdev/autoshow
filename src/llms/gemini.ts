@@ -1,9 +1,9 @@
 // src/llms/gemini.ts
 
 import { GoogleGenerativeAI } from '@google/generative-ai'
-import { err } from '../utils/logging'
-import { env } from '../utils/node-utils'
-import { LLM_SERVICES_CONFIG } from '../../shared/constants'
+import { err } from '../utils/logging.ts'
+import { env } from '../utils/node-utils.ts'
+import { LLM_SERVICES_CONFIG } from '../../shared/constants.ts'
 
 /**
  * Type union of all possible `.modelId` fields for Gemini models in {@link LLM_SERVICES_CONFIG}.

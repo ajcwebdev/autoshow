@@ -5,7 +5,7 @@ import { l, err } from '../utils/logging.ts'
 import { readFile, env } from '../utils/node-utils.ts'
 import { TRANSCRIPTION_SERVICES_CONFIG } from '../../shared/constants.ts'
 
-import type { ProcessingOptions } from '../utils/types.ts'
+import type { ProcessingOptions } from '../../shared/types.ts'
 
 const BASE_URL = 'https://api.assemblyai.com/v2'
 

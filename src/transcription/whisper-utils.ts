@@ -3,7 +3,7 @@
 import { l, err } from '../utils/logging.ts'
 import { execPromise, existsSync } from '../utils/node-utils.ts'
 
-import type { WhisperOutput } from '../utils/types.ts'
+import type { WhisperOutput } from '../../shared/types.ts'
 
 export function formatTimestamp(timestamp: string) {
   const [timeWithoutMs] = timestamp.split(',') as [string]

@@ -15,7 +15,7 @@ import { l, err, logSeparator } from './utils/logging.ts'
 import { argv, exit, fileURLToPath } from './utils/node-utils.ts'
 import { ENV_VARS_MAP } from '../shared/constants.ts'
 
-import type { ProcessingOptions } from './utils/types.ts'
+import type { ProcessingOptions } from '../shared/types.ts'
 
 /**
  * Defines the command-line interface options and descriptions.

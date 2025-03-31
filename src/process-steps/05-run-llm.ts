@@ -29,7 +29,7 @@ import { callDeepSeek } from '../llms/deepseek.ts'
 import { callFireworks } from '../llms/fireworks.ts'
 import { callTogether } from '../llms/together.ts'
 
-import type { ProcessingOptions, ShowNoteMetadata, LLMResult } from '../utils/types.ts'
+import type { ProcessingOptions, ShowNoteMetadata, LLMResult } from '../../shared/types.ts'
 import type { ChatGPTModelValue } from '../llms/chatgpt.ts'
 import type { ClaudeModelValue } from '../llms/claude.ts'
 import type { GeminiModelValue } from '../llms/gemini.ts'

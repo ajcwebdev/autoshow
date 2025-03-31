@@ -3,16 +3,10 @@
 
 import PageLayout from "@/layouts/Base.astro"
 import App from "@/components/App"
-import Instructions from "@/components/Instructions"
 ---
 
 <PageLayout meta={{ title: "Home" }}>
   <section class="p-6 max-w-6xl mx-auto">
-    <h1 class="text-4xl font-bold text-emerald-400 mb-8">Generate Show Notes</h1>
-    <p>This app uses <a href="https://github.com/ajcwebdev/autoshow" target="_blank">AutoShow</a> and Astro to generate show notes based on video and audio content of any kind.</p>
-    <Instructions />
-    <ul class="show-notes-list">
-      <App client:only="react" />
-    </ul>
+    <App client:only="react" />
   </section>
 </PageLayout>

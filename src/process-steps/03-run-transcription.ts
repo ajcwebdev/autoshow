@@ -11,7 +11,7 @@ import { callAssembly } from '../transcription/assembly.ts'
 import { retryTranscriptionCall, logTranscriptionCost } from './03-run-transcription-utils.ts'
 import { l, err, logInitialFunctionCall } from '../utils/logging.ts'
 
-import type { ProcessingOptions, TranscriptionResult } from '../utils/types.ts'
+import type { ProcessingOptions, TranscriptionResult } from '../../shared/types.ts'
 
 export async function runTranscription(
   options: ProcessingOptions,

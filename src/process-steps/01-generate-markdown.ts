@@ -4,7 +4,7 @@ import { sanitizeTitle, buildFrontMatter } from './01-generate-markdown-utils.ts
 import { l, err, logInitialFunctionCall } from '../utils/logging.ts'
 import { execFilePromise, basename, extname } from '../utils/node-utils.ts'
 
-import type { ProcessingOptions, ShowNoteMetadata } from '../utils/types.ts'
+import type { ProcessingOptions, ShowNoteMetadata } from '../../shared/types.ts'
 
 /**
  * Generates markdown content with front matter based on the provided options and input.

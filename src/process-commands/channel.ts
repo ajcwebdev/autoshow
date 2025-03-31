@@ -6,7 +6,7 @@ import { saveInfo } from '../process-steps/01-generate-markdown-utils.ts'
 import { l, err, logSeparator, logInitialFunctionCall } from '../utils/logging.ts'
 import { execFilePromise } from '../utils/node-utils.ts'
 
-import type { ProcessingOptions } from '../utils/types.ts'
+import type { ProcessingOptions } from '../../shared/types.ts'
 
 /**
  * Fetches, sorts, and selects which videos to process based on provided options, 

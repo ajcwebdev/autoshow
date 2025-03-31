@@ -5,7 +5,7 @@ import { executeWithRetry } from './02-download-audio-utils.ts'
 import { l, err, logInitialFunctionCall } from '../utils/logging.ts'
 import { execPromise, readFile, access, rename } from '../utils/node-utils.ts'
 
-import type { ProcessingOptions } from '../utils/types.ts'
+import type { ProcessingOptions } from '../../shared/types.ts'
 
 /**
  * Downloads or processes audio content from various sources and converts it to a standardized WAV format.

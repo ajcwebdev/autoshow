@@ -3,7 +3,7 @@
 import { l, err } from '../utils/logging.ts'
 import { execFilePromise, writeFile } from '../utils/node-utils.ts'
 
-import type { VideoInfo, ShowNoteMetadata } from '../utils/types.ts'
+import type { VideoInfo, ShowNoteMetadata } from '../../shared/types.ts'
 
 /**
  * Saves metadata or feed information to a JSON file, consolidating the logic from the original

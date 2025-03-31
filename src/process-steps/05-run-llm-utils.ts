@@ -14,7 +14,7 @@ import { l, err } from '../utils/logging.ts'
 import { readFile } from '../utils/node-utils.ts'
 import { LLM_SERVICES_CONFIG } from '../../shared/constants.ts'
 
-import type { ProcessingOptions, ShowNoteMetadata } from '../utils/types.ts'
+import type { ProcessingOptions, ShowNoteMetadata } from '../../shared/types.ts'
 
 /**
  * Returns a formatted cost string in cents or dollars based on magnitude.

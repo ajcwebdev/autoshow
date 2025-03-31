@@ -1,12 +1,15 @@
-// src/utils/types.ts
+// shared/types.ts
+
+import { LLM_SERVICES_CONFIG } from './constants.ts'
 
 /**
  * Represents a single show note record in the database.
  * Matches the Prisma model and underlying database schema.
  *
  * Added fields to store LLM and transcription details, including service, model, costs, and final cost.
+ * Now includes the 'content' field from the frontend type.
  */
-export type ShowNote = {
+export interface ShowNote {
   id?: number
   showLink?: string
   channel?: string
@@ -28,8 +31,12 @@ export type ShowNote = {
   transcriptionModel?: string
   transcriptionCost?: number
   finalCost?: number
+  content?: string
 }
 
+/**
+ * Metadata subset of show note fields.
+ */
 export type ShowNoteMetadata = {
   showLink?: string
   channel?: string
@@ -43,7 +50,7 @@ export type ShowNoteMetadata = {
 }
 
 /**
- * Processing options passed through command-line arguments.
+ * Processing options passed through command-line arguments or HTTP requests.
  */
 export type ProcessingOptions = {
   /** URL of the YouTube video to process. */
@@ -129,6 +136,9 @@ export type ProcessingOptions = {
   [key: string]: any
 }
 
+/**
+ * Whisper transcription output structure.
+ */
 export type WhisperOutput = {
   systeminfo: string
   model: {
@@ -228,3 +238,66 @@ export type LLMResult = {
  * Type for LLM function signatures, returning both content and usage details.
  */
 export type LLMFunction = (prompt: string, transcript: string, options: any) => Promise<LLMResult>
+
+/**
+ * Interface for general site configuration in Astro.
+ */
+export interface SiteConfig {
+	author: string
+	title: string
+	description: string
+	lang: string
+	ogLocale: string
+	date: {
+		locale: string | string[] | undefined
+		options: Intl.DateTimeFormatOptions
+	}
+	sortPostsByUpdatedDate: boolean
+}
+
+/**
+ * Interface for site-level metadata (Open Graph, SEO, etc.).
+ */
+export interface SiteMeta {
+	title: string
+	description?: string
+	ogImage?: string | undefined
+	articleDate?: string | undefined
+}
+
+/**
+ * Define types for the Alert component props.
+ */
+export interface AlertProps {
+  message: string
+  variant: string
+}
+
+/**
+ * Define the allowed LLM service keys from LLM_SERVICES_CONFIG.
+ */
+export type LlmServiceKey = keyof typeof LLM_SERVICES_CONFIG
+
+/**
+ * Define props for the Form component.
+ */
+export interface FormProps {
+  onNewShowNote: () => void
+}
+
+/**
+ * Define the result object returned by the server for show note operations.
+ */
+export interface ResultType {
+  transcript: string
+  frontMatter: string
+  prompt: string
+  llmOutput: string
+  content?: string
+  message?: string
+}
+
+/**
+ * Enum-like union for different process options on the frontend.
+ */
+export type ProcessTypeEnum = 'video' | 'file'

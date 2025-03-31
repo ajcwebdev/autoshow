@@ -5,6 +5,7 @@ import { ProcessType } from '@/components/groups/ProcessType'
 import { TranscriptionService } from '@/components/groups/TranscriptionService'
 import { LLMService } from '@/components/groups/LLMService'
 import { Prompts } from '@/components/groups/Prompts'
+import { Wallet } from '@/components/groups/Wallet'
 
 import type {
   AlertProps, ResultType, FormProps, ProcessTypeEnum
@@ -46,64 +47,22 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
-  /**
-   * Stores the user's wallet address.
-   * @type {[string, React.Dispatch<React.SetStateAction<string>>]}
-   */
   const [walletAddress, setWalletAddress] = useState<string>('')
-
-  /**
-   * Stores the user's mnemonic for the wallet.
-   * @type {[string, React.Dispatch<React.SetStateAction<string>>]}
-   */
   const [mnemonic, setMnemonic] = useState<string>('')
 
-  /**
-   * Stores the user's transcription API key.
-   * @type {[string, React.Dispatch<React.SetStateAction<string>>]}
-   */
   const [transcriptionApiKey, setTranscriptionApiKey] = useState<string>('')
-
-  /**
-   * Stores the selected transcription API key service.
-   * @type {[string, React.Dispatch<React.SetStateAction<string>>]}
-   */
   const [selectedTranscriptionApiKeyService, setSelectedTranscriptionApiKeyService] = useState<string>('')
 
-  /**
-   * Stores the user's LLM API key.
-   * @type {[string, React.Dispatch<React.SetStateAction<string>>]}
-   */
   const [llmApiKey, setLlmApiKey] = useState<string>('')
-
-  /**
-   * Stores the selected LLM API key service.
-   * @type {[string, React.Dispatch<React.SetStateAction<string>>]}
-   */
   const [selectedLlmApiKeyService, setSelectedLlmApiKeyService] = useState<string>('chatgpt')
 
-  /**
-   * Tracks the current step of the multi-step process.
-   */
   const [currentStep, setCurrentStep] = useState<number>(1)
-
-  /**
-   * Stores the cost estimates for each transcription service in step 1.
-   */
   const [transcriptionCosts, setTranscriptionCosts] = useState<Array<{ service: string, cost: any }>>([])
-
-  /**
-   * Stores the cost estimates for each LLM service in step 3.
-   */
   const [llmCosts, setLlmCosts] = useState<Array<{ service: string, cost: any }>>([])
-
-  /**
-   * After picking a transcription service, hold the final transcript content here.
-   */
   const [transcriptContent, setTranscriptContent] = useState<string>('')
 
   /**
-   * Step 1: Calculate cost for each transcription service (video or file)
+   * This function is triggered in Step 1 to get cost estimates from each transcription provider.
    */
   const handleCalculateTranscriptCost = async () => {
     setIsLoading(true)
@@ -111,7 +70,6 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
     setTranscriptionCosts([])
 
     try {
-      // We'll do one cost call for each known transcription service
       const costs: Array<{ service: string, cost: any }> = []
       for (const svc of Object.values(TRANSCRIPTION_SERVICES_CONFIG)) {
         if (!svc.value) continue
@@ -122,9 +80,6 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
           transcriptServices: svc.value
         }
 
-        // If we're in video mode, this code won't physically parse the video on the server,
-        // but shows how you'd request cost (if your backend supports it).
-        // For the existing code, transcriptCost expects a filePath, so we do a best-effort approach.
         if (processType === 'video') {
           body.filePath = url
         }
@@ -156,10 +111,7 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
   }
 
   /**
-   * Step 2: After user chooses a transcription service, run the actual transcription
-   * (either "video" or "file") and store the transcript. Then also allow selecting prompts.
-   *
-   * @param chosenService - The transcription service the user selected from the cost list
+   * This function is used in Step 2 to actually run transcription with the chosen service.
    */
   const handleRunTranscription = async (chosenService: string) => {
     setIsLoading(true)
@@ -180,12 +132,10 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
         requestBody.filePath = filePath
       }
 
-      // For whisper model
       if (chosenService.startsWith('whisper')) {
         requestBody.whisperModel = whisperModel
       }
 
-      // Map transcription API key
       if (selectedTranscriptionApiKeyService === 'assembly') {
         requestBody.assemblyApiKey = transcriptionApiKey
       } else if (selectedTranscriptionApiKeyService === 'deepgram') {
@@ -220,8 +170,7 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
   }
 
   /**
-   * Step 3: Combine transcript + selected prompts into a single file or string, then
-   * calculate LLM cost for each LLM service.
+   * In Step 3, we combine transcript + prompts and calculate LLM cost from each provider.
    */
   const handleCalculateLLMCosts = async () => {
     setIsLoading(true)
@@ -229,13 +178,9 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
     setLlmCosts([])
 
     try {
-      const combinedText = transcriptContent + '\n\nPrompts:\n' + selectedPrompts.join(', ')
-
-      console.log('[handleCalculateLLMCosts] About to estimate LLM cost for all providers, combinedText length:', combinedText.length)
-
       const combinedFilePath = 'combined-transcript-and-prompts.txt'
-
       const costs: Array<{ service: string, cost: any }> = []
+
       for (const svc of Object.values(LLM_SERVICES_CONFIG)) {
         if (!svc.value) continue
 
@@ -247,21 +192,17 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
           mnemonic,
         }
 
-        if (selectedLlmApiKeyService === 'chatgpt' && svc.value === 'chatgpt') {
-          body.openaiApiKey = llmApiKey
-        } else if (selectedLlmApiKeyService === 'claude' && svc.value === 'claude') {
-          body.anthropicApiKey = llmApiKey
-        } else if (selectedLlmApiKeyService === 'gemini' && svc.value === 'gemini') {
-          body.geminiApiKey = llmApiKey
-        } else if (selectedLlmApiKeyService === 'deepseek' && svc.value === 'deepseek') {
-          body.deepseekApiKey = llmApiKey
-        } else if (selectedLlmApiKeyService === 'together' && svc.value === 'together') {
-          body.togetherApiKey = llmApiKey
-        } else if (selectedLlmApiKeyService === 'fireworks' && svc.value === 'fireworks') {
-          body.fireworksApiKey = llmApiKey
+        // Cast svc.value to the LLM service's key type
+        const svcKey = svc.value as keyof typeof LLM_SERVICES_CONFIG
+        if (
+          selectedLlmApiKeyService === svc.value &&
+          'apiKeyPropName' in LLM_SERVICES_CONFIG[svcKey]
+        ) {
+          const serviceConfig = LLM_SERVICES_CONFIG[svcKey as keyof typeof LLM_SERVICES_CONFIG];
+          if ('apiKeyPropName' in serviceConfig) {
+            body[serviceConfig.apiKeyPropName] = llmApiKey;
+          }
         }
-
-        console.log('[handleCalculateLLMCosts] Attempting to fetch cost for service:', svc.value, 'with request body:', body)
 
         const response = await fetch('http://localhost:3000/api/process', {
           method: 'POST',
@@ -270,12 +211,10 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
         })
 
         if (!response.ok) {
-          console.log('[handleCalculateLLMCosts] failed response status for service', svc.value, ':', response.status, response.statusText)
           throw new Error(`Failed to fetch LLM cost for ${svc.value}`)
         }
 
         const data = await response.json()
-        console.log('[handleCalculateLLMCosts] got cost response for', svc.value, ':', data)
         costs.push({ service: svc.value, cost: data.cost })
       }
       setLlmCosts(costs)
@@ -291,10 +230,7 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
   }
 
   /**
-   * Final Step: Run the chosen LLM. We pass the combined transcript+prompts to the server
-   * using "runLLM" type, and then display the final result.
-   *
-   * @param chosenLlm - The LLM service the user selected
+   * Final Step: Run the chosen LLM with combined transcript and prompts, then display results.
    */
   const handleRunLLM = async (chosenLlm: string) => {
     setIsLoading(true)
@@ -302,10 +238,7 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
     setResult(null)
 
     try {
-      console.log('[handleRunLLM] Starting final LLM run with service:', chosenLlm)
-
       const combinedFilePath = 'combined-transcript-and-prompts.txt'
-
       const requestBody: any = {
         type: 'runLLM',
         filePath: combinedFilePath,
@@ -314,21 +247,14 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
         mnemonic,
       }
 
-      if (selectedLlmApiKeyService === 'chatgpt' && chosenLlm === 'chatgpt') {
-        requestBody.openaiApiKey = llmApiKey
-      } else if (selectedLlmApiKeyService === 'claude' && chosenLlm === 'claude') {
-        requestBody.anthropicApiKey = llmApiKey
-      } else if (selectedLlmApiKeyService === 'gemini' && chosenLlm === 'gemini') {
-        requestBody.geminiApiKey = llmApiKey
-      } else if (selectedLlmApiKeyService === 'deepseek' && chosenLlm === 'deepseek') {
-        requestBody.deepseekApiKey = llmApiKey
-      } else if (selectedLlmApiKeyService === 'together' && chosenLlm === 'together') {
-        requestBody.togetherApiKey = llmApiKey
-      } else if (selectedLlmApiKeyService === 'fireworks' && chosenLlm === 'fireworks') {
-        requestBody.fireworksApiKey = llmApiKey
+      const chosenKey = chosenLlm as keyof typeof LLM_SERVICES_CONFIG
+      if (selectedLlmApiKeyService === chosenLlm && 
+          'apiKeyPropName' in LLM_SERVICES_CONFIG[chosenKey]) {
+        const serviceConfig = LLM_SERVICES_CONFIG[chosenKey];
+        if ('apiKeyPropName' in serviceConfig && typeof serviceConfig.apiKeyPropName === 'string') {
+          requestBody[serviceConfig.apiKeyPropName] = llmApiKey;
+        }
       }
-
-      console.log('[handleRunLLM] Request body for final LLM run:', requestBody)
 
       const response = await fetch('http://localhost:3000/api/process', {
         method: 'POST',
@@ -337,12 +263,10 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
       })
 
       if (!response.ok) {
-        console.log('[handleRunLLM] failed response status for service', chosenLlm, ':', response.status, response.statusText)
         throw new Error(`HTTP error! status: ${response.status}`)
       }
 
       const data = await response.json()
-      console.log('[handleRunLLM] final LLM response:', data)
       setResult({
         llmOutput: data.message || 'LLM processing complete',
         frontMatter: '',
@@ -373,25 +297,13 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
 
   return (
     <>
-      {/* 
-        Step 1: Input for process type, URL/file path, and button to calculate transcription cost 
-      */}
       {currentStep === 1 && (
         <div>
-          <label htmlFor="walletAddress">Wallet Address</label>
-          <input
-            type="text"
-            id="walletAddress"
-            value={walletAddress}
-            onChange={(e) => setWalletAddress(e.target.value)}
-          />
-
-          <label htmlFor="mnemonic">Mnemonic</label>
-          <input
-            type="text"
-            id="mnemonic"
-            value={mnemonic}
-            onChange={(e) => setMnemonic(e.target.value)}
+          <Wallet
+            walletAddress={walletAddress}
+            setWalletAddress={setWalletAddress}
+            mnemonic={mnemonic}
+            setMnemonic={setMnemonic}
           />
 
           <ProcessType
@@ -412,9 +324,6 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
         </div>
       )}
 
-      {/* 
-        Step 2: Display transcription costs, pick a service, run actual transcription, and choose prompts 
-      */}
       {currentStep === 2 && (
         <div>
           <h3>Select a Transcription Service (Cost Estimates)</h3>
@@ -461,9 +370,6 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
         </div>
       )}
 
-      {/* 
-        Step 3: Calculate LLM cost using the transcript+prompts, show LLM options, and run final LLM 
-      */}
       {currentStep === 3 && (
         <div>
           <h3>Transcript Ready</h3>
@@ -497,9 +403,6 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
             </div>
           )}
 
-          {/* 
-            Show existing LLMService UI for setting model & API keys if needed 
-          */}
           {llmCosts.length > 0 && (
             <LLMService
               // @ts-ignore

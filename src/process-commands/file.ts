@@ -13,7 +13,7 @@ import { selectPrompts } from '../process-steps/04-select-prompt.ts'
 import { runLLM } from '../process-steps/05-run-llm.ts'
 import { l, err, logInitialFunctionCall } from '../utils/logging.ts'
 
-import type { ProcessingOptions, ShowNoteMetadata } from '../utils/types.ts'
+import type { ProcessingOptions, ShowNoteMetadata } from '../../shared/types.ts'
 
 /**
  * Processes a local audio or video file through a series of operations:

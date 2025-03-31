@@ -5,7 +5,7 @@ import { saveInfo } from '../process-steps/01-generate-markdown-utils.ts'
 import { l, err, logSeparator, logInitialFunctionCall } from '../utils/logging.ts'
 import { readFile } from '../utils/node-utils.ts'
 
-import type { ProcessingOptions } from '../utils/types.ts'
+import type { ProcessingOptions } from '../../shared/types.ts'
 
 /**
  * Processes multiple YouTube videos from a file containing URLs by:

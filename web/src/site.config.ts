@@ -1,6 +1,6 @@
 // web/src/site.config.ts
 
-import type { SiteConfig } from "@/types"
+import type { SiteConfig } from "../../shared/types.ts"
 
 export const siteConfig: SiteConfig = {
 	author: "Anthony Campolo",

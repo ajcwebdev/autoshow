@@ -10,7 +10,7 @@
 import { l } from './utils/logging.ts'
 import { env } from './utils/node-utils.ts'
 
-import type { ShowNote } from './utils/types.ts'
+import type { ShowNote } from '../shared/types.ts'
 
 /**
  * Interface for database operations

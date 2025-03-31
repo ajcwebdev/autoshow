@@ -2,7 +2,7 @@
 
 import { l, err } from '../utils/logging.ts'
 
-import type { ProcessingOptions, ShowNoteMetadata, HandlerFunction } from '../utils/types.ts'
+import type { ProcessingOptions, ShowNoteMetadata, HandlerFunction } from '../../shared/types.ts'
 
 /**
  * Validates RSS flags (e.g., --last, --skip, --order, --date, --lastDays) without requiring feed data.

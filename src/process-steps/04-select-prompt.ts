@@ -5,7 +5,7 @@ import { err, l, logInitialFunctionCall } from '../utils/logging.ts'
 import { readFile } from '../utils/node-utils.ts'
 import { PROMPT_CHOICES } from '../../shared/constants.ts'
 
-import type { ProcessingOptions } from '../utils/types.ts'
+import type { ProcessingOptions } from '../../shared/types.ts'
 
 const validPromptValues = new Set(PROMPT_CHOICES.map(choice => choice.value))
 

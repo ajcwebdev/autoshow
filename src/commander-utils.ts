@@ -16,7 +16,7 @@ import { err } from './utils/logging.ts'
 import { exit } from './utils/node-utils.ts'
 import { LLM_SERVICES_CONFIG } from '../shared/constants.ts'
 
-import type { ProcessingOptions, HandlerFunction } from './utils/types.ts'
+import type { ProcessingOptions, HandlerFunction } from '../shared/types.ts'
 
 /**
  * Maps action names to their corresponding handler function.

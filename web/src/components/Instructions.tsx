@@ -5,6 +5,8 @@ import React from 'react'
 const Instructions: React.FC = () => {
   return (
     <>
+    <h1 className="text-4xl font-bold text-emerald-400 mb-8">Generate Show Notes</h1>
+    <p>This app uses <a href="https://github.com/ajcwebdev/autoshow" target="_blank">AutoShow</a> and Astro to generate show notes based on video and audio content of any kind.</p>
     <h2 className="text-3xl font-bold mb-6">Instructions</h2>
     <p>
       1. Choose the type of content you want to use 

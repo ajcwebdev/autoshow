@@ -147,6 +147,7 @@ export const TRANSCRIPTION_SERVICES_CONFIG = {
  * @property {string} serviceName - The service's display name
  * @property {string|null} value - The internal value or key for the service
  * @property {string} label - The user-facing label for the service
+ * @property {string} [apiKeyPropName] - The request body property name for the API key
  * @property {Array<LLMModel>} models - The models available under this service
  */
 export const LLM_SERVICES_CONFIG = {
@@ -160,6 +161,7 @@ export const LLM_SERVICES_CONFIG = {
     serviceName: 'OpenAI ChatGPT',
     value: 'chatgpt',
     label: 'ChatGPT',
+    apiKeyPropName: 'openaiApiKey',
     models: [
       { modelName: 'GPT 4.5 PREVIEW', modelId: 'gpt-4.5-preview', inputCostPer1M: 75.00, outputCostPer1M: 150.00, inputCostPer1MCents: 7500, outputCostPer1MCents: 15000 },
       { modelName: 'GPT 4o', modelId: 'gpt-4o', inputCostPer1M: 2.50, outputCostPer1M: 10.00, inputCostPer1MCents: 250, outputCostPer1MCents: 1000 },
@@ -171,6 +173,7 @@ export const LLM_SERVICES_CONFIG = {
     serviceName: 'Anthropic Claude',
     value: 'claude',
     label: 'Claude',
+    apiKeyPropName: 'anthropicApiKey',
     models: [
       { modelName: 'Claude 3.7 Sonnet', modelId: 'claude-3-7-sonnet-latest', inputCostPer1M: 3.00, outputCostPer1M: 15.00, inputCostPer1MCents: 300, outputCostPer1MCents: 1500 },
       { modelName: 'Claude 3.5 Haiku', modelId: 'claude-3-5-haiku-latest', inputCostPer1M: 0.80, outputCostPer1M: 4.00, inputCostPer1MCents: 80, outputCostPer1MCents: 400 },
@@ -181,6 +184,7 @@ export const LLM_SERVICES_CONFIG = {
     serviceName: 'Google Gemini',
     value: 'gemini',
     label: 'Gemini',
+    apiKeyPropName: 'geminiApiKey',
     models: [
       { modelName: 'Gemini 1.5 Pro', modelId: 'gemini-1.5-pro', inputCostPer1M: 2.50, outputCostPer1M: 10.00, inputCostPer1MCents: 250, outputCostPer1MCents: 1000 },
       { modelName: 'Gemini 1.5 Flash-8B', modelId: 'gemini-1.5-flash-8b', inputCostPer1M: 0.075, outputCostPer1M: 0.30, inputCostPer1MCents: 7.5, outputCostPer1MCents: 30 },
@@ -193,6 +197,7 @@ export const LLM_SERVICES_CONFIG = {
     serviceName: 'DeepSeek',
     value: 'deepseek',
     label: 'Deepseek',
+    apiKeyPropName: 'deepseekApiKey',
     models: [
       { modelName: 'DeepSeek Chat', modelId: 'deepseek-chat', inputCostPer1M: 0.07, outputCostPer1M: 1.10, inputCostPer1MCents: 7, outputCostPer1MCents: 110 },
       { modelName: 'DeepSeek Reasoner', modelId: 'deepseek-reasoner', inputCostPer1M: 0.14, outputCostPer1M: 2.19, inputCostPer1MCents: 14, outputCostPer1MCents: 219 },
@@ -202,6 +207,7 @@ export const LLM_SERVICES_CONFIG = {
     serviceName: 'Fireworks AI',
     value: 'fireworks',
     label: 'Fireworks',
+    apiKeyPropName: 'fireworksApiKey',
     models: [
       { modelName: 'LLAMA 3 1 405B', modelId: 'accounts/fireworks/models/llama-v3p1-405b-instruct', inputCostPer1M: 3.00, outputCostPer1M: 3.00, inputCostPer1MCents: 300, outputCostPer1MCents: 300 },
       { modelName: 'LLAMA 3 1 70B', modelId: 'accounts/fireworks/models/llama-v3p1-70b-instruct', inputCostPer1M: 0.90, outputCostPer1M: 0.90, inputCostPer1MCents: 90, outputCostPer1MCents: 90 },
@@ -214,6 +220,7 @@ export const LLM_SERVICES_CONFIG = {
     serviceName: 'Together AI',
     value: 'together',
     label: 'Together AI',
+    apiKeyPropName: 'togetherApiKey',
     models: [
       { modelName: 'LLAMA 3 2 3B', modelId: 'meta-llama/Llama-3.2-3B-Instruct-Turbo', inputCostPer1M: 0.06, outputCostPer1M: 0.06, inputCostPer1MCents: 6, outputCostPer1MCents: 6 },
       { modelName: 'LLAMA 3 1 405B', modelId: 'meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo', inputCostPer1M: 3.50, outputCostPer1M: 3.50, inputCostPer1MCents: 350, outputCostPer1MCents: 350 },

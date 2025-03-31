@@ -11,7 +11,7 @@ import { runLLM } from '../process-steps/05-run-llm.ts'
 import { l, err, logSeparator, logInitialFunctionCall } from '../utils/logging.ts'
 import { parser } from '../utils/node-utils.ts'
 
-import type { ProcessingOptions, ShowNoteMetadata } from '../utils/types.ts'
+import type { ProcessingOptions, ShowNoteMetadata } from '../../shared/types.ts'
 
 /**
  * Fetches and parses an RSS feed (URL or local file path), then applies filtering via {@link filterRSSItems}.

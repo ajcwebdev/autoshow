@@ -45,14 +45,14 @@ curl --json '{
 ```bash
 curl --json '{
   "type": "file",
-  "filePath": "content/audio.mp3"
+  "filePath": "content/examples/audio.mp3"
 }' http://localhost:3000/api/process
 ```
 
 ```bash
 curl --json '{
   "type": "file",
-  "filePath": "content/audio.mp3",
+  "filePath": "content/examples/audio.mp3",
   "whisperModel": "tiny",
   "llm": "deepseek"
 }' http://localhost:3000/api/process
@@ -61,7 +61,7 @@ curl --json '{
 ```bash
 curl --json '{
   "type": "file",
-  "filePath": "content/audio.mp3",
+  "filePath": "content/examples/audio.mp3",
   "prompts": ["titles"],
   "whisperModel": "tiny",
   "llm": "deepseek"

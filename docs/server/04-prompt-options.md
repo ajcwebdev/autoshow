@@ -258,7 +258,7 @@ You can also provide a fully custom prompt via a file or raw text, along with yo
 ```bash
 curl --json '{
   "type": "audio",
-  "file": "content/audio.mp3",
+  "file": "content/examples/audio.mp3",
   "prompts": [],
   "customPrompt": "content/examples/custom-prompt.md"
 }' http://localhost:3000/api/process

@@ -35,7 +35,7 @@ const Instructions: React.FC = () => {
           </tr>
           <tr className="border-b border-gray-700 hover:bg-gray-800">
             <td className="p-4" style={{ width: '5rem', whiteSpace: 'nowrap' }}>File</td>
-            <td className="p-4 break-words">content/audio.mp3</td>
+            <td className="p-4 break-words">content/examples/audio.mp3</td>
             <td className="p-4">Audio file attachment for the show notes</td>
           </tr>
         </tbody>

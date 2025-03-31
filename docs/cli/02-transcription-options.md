@@ -11,8 +11,8 @@
 ## Get Transcription Cost
 
 ```bash
-npm run as -- --transcriptCost "content/audio.mp3" --deepgram
-npm run as -- --transcriptCost "content/audio.mp3" --assembly
+npm run as -- --transcriptCost "content/examples/audio.mp3" --deepgram
+npm run as -- --transcriptCost "content/examples/audio.mp3" --assembly
 ```
 
 ## Transcription Services

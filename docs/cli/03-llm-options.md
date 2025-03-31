@@ -31,7 +31,7 @@ Create a `.env` file (or set them in your environment) for any service(s) you pl
 You can run only the LLM step (for example, after doing transcription separately):
 
 ```bash
-npm run as -- --runLLM "content/audio-prompt.md" --chatgpt
+npm run as -- --runLLM "content/examples/audio-prompt.md" --chatgpt
 ```
 
 ## Get LLM Cost
@@ -39,9 +39,9 @@ npm run as -- --runLLM "content/audio-prompt.md" --chatgpt
 If you just want to calculate the estimated cost of input/output tokens for a given provider:
 
 ```bash
-npm run as -- --llmCost "content/audio-prompt.md" --chatgpt
-npm run as -- --llmCost "content/audio-prompt.md" --claude
-npm run as -- --llmCost "content/audio-prompt.md" --gemini
+npm run as -- --llmCost "content/examples/audio-prompt.md" --chatgpt
+npm run as -- --llmCost "content/examples/audio-prompt.md" --claude
+npm run as -- --llmCost "content/examples/audio-prompt.md" --gemini
 ```
 
 No LLM model will be called, and no LLM-based output file is generated.

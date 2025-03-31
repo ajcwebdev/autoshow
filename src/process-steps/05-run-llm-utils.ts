@@ -316,10 +316,13 @@ export async function estimateLLMCost(
   l.dim(`\nEstimating LLM cost for '${llmService}' with file: ${filePath}`)
 
   try {
+    l.dim('[estimateLLMCost] reading file for cost estimate...')
     const content = await readFile(filePath, 'utf8')
-    const tokenCount = approximateTokens(content)
+    l.dim('[estimateLLMCost] file content length:', content.length)
 
-    // Default fallback model selection
+    const tokenCount = approximateTokens(content)
+    l.dim('[estimateLLMCost] approximate token count:', tokenCount)
+
     let userModel = typeof options[llmService] === 'string'
       ? options[llmService] as string
       : undefined
@@ -343,6 +346,8 @@ export async function estimateLLMCost(
       userModel = 'meta-llama/Llama-3.2-3B-Instruct-Turbo'
     }
 
+    l.dim('[estimateLLMCost] determined userModel:', userModel)
+
     const name = userModel || llmService
 
     const costInfo = logLLMCost({
@@ -355,6 +360,7 @@ export async function estimateLLMCost(
       }
     })
 
+    l.dim('[estimateLLMCost] final cost estimate (totalCost):', costInfo.totalCost)
     return costInfo.totalCost ?? 0
   } catch (error) {
     err(`Error estimating LLM cost: ${(error as Error).message}`)

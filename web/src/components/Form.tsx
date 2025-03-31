@@ -126,7 +126,6 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
         // but shows how you'd request cost (if your backend supports it).
         // For the existing code, transcriptCost expects a filePath, so we do a best-effort approach.
         if (processType === 'video') {
-          // The server's transcriptCost path doesn't truly handle videos in the sample, but we place a placeholder.
           body.filePath = url
         }
 
@@ -230,13 +229,10 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
     setLlmCosts([])
 
     try {
-      // We assume the combined text is just transcript + prompt placeholders
       const combinedText = transcriptContent + '\n\nPrompts:\n' + selectedPrompts.join(', ')
 
-      // Write or send combined text to the server in a "filePath" field
-      // (In a real app, you'd have an endpoint or logic to store the combined text in a file.)
-      // For demonstration, we'll just pass it as "filePath" memory.
-      // The server's llmCost logic expects filePath, so we do a best-effort approach here.
+      console.log('[handleCalculateLLMCosts] About to estimate LLM cost for all providers, combinedText length:', combinedText.length)
+
       const combinedFilePath = 'combined-transcript-and-prompts.txt'
 
       const costs: Array<{ service: string, cost: any }> = []
@@ -251,12 +247,21 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
           mnemonic,
         }
 
-        // Provide an example of how you'd pass an LLM API key
         if (selectedLlmApiKeyService === 'chatgpt' && svc.value === 'chatgpt') {
           body.openaiApiKey = llmApiKey
         } else if (selectedLlmApiKeyService === 'claude' && svc.value === 'claude') {
           body.anthropicApiKey = llmApiKey
+        } else if (selectedLlmApiKeyService === 'gemini' && svc.value === 'gemini') {
+          body.geminiApiKey = llmApiKey
+        } else if (selectedLlmApiKeyService === 'deepseek' && svc.value === 'deepseek') {
+          body.deepseekApiKey = llmApiKey
+        } else if (selectedLlmApiKeyService === 'together' && svc.value === 'together') {
+          body.togetherApiKey = llmApiKey
+        } else if (selectedLlmApiKeyService === 'fireworks' && svc.value === 'fireworks') {
+          body.fireworksApiKey = llmApiKey
         }
+
+        console.log('[handleCalculateLLMCosts] Attempting to fetch cost for service:', svc.value, 'with request body:', body)
 
         const response = await fetch('http://localhost:3000/api/process', {
           method: 'POST',
@@ -265,10 +270,12 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
         })
 
         if (!response.ok) {
+          console.log('[handleCalculateLLMCosts] failed response status for service', svc.value, ':', response.status, response.statusText)
           throw new Error(`Failed to fetch LLM cost for ${svc.value}`)
         }
 
         const data = await response.json()
+        console.log('[handleCalculateLLMCosts] got cost response for', svc.value, ':', data)
         costs.push({ service: svc.value, cost: data.cost })
       }
       setLlmCosts(costs)
@@ -295,7 +302,8 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
     setResult(null)
 
     try {
-      // We'll re-send the combined text as a "filePath" again
+      console.log('[handleRunLLM] Starting final LLM run with service:', chosenLlm)
+
       const combinedFilePath = 'combined-transcript-and-prompts.txt'
 
       const requestBody: any = {
@@ -306,7 +314,6 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
         mnemonic,
       }
 
-      // Map LLM API key
       if (selectedLlmApiKeyService === 'chatgpt' && chosenLlm === 'chatgpt') {
         requestBody.openaiApiKey = llmApiKey
       } else if (selectedLlmApiKeyService === 'claude' && chosenLlm === 'claude') {
@@ -321,6 +328,8 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
         requestBody.fireworksApiKey = llmApiKey
       }
 
+      console.log('[handleRunLLM] Request body for final LLM run:', requestBody)
+
       const response = await fetch('http://localhost:3000/api/process', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -328,12 +337,12 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
       })
 
       if (!response.ok) {
+        console.log('[handleRunLLM] failed response status for service', chosenLlm, ':', response.status, response.statusText)
         throw new Error(`HTTP error! status: ${response.status}`)
       }
 
-      // The 'runLLM' path in the example returns only { message }, but if you adapt your backend,
-      // you can return an updated "ResultType". We'll just mock it as if it returned an LLM output:
       const data = await response.json()
+      console.log('[handleRunLLM] final LLM response:', data)
       setResult({
         llmOutput: data.message || 'LLM processing complete',
         frontMatter: '',

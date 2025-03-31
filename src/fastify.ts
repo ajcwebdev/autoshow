@@ -277,6 +277,9 @@ export const handleProcessRequest = async (
        * Accepts "filePath" (combined prompt+transcript) and "llm"
        */
       case 'llmCost': {
+        l('\n[llmCost] Received request to estimate LLM cost for service:', llmServices)
+        l('[llmCost] filePath from requestData is:', requestData['filePath'])
+
         const filePath = requestData['filePath'] as string
         if (!filePath) {
           reply.status(400).send({ error: 'File path is required' })
@@ -287,8 +290,11 @@ export const handleProcessRequest = async (
           return
         }
         options.llmCost = filePath
+
+        l('[llmCost] calling estimateLLMCost with options:', options)
         const cost = await estimateLLMCost(options, llmServices)
-        l(cost)
+
+        l('[llmCost] estimateLLMCost returned:', cost)
         reply.send({ cost })
         break
       }

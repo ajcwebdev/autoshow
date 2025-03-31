@@ -18,19 +18,14 @@ const commands = [
     newName: '01-LOCAL-02-file-whisper-tiny.md'
   },
   {
-    cmd: 'npm run as -- --file "content/examples/audio.mp3" --prompt titles summary --ollama',
-    expectedFile: 'audio-ollama-shownotes.md',
-    newName: '01-LOCAL-03-file-prompts-ollama-shownotes.md'
-  },
-  {
     cmd: 'npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk"',
     expectedFile: '2024-09-24-ep0-fsjam-podcast-prompt.md',
-    newName: '01-LOCAL-04-video-default.md'
+    newName: '01-LOCAL-03-video-default.md'
   },
   {
     cmd: 'npm run as -- --rss "https://ajcwebdev.substack.com/feed"',
     expectedFile: '2021-05-10-thoughts-on-lambda-school-layoffs-prompt.md',
-    newName: '01-LOCAL-05-rss-default.md',
+    newName: '01-LOCAL-04-rss-default.md',
   },
 ]
 

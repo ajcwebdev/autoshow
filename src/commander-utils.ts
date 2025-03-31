@@ -1,22 +1,22 @@
 // src/commander-utils.ts
 
-import { processVideo } from './process-commands/video'
-import { processPlaylist } from './process-commands/playlist'
-import { processChannel } from './process-commands/channel'
-import { processURLs } from './process-commands/urls'
-import { processFile } from './process-commands/file'
-import { processRSS } from './process-commands/rss'
-import { validateRSSAction } from './process-commands/rss-utils'
-import { estimateTranscriptCost } from './process-steps/03-run-transcription-utils'
-import { selectPrompts } from './process-steps/04-select-prompt'
-import { estimateLLMCost, runLLMFromPromptFile } from './process-steps/05-run-llm-utils'
-import { createEmbeds } from './utils/embeddings/create-embed'
-import { queryEmbeddings } from './utils/embeddings/query-embed'
-import { err } from './utils/logging'
-import { exit } from './utils/node-utils'
-import { LLM_SERVICES_CONFIG } from '../shared/constants'
+import { processVideo } from './process-commands/video.ts'
+import { processPlaylist } from './process-commands/playlist.ts'
+import { processChannel } from './process-commands/channel.ts'
+import { processURLs } from './process-commands/urls.ts'
+import { processFile } from './process-commands/file.ts'
+import { processRSS } from './process-commands/rss.ts'
+import { validateRSSAction } from './process-commands/rss-utils.ts'
+import { estimateTranscriptCost } from './process-steps/03-run-transcription-utils.ts'
+import { selectPrompts } from './process-steps/04-select-prompt.ts'
+import { estimateLLMCost, runLLMFromPromptFile } from './process-steps/05-run-llm-utils.ts'
+import { createEmbeds } from './utils/embeddings/create-embed.ts'
+import { queryEmbeddings } from './utils/embeddings/query-embed.ts'
+import { err } from './utils/logging.ts'
+import { exit } from './utils/node-utils.ts'
+import { LLM_SERVICES_CONFIG } from '../shared/constants.ts'
 
-import type { ProcessingOptions, HandlerFunction } from './utils/types'
+import type { ProcessingOptions, HandlerFunction } from '../shared/types.ts'
 
 /**
  * Maps action names to their corresponding handler function.
@@ -260,7 +260,7 @@ export async function handleEarlyExitIfNeeded(options: ProcessingOptions): Promi
     const llmService = validateLLM(options)
 
     if (!llmService) {
-      err('Please specify which LLM service to use (e.g., --chatgpt, --claude, --ollama, etc.).')
+      err('Please specify which LLM service to use (e.g., --chatgpt, --claude, etc.).')
       exit(1)
     }
 
@@ -273,7 +273,7 @@ export async function handleEarlyExitIfNeeded(options: ProcessingOptions): Promi
     const llmService = validateLLM(options)
 
     if (!llmService) {
-      err('Please specify which LLM service to use (e.g., --chatgpt, --claude, --ollama, etc.).')
+      err('Please specify which LLM service to use (e.g., --chatgpt, --claude, etc.).')
       exit(1)
     }
 

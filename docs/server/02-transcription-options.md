@@ -25,7 +25,8 @@ curl --json '{
   "type": "video",
   "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "transcriptServices": "deepgram",
-  "transcriptModel": "BASE"
+  "transcriptModel": "base",
+  "deepgramApiKey": ""
 }' http://localhost:3000/api/process
 ```
 
@@ -62,7 +63,7 @@ curl --json '{
 ```bash
 curl --json '{
   "type": "transcriptCost",
-  "filePath": "content/audio.mp3",
+  "filePath": "content/examples/audio.mp3",
   "transcriptServices": "deepgram"
 }' http://localhost:3000/api/process
 ```
@@ -70,7 +71,7 @@ curl --json '{
 ```bash
 curl --json '{
   "type": "transcriptCost",
-  "filePath": "content/audio.mp3",
+  "filePath": "content/examples/audio.mp3",
   "transcriptServices": "assembly"
 }' http://localhost:3000/api/process
 ```

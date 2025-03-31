@@ -11,8 +11,8 @@
 ## Get Transcription Cost
 
 ```bash
-npm run as -- --transcriptCost "content/audio.mp3" --deepgram
-npm run as -- --transcriptCost "content/audio.mp3" --assembly
+npm run as -- --transcriptCost "content/examples/audio.mp3" --deepgram
+npm run as -- --transcriptCost "content/examples/audio.mp3" --assembly
 ```
 
 ## Transcription Services
@@ -38,9 +38,9 @@ npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --deepgram
 Select model:
 
 ```bash
-npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --deepgram BASE
-npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --deepgram ENHANCED
-npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --deepgram NOVA_2
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --deepgram base
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --deepgram enhanced
+npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --deepgram nova-2
 ```
 
 Include Deepgram API key directly in CLI command instead of in `.env` file:

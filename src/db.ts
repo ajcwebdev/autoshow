@@ -3,16 +3,14 @@
 /**
  * Database service abstraction layer
  * Provides conditional database operations based on environment
- * 
- * @module db
+ *
+ * Added new fields to the create call inside insertShowNote to store LLM and transcription details and costs.
  */
 
-import { l } from './utils/logging'
-import { env } from './utils/node-utils'
+import { l } from './utils/logging.ts'
+import { env } from './utils/node-utils.ts'
 
-import type { ShowNote } from './utils/types'
-
-// Don't import PrismaClient at the top level to avoid connection attempts in CLI mode
+import type { ShowNote } from '../shared/types.ts'
 
 /**
  * Interface for database operations
@@ -66,13 +64,9 @@ export class PrismaDatabaseService implements DatabaseService {
   private initialized = false
   
   constructor() {
-    // We'll initialize the prisma client in an async init method
     this.prismaClient = null
   }
   
-  /**
-   * Initializes the Prisma client asynchronously
-   */
   async init() {
     if (this.initialized) return this
     
@@ -82,11 +76,11 @@ export class PrismaDatabaseService implements DatabaseService {
       this.initialized = true
     } catch (error) {
       l.dim('\n  Warning: Could not initialize PrismaClient. Using NoOp database service instead.\n')
-      // Don't rethrow - we'll operate in NoOp mode if PrismaClient fails
     }
     
     return this
   }
+
   async insertShowNote(showNote: ShowNote) {
     if (!this.initialized) await this.init()
     if (!this.prismaClient) {
@@ -116,7 +110,14 @@ export class PrismaDatabaseService implements DatabaseService {
           transcript: transcript ?? null,
           llmOutput: llmOutput ?? null,
           walletAddress: walletAddress ?? null,
-          mnemonic: mnemonic ?? null
+          mnemonic: mnemonic ?? null,
+          llmService: showNote.llmService ?? null,
+          llmModel: showNote.llmModel ?? null,
+          llmCost: showNote.llmCost ?? null,
+          transcriptionService: showNote.transcriptionService ?? null,
+          transcriptionModel: showNote.transcriptionModel ?? null,
+          transcriptionCost: showNote.transcriptionCost ?? null,
+          finalCost: showNote.finalCost ?? null
         }
       })
       l.dim('    - Show note inserted successfully.\n')

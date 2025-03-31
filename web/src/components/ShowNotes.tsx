@@ -1,4 +1,4 @@
-// web/src/components/app/ShowNotes.tsx
+// web/src/components/ShowNotes.tsx
 
 import React, { useState, useEffect } from 'react'
 

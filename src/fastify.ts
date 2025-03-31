@@ -2,35 +2,20 @@
 
 import Fastify from 'fastify'
 import cors from '@fastify/cors'
-import { dbService } from './db'
-import { processVideo } from './process-commands/video'
-import { processFile } from './process-commands/file'
-import { estimateTranscriptCost } from './process-steps/03-run-transcription-utils'
-import { estimateLLMCost, runLLMFromPromptFile } from './process-steps/05-run-llm-utils'
-import { createEmbeds } from './utils/embeddings/create-embed'
-import { queryEmbeddings } from './utils/embeddings/query-embed'
-import { submitShowNoteDoc } from './utils/dash-documents'
-import { l, err } from './utils/logging'
-import { env, join, writeFile } from './utils/node-utils'
-import { ENV_VARS_MAP, TRANSCRIPTION_SERVICES_CONFIG, LLM_SERVICES_CONFIG } from '../shared/constants'
+import { dbService } from './db.ts'
+import { processVideo } from './process-commands/video.ts'
+import { processFile } from './process-commands/file.ts'
+import { estimateTranscriptCost } from './process-steps/03-run-transcription-utils.ts'
+import { estimateLLMCost, runLLMFromPromptFile } from './process-steps/05-run-llm-utils.ts'
+import { createEmbeds } from './utils/embeddings/create-embed.ts'
+import { queryEmbeddings } from './utils/embeddings/query-embed.ts'
+import { submitShowNoteDoc } from './utils/dash-documents.ts'
+import { l, err } from './utils/logging.ts'
+import { env, join, writeFile } from './utils/node-utils.ts'
+import { ENV_VARS_MAP, TRANSCRIPTION_SERVICES_CONFIG, LLM_SERVICES_CONFIG } from '../shared/constants.ts'
 
 import type { FastifyRequest, FastifyReply } from 'fastify'
-import type { ProcessingOptions } from './utils/types'
-
-/**
- * Validates the process type from the request body to ensure that it is a recognized
- * process type supported by the application. Throws an error if the type is invalid.
- *
- * @param type - The process type string from the request body
- * @returns The valid process type as a string if validation passes
- * @throws Error if the type is not valid or is missing
- */
-export function validateServerProcessAction(type: string) {
-  if (!['video', 'file', 'transcriptCost', 'llmCost', 'runLLM', 'createEmbeddings', 'queryEmbeddings'].includes(type)) {
-    throw new Error('Invalid or missing process type')
-  }
-  return type
-}
+import type { ProcessingOptions } from '../shared/types.ts'
 
 /**
  * Maps the incoming request data to typed processing options, determining which LLM
@@ -38,7 +23,6 @@ export function validateServerProcessAction(type: string) {
  * plus optional `llmServices` and `transcriptServices` if they are defined.
  *
  * @param requestData - The raw request body
- * @returns An object containing processing options and optionally LLM or transcript service.
  */
 export function validateRequest(requestData: Record<string, unknown>) {
   const options: ProcessingOptions = {}
@@ -78,12 +62,9 @@ export function validateRequest(requestData: Record<string, unknown>) {
     || (typeof requestData[`${transcriptServices}Model`] === 'string' ? requestData[`${transcriptServices}Model`] : undefined)
   const transcriptModel = transcriptModelRaw as string | undefined
 
-  if (transcriptServices === 'whisper') {
-    options.whisper = transcriptModel || 'base'
-  } else if (transcriptServices === 'deepgram') {
-    options.deepgram = transcriptModel || true
-  } else if (transcriptServices === 'assembly') {
-    options.assembly = transcriptModel || true
+  if (transcriptServices) {
+    const defaultModelId = TRANSCRIPTION_SERVICES_CONFIG[transcriptServices].models[0].modelId
+    options[transcriptServices] = transcriptModel ?? defaultModelId
   }
 
   // Map additional options from the request data
@@ -94,9 +75,9 @@ export function validateRequest(requestData: Record<string, unknown>) {
   }
 
   // Build our return object conditionally for exactOptionalPropertyTypes:
-  const result: { 
-    options: ProcessingOptions; 
-    llmServices?: string; 
+  const result: {
+    options: ProcessingOptions
+    llmServices?: string
     transcriptServices?: 'whisper' | 'deepgram' | 'assembly'
   } = { options }
 
@@ -135,7 +116,6 @@ env['SERVER_MODE'] = 'true'
  *
  * @param request - FastifyRequest object containing the incoming request data
  * @param reply - FastifyReply object for sending the response
- * @returns A Promise that resolves to void
  */
 export const handleProcessRequest = async (
   request: FastifyRequest,
@@ -153,9 +133,7 @@ export const handleProcessRequest = async (
     const mnemonic = requestData['mnemonic'] as string | undefined
     l(`walletAddress from request: ${walletAddress}, mnemonic from request: ${mnemonic}`)
 
-    try {
-      validateServerProcessAction(type)
-    } catch {
+    if (!['video', 'file', 'transcriptCost', 'llmCost', 'runLLM', 'createEmbeddings', 'queryEmbeddings'].includes(type)) {
       l('Invalid or missing process type, sending 400')
       reply.status(400).send({ error: 'Valid process type is required' })
       return
@@ -188,7 +166,6 @@ export const handleProcessRequest = async (
 
         /**
          * Write the entire result to a .json file in the "content" directory
-         * @type {string}
          */
         const contentDir = join(process.cwd(), 'content')
         const timestamp = Date.now()
@@ -235,7 +212,6 @@ export const handleProcessRequest = async (
 
         /**
          * Write the entire result to a .json file in the "content" directory
-         * @type {string}
          */
         const contentDir = join(process.cwd(), 'content')
         const timestamp = Date.now()
@@ -251,10 +227,6 @@ export const handleProcessRequest = async (
         break
       }
 
-      /**
-       * Handles transcript cost estimates for the server
-       * Accepts "filePath" and "transcriptServices" from the request body
-       */
       case 'transcriptCost': {
         const filePath = requestData['filePath'] as string
         if (!filePath) {
@@ -266,16 +238,16 @@ export const handleProcessRequest = async (
           return
         }
         options.transcriptCost = filePath
-        await estimateTranscriptCost(options, transcriptServices)
-        reply.send({ message: 'Transcript cost estimated successfully' })
+        const cost = await estimateTranscriptCost(options, transcriptServices)
+        l(cost)
+        reply.send({ cost })
         break
       }
 
-      /**
-       * Handles LLM cost estimation
-       * Accepts "filePath" (combined prompt+transcript) and "llm"
-       */
       case 'llmCost': {
+        l('\n[llmCost] Received request to estimate LLM cost for service:', llmServices)
+        l('[llmCost] filePath from requestData is:', requestData['filePath'])
+
         const filePath = requestData['filePath'] as string
         if (!filePath) {
           reply.status(400).send({ error: 'File path is required' })
@@ -286,15 +258,15 @@ export const handleProcessRequest = async (
           return
         }
         options.llmCost = filePath
-        await estimateLLMCost(options, llmServices)
-        reply.send({ message: 'LLM cost estimated successfully' })
+
+        l('[llmCost] calling estimateLLMCost with options:', options)
+        const cost = await estimateLLMCost(options, llmServices)
+
+        l('[llmCost] estimateLLMCost returned:', cost)
+        reply.send({ cost })
         break
       }
 
-      /**
-       * Skips steps 1-4 and runs an LLM directly on a file with a transcript and prompt
-       * Accepts "filePath" and "llm"
-       */
       case 'runLLM': {
         const filePath = requestData['filePath'] as string
         if (!filePath) {
@@ -312,15 +284,6 @@ export const handleProcessRequest = async (
       }
 
       case 'createEmbeddings': {
-        /**
-         * Creates embeddings by reading .md files (recursively) from the specified directory
-         * (or defaults to the "content" directory if none provided) and storing them in the
-         * Postgres "embeddings" table via Prisma.
-         *
-         * @async
-         * @param {string} [directory] - An optional directory path to scan for markdown files
-         * @returns {Promise<void>} - Responds with a success message once embeddings are created
-         */
         const directory = requestData['directory'] as string | undefined
         await createEmbeds(directory)
         reply.send({ message: 'Embeddings created successfully' })
@@ -328,15 +291,6 @@ export const handleProcessRequest = async (
       }
 
       case 'queryEmbeddings': {
-        /**
-         * Queries the embeddings in the Postgres "embeddings" table for the most relevant documents
-         * based on the question provided in the request body, optionally scoped to a directory.
-         *
-         * @async
-         * @param {string} question - The user question
-         * @param {string} [directory] - Optional directory path used to locate .md files
-         * @returns {Promise<void>} - Responds with a success message once query is complete
-         */
         const question = requestData['question'] as string
         const directory = requestData['directory'] as string | undefined
         if (!question) {

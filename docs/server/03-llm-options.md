@@ -5,7 +5,7 @@
 ```bash
 curl --json '{
   "type": "llmCost",
-  "filePath": "content/audio-prompt.md",
+  "filePath": "content/examples/audio-prompt.md",
   "llm": "chatgpt"
 }' http://localhost:3000/api/process
 ```
@@ -13,7 +13,7 @@ curl --json '{
 ```bash
 curl --json '{
   "type": "llmCost",
-  "filePath": "content/audio-prompt.md",
+  "filePath": "content/examples/audio-prompt.md",
   "llm": "claude"
 }' http://localhost:3000/api/process
 ```
@@ -25,7 +25,7 @@ Skip steps 1-4 and run LLM (ChatGPT) on a file with prompt and transcript.
 ```bash
 curl --json '{
   "type": "runLLM",
-  "filePath": "content/audio-prompt.md",
+  "filePath": "content/examples/audio-prompt.md",
   "llm": "chatgpt"
 }' http://localhost:3000/api/process
 ```

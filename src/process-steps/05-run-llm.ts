@@ -1,39 +1,42 @@
 // src/process-steps/05-run-llm.ts
 
-import { dbService } from '../db'
-import { retryLLMCall, LLM_FUNCTIONS, getModelIdOrDefault } from './05-run-llm-utils'
-import { l, err, logInitialFunctionCall } from '../utils/logging'
-import { writeFile, env } from '../utils/node-utils'
-
-import type { ProcessingOptions, ShowNoteMetadata } from '../utils/types'
-
 /**
- * Processes a transcript using a specified Language Model service.
- * Handles the complete workflow from combining the transcript to generating
- * and saving the final markdown output for multiple LLM services.
- * 
- * The function performs these steps:
- * 1. Combines the transcript with a provided prompt (if any)
- * 2. Processes the content with the selected LLM
- * 3. Saves the results with front matter and transcript or prompt+transcript
- * 4. Inserts show notes into the database (when in server mode only)
- * 
- * If no LLM is selected, it writes the front matter, prompt, and transcript to a file.
- * If an LLM is selected, it writes the front matter, showNotes, and transcript to a file.
- * 
- * @param {ProcessingOptions} options - Configuration options including:
- *   - prompt: Array of prompt sections to include
- *   - LLM-specific options (e.g., chatgpt, claude, etc.)
- * @param {string} finalPath - Base path for input/output files:
- *   - Final output: `${finalPath}-${llmServices}-shownotes.md` (if LLM is used)
- *   - Otherwise: `${finalPath}-prompt.md`
- * @param {string} frontMatter - YAML front matter content to include in the output
- * @param {string} prompt - Optional prompt or instructions to process
- * @param {string} transcript - The transcript content
- * @param {ShowNoteMetadata} metadata - The metadata object
- * @param {string} [llmServices] - The LLM service to use
- * @returns {Promise<string>} Resolves with the LLM output, or an empty string if no LLM is selected
+ * Handles LLM processing and now takes transcription cost and model so final costs can be stored.
+ * Also computes the final cost (llm cost + transcription cost) and stores all new fields in the DB.
+ *
+ * @param {ProcessingOptions} options - The command-line options
+ * @param {string} finalPath - The file path (without extension) used for naming outputs
+ * @param {string} frontMatter - The front matter section of the markdown
+ * @param {string} prompt - The prompt text to be processed by the LLM
+ * @param {string} transcript - The transcribed text
+ * @param {ShowNoteMetadata} metadata - Additional metadata for the show note
+ * @param {string} [llmServices] - The LLM service to use (e.g., 'chatgpt', 'claude')
+ * @param {string} [transcriptionServices] - The transcription service used (e.g., 'whisper', 'deepgram')
+ * @param {string} [transcriptionModel] - The model used by the transcription service
+ * @param {number} [transcriptionCost] - The cost of the transcription step
+ * @returns {Promise<string>} - The show notes result from the LLM
  */
+
+import { dbService } from '../db.ts'
+import { retryLLMCall, logLLMCost } from './05-run-llm-utils.ts'
+import { l, err, logInitialFunctionCall } from '../utils/logging.ts'
+import { writeFile, env } from '../utils/node-utils.ts'
+import { LLM_SERVICES_CONFIG } from '../../shared/constants.ts'
+import { callChatGPT } from '../llms/chatgpt.ts'
+import { callClaude } from '../llms/claude.ts'
+import { callGemini } from '../llms/gemini.ts'
+import { callDeepSeek } from '../llms/deepseek.ts'
+import { callFireworks } from '../llms/fireworks.ts'
+import { callTogether } from '../llms/together.ts'
+
+import type { ProcessingOptions, ShowNoteMetadata, LLMResult } from '../../shared/types.ts'
+import type { ChatGPTModelValue } from '../llms/chatgpt.ts'
+import type { ClaudeModelValue } from '../llms/claude.ts'
+import type { GeminiModelValue } from '../llms/gemini.ts'
+import type { DeepSeekModelValue } from '../llms/deepseek.ts'
+import type { FireworksModelValue } from '../llms/fireworks.ts'
+import type { TogetherModelValue } from '../llms/together.ts'
+
 export async function runLLM(
   options: ProcessingOptions,
   finalPath: string,
@@ -42,35 +45,90 @@ export async function runLLM(
   transcript: string,
   metadata: ShowNoteMetadata,
   llmServices?: string,
+  transcriptionServices?: string,
+  transcriptionModel?: string,
+  transcriptionCost?: number
 ) {
   l.step(`\nStep 5 - Run Language Model\n`)
   logInitialFunctionCall('runLLM', { llmServices, metadata })
 
-  l(`[runLLM] walletAddress from options: ${options['walletAddress']}`)
-  l(`[runLLM] mnemonic from options: ${options['mnemonic']}`)
-
   metadata.walletAddress = options['walletAddress'] || metadata.walletAddress
   metadata.mnemonic = options['mnemonic'] || metadata.mnemonic
 
-  l(`[runLLM] final metadata.walletAddress: ${metadata.walletAddress}`)
-  l(`[runLLM] final metadata.mnemonic: ${metadata.mnemonic}`)
-
   try {
     let showNotesResult = ''
+    let llmCost = 0
+    let userModel = ''
+
     if (llmServices) {
       l.dim(`\n  Preparing to process with '${llmServices}' Language Model...\n`)
-      const llmFunction = LLM_FUNCTIONS[llmServices as keyof typeof LLM_FUNCTIONS]
-      if (!llmFunction) {
-        throw new Error(`Invalid LLM option: ${llmServices}`)
+
+      const config = LLM_SERVICES_CONFIG[llmServices as keyof typeof LLM_SERVICES_CONFIG]
+      if (!config) {
+        throw new Error(`Unknown LLM service: ${llmServices}`)
       }
-      const userModel = getModelIdOrDefault(llmServices, options[llmServices])
-      let showNotes = ''
-      await retryLLMCall<string>(
-        async () => {
-          showNotes = await llmFunction(prompt, transcript, userModel)
-          return showNotes
+
+      const optionValue = options[llmServices as keyof typeof options]
+      const defaultModelId = config.models[0]?.modelId ?? ''
+      const userModel = (typeof optionValue === 'string' && optionValue !== 'true' && optionValue.trim() !== '')
+        ? optionValue
+        : defaultModelId
+
+      let showNotesData: LLMResult
+
+      switch (llmServices) {
+        case 'chatgpt':
+          showNotesData = await retryLLMCall(
+            () => callChatGPT(prompt, transcript, userModel as ChatGPTModelValue)
+          )
+          break
+
+        case 'claude':
+          showNotesData = await retryLLMCall(
+            () => callClaude(prompt, transcript, userModel as ClaudeModelValue)
+          )
+          break
+
+        case 'gemini':
+          showNotesData = await retryLLMCall(
+            () => callGemini(prompt, transcript, userModel as GeminiModelValue)
+          )
+          break
+
+        case 'deepseek':
+          showNotesData = await retryLLMCall(
+            () => callDeepSeek(prompt, transcript, userModel as DeepSeekModelValue)
+          )
+          break
+
+        case 'fireworks':
+          showNotesData = await retryLLMCall(
+            () => callFireworks(prompt, transcript, userModel as FireworksModelValue)
+          )
+          break
+
+        case 'together':
+          showNotesData = await retryLLMCall(
+            () => callTogether(prompt, transcript, userModel as TogetherModelValue)
+          )
+          break
+
+        default:
+          throw new Error(`Unknown LLM service: ${llmServices}`)
+      }
+
+      const costBreakdown = logLLMCost({
+        name: userModel,
+        stopReason: showNotesData.usage?.stopReason ?? 'unknown',
+        tokenUsage: {
+          input: showNotesData.usage?.input,
+          output: showNotesData.usage?.output,
+          total: showNotesData.usage?.total
         }
-      )
+      })
+
+      llmCost = costBreakdown.totalCost ?? 0
+      const showNotes = showNotesData.content
 
       const outputFilename = `${finalPath}-${llmServices}-shownotes.md`
       await writeFile(outputFilename, `${frontMatter}\n${showNotes}\n\n## Transcript\n\n${transcript}`)
@@ -82,6 +140,8 @@ export async function runLLM(
       l.dim(`\n  Writing front matter + prompt + transcript to file:\n    - ${noLLMFile}`)
       await writeFile(noLLMFile, `${frontMatter}\n${prompt}\n## Transcript\n\n${transcript}`)
     }
+
+    const finalCost = (transcriptionCost || 0) + llmCost
 
     if (env['SERVER_MODE'] === 'true') {
       await dbService.insertShowNote({
@@ -97,7 +157,14 @@ export async function runLLM(
         transcript,
         llmOutput: showNotesResult,
         walletAddress: metadata.walletAddress ?? '',
-        mnemonic: metadata.mnemonic ?? ''
+        mnemonic: metadata.mnemonic ?? '',
+        llmService: llmServices ?? '',
+        llmModel: userModel,
+        llmCost,
+        transcriptionService: transcriptionServices ?? '',
+        transcriptionModel: transcriptionModel ?? '',
+        transcriptionCost,
+        finalCost
       })
     } else {
       l.dim('\n  Skipping database insertion in CLI mode')

@@ -1,7 +1,7 @@
 // src/process-steps/02-download-audio-utils.ts
 
-import { l, err } from '../utils/logging'
-import { execFilePromise, unlink } from '../utils/node-utils'
+import { l, err } from '../utils/logging.ts'
+import { execFilePromise, unlink } from '../utils/node-utils.ts'
 
 /**
  * Removes temporary files generated during content processing.

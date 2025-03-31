@@ -54,7 +54,6 @@ AutoShow can generate diverse content formats including:
 - Integration with various:
   - LLMs (ChatGPT, Claude, Gemini, Deepseek, Fireworks, Together)
   - Transcription services (Whisper.cpp, Deepgram, Assembly)
-- Local LLM support with Ollama
 - Customizable prompts for generating titles, summaries, chapter titles/descriptions, key takeaways, and questions to test comprehension
 - Markdown output with metadata and formatted content
 
@@ -106,12 +105,6 @@ Run on a podcast RSS feed.
 
 ```bash
 npm run as -- --rss "https://ajcwebdev.substack.com/feed"
-```
-
-Use local LLM.
-
-```bash
-npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --ollama
 ```
 
 Use 3rd party LLM providers.
@@ -184,7 +177,6 @@ Example commands for all available CLI options can be found in [`docs/examples.m
   - `assembly.ts`: Integration with AssemblyAI API for transcription.
 
 - Language Models (`src/llms`)
-  - `ollama.ts`: Integration with local Ollama models.
   - `chatgpt.ts`: Integration with OpenAI's GPT models.
   - `claude.ts`: Integration with Anthropic's Claude models.
   - `gemini.ts`: Integration with Google's Gemini models.

@@ -1,11 +1,11 @@
 // src/process-steps/04-select-prompt.ts
 
-import { sections } from '../prompts/sections'
-import { err, l, logInitialFunctionCall } from '../utils/logging'
-import { readFile } from '../utils/node-utils'
-import { PROMPT_CHOICES } from '../../shared/constants'
+import { sections } from '../prompts/sections.ts'
+import { err, l, logInitialFunctionCall } from '../utils/logging.ts'
+import { readFile } from '../utils/node-utils.ts'
+import { PROMPT_CHOICES } from '../../shared/constants.ts'
 
-import type { ProcessingOptions } from '../utils/types'
+import type { ProcessingOptions } from '../../shared/types.ts'
 
 const validPromptValues = new Set(PROMPT_CHOICES.map(choice => choice.value))
 

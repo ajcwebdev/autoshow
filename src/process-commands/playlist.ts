@@ -1,11 +1,11 @@
 // src/process-commands/playlist.ts
 
-import { processVideo } from './video'
-import { saveInfo } from '../process-steps/01-generate-markdown-utils'
-import { l, err, logSeparator, logInitialFunctionCall } from '../utils/logging'
-import { execFilePromise } from '../utils/node-utils'
+import { processVideo } from './video.ts'
+import { saveInfo } from '../process-steps/01-generate-markdown-utils.ts'
+import { l, err, logSeparator, logInitialFunctionCall } from '../utils/logging.ts'
+import { execFilePromise } from '../utils/node-utils.ts'
 
-import type { ProcessingOptions } from '../utils/types'
+import type { ProcessingOptions } from '../../shared/types.ts'
 
 /**
  * Processes an entire YouTube playlist by:

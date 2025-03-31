@@ -1,10 +1,31 @@
-// src/utils/images/stability-ai-generator.js
+// src/utils/images/stability-ai-generator.ts
 
 import { writeFile, mkdir } from 'fs/promises'
 import { dirname } from 'path'
-import { generateUniqueFilename } from './utils.js'
+import { generateUniqueFilename } from './utils.ts'
 
-async function generateImageWithStabilityAI(prompt, outputPath, options = {}) {
+import type { GenerateImageResponse } from './black-forest-labs-generator.ts'
+
+/**
+ * Configuration options for Stability AI image generation
+ */
+interface StabilityOptions {
+  engine_id?: string
+  width?: number
+  height?: number
+  cfg_scale?: number
+  samples?: number
+  steps?: number
+}
+
+/**
+ * Generate an image with Stability AI using a given prompt, output path, and options
+ * @param prompt - The text prompt to generate the image from
+ * @param outputPath - The optional filesystem path where the generated image will be saved
+ * @param options - Additional configuration options
+ * @returns A promise resolving with the generation result
+ */
+async function generateImageWithStabilityAI(prompt: string, outputPath?: string, options: StabilityOptions = {}): Promise<GenerateImageResponse> {
   try {
     console.log('Generating image with Stability AI...')
     
@@ -12,7 +33,7 @@ async function generateImageWithStabilityAI(prompt, outputPath, options = {}) {
     const uniqueOutputPath = outputPath || generateUniqueFilename('stability', 'png')
     
     // Validate API key
-    if (!process.env.STABILITY_API_KEY) {
+    if (!process.env['STABILITY_API_KEY']) {
       throw new Error('STABILITY_API_KEY environment variable is missing')
     }
     
@@ -23,7 +44,7 @@ async function generateImageWithStabilityAI(prompt, outputPath, options = {}) {
       height: 1024,
       cfg_scale: 7,
       samples: 1,
-      steps: 30,
+      steps: 30
     }
     
     const config = { ...defaultOptions, ...options }
@@ -35,7 +56,7 @@ async function generateImageWithStabilityAI(prompt, outputPath, options = {}) {
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
-          'Authorization': `Bearer ${process.env.STABILITY_API_KEY}`
+          'Authorization': `Bearer ${process.env['STABILITY_API_KEY']}`
         },
         body: JSON.stringify({
           text_prompts: [
@@ -48,11 +69,11 @@ async function generateImageWithStabilityAI(prompt, outputPath, options = {}) {
           height: config.height,
           width: config.width,
           samples: config.samples,
-          steps: config.steps,
+          steps: config.steps
         })
       }
     ).catch(error => {
-      throw new Error(`Network error: ${error.message}`)
+      throw new Error(`Network error: ${(error as Error).message}`)
     })
 
     if (!response.ok) {
@@ -67,7 +88,7 @@ async function generateImageWithStabilityAI(prompt, outputPath, options = {}) {
     }
 
     const data = await response.json().catch(error => {
-      throw new Error(`Error parsing API response: ${error.message}`)
+      throw new Error(`Error parsing API response: ${(error as Error).message}`)
     })
 
     if (!data.artifacts || !data.artifacts[0] || !data.artifacts[0].base64) {
@@ -83,7 +104,7 @@ async function generateImageWithStabilityAI(prompt, outputPath, options = {}) {
       await mkdir(outputDir, { recursive: true })
     } catch (err) {
       // Directory might already exist
-      if (err.code !== 'EEXIST') throw err
+      if ((err as NodeJS.ErrnoException).code !== 'EEXIST') throw err
     }
     
     // Save the image
@@ -97,11 +118,11 @@ async function generateImageWithStabilityAI(prompt, outputPath, options = {}) {
       finishReason: data.artifacts[0].finishReason
     }
   } catch (error) {
-    console.error('Error generating image with Stability AI:', error.message)
+    console.error('Error generating image with Stability AI:', (error as Error).message)
     return {
       success: false,
-      error: error.message,
-      details: error.stack
+      error: (error as Error).message,
+      details: (error as Error).stack
     }
   }
 }

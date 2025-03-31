@@ -3,7 +3,6 @@
   "author": "Anthony Campolo",
   "description": "An example workflow for automatically generating customizable show notes for audio and video files.",
   "keywords": [
-    "Ollama",
     "ChatGPT",
     "Claude",
     "Gemini",
@@ -16,22 +15,23 @@
   ],
   "type": "module",
   "scripts": {
-    "tsx:base": "tsx --env-file=.env --no-warnings",
+    "node:base": "node --no-warnings --experimental-transform-types --es-module-specifier-resolution=node",
     "setup": "bash .github/setup/setup.sh",
     "check": "npx tsc",
-    "as": "npm run tsx:base -- src/commander.ts",
-    "test:base": "tsx --test --env-file=.env --test-reporter=spec --test-reporter-destination=spec.log --test-concurrency=1",
+    "as": "npm run node:base -- src/commander.ts",
+    "test:base": "npm run node:base -- --test",
+    "test:cli-local": "npm run test:base -- test/cli/cli-local.test.ts",
     "test:cli": "npm run test:base -- test/cli/*.test.ts",
     "test:models": "npm run test:base -- test/models/*.test.ts",
-    "serve": "npm run tsx:base -- --watch src/fastify.ts",
-    "server-local-test": "npm run tsx:base -- test/server/server-local.ts",
-    "server-all-test": "npm run tsx:base -- test/server/server-all.ts",
-    "server-prompts-test": "npm run tsx:base -- test/server/server-prompts.ts",
-    "server-models-test": "npm run tsx:base -- test/server/server-models.ts",
+    "serve": "npm run node:base -- --watch src/fastify.ts",
+    "server-local-test": "npm run node:base -- test/server/server-local.ts",
+    "server-all-test": "npm run node:base -- test/server/server-all.ts",
+    "server-prompts-test": "npm run node:base -- test/server/server-prompts.ts",
+    "server-models-test": "npm run node:base -- test/server/server-models.ts",
     "docker-up": "docker-compose -f .github/docker-compose.yml --env-file .env up -d --build",
     "up": "docker-compose -f .github/docker-compose.yml --env-file .env up -d --build",
     "web": "npm run up && cd web && npm i && npm run dev",
-    "start": "npx prisma migrate deploy --schema=/usr/src/app/prisma/schema.prisma && npx tsx --no-warnings src/fastify.ts",
+    "start": "npx prisma migrate deploy --schema=/usr/src/app/prisma/schema.prisma && npm run node:base -- src/fastify.ts",
     "docker-info": "docker images && docker-compose -f .github/docker-compose.yml images && docker ps && docker-compose -f .github/docker-compose.yml ps && docker volume ls",
     "docker-inspect": "docker network inspect autoshow-network && docker inspect autoshow-service && docker inspect autoshow-postgres",
     "docker-logs": "docker logs autoshow-service && docker-compose -f .github/docker-compose.yml logs",
@@ -40,7 +40,7 @@
     "get-db": "docker-compose -f .github/docker-compose.yml exec -T autoshow-postgres psql -U myuser -d mydatabase -t -q --set AUTOCOMMIT=on --set ON_ERROR_STOP=on -c 'SELECT row_to_json(s) FROM show_notes s'",
     "wipe-db": "docker-compose -f .github/docker-compose.yml exec -T autoshow-postgres psql -U myuser -d mydatabase -t -q --set AUTOCOMMIT=on --set ON_ERROR_STOP=on -c 'TRUNCATE show_notes, embeddings RESTART IDENTITY CASCADE;'",
     "railway-info": "railway list && railway status && railway volume list && railway variables -s autoshow && railway variables -s Postgres",
-    "create-data-contract": "npm run tsx:base --env-file=.env .github/create-dash-contract.ts"
+    "create-data-contract": "npm run node:base -- .github/create-dash-contract.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "0.39.0",
@@ -51,18 +51,15 @@
     "assemblyai": "4.9.0",
     "chalk": "5.4.1",
     "commander": "13.1.0",
-    "dash": "^4.8.0",
+    "dash": "4.8.0",
     "fast-xml-parser": "5.0.8",
     "fastify": "5.2.1",
     "file-type": "20.4.0",
-    "ollama": "0.5.14",
     "openai": "4.86.1",
-    "pg": "8.13.3",
     "prisma": "6.4.1"
   },
   "devDependencies": {
     "@types/node": "22.13.7",
-    "@types/pg": "8.11.11",
     "typescript": "5.8.2"
   }
 }

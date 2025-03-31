@@ -5,8 +5,7 @@
 #   0) 00-cleanup.sh
 #   1) 01-npm-and-env-vars.sh
 #   2) 02-homebrew.sh
-#   3) 03-ollama.sh
-#   4) 04-whisper.sh
+#   4) 03-whisper.sh
 #
 # The script sets up required dependencies for the application without database integration.
 
@@ -59,8 +58,7 @@ is_docker_container() {
 ##############################################################################
 source "$(dirname "$0")/01-npm-and-env-vars.sh"
 source "$(dirname "$0")/02-homebrew.sh"
-source "$(dirname "$0")/03-ollama.sh"
-source "$(dirname "$0")/04-whisper.sh"
+source "$(dirname "$0")/03-whisper.sh"
 
 ##############################################################################
 # 4. FINAL SUCCESS MESSAGE

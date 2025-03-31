@@ -1,15 +1,14 @@
 // src/llms/deepseek.ts
 
 import { OpenAI } from 'openai'
-import { logLLMCost } from '../process-steps/05-run-llm-utils'
-import { err } from '../utils/logging'
-import { env } from '../utils/node-utils'
-import { LLM_SERVICES_CONFIG } from '../../shared/constants'
+import { err } from '../utils/logging.ts'
+import { env } from '../utils/node-utils.ts'
+import { LLM_SERVICES_CONFIG } from '../../shared/constants.ts'
 
 /**
  * Type union of all possible `.modelId` fields for DeepSeek models in {@link LLM_SERVICES_CONFIG}.
  */
-type DeepSeekModelValue = (typeof LLM_SERVICES_CONFIG.deepseek.models)[number]['modelId']
+export type DeepSeekModelValue = (typeof LLM_SERVICES_CONFIG.deepseek.models)[number]['modelId']
 
 /**
  * Calls the DeepSeek API via an OpenAI-compatible endpoint and returns generated text.
@@ -24,7 +23,7 @@ export async function callDeepSeek(
   prompt: string,
   transcript: string,
   modelValue: DeepSeekModelValue
-): Promise<string> {
+) {
   if (!env['DEEPSEEK_API_KEY']) {
     throw new Error('Missing DEEPSEEK_API_KEY environment variable.')
   }
@@ -47,19 +46,15 @@ export async function callDeepSeek(
       throw new Error('No valid response from DeepSeek.')
     }
 
-    const content = firstChoice.message.content
-
-    logLLMCost({
-      name: modelValue,
-      stopReason: firstChoice.finish_reason ?? 'unknown',
-      tokenUsage: {
+    return {
+      content: firstChoice.message.content,
+      usage: {
+        stopReason: firstChoice.finish_reason ?? 'unknown',
         input: res.usage?.prompt_tokens,
         output: res.usage?.completion_tokens,
         total: res.usage?.total_tokens
       }
-    })
-
-    return content
+    }
   } catch (error) {
     err(`Error in callDeepSeek: ${(error as Error).message}`)
     throw error

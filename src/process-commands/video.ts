@@ -1,14 +1,14 @@
 // src/process-commands/video.ts
 
-import { generateMarkdown } from '../process-steps/01-generate-markdown'
-import { downloadAudio } from '../process-steps/02-download-audio'
-import { saveAudio } from '../process-steps/02-download-audio-utils'
-import { runTranscription } from '../process-steps/03-run-transcription'
-import { selectPrompts } from '../process-steps/04-select-prompt'
-import { runLLM } from '../process-steps/05-run-llm'
-import { err, logInitialFunctionCall } from '../utils/logging'
+import { generateMarkdown } from '../process-steps/01-generate-markdown.ts'
+import { downloadAudio } from '../process-steps/02-download-audio.ts'
+import { saveAudio } from '../process-steps/02-download-audio-utils.ts'
+import { runTranscription } from '../process-steps/03-run-transcription.ts'
+import { selectPrompts } from '../process-steps/04-select-prompt.ts'
+import { runLLM } from '../process-steps/05-run-llm.ts'
+import { err, logInitialFunctionCall } from '../utils/logging.ts'
 
-import type { ProcessingOptions, ShowNoteMetadata } from '../utils/types'
+import type { ProcessingOptions, ShowNoteMetadata } from '../../shared/types.ts'
 
 /**
  * Processes a single video by executing a series of operations:
@@ -32,7 +32,6 @@ export async function processVideo(
   llmServices?: string,
   transcriptServices?: string
 ) {
-  // Log the processing parameters for debugging purposes
   logInitialFunctionCall('processVideo', { url, llmServices, transcriptServices })
 
   try {
@@ -43,12 +42,12 @@ export async function processVideo(
     await downloadAudio(options, url, filename)
 
     // Step 3 - Transcribe audio and read transcript
-    const transcript = await runTranscription(options, finalPath, transcriptServices)
+    const { transcript, transcriptionCost, modelId: transcriptionModel } = await runTranscription(options, finalPath, transcriptServices)
 
     // Step 4 - Selecting prompt
     const selectedPrompts = await selectPrompts(options)
 
-    // Step 5 - Running LLM processing on transcript (if applicable)...
+    // Step 5 - Running LLM processing on transcript (if applicable)
     const llmOutput = await runLLM(
       options,
       finalPath,
@@ -56,7 +55,10 @@ export async function processVideo(
       selectedPrompts,
       transcript,
       metadata as ShowNoteMetadata,
-      llmServices
+      llmServices,
+      transcriptServices,
+      transcriptionModel,
+      transcriptionCost
     )
 
     // Step 6 - Cleanup

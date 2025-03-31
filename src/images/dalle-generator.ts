@@ -1,10 +1,18 @@
-// src/utils/images/dalle-generator.js
+// src/utils/images/dalle-generator.ts
 
 import { writeFile, mkdir } from 'fs/promises'
 import { dirname } from 'path'
-import { generateUniqueFilename } from './utils.js'
+import { generateUniqueFilename } from './utils.ts'
 
-async function generateImageWithDallE(prompt, outputPath) {
+import type { GenerateImageResponse } from './black-forest-labs-generator.ts'
+
+/**
+ * Generate an image with DALL-E 3 using a given prompt and optional output path
+ * @param prompt - The text prompt to generate the image from
+ * @param outputPath - The optional filesystem path where the generated image will be saved
+ * @returns A promise resolving with the generation result
+ */
+async function generateImageWithDallE(prompt: string, outputPath?: string): Promise<GenerateImageResponse> {
   try {
     console.log('Generating image with DALL-E 3...')
     
@@ -12,7 +20,7 @@ async function generateImageWithDallE(prompt, outputPath) {
     const uniqueOutputPath = outputPath || generateUniqueFilename('dalle', 'png')
     
     // Validate API key
-    if (!process.env.OPENAI_API_KEY) {
+    if (!process.env['OPENAI_API_KEY']) {
       throw new Error('OPENAI_API_KEY environment variable is missing')
     }
     
@@ -22,7 +30,7 @@ async function generateImageWithDallE(prompt, outputPath) {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`
+          'Authorization': `Bearer ${process.env['OPENAI_API_KEY']}`
         },
         body: JSON.stringify({
           model: 'dall-e-3',
@@ -34,7 +42,7 @@ async function generateImageWithDallE(prompt, outputPath) {
         })
       }
     ).catch(error => {
-      throw new Error(`Network error: ${error.message}`)
+      throw new Error(`Network error: ${(error as Error).message}`)
     })
     
     if (!response.ok) {
@@ -49,7 +57,7 @@ async function generateImageWithDallE(prompt, outputPath) {
     }
 
     const data = await response.json().catch(error => {
-      throw new Error(`Error parsing API response: ${error.message}`)
+      throw new Error(`Error parsing API response: ${(error as Error).message}`)
     })
     
     if (!data.data || !data.data[0] || !data.data[0].b64_json) {
@@ -65,7 +73,7 @@ async function generateImageWithDallE(prompt, outputPath) {
       await mkdir(outputDir, { recursive: true })
     } catch (err) {
       // Directory might already exist
-      if (err.code !== 'EEXIST') throw err
+      if ((err as NodeJS.ErrnoException).code !== 'EEXIST') throw err
     }
     
     // Save the image
@@ -78,11 +86,11 @@ async function generateImageWithDallE(prompt, outputPath) {
       prompt_used: data.data[0].revised_prompt || prompt
     }
   } catch (error) {
-    console.error('Error generating image with DALL-E:', error.message)
+    console.error('Error generating image with DALL-E:', (error as Error).message)
     return {
       success: false,
-      error: error.message,
-      details: error.stack
+      error: (error as Error).message,
+      details: (error as Error).stack
     }
   }
 }

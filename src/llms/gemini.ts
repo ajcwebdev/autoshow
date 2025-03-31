@@ -1,15 +1,14 @@
 // src/llms/gemini.ts
 
 import { GoogleGenerativeAI } from '@google/generative-ai'
-import { logLLMCost } from '../process-steps/05-run-llm-utils'
-import { err } from '../utils/logging'
-import { env } from '../utils/node-utils'
-import { LLM_SERVICES_CONFIG } from '../../shared/constants'
+import { err } from '../utils/logging.ts'
+import { env } from '../utils/node-utils.ts'
+import { LLM_SERVICES_CONFIG } from '../../shared/constants.ts'
 
 /**
  * Type union of all possible `.modelId` fields for Gemini models in {@link LLM_SERVICES_CONFIG}.
  */
-type GeminiModelValue = (typeof LLM_SERVICES_CONFIG.gemini.models)[number]['modelId']
+export type GeminiModelValue = (typeof LLM_SERVICES_CONFIG.gemini.models)[number]['modelId']
 
 /**
  * Simple utility function to introduce a delay.
@@ -36,7 +35,7 @@ export async function callGemini(
   prompt: string,
   transcript: string,
   modelValue: GeminiModelValue
-): Promise<string> {
+) {
   if (!env['GEMINI_API_KEY']) {
     throw new Error('Missing GEMINI_API_KEY environment variable.')
   }
@@ -60,17 +59,15 @@ export async function callGemini(
         totalTokenCount
       } = usageMetadata ?? {}
 
-      logLLMCost({
-        name: modelValue,
-        stopReason: 'complete',
-        tokenUsage: {
+      return {
+        content: text,
+        usage: {
+          stopReason: 'complete',
           input: promptTokenCount,
           output: candidatesTokenCount,
           total: totalTokenCount
         }
-      })
-
-      return text
+      }
     } catch (error) {
       err(
         `Error in callGemini (attempt ${attempt}/${maxRetries}): ${

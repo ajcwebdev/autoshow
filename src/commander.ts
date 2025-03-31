@@ -10,12 +10,12 @@
  */
 
 import { Command } from 'commander'
-import { processAction, validateInputCLI, handleEarlyExitIfNeeded } from './commander-utils'
-import { l, err, logSeparator } from './utils/logging'
-import { argv, exit, fileURLToPath } from './utils/node-utils'
-import { ENV_VARS_MAP } from '../shared/constants'
+import { processAction, validateInputCLI, handleEarlyExitIfNeeded } from './commander-utils.ts'
+import { l, err, logSeparator } from './utils/logging.ts'
+import { argv, exit, fileURLToPath } from './utils/node-utils.ts'
+import { ENV_VARS_MAP } from '../shared/constants.ts'
 
-import type { ProcessingOptions } from './utils/types'
+import type { ProcessingOptions } from '../shared/types.ts'
 
 /**
  * Defines the command-line interface options and descriptions.
@@ -53,7 +53,6 @@ program
   .option('--transcriptCost <filePath>', 'Estimate transcription cost for the given file')
   .option('--llmCost <filePath>', 'Estimate LLM cost for the given prompt and transcript file')
   // LLM service options
-  .option('--ollama [model]', 'Use Ollama for processing with optional model specification')
   .option('--chatgpt [model]', 'Use ChatGPT for processing with optional model specification')
   .option('--claude [model]', 'Use Claude for processing with optional model specification')
   .option('--gemini [model]', 'Use Gemini for processing with optional model specification')

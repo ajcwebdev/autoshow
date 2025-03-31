@@ -26,7 +26,7 @@
     // **Additional Type Checking**
     "noUncheckedIndexedAccess": true,             // Include 'undefined' in indexed access results
     "noPropertyAccessFromIndexSignature": true,   // Disallow property access via indexing signatures
-    "exactOptionalPropertyTypes": true,           // Interpret optional property types as written
+    // "exactOptionalPropertyTypes": false,           // Interpret optional property types as written
     "noImplicitReturns": true,                    // Error when not all code paths in function return a value
     "noFallthroughCasesInSwitch": true,           // Error for fallthrough cases in switch statements
     "noImplicitOverride": true,                   // Ensure overrides are explicitly marked with an 'override' modifier
@@ -55,7 +55,9 @@
     },
 
     // **Experimental Features**
-    "isolatedModules": true                       // Ensure each file can be safely transpiled without relying on other imports
+    "isolatedModules": true,                      // Ensure each file can be safely transpiled without relying on other imports
+    "allowImportingTsExtensions": true,           // Allow importing TypeScript files with '.ts' extension
+    "noEmit": true,                               // Do not emit outputs
   },
   "include": [
     "src/**/*",                                   // Include all files in 'src' directory

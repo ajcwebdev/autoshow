@@ -1,14 +1,19 @@
 // src/process-commands/file.ts
 
-import { generateMarkdown } from '../process-steps/01-generate-markdown'
-import { downloadAudio } from '../process-steps/02-download-audio'
-import { saveAudio } from '../process-steps/02-download-audio-utils'
-import { runTranscription } from '../process-steps/03-run-transcription'
-import { selectPrompts } from '../process-steps/04-select-prompt'
-import { runLLM } from '../process-steps/05-run-llm'
-import { l, err, logInitialFunctionCall } from '../utils/logging'
+/**
+ * Processes a local audio or video file and now also retrieves the transcription cost and model.
+ * Passes that cost and model into runLLM so they can be recorded in the database.
+ */
 
-import type { ProcessingOptions, ShowNoteMetadata } from '../utils/types'
+import { generateMarkdown } from '../process-steps/01-generate-markdown.ts'
+import { downloadAudio } from '../process-steps/02-download-audio.ts'
+import { saveAudio } from '../process-steps/02-download-audio-utils.ts'
+import { runTranscription } from '../process-steps/03-run-transcription.ts'
+import { selectPrompts } from '../process-steps/04-select-prompt.ts'
+import { runLLM } from '../process-steps/05-run-llm.ts'
+import { l, err, logInitialFunctionCall } from '../utils/logging.ts'
+
+import type { ProcessingOptions, ShowNoteMetadata } from '../../shared/types.ts'
 
 /**
  * Processes a local audio or video file through a series of operations:
@@ -34,7 +39,6 @@ export async function processFile(
   llmServices?: string,
   transcriptServices?: string
 ) {
-  // Log the processing parameters for debugging purposes
   logInitialFunctionCall('processFile', { filePath, llmServices, transcriptServices })
 
   try {
@@ -44,13 +48,13 @@ export async function processFile(
     // Step 2 - Convert to WAV
     await downloadAudio(options, filePath, filename)
 
-    // Step 3 - Transcribe audio and read transcript
-    const transcript = await runTranscription(options, finalPath, transcriptServices)
+    // Step 3 - Transcribe audio, returning transcript and cost
+    const { transcript, transcriptionCost, modelId: transcriptionModel } = await runTranscription(options, finalPath, transcriptServices)
 
     // Step 4 - Selecting prompt
     const selectedPrompts = await selectPrompts(options)
 
-    // Step 5 - Run LLM (if applicable)
+    // Step 5 - Run LLM with transcription details
     const llmOutput = await runLLM(
       options,
       finalPath,
@@ -58,7 +62,10 @@ export async function processFile(
       selectedPrompts,
       transcript,
       metadata as ShowNoteMetadata,
-      llmServices
+      llmServices,
+      transcriptServices,
+      transcriptionModel,
+      transcriptionCost
     )
 
     // Step 6 - Cleanup

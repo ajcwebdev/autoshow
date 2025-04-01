@@ -1,26 +1,20 @@
 // src/process-commands/rss.ts
 
 import { logRSSProcessingStatus, filterRSSItems, retryRSSFetch } from './rss-utils.ts'
-import { generateMarkdown } from '../process-steps/01-generate-markdown.ts'
-import { saveInfo } from '../process-steps/01-generate-markdown-utils.ts'
-import { downloadAudio } from '../process-steps/02-download-audio.ts'
-import { saveAudio } from '../process-steps/02-download-audio-utils.ts'
-import { runTranscription } from '../process-steps/03-run-transcription.ts'
-import { selectPrompts } from '../process-steps/04-select-prompt.ts'
-import { runLLM } from '../process-steps/05-run-llm.ts'
 import { l, err, logSeparator, logInitialFunctionCall } from '../utils/logging.ts'
 import { parser } from '../utils/node-utils.ts'
+import { saveAudio } from '../process-steps/02-download-audio-utils.ts'
+import { saveInfo } from '../process-steps/01-generate-markdown-utils.ts'
+import {
+  createProcessContext,
+  stepGenerateMarkdown,
+  stepDownloadAudio,
+  stepRunTranscription,
+  stepSelectPrompts,
+  stepRunLLM
+} from '../process-steps/workflow-context.ts'
+import type { ProcessingOptions } from '../../shared/types.ts'
 
-import type { ProcessingOptions, ShowNoteMetadata } from '../../shared/types.ts'
-
-/**
- * Fetches and parses an RSS feed (URL or local file path), then applies filtering via {@link filterRSSItems}.
- * 
- * @param rssUrl - URL or local file path of the RSS feed to parse
- * @param options - Configuration options
- * @returns A promise that resolves to an object with filtered RSS items and the channel title
- * @throws Will exit the process on network or parsing errors
- */
 export async function selectRSSItemsToProcess(
   rssUrl: string,
   options: ProcessingOptions
@@ -28,7 +22,6 @@ export async function selectRSSItemsToProcess(
   try {
     const fsPromises = await import('node:fs/promises')
     await fsPromises.access(rssUrl)
-
     const text = await fsPromises.readFile(rssUrl, 'utf8')
     const feed = parser.parse(text)
     const {
@@ -37,13 +30,11 @@ export async function selectRSSItemsToProcess(
       image: channelImageObject,
       item: feedItems,
     } = feed.rss.channel
-
     const feedItemsArray = Array.isArray(feedItems) ? feedItems : [feedItems]
     if (!feedItemsArray || feedItemsArray.length === 0) {
       err('Error: No items found in the RSS feed.')
       process.exit(1)
     }
-
     const itemsToProcess = await filterRSSItems(
       options,
       feedItemsArray,
@@ -51,9 +42,10 @@ export async function selectRSSItemsToProcess(
       channelLink,
       channelImageObject?.url
     )
-
     return { items: itemsToProcess, channelTitle: channelTitle || '' }
-  } catch {}
+  } catch {
+    // If not a local file, do a network fetch
+  }
 
   const controller = new AbortController()
   const timeout = setTimeout(() => controller.abort(), 10000)
@@ -67,12 +59,10 @@ export async function selectRSSItemsToProcess(
       })
     )
     clearTimeout(timeout)
-
     if (!response.ok) {
       err(`HTTP error! status: ${response.status}`)
       process.exit(1)
     }
-
     const text = await response.text()
     const feed = parser.parse(text)
     const {
@@ -81,13 +71,11 @@ export async function selectRSSItemsToProcess(
       image: channelImageObject,
       item: feedItems,
     } = feed.rss.channel
-
     const feedItemsArray = Array.isArray(feedItems) ? feedItems : [feedItems]
     if (!feedItemsArray || feedItemsArray.length === 0) {
       err('Error: No items found in the RSS feed.')
       process.exit(1)
     }
-
     const itemsToProcess = await filterRSSItems(
       options,
       feedItemsArray,
@@ -95,28 +83,18 @@ export async function selectRSSItemsToProcess(
       channelLink,
       channelImageObject?.url
     )
-
     return { items: itemsToProcess, channelTitle: channelTitle || '' }
   } catch (error) {
-    if ((error as Error).name === 'AbortError') {
+    const e = error instanceof Error ? error : new Error(String(error))
+    if (e.name === 'AbortError') {
       err('Error: Fetch request timed out.')
     } else {
-      err(`Error fetching RSS feed: ${(error as Error).message}`)
+      err(`Error fetching RSS feed: ${e.message}`)
     }
     process.exit(1)
   }
 }
 
-/**
- * Main function to process items from an RSS feed by generating markdown, downloading audio,
- * transcribing, selecting a prompt, and possibly running an LLM.
- * 
- * @param options - The ProcessingOptions containing RSS feed details and filters
- * @param rssUrl - The URL of the RSS feed to process
- * @param llmServices - Optional LLM services for advanced processing
- * @param transcriptServices - The chosen transcription service for audio content
- * @returns A promise that resolves when the feed has been fully processed
- */
 export async function processRSS(
   options: ProcessingOptions,
   rssUrl: string,
@@ -136,7 +114,6 @@ export async function processRSS(
 
   try {
     const { items, channelTitle } = await selectRSSItemsToProcess(rssUrl, options)
-
     if (options.info) {
       if (items.length > 0) {
         await saveAudio('', true)
@@ -144,16 +121,13 @@ export async function processRSS(
       }
       return
     }
-
     if (items.length === 0) {
       l.dim('\nNo items found matching the provided criteria for this feed. Skipping...')
       return
     }
-
     logRSSProcessingStatus(items.length, items.length, options)
 
     const results = []
-
     for (const [index, item] of items.entries()) {
       logSeparator({
         type: 'rss',
@@ -162,51 +136,47 @@ export async function processRSS(
         descriptor: item.title
       })
 
-      l.opts('Parameters passed to processItem:\n')
-      l.opts(`  - llmServices: ${llmServices}\n  - transcriptServices: ${transcriptServices}\n`)
+      l.opts(`\n  - llmServices: ${llmServices}\n  - transcriptServices: ${transcriptServices}\n`)
 
       try {
-        const { frontMatter, finalPath, filename, metadata } = await generateMarkdown(options, item)
+        const ctx = createProcessContext(options, item.showLink || '')
+        await stepGenerateMarkdown(ctx)
+        if (ctx.metadata && item.description) {
+          ctx.metadata.description = item.description
+        }
         if (item.showLink) {
-          await downloadAudio(options, item.showLink, filename)
+          await stepDownloadAudio(ctx)
         } else {
           throw new Error(`showLink is undefined for item: ${item.title}`)
         }
-        const { transcript, transcriptionCost, modelId: transcriptionModel } = await runTranscription(options, finalPath, transcriptServices)
-        const selectedPrompts = await selectPrompts(options)
-        const llmOutput = await runLLM(
-          options,
-          finalPath,
-          frontMatter,
-          selectedPrompts,
-          transcript,
-          metadata as ShowNoteMetadata,
-          llmServices,
-          transcriptServices,
-          transcriptionModel,
-          transcriptionCost
-        )
-        if (!options.saveAudio) {
-          await saveAudio(finalPath)
+        await stepRunTranscription(ctx, transcriptServices)
+        await stepSelectPrompts(ctx)
+        await stepRunLLM(ctx, llmServices, transcriptServices)
+
+        if (!options.saveAudio && ctx.finalPath) {
+          await saveAudio(ctx.finalPath)
         }
+
         results.push({
-          frontMatter,
-          prompt: selectedPrompts,
-          llmOutput: llmOutput || '',
-          transcript,
+          frontMatter: ctx.frontMatter || '',
+          prompt: ctx.selectedPrompts || '',
+          llmOutput: ctx.llmOutput || '',
+          transcript: ctx.transcript || ''
         })
-      } catch (error) {
-        err(`Error processing item ${item.title}: ${(error as Error).message}`)
+      } catch (subErr) {
+        const e = subErr instanceof Error ? subErr : new Error(String(subErr))
+        err(`Error processing item ${item.title}: ${e.message}`)
         results.push({
           frontMatter: '',
           prompt: '',
           llmOutput: '',
-          transcript: '',
+          transcript: ''
         })
       }
     }
   } catch (error) {
-    err(`Error processing RSS feed: ${(error as Error).message}`)
+    const e = error instanceof Error ? error : new Error(String(error))
+    err(`Error processing RSS feed: ${e.message}`)
     process.exit(1)
   }
 }

@@ -1,21 +1,10 @@
-// src/process-commands/channel.ts
-
 import { processVideo } from './video.ts'
 import { validateChannelOptions, logChannelProcessingStatus } from './channel-utils.ts'
-import { saveInfo } from '../process-steps/01-generate-markdown-utils.ts'
+import { checkAndHandleInfo } from './info-utils.ts'
 import { l, err, logSeparator, logInitialFunctionCall } from '../utils/logging.ts'
 import { execFilePromise } from '../utils/node-utils.ts'
-
 import type { ProcessingOptions } from '../../shared/types.ts'
 
-/**
- * Fetches, sorts, and selects which videos to process based on provided options, 
- * including retrieving details for each video via yt-dlp.
- * 
- * @param stdout - The raw output from yt-dlp containing the video URLs
- * @param options - Configuration options for processing
- * @returns A promise resolving to an object containing all fetched videos and the subset of videos selected to process
- */
 export async function selectVideos(
   stdout: string,
   options: ProcessingOptions
@@ -28,20 +17,16 @@ export async function selectVideos(
       const { stdout } = await execFilePromise('yt-dlp', [
         '--print', '%(upload_date)s|%(timestamp)s|%(is_live)s|%(webpage_url)s',
         '--no-warnings',
-        url,
+        url
       ])
-
       const [uploadDate, timestamp, isLive, videoUrl] = stdout.trim().split('|')
-
       if (!uploadDate || !timestamp || !videoUrl) {
         throw new Error('Incomplete video information received from yt-dlp')
       }
-
       const year = uploadDate.substring(0, 4)
       const month = uploadDate.substring(4, 6)
       const day = uploadDate.substring(6, 8)
       const date = new Date(`${year}-${month}-${day}`)
-
       return {
         uploadDate,
         url: videoUrl,
@@ -57,18 +42,14 @@ export async function selectVideos(
 
   const videoDetailsResults = await Promise.all(videoDetailsPromises)
   const allVideos = videoDetailsResults.filter((video) => video !== null)
-
   if (allVideos.length === 0) {
     err('Error: No videos found in the channel.')
     process.exit(1)
   }
-
   allVideos.sort((a, b) => a.timestamp - b.timestamp)
-
   if (options.order !== 'oldest') {
     allVideos.reverse()
   }
-
   l.opts(`\nFound ${allVideos.length} videos in the channel...`)
 
   let videosToProcess
@@ -77,25 +58,9 @@ export async function selectVideos(
   } else {
     videosToProcess = allVideos.slice(options.skip || 0)
   }
-
   return { allVideos, videosToProcess }
 }
 
-/**
- * Processes an entire YouTube channel:
- * 1. Validates top-level flags.
- * 2. Fetches all video URLs via yt-dlp.
- * 3. Uses {@link selectVideos} to gather metadata and filter videos.
- * 4. Logs processing info or saves it if `--info` is specified.
- * 5. Iterates over each video and calls {@link processVideo}.
- * 
- * @param options - Configuration options for processing
- * @param channelUrl - URL of the YouTube channel to process
- * @param llmServices - Optional language model service
- * @param transcriptServices - Optional transcription service
- * @throws Will terminate the process if the channel cannot be processed
- * @returns Promise that resolves when all videos have been processed or info is saved
- */
 export async function processChannel(
   options: ProcessingOptions,
   channelUrl: string,
@@ -105,23 +70,21 @@ export async function processChannel(
   logInitialFunctionCall('processChannel', { llmServices, transcriptServices })
   try {
     validateChannelOptions(options)
-
     const { stdout, stderr } = await execFilePromise('yt-dlp', [
       '--flat-playlist',
       '--print', '%(url)s',
       '--no-warnings',
-      channelUrl,
+      channelUrl
     ])
-
     if (stderr) {
       err(`yt-dlp warnings: ${stderr}`)
     }
-
     const { allVideos, videosToProcess } = await selectVideos(stdout, options)
     logChannelProcessingStatus(allVideos.length, videosToProcess.length, options)
 
-    if (options.info) {
-      await saveInfo('channel', videosToProcess, '')
+    // Unified info-check
+    const handledInfo = await checkAndHandleInfo(options, 'channel', videosToProcess, '')
+    if (handledInfo) {
       return
     }
 
@@ -133,7 +96,6 @@ export async function processChannel(
         total: videosToProcess.length,
         descriptor: url
       })
-
       try {
         await processVideo(options, url, llmServices, transcriptServices)
       } catch (error) {

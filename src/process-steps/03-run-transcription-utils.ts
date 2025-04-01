@@ -1,24 +1,16 @@
 // src/process-steps/03-run-transcription-utils.ts
 
 import { l, err } from '../utils/logging.ts'
-import { execPromise } from '../utils/node-utils.ts'
+// import { execPromise } from '../utils/node-utils.ts'
 import { TRANSCRIPTION_SERVICES_CONFIG } from '../../shared/constants.ts'
-
 import type { ProcessingOptions } from '../../shared/types.ts'
+import { getAudioDurationInMinutes } from '../utils/cost-calculator.ts'
 
-/**
- * Retries a given transcription call with an exponential backoff of 7 attempts (1s initial delay).
- * 
- * @param {() => Promise<T>} fn - The function to execute for the transcription call
- * @returns {Promise<T>} Resolves when the function succeeds or rejects after 7 attempts
- * @throws {Error} If the function fails after all attempts
- */
 export async function retryTranscriptionCall<T>(
   fn: () => Promise<T>
 ) {
   const maxRetries = 7
   let attempt = 0
-
   while (attempt < maxRetries) {
     try {
       attempt++
@@ -36,50 +28,36 @@ export async function retryTranscriptionCall<T>(
       await new Promise((resolve) => setTimeout(resolve, delayMs))
     }
   }
-
   throw new Error('Transcription call failed after maximum retries.')
 }
 
 /**
- * Asynchronously calculates and logs the estimated transcription cost, then returns that cost value.
- * Internally calculates the audio file duration using ffprobe.
- *
- * @param {object} info - An object containing transcription information
- * @param {string} info.modelId - The model identifier (e.g., 'base', 'nova-2', etc.)
- * @param {number} info.costPerMinuteCents - The cost per minute in cents
- * @param {string} info.filePath - The file path to the audio file
- * @returns {Promise<number>} The numeric transcription cost
- * @throws {Error} If ffprobe fails or returns invalid data.
+ * Logs the approximate cost of transcription for the given model and file. 
+ * Replaced inline cost logic with new cost-calculator approach.
  */
 export async function logTranscriptionCost(info: {
   modelId: string
   costPerMinuteCents: number
   filePath: string
 }) {
-  const cmd = `ffprobe -v error -show_entries format=duration -of csv=p=0 "${info.filePath}"`
-  const { stdout } = await execPromise(cmd)
-  const seconds = parseFloat(stdout.trim())
-  if (isNaN(seconds)) {
-    throw new Error(`Could not parse audio duration for file: ${info.filePath}`)
+  try {
+    const minutes = await getAudioDurationInMinutes(info.filePath)
+    const cost = info.costPerMinuteCents * minutes
+    l.dim(
+      `  - Estimated Transcription Cost for ${info.modelId}:\n` +
+      `    - Audio Length: ${minutes.toFixed(2)} minutes\n` +
+      `    - Cost: ¢${cost.toFixed(5)}`
+    )
+    return cost
+  } catch (error) {
+    err(`Error in logTranscriptionCost: ${(error as Error).message}`)
+    return 0
   }
-  const minutes = seconds / 60
-  const cost = info.costPerMinuteCents * minutes
-
-  l.dim(
-    `  - Estimated Transcription Cost for ${info.modelId}:\n` +
-    `    - Audio Length: ${minutes.toFixed(2)} minutes\n` +
-    `    - Cost: ¢${cost.toFixed(5)}`
-  )
-
-  return cost
 }
 
 /**
- * Estimates transcription cost for the provided file and chosen transcription service.
- * 
- * @param {ProcessingOptions} options - The command-line options (must include `transcriptCost` file path).
- * @param {string} transcriptServices - The selected transcription service (e.g., "deepgram", "assembly", "whisper").
- * @returns {Promise<number>} The numeric cost estimate
+ * If the user just wants a transcript cost estimate (without actual transcription),
+ * we used to have custom logic. Now we unify it with cost-calculator.ts functions.
  */
 export async function estimateTranscriptCost(
   options: ProcessingOptions,
@@ -87,7 +65,6 @@ export async function estimateTranscriptCost(
 ) {
   const filePath = options.transcriptCost
   if (!filePath) throw new Error('No file path provided to estimate transcription cost.')
-
   if (!['whisper', 'deepgram', 'assembly'].includes(transcriptServices)) {
     throw new Error(`Unsupported transcription service: ${transcriptServices}`)
   }
@@ -97,19 +74,21 @@ export async function estimateTranscriptCost(
   const defaultModelId = transcriptServices === 'deepgram'
     ? 'nova-2'
     : transcriptServices === 'assembly'
-    ? 'best'
-    : 'base'
+      ? 'best'
+      : 'base'
   const modelInput = typeof optionValue === 'string' ? optionValue : defaultModelId
   const normalizedModelId = modelInput.toLowerCase()
   const model = config.models.find(m => m.modelId === normalizedModelId)
-
   if (!model) throw new Error(`Model not found for: ${modelInput}`)
 
-  const cost = await logTranscriptionCost({
-    modelId: model.modelId,
-    costPerMinuteCents: model.costPerMinuteCents,
-    filePath
-  })
-
-  return cost
+  try {
+    const minutes = await getAudioDurationInMinutes(filePath)
+    // Use the cost-per-minute from the config
+    const cost = model.costPerMinuteCents * minutes
+    l.dim(`\nTranscript cost estimate for ${transcriptServices} (${model.modelId}): ¢${cost.toFixed(5)}`)
+    return cost
+  } catch (error) {
+    err(`Error in estimateTranscriptCost: ${(error as Error).message}`)
+    throw error
+  }
 }

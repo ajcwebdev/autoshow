@@ -3,40 +3,31 @@
 import { checkWhisperDirAndModel, formatWhisperTranscript } from './whisper-utils.ts'
 import { l, err } from '../utils/logging.ts'
 import { readFile, unlink, execPromise } from '../utils/node-utils.ts'
-import { TRANSCRIPTION_SERVICES_CONFIG } from '../../shared/constants.ts'
-
+import { getTranscriptionModelConfig } from '../utils/service-config.ts'
 import type { ProcessingOptions, WhisperOutput } from '../../shared/types.ts'
 
-/**
- * Main function to handle transcription using local Whisper.cpp.
- * @param {ProcessingOptions} options - Processing options that determine how transcription is run.
- * @param {string} finalPath - The base filename (without extension) for input and output files.
- * @returns {Promise<TranscriptionResult>}
- */
 export async function callWhisper(
-  options: ProcessingOptions,
-  finalPath: string
+  _options: ProcessingOptions,
+  finalPath: string,
+  modelId: string
 ) {
   l.opts('\n  callWhisper called with arguments:')
   l.opts(`    - finalPath: ${finalPath}`)
-
+  l.opts(`    - modelId: ${modelId}`)
+  
   try {
-    const whisperModel = typeof options.whisper === 'string'
-      ? options.whisper
-      : options.whisper === true
-        ? 'base'
-        : (() => { throw new Error('Invalid whisper option') })()
-
-    const whisperModels = TRANSCRIPTION_SERVICES_CONFIG.whisper.models
-    const chosenModel = whisperModels.find(m => m.modelId === whisperModel)
-      ?? (() => { throw new Error(`Unknown model type: ${whisperModel}`) })()
-
-    const { modelId, costPerMinuteCents } = chosenModel
-
+    // Get model configuration
+    const modelConfig = getTranscriptionModelConfig('whisper', modelId)
+    if (!modelConfig) {
+      throw new Error(`Unknown whisper model: ${modelId}`)
+    }
+    
+    const { costPerMinuteCents } = modelConfig
     const modelGGMLName = `ggml-${modelId}.bin`
-
+    
+    // Check whisper directory and model
     await checkWhisperDirAndModel(modelId, modelGGMLName)
-
+    
     l.dim(`  Invoking whisper.cpp on file:\n    - ${finalPath}.wav`)
     try {
       await execPromise(
@@ -54,13 +45,15 @@ export async function callWhisper(
       err(`Error running whisper.cpp: ${(whisperError as Error).message}`)
       throw whisperError
     }
-
+    
     l.dim(`\n  Transcript JSON file successfully created, reading file for txt conversion:\n    - ${finalPath}.json\n`)
     const jsonContent = await readFile(`${finalPath}.json`, 'utf8')
     const parsedJson = JSON.parse(jsonContent) as WhisperOutput
     const txtContent = formatWhisperTranscript(parsedJson)
+    
+    // Clean up temp file
     await unlink(`${finalPath}.json`)
-
+    
     return {
       transcript: txtContent,
       modelId,
@@ -68,6 +61,6 @@ export async function callWhisper(
     }
   } catch (error) {
     err('Error in callWhisper:', (error as Error).message)
-    process.exit(1)
+    throw error
   }
 }

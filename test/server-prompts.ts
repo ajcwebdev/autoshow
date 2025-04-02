@@ -1,8 +1,8 @@
-// test/server/server-prompts.ts
+// test/server-prompts.ts
 
 import fs from 'node:fs/promises'
 import path from 'node:path'
-import { l, err } from '../../src/utils/logging.ts'
+import { l, err } from '../src/utils/logging.ts'
 
 const BASE_URL = 'http://localhost:3000'
 const OUTPUT_DIR = 'content'

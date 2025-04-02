@@ -1,9 +1,9 @@
-// test/server/server-all.ts
+// test/server-all.ts
 
 import fs from 'node:fs/promises'
 import path from 'node:path'
-import { l, err } from '../../src/utils/logging.ts'
-import { env } from '../../src/utils/node-utils.ts'
+import { l, err } from '../src/utils/logging.ts'
+import { env } from '../src/utils/node-utils.ts'
 import 'dotenv/config'
 
 const BASE_URL = 'http://localhost:3000'

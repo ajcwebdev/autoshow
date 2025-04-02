@@ -3,6 +3,8 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import { l, err } from '../../src/utils/logging.ts'
+import { env } from '../../src/utils/node-utils.ts'
+import 'dotenv/config'
 
 const BASE_URL = 'http://localhost:3000'
 const OUTPUT_DIR = 'content'
@@ -16,9 +18,7 @@ const {
   DEEPSEEK_API_KEY,
   FIREWORKS_API_KEY,
   TOGETHER_API_KEY
-} = process.env
-
-type LLMProvider = 'chatgpt' | 'claude' | 'gemini' | 'deepseek' | 'fireworks' | 'together'
+} = env
 
 interface RequestData {
   type: 'file' | 'video'
@@ -28,14 +28,14 @@ interface RequestData {
   transcriptModel?: string
   transcriptServices?: string
   speakerLabels?: boolean
-  llm?: LLMProvider
+  llm?: string
   llmModel?: string
-  openaiApiKey?: string | undefined
-  anthropicApiKey?: string | undefined
-  geminiApiKey?: string | undefined
-  deepseekApiKey?: string | undefined
-  deepgramApiKey?: string | undefined
-  assemblyApiKey?: string | undefined
+  openaiApiKey?: string
+  anthropicApiKey?: string
+  geminiApiKey?: string
+  deepseekApiKey?: string
+  deepgramApiKey?: string
+  assemblyApiKey?: string
   togetherApiKey?: string | undefined
   fireworksApiKey?: string | undefined
 }
@@ -57,7 +57,7 @@ const requests: Request[] = [
       assemblyApiKey: ASSEMBLY_API_KEY,
     },
     endpoint: '/api/process',
-    outputFiles: ['01-assembly-best.md'],
+    outputFiles: ['01-assembly-best.md', '01-assembly-best.json'],
   },
   // 2) Assembly (nano)
   {
@@ -69,7 +69,7 @@ const requests: Request[] = [
       assemblyApiKey: ASSEMBLY_API_KEY,
     },
     endpoint: '/api/process',
-    outputFiles: ['02-assembly-nano.md'],
+    outputFiles: ['02-assembly-nano.md', '02-assembly-nano.json'],
   },
   // 3) Deepgram (nova-2)
   {
@@ -81,7 +81,7 @@ const requests: Request[] = [
       deepgramApiKey: DEEPGRAM_API_KEY,
     },
     endpoint: '/api/process',
-    outputFiles: ['03-deepgram-nova-2.md'],
+    outputFiles: ['03-deepgram-nova-2.md', '03-deepgram-nova-2.json'],
   },
   // 4) Deepgram (base)
   {
@@ -93,7 +93,7 @@ const requests: Request[] = [
       deepgramApiKey: DEEPGRAM_API_KEY,
     },
     endpoint: '/api/process',
-    outputFiles: ['04-deepgram-base.md'],
+    outputFiles: ['04-deepgram-base.md', '04-deepgram-base.json'],
   },
   // 5) Deepgram (enhanced)
   {
@@ -105,7 +105,7 @@ const requests: Request[] = [
       deepgramApiKey: DEEPGRAM_API_KEY,
     },
     endpoint: '/api/process',
-    outputFiles: ['05-deepgram-enhanced.md'],
+    outputFiles: ['05-deepgram-enhanced.md', '05-deepgram-enhanced.json'],
   },
 
   // 6) ChatGPT (gpt-4.5-preview)
@@ -118,7 +118,7 @@ const requests: Request[] = [
       openaiApiKey: OPENAI_API_KEY,
     },
     endpoint: '/api/process',
-    outputFiles: ['06-chatgpt-gpt-4.5-preview.md'],
+    outputFiles: ['06-chatgpt-gpt-4.5-preview.md', '06-chatgpt-gpt-4.5-preview.json'],
   },
   // 7) ChatGPT (gpt-4o)
   {
@@ -130,7 +130,7 @@ const requests: Request[] = [
       openaiApiKey: OPENAI_API_KEY,
     },
     endpoint: '/api/process',
-    outputFiles: ['07-chatgpt-gpt-4o.md'],
+    outputFiles: ['07-chatgpt-gpt-4o.md', '07-chatgpt-gpt-4o.json'],
   },
   // 8) ChatGPT (gpt-4o-mini)
   {
@@ -142,7 +142,7 @@ const requests: Request[] = [
       openaiApiKey: OPENAI_API_KEY,
     },
     endpoint: '/api/process',
-    outputFiles: ['08-chatgpt-gpt-4o-mini.md'],
+    outputFiles: ['08-chatgpt-gpt-4o-mini.md', '08-chatgpt-gpt-4o-mini.json'],
   },
   // 9) ChatGPT (o1-mini)
   {
@@ -154,7 +154,7 @@ const requests: Request[] = [
       openaiApiKey: OPENAI_API_KEY,
     },
     endpoint: '/api/process',
-    outputFiles: ['09-chatgpt-o1-mini.md'],
+    outputFiles: ['09-chatgpt-o1-mini.md', '09-chatgpt-o1-mini.json'],
   },
 
   // 10) Claude (claude-3-7-sonnet-latest)
@@ -167,7 +167,7 @@ const requests: Request[] = [
       anthropicApiKey: ANTHROPIC_API_KEY,
     },
     endpoint: '/api/process',
-    outputFiles: ['10-claude-3-7-sonnet-latest.md'],
+    outputFiles: ['10-claude-3-7-sonnet-latest.md', '10-claude-3-7-sonnet-latest.json'],
   },
   // 11) Claude (claude-3-5-haiku-latest)
   {
@@ -179,7 +179,7 @@ const requests: Request[] = [
       anthropicApiKey: ANTHROPIC_API_KEY,
     },
     endpoint: '/api/process',
-    outputFiles: ['11-claude-3-5-haiku-latest.md'],
+    outputFiles: ['11-claude-3-5-haiku-latest.md', '11-claude-3-5-haiku-latest.json'],
   },
   // 12) Claude (claude-3-opus-latest)
   {
@@ -191,7 +191,7 @@ const requests: Request[] = [
       anthropicApiKey: ANTHROPIC_API_KEY,
     },
     endpoint: '/api/process',
-    outputFiles: ['12-claude-3-opus-latest.md'],
+    outputFiles: ['12-claude-3-opus-latest.md', '12-claude-3-opus-latest.json'],
   },
 
   // 13) DeepSeek (deepseek-chat)
@@ -204,7 +204,7 @@ const requests: Request[] = [
       deepseekApiKey: DEEPSEEK_API_KEY,
     },
     endpoint: '/api/process',
-    outputFiles: ['13-deepseek-chat.md'],
+    outputFiles: ['13-deepseek-chat.md', '13-deepseek-chat.json'],
   },
   // 14) DeepSeek (deepseek-reasoner)
   {
@@ -216,7 +216,7 @@ const requests: Request[] = [
       deepseekApiKey: DEEPSEEK_API_KEY,
     },
     endpoint: '/api/process',
-    outputFiles: ['14-deepseek-reasoner.md'],
+    outputFiles: ['14-deepseek-reasoner.md', '14-deepseek-reasoner.json'],
   },
 
   // 15) Gemini (gemini-1.5-pro)
@@ -229,7 +229,7 @@ const requests: Request[] = [
       geminiApiKey: GEMINI_API_KEY,
     },
     endpoint: '/api/process',
-    outputFiles: ['15-gemini-1.5-pro.md'],
+    outputFiles: ['15-gemini-1.5-pro.md', '15-gemini-1.5-pro.json'],
   },
   // 16) Gemini (gemini-1.5-flash-8b)
   {
@@ -241,7 +241,7 @@ const requests: Request[] = [
       geminiApiKey: GEMINI_API_KEY,
     },
     endpoint: '/api/process',
-    outputFiles: ['16-gemini-1.5-flash-8b.md'],
+    outputFiles: ['16-gemini-1.5-flash-8b.md', '16-gemini-1.5-flash-8b.json'],
   },
   // 17) Gemini (gemini-1.5-flash)
   {
@@ -253,7 +253,7 @@ const requests: Request[] = [
       geminiApiKey: GEMINI_API_KEY,
     },
     endpoint: '/api/process',
-    outputFiles: ['17-gemini-1.5-flash.md'],
+    outputFiles: ['17-gemini-1.5-flash.md', '17-gemini-1.5-flash.json'],
   },
   // 18) Gemini (gemini-2.0-flash-lite)
   {
@@ -265,7 +265,7 @@ const requests: Request[] = [
       geminiApiKey: GEMINI_API_KEY,
     },
     endpoint: '/api/process',
-    outputFiles: ['18-gemini-2.0-flash-lite.md'],
+    outputFiles: ['18-gemini-2.0-flash-lite.md', '18-gemini-2.0-flash-lite.json'],
   },
   // 19) Gemini (gemini-2.0-flash)
   {
@@ -277,7 +277,7 @@ const requests: Request[] = [
       geminiApiKey: GEMINI_API_KEY,
     },
     endpoint: '/api/process',
-    outputFiles: ['19-gemini-2.0-flash.md'],
+    outputFiles: ['19-gemini-2.0-flash.md', '19-gemini-2.0-flash.json'],
   },
 
   // 20) Fireworks (llama-v3p1-405b)
@@ -290,7 +290,7 @@ const requests: Request[] = [
       fireworksApiKey: FIREWORKS_API_KEY,
     },
     endpoint: '/api/process',
-    outputFiles: ['20-fireworks-llama-v3p1-405b.md'],
+    outputFiles: ['20-fireworks-llama-v3p1-405b.md', '20-fireworks-llama-v3p1-405b.json'],
   },
   // 21) Fireworks (llama-v3p1-70b)
   {
@@ -302,7 +302,7 @@ const requests: Request[] = [
       fireworksApiKey: FIREWORKS_API_KEY,
     },
     endpoint: '/api/process',
-    outputFiles: ['21-fireworks-llama-v3p1-70b.md'],
+    outputFiles: ['21-fireworks-llama-v3p1-70b.md', '21-fireworks-llama-v3p1-70b.json'],
   },
   // 22) Fireworks (llama-v3p1-8b)
   {
@@ -314,21 +314,9 @@ const requests: Request[] = [
       fireworksApiKey: FIREWORKS_API_KEY,
     },
     endpoint: '/api/process',
-    outputFiles: ['22-fireworks-llama-v3p1-8b.md'],
+    outputFiles: ['22-fireworks-llama-v3p1-8b.md', '22-fireworks-llama-v3p1-8b.json'],
   },
-  // 23) Fireworks (llama-v3p2-3b)
-  {
-    data: {
-      type: 'file',
-      filePath: 'content/examples/audio.mp3',
-      llm: 'fireworks',
-      llmModel: 'accounts/fireworks/models/llama-v3p2-3b-instruct',
-      fireworksApiKey: FIREWORKS_API_KEY,
-    },
-    endpoint: '/api/process',
-    outputFiles: ['23-fireworks-llama-v3p2-3b.md'],
-  },
-  // 24) Fireworks (qwen2p5-72b)
+  // 23) Fireworks (qwen2p5-72b)
   {
     data: {
       type: 'file',
@@ -338,10 +326,10 @@ const requests: Request[] = [
       fireworksApiKey: FIREWORKS_API_KEY,
     },
     endpoint: '/api/process',
-    outputFiles: ['24-fireworks-qwen2p5-72b.md'],
+    outputFiles: ['23-fireworks-qwen2p5-72b.md', '23-fireworks-qwen2p5-72b.json'],
   },
 
-  // 25) Together (llama-3.2-3b)
+  // 24) Together (llama-3.2-3b)
   {
     data: {
       type: 'file',
@@ -351,9 +339,9 @@ const requests: Request[] = [
       togetherApiKey: TOGETHER_API_KEY,
     },
     endpoint: '/api/process',
-    outputFiles: ['25-together-llama-3.2-3b.md'],
+    outputFiles: ['24-together-llama-3.2-3b.md', '24-together-llama-3.2-3b.json'],
   },
-  // 26) Together (llama-3.1-405b)
+  // 25) Together (llama-3.1-405b)
   {
     data: {
       type: 'file',
@@ -363,9 +351,9 @@ const requests: Request[] = [
       togetherApiKey: TOGETHER_API_KEY,
     },
     endpoint: '/api/process',
-    outputFiles: ['26-together-llama-3.1-405b.md'],
+    outputFiles: ['25-together-llama-3.1-405b.md', '25-together-llama-3.1-405b.json'],
   },
-  // 27) Together (llama-3.1-70b)
+  // 26) Together (llama-3.1-70b)
   {
     data: {
       type: 'file',
@@ -375,9 +363,9 @@ const requests: Request[] = [
       togetherApiKey: TOGETHER_API_KEY,
     },
     endpoint: '/api/process',
-    outputFiles: ['27-together-llama-3.1-70b.md'],
+    outputFiles: ['26-together-llama-3.1-70b.md', '26-together-llama-3.1-70b.json'],
   },
-  // 28) Together (llama-3.1-8b)
+  // 27) Together (llama-3.1-8b)
   {
     data: {
       type: 'file',
@@ -387,9 +375,9 @@ const requests: Request[] = [
       togetherApiKey: TOGETHER_API_KEY,
     },
     endpoint: '/api/process',
-    outputFiles: ['28-together-llama-3.1-8b.md'],
+    outputFiles: ['27-together-llama-3.1-8b.md', '27-together-llama-3.1-8b.json'],
   },
-  // 29) Together (gemma-2-27b)
+  // 28) Together (gemma-2-27b)
   {
     data: {
       type: 'file',
@@ -399,9 +387,9 @@ const requests: Request[] = [
       togetherApiKey: TOGETHER_API_KEY,
     },
     endpoint: '/api/process',
-    outputFiles: ['29-together-gemma-2-27b.md'],
+    outputFiles: ['28-together-gemma-2-27b.md', '28-together-gemma-2-27b.json'],
   },
-  // 30) Together (gemma-2-9b)
+  // 29) Together (gemma-2-9b)
   {
     data: {
       type: 'file',
@@ -411,9 +399,9 @@ const requests: Request[] = [
       togetherApiKey: TOGETHER_API_KEY,
     },
     endpoint: '/api/process',
-    outputFiles: ['30-together-gemma-2-9b.md'],
+    outputFiles: ['29-together-gemma-2-9b.md', '29-together-gemma-2-9b.json'],
   },
-  // 31) Together (qwen2.5-72b)
+  // 30) Together (qwen2.5-72b)
   {
     data: {
       type: 'file',
@@ -423,9 +411,9 @@ const requests: Request[] = [
       togetherApiKey: TOGETHER_API_KEY,
     },
     endpoint: '/api/process',
-    outputFiles: ['31-together-qwen2.5-72b.md'],
+    outputFiles: ['30-together-qwen2.5-72b.md', '30-together-qwen2.5-72b.json'],
   },
-  // 32) Together (qwen2.5-7b)
+  // 31) Together (qwen2.5-7b)
   {
     data: {
       type: 'file',
@@ -435,14 +423,22 @@ const requests: Request[] = [
       togetherApiKey: TOGETHER_API_KEY,
     },
     endpoint: '/api/process',
-    outputFiles: ['32-together-qwen2.5-7b.md'],
+    outputFiles: ['31-together-qwen2.5-7b.md', '31-together-qwen2.5-7b.json'],
   },
 ]
 
-const fetchRequest = async (request: Request, index: number): Promise<void> => {
+/**
+ * Sends a POST request to the server with the provided data, checks for errors,
+ * logs error details if the server returns a non-OK status, and renames new files
+ * based on the output file names.
+ * 
+ * @param request - The request object containing data, endpoint, and output files
+ * @param index - The index of the request in the sequence
+ */
+const fetchRequest = async (request: Request, index: number) => {
   try {
+    // Get list of files before the request
     const filesBefore: string[] = await fs.readdir(OUTPUT_DIR)
-
     const response: Response = await fetch(`${BASE_URL}${request.endpoint}`, {
       method: 'POST',
       headers: {
@@ -451,28 +447,30 @@ const fetchRequest = async (request: Request, index: number): Promise<void> => {
       body: JSON.stringify(request.data),
     })
     l(`\nRequest ${index + 1} response status:`, response.status)
+    // If the response is not ok, read the error text for better debugging
     if (!response.ok) {
+      const errorText = await response.text()
+      console.error('Error details:', errorText)
       throw new Error(`HTTP error! status: ${response.status}`)
     }
-
     const result: { message: string } = await response.json()
     l(`Request ${index + 1} result: ${result.message}`)
-
+    // Wait briefly to ensure files are written
     await new Promise((resolve) => setTimeout(resolve, 1000))
-
+    // Get list of files after the request
     const filesAfter: string[] = await fs.readdir(OUTPUT_DIR)
+    // Identify new files
     const newFiles: string[] = filesAfter.filter((f) => !filesBefore.includes(f))
+    // Sort new files to ensure consistent ordering
     newFiles.sort()
-
-    const outputFiles = request.outputFiles
-
+    const outputFiles: string[] = request.outputFiles
     if (newFiles.length > 0) {
-      for (let i = 0; i < Math.min(newFiles.length, outputFiles.length); i++) {
-        const oldFilePath = path.join(OUTPUT_DIR, newFiles[i]!)
-        const newFileName = outputFiles[i]!
-        const newFilePath = path.join(OUTPUT_DIR, newFileName)
+      for (let i = 0; i < newFiles.length; i++) {
+        const oldFilePath: string = path.join(OUTPUT_DIR, newFiles[i]!)
+        const newFileName: string = outputFiles[i] ?? `output_${i}.md`
+        const newFilePath: string = path.join(OUTPUT_DIR, newFileName)
         await fs.rename(oldFilePath, newFilePath)
-        l(`File renamed: ${oldFilePath} --> ${newFilePath}`)
+        l(`\nFile renamed:\n  - Old: ${oldFilePath}\n  - New: ${newFilePath}`)
       }
     } else {
       l('No new files to rename for this request.')
@@ -482,9 +480,15 @@ const fetchRequest = async (request: Request, index: number): Promise<void> => {
   }
 }
 
-const runAllRequests = async (): Promise<void> => {
-  for (const [i, request] of requests.entries()) {
-    await fetchRequest(request, i)
+/**
+ * Iterates over all configured requests and executes them in sequence.
+ */
+const runAllRequests = async () => {
+  for (let i = 0; i < requests.length; i++) {
+    const request = requests[i]
+    if (request) {
+      await fetchRequest(request, i)
+    }
   }
 }
 

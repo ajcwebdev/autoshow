@@ -11,7 +11,6 @@ import { join } from 'node:path'
     - accounts/fireworks/models/llama-v3p1-405b-instruct
     - accounts/fireworks/models/llama-v3p1-70b-instruct
     - accounts/fireworks/models/llama-v3p1-8b-instruct
-    - accounts/fireworks/models/llama-v3p2-3b-instruct
     - accounts/fireworks/models/qwen2p5-72b-instruct
 */
 
@@ -30,11 +29,6 @@ const commands = [
     cmd: 'npm run as -- --file "content/examples/audio.mp3" --fireworks accounts/fireworks/models/llama-v3p1-8b-instruct',
     expectedFile: 'audio-fireworks-shownotes.md',
     newName: '07-FIREWORKS-03-fireworks-llama-v3p1-8b.md'
-  },
-  {
-    cmd: 'npm run as -- --file "content/examples/audio.mp3" --fireworks accounts/fireworks/models/llama-v3p2-3b-instruct',
-    expectedFile: 'audio-fireworks-shownotes.md',
-    newName: '07-FIREWORKS-04-fireworks-llama-v3p2-3b.md'
   },
   {
     cmd: 'npm run as -- --file "content/examples/audio.mp3" --fireworks accounts/fireworks/models/qwen2p5-72b-instruct',

@@ -212,7 +212,6 @@ export const LLM_SERVICES_CONFIG = {
       { modelName: 'LLAMA 3 1 405B', modelId: 'accounts/fireworks/models/llama-v3p1-405b-instruct', inputCostPer1M: 3.00, outputCostPer1M: 3.00, inputCostPer1MCents: 300, outputCostPer1MCents: 300 },
       { modelName: 'LLAMA 3 1 70B', modelId: 'accounts/fireworks/models/llama-v3p1-70b-instruct', inputCostPer1M: 0.90, outputCostPer1M: 0.90, inputCostPer1MCents: 90, outputCostPer1MCents: 90 },
       { modelName: 'LLAMA 3 1 8B', modelId: 'accounts/fireworks/models/llama-v3p1-8b-instruct', inputCostPer1M: 0.20, outputCostPer1M: 0.20, inputCostPer1MCents: 20, outputCostPer1MCents: 20 },
-      { modelName: 'LLAMA 3 2 3B', modelId: 'accounts/fireworks/models/llama-v3p2-3b-instruct', inputCostPer1M: 0.10, outputCostPer1M: 0.10, inputCostPer1MCents: 10, outputCostPer1MCents: 10 },
       { modelName: 'QWEN 2 5 72B', modelId: 'accounts/fireworks/models/qwen2p5-72b-instruct', inputCostPer1M: 0.90, outputCostPer1M: 0.90, inputCostPer1MCents: 90, outputCostPer1MCents: 90 },
     ]
   },

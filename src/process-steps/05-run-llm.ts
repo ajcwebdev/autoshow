@@ -443,9 +443,6 @@ export async function estimateLLMCost(
     if (llmService === 'deepseek' && (userModel === undefined || userModel === 'true')) {
       userModel = 'deepseek-chat'
     }
-    if (llmService === 'fireworks' && (userModel === undefined || userModel === 'true')) {
-      userModel = 'accounts/fireworks/models/llama-v3p2-3b-instruct'
-    }
     if (llmService === 'together' && (userModel === undefined || userModel === 'true')) {
       userModel = 'meta-llama/Llama-3.2-3B-Instruct-Turbo'
     }

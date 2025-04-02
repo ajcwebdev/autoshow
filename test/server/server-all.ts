@@ -3,6 +3,8 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import { l, err } from '../../src/utils/logging.ts'
+import { env } from '../../src/utils/node-utils.ts'
+import 'dotenv/config'
 
 const BASE_URL = 'http://localhost:3000'
 const OUTPUT_DIR = 'content'
@@ -14,10 +16,7 @@ const {
   ANTHROPIC_API_KEY,
   GEMINI_API_KEY,
   DEEPSEEK_API_KEY,
-} = process.env
-
-type LLMProvider = 'chatgpt' | 'claude' | 'gemini' | 'deepseek' | 'fireworks' | 'together'
-type TranscriptService = 'deepgram' | 'assembly' | 'whisper'
+} = env
 
 interface RequestData {
   type: 'file' | 'video'
@@ -25,20 +24,21 @@ interface RequestData {
   url?: string
   prompts?: string[]
   whisperModel?: string
-  transcriptServices?: TranscriptService
+  transcriptServices?: string
   speakerLabels?: boolean
-  llm?: LLMProvider
-  llmModel?: string
-  openaiApiKey?: string | undefined
-  anthropicApiKey?: string | undefined
-  geminiApiKey?: string | undefined
-  deepseekApiKey?: string | undefined
-  deepgramApiKey?: string | undefined
-  assemblyApiKey?: string | undefined
-  togetherApiKey?: string | undefined
-  fireworksApiKey?: string | undefined
+  llm?: string
+  openaiApiKey?: string
+  anthropicApiKey?: string
+  geminiApiKey?: string
+  deepseekApiKey?: string
+  deepgramApiKey?: string
+  assemblyApiKey?: string
 }
 
+/**
+ * Represents a single request configuration, including the endpoint
+ * and the expected output file names that will be used for renaming new files.
+ */
 interface Request {
   data: RequestData
   endpoint: string
@@ -46,14 +46,14 @@ interface Request {
 }
 
 const requests: Request[] = [
-  // --- FILE ENDPOINT REQUESTS ---
+  // File Endpoint Requests
   {
     data: {
       type: 'file',
       filePath: 'content/examples/audio.mp3',
     },
     endpoint: '/api/process',
-    outputFiles: ['FILE_01.md'],
+    outputFiles: ['01-file-default.md', `01-file-default.json`],
   },
   {
     data: {
@@ -62,45 +62,36 @@ const requests: Request[] = [
       whisperModel: 'tiny',
     },
     endpoint: '/api/process',
-    outputFiles: ['FILE_02.md'],
+    outputFiles: ['02-file-whisper-tiny.md', `02-file-whisper-tiny.json`],
   },
   {
     data: {
       type: 'file',
       filePath: 'content/examples/audio.mp3',
       transcriptServices: 'whisper',
+      prompts: ['titles', 'summary'],
     },
     endpoint: '/api/process',
-    outputFiles: ['FILE_03.md'],
+    outputFiles: ['03-file-prompts.md', `03-file-prompts.json`],
   },
-  {
-    data: {
-      type: 'file',
-      filePath: 'content/examples/audio.mp3',
-      prompts: ['titles'],
-      whisperModel: 'tiny',
-    },
-    endpoint: '/api/process',
-    outputFiles: ['FILE_04.md'],
-  },
-
-  // --- VIDEO ENDPOINT REQUESTS ---
+  // Video Endpoint Requests
   {
     data: {
       type: 'video',
       url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
     },
     endpoint: '/api/process',
-    outputFiles: ['FILE_05.md'],
+    outputFiles: ['04-video-default.md', '04-video-default.json'],
   },
   {
     data: {
       type: 'video',
       url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
+      prompts: ['titles', 'summary'],
       whisperModel: 'tiny',
     },
     endpoint: '/api/process',
-    outputFiles: ['FILE_06.md'],
+    outputFiles: ['05-video-whisper-tiny-prompts.md', '05-video-whisper-tiny-prompts.json'],
   },
   {
     data: {
@@ -110,7 +101,7 @@ const requests: Request[] = [
       openaiApiKey: OPENAI_API_KEY,
     },
     endpoint: '/api/process',
-    outputFiles: ['FILE_07.md'],
+    outputFiles: ['06-video-chatgpt.md', '06-video-chatgpt.json'],
   },
   {
     data: {
@@ -120,7 +111,7 @@ const requests: Request[] = [
       anthropicApiKey: ANTHROPIC_API_KEY,
     },
     endpoint: '/api/process',
-    outputFiles: ['FILE_08.md'],
+    outputFiles: ['07-video-claude.md', '07-video-claude.json'],
   },
   {
     data: {
@@ -130,7 +121,7 @@ const requests: Request[] = [
       geminiApiKey: GEMINI_API_KEY,
     },
     endpoint: '/api/process',
-    outputFiles: ['FILE_09.md'],
+    outputFiles: ['08-video-gemini.md', '08-video-gemini.json'],
   },
   {
     data: {
@@ -140,16 +131,7 @@ const requests: Request[] = [
       deepseekApiKey: DEEPSEEK_API_KEY,
     },
     endpoint: '/api/process',
-    outputFiles: ['FILE_10.md'],
-  },
-  {
-    data: {
-      type: 'video',
-      url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
-      whisperModel: 'tiny',
-    },
-    endpoint: '/api/process',
-    outputFiles: ['FILE_11.md'],
+    outputFiles: ['09-video-deepseek.md', '09-video-deepseek.json'],
   },
   {
     data: {
@@ -159,7 +141,7 @@ const requests: Request[] = [
       deepgramApiKey: DEEPGRAM_API_KEY,
     },
     endpoint: '/api/process',
-    outputFiles: ['FILE_12.md'],
+    outputFiles: ['10-video-deepgram.md', '10-video-deepgram.json'],
   },
   {
     data: {
@@ -169,7 +151,7 @@ const requests: Request[] = [
       assemblyApiKey: ASSEMBLY_API_KEY,
     },
     endpoint: '/api/process',
-    outputFiles: ['FILE_13.md'],
+    outputFiles: ['11-video-assembly.md', '11-video-assembly.json'],
   },
   {
     data: {
@@ -180,12 +162,21 @@ const requests: Request[] = [
       assemblyApiKey: ASSEMBLY_API_KEY,
     },
     endpoint: '/api/process',
-    outputFiles: ['FILE_14.md'],
+    outputFiles: ['12-video-assembly-speakers.md', '12-video-assembly-speakers.json'],
   },
 ]
 
-const fetchRequest = async (request: Request, index: number): Promise<void> => {
+/**
+ * Sends a POST request to the server with the provided data, checks for errors,
+ * logs error details if the server returns a non-OK status, and renames new files
+ * based on the output file names.
+ * 
+ * @param request - The request object containing data, endpoint, and output files
+ * @param index - The index of the request in the sequence
+ */
+const fetchRequest = async (request: Request, index: number) => {
   try {
+    // Get list of files before the request
     const filesBefore: string[] = await fs.readdir(OUTPUT_DIR)
 
     const response: Response = await fetch(`${BASE_URL}${request.endpoint}`, {
@@ -196,28 +187,38 @@ const fetchRequest = async (request: Request, index: number): Promise<void> => {
       body: JSON.stringify(request.data),
     })
     l(`\nRequest ${index + 1} response status:`, response.status)
+
+    // If the response is not ok, read the error text for better debugging
     if (!response.ok) {
+      const errorText = await response.text()
+      console.error('Error details:', errorText)
       throw new Error(`HTTP error! status: ${response.status}`)
     }
 
     const result: { message: string } = await response.json()
     l(`Request ${index + 1} result: ${result.message}`)
 
+    // Wait briefly to ensure files are written
     await new Promise((resolve) => setTimeout(resolve, 1000))
 
+    // Get list of files after the request
     const filesAfter: string[] = await fs.readdir(OUTPUT_DIR)
+
+    // Identify new files
     const newFiles: string[] = filesAfter.filter((f) => !filesBefore.includes(f))
+
+    // Sort new files to ensure consistent ordering
     newFiles.sort()
 
-    const outputFiles = request.outputFiles
+    const outputFiles: string[] = request.outputFiles
 
     if (newFiles.length > 0) {
-      for (let i = 0; i < Math.min(newFiles.length, outputFiles.length); i++) {
-        const oldFilePath = path.join(OUTPUT_DIR, newFiles[i]!)
-        const newFileName = outputFiles[i]!
-        const newFilePath = path.join(OUTPUT_DIR, newFileName)
+      for (let i = 0; i < newFiles.length; i++) {
+        const oldFilePath: string = path.join(OUTPUT_DIR, newFiles[i]!)
+        const newFileName: string = outputFiles[i] ?? `output_${i}.md`
+        const newFilePath: string = path.join(OUTPUT_DIR, newFileName)
         await fs.rename(oldFilePath, newFilePath)
-        l(`File renamed: ${oldFilePath} --> ${newFilePath}`)
+        l(`\nFile renamed:\n  - Old: ${oldFilePath}\n  - New: ${newFilePath}`)
       }
     } else {
       l('No new files to rename for this request.')
@@ -227,9 +228,15 @@ const fetchRequest = async (request: Request, index: number): Promise<void> => {
   }
 }
 
-const runAllRequests = async (): Promise<void> => {
-  for (const [i, request] of requests.entries()) {
-    await fetchRequest(request, i)
+/**
+ * Iterates over all configured requests and executes them in sequence.
+ */
+const runAllRequests = async () => {
+  for (let i = 0; i < requests.length; i++) {
+    const request = requests[i]
+    if (request) {
+      await fetchRequest(request, i)
+    }
   }
 }
 

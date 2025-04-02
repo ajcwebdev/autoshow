@@ -141,8 +141,6 @@ Example commands for all available CLI options can be found in [`docs/examples.m
 ### Node CLI and Server Backend
 
 - Main Entry Points (`src`)
-  - `commander.ts`: CLI setup using Commander.js.
-  - `commander-utils.ts`: Helper functions for CLI usage.
   - `db.ts`: Initializes the database connection via Prisma.
   - `fastify.ts`: Sets up and configures the Fastify web server.
 
@@ -151,23 +149,13 @@ Example commands for all available CLI options can be found in [`docs/examples.m
 - Process Commands (`src/process-commands`)
   - `file.ts`: Processes local audio/video files.
   - `video.ts`: Processes single YouTube videos.
-  - `urls.ts`: Processes videos listed in a URL file.
-  - `playlist.ts`: Processes YouTube playlists.
-  - `channel.ts`: Processes all videos from YouTube channels.
-  - `channel-utils.ts`: Helpers specific to YouTube channel processing.
-  - `rss.ts`: Processes podcast RSS feeds.
-  - `rss-utils.ts`: Helpers for RSS feed processing.
 
 - Process Steps (`src/process-steps`)
   - `01-generate-markdown.ts`: Creates initial markdown file with metadata.
-  - `01-generate-markdown-utils.ts`: Utility functions for the markdown generation step.
   - `02-download-audio.ts`: Downloads audio from YouTube videos.
-  - `02-download-audio-utils.ts`: Utility functions for the audio download step.
   - `03-run-transcription.ts`: Manages transcription processes.
-  - `03-run-transcription-utils.ts`: Utility functions for the transcription step.
   - `04-select-prompt.ts`: Defines prompts for summarization and chapter creation.
   - `05-run-llm.ts`: Runs language model processes based on prompts.
-  - `05-run-llm-utils.ts`: Utility functions for running language models.
 
 ### Transcription and LLM Services
 
@@ -177,12 +165,7 @@ Example commands for all available CLI options can be found in [`docs/examples.m
   - `assembly.ts`: Integration with AssemblyAI API for transcription.
 
 - Language Models (`src/llms`)
-  - `chatgpt.ts`: Integration with OpenAI's GPT models.
-  - `claude.ts`: Integration with Anthropic's Claude models.
-  - `gemini.ts`: Integration with Google's Gemini models.
-  - `fireworks.ts`: Integration with Fireworks open-source models.
-  - `together.ts`: Integration with Together open-source models.
-  - `deepseek.ts`: Integration with DeepSeek AI models.
+  - `llm-services.ts`: Integration with OpenAI's GPT, Anthropic's Claude, Google's Gemini, DeepSeek, Fireworks, and Together.
 
 ### Utility Files
 

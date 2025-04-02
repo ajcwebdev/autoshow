@@ -55,20 +55,8 @@ export type ShowNoteMetadata = {
 export type ProcessingOptions = {
   /** URL of the YouTube video to process. */
   video?: string
-  /** URL of the YouTube playlist to process. */
-  playlist?: string
-  /** URL of the YouTube channel to process. */
-  channel?: string
-  /** File path containing a list of URLs to process. */
-  urls?: string
   /** Local audio or video file path to process. */
   file?: string
-  /** URL of the podcast RSS feed to process. */
-  rss?: string | string[]
-  /** Specific items (audio URLs) from the RSS feed to process. */
-  item?: string[]
-  /** Flag to generate JSON file with RSS feed information instead of processing items. */
-  info?: boolean
   /** Flag to indicate whether to keep temporary audio WAV file after processing. */
   saveAudio?: boolean
   /** The Whisper model to use (e.g., 'tiny', 'base'). */
@@ -107,16 +95,6 @@ export type ProcessingOptions = {
   llmServices?: string
   /** The selected transcription option. */
   transcriptServices?: string
-  /** Number of items to skip in RSS feed processing. */
-  skip?: number
-  /** Order in which to process RSS feed items ('newest' or 'oldest'). */
-  order?: string
-  /** Number of most recent items to process (overrides --order and --skip). */
-  last?: number
-  /** Date of RSS items to process. */
-  date?: string[]
-  /** Number of previous days to check for RSS items to process. */
-  lastDays?: number
   /** Provide override for OpenAI API key. */
   openaiApiKey?: string
   /** Provide override for Anthropic API key. */
@@ -179,32 +157,6 @@ export type WhisperOutput = {
     }
     text: string
   }>
-}
-
-/**
- * Handler function for processing different actions (e.g., video, playlist).
- * 
- * @param options - The options containing various inputs
- * @param input - The specific input (URL or file path)
- * @param llmServices - The selected LLM service (optional)
- * @param transcriptServices - The selected transcription service (optional)
- */
-export type HandlerFunction = (
-  options: ProcessingOptions,
-  input: string,
-  llmServices?: string,
-  transcriptServices?: string
-) => Promise<void>
-
-/**
- * Video information including upload date, URL, and type.
- */
-export interface VideoInfo {
-  uploadDate: string
-  url: string
-  date: Date
-  timestamp: number
-  isLive: boolean
 }
 
 /**

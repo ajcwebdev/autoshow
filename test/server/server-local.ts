@@ -30,7 +30,7 @@ const requests: Request[] = [
       filePath: 'content/examples/audio.mp3',
     },
     endpoint: '/api/process',
-    outputFiles: ['01-file-default.md'],
+    outputFiles: ['01-file-default.md', `01-file-default.json`],
   },
   {
     data: {
@@ -39,7 +39,7 @@ const requests: Request[] = [
       whisperModel: 'tiny',
     },
     endpoint: '/api/process',
-    outputFiles: ['02-file-whisper-tiny.md'],
+    outputFiles: ['02-file-whisper-tiny.md', `02-file-whisper-tiny.json`],
   },
   {
     data: {
@@ -49,7 +49,7 @@ const requests: Request[] = [
       prompts: ['titles', 'summary'],
     },
     endpoint: '/api/process',
-    outputFiles: ['03-file-prompts.md'],
+    outputFiles: ['03-file-prompts.md', `03-file-prompts.json`],
   },
   // Video Endpoint Requests
   {
@@ -58,7 +58,7 @@ const requests: Request[] = [
       url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
     },
     endpoint: '/api/process',
-    outputFiles: ['04-video-default.md'],
+    outputFiles: ['04-video-default.md', '04-video-default.json'],
   },
   {
     data: {
@@ -68,7 +68,7 @@ const requests: Request[] = [
       whisperModel: 'tiny',
     },
     endpoint: '/api/process',
-    outputFiles: ['05-video-whisper-tiny-prompts.md'],
+    outputFiles: ['05-video-whisper-tiny-prompts.md', '05-video-whisper-tiny-prompts.json'],
   },
 ]
 

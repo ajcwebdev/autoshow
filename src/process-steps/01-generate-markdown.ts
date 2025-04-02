@@ -1,10 +1,67 @@
 // src/process-steps/01-generate-markdown.ts
 
-import { sanitizeTitle, buildFrontMatter } from './01-generate-markdown-utils.ts'
 import { l, err, logInitialFunctionCall } from '../utils/logging.ts'
 import { execFilePromise, basename, extname } from '../utils/node-utils.ts'
 
 import type { ProcessingOptions, ShowNoteMetadata } from '../../shared/types.ts'
+
+/**
+ * Sanitizes a title string for use in filenames by:
+ * - Removing special characters except spaces and hyphens
+ * - Converting spaces and underscores to hyphens
+ * - Converting to lowercase
+ * - Limiting length to 200 characters
+ * 
+ * @param {string} title - The title to sanitize.
+ * @returns {string} The sanitized title safe for use in filenames.
+ * 
+ * @example
+ * sanitizeTitle('My Video Title! (2024)') // returns 'my-video-title-2024'
+ */
+export function sanitizeTitle(title: string) {
+  return title
+    .replace(/[^\w\s-]/g, '')
+    .trim()
+    .replace(/[\s_]+/g, '-')
+    .replace(/-+/g, '-')
+    .toLowerCase()
+    .slice(0, 200)
+}
+
+/**
+ * Builds the front matter content string array from the provided metadata object
+ * 
+ * @param {object} metadata - The metadata object
+ * @param {string} metadata.showLink
+ * @param {string} metadata.channel
+ * @param {string} metadata.channelURL
+ * @param {string} metadata.title
+ * @param {string} metadata.description
+ * @param {string} metadata.publishDate
+ * @param {string} metadata.coverImage
+ * @returns {string[]} The front matter array
+ */
+export function buildFrontMatter(metadata: {
+  showLink: string
+  channel: string
+  channelURL: string
+  title: string
+  description: string
+  publishDate: string
+  coverImage: string
+}) {
+  return [
+    '---',
+    `showLink: "${metadata.showLink}"`,
+    `channel: "${metadata.channel}"`,
+    `channelURL: "${metadata.channelURL}"`,
+    `title: "${metadata.title}"`,
+    `description: "${metadata.description}"`,
+    `publishDate: "${metadata.publishDate}"`,
+    `coverImage: "${metadata.coverImage}"`,
+    '---\n',
+  ]
+}
 
 /**
  * Generates markdown content with front matter based on the provided options and input.
@@ -54,9 +111,6 @@ export async function generateMarkdown(
   const { filename, metadata } = await (async () => {
     switch (true) {
       case !!options.video:
-      case !!options.playlist:
-      case !!options.urls:
-      case !!options.channel:
         try {
           l.dim('  Extracting metadata with yt-dlp. Parsing output...')
           const { stdout } = await execFilePromise('yt-dlp', [
@@ -114,33 +168,6 @@ export async function generateMarkdown(
             description: '',
             publishDate: '',
             coverImage: '',
-          }
-        }
-
-      case !!options.rss:
-        l.dim('\n  Generating markdown for an RSS item...\n')
-        const item = input as ShowNoteMetadata
-        const {
-          publishDate,
-          title: rssTitle,
-          coverImage,
-          showLink,
-          channel: rssChannel,
-          channelURL,
-        } = item
-
-        const rssFilename = `${publishDate}-${sanitizeTitle(rssTitle)}`
-
-        return {
-          filename: rssFilename,
-          metadata: {
-            showLink: showLink,
-            channel: rssChannel,
-            channelURL: channelURL,
-            title: rssTitle,
-            description: '',
-            publishDate: publishDate,
-            coverImage: coverImage,
           }
         }
 

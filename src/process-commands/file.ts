@@ -6,8 +6,7 @@
  */
 
 import { generateMarkdown } from '../process-steps/01-generate-markdown.ts'
-import { downloadAudio } from '../process-steps/02-download-audio.ts'
-import { saveAudio } from '../process-steps/02-download-audio-utils.ts'
+import { downloadAudio, saveAudio } from '../process-steps/02-download-audio.ts'
 import { runTranscription } from '../process-steps/03-run-transcription.ts'
 import { selectPrompts } from '../process-steps/04-select-prompt.ts'
 import { runLLM } from '../process-steps/05-run-llm.ts'

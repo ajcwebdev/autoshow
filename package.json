@@ -19,7 +19,9 @@
     "setup": "bash .github/setup/setup.sh",
     "check": "npx tsc",
     "as": "npm run node:base -- src/commander.ts",
-    "test:base": "npm run node:base -- --test",
+    "test:base": "tsx --test --env-file=.env --test-reporter=spec --test-reporter-destination=spec.log --test-concurrency=1",
+    "test:main": "npm run test:base -- test/main.test.ts",
+    "test:local": "npm run test:base -- test/local.test.ts",
     "serve": "npm run node:base -- --watch src/fastify.ts",
     "local-test": "npm run node:base -- test/server-local.ts",
     "all-test": "npm run node:base -- test/server-all.ts",
@@ -57,6 +59,7 @@
   },
   "devDependencies": {
     "@types/node": "22.13.7",
+    "tsx": "4.19.3",
     "typescript": "5.8.2"
   }
 }

@@ -33,8 +33,8 @@ export function validateRequest(requestData: Record<string, unknown>) {
 
   // Collect all valid LLM service values from LLM_SERVICES_CONFIG (excluding null/skip)
   const validLlmValues = Object.values(LLM_SERVICES_CONFIG)
-    .map((service) => service.value)
-    .filter((v) => v !== null) as string[]
+    .map(service => service.value)
+    .filter(v => v !== null) as string[]
 
   // Check if a valid LLM service is provided
   const llm = requestData['llm']
@@ -47,19 +47,26 @@ export function validateRequest(requestData: Record<string, unknown>) {
   }
 
   // Collect valid transcription service values
-  const validTranscriptValues = Object.values(TRANSCRIPTION_SERVICES_CONFIG).map(s => s.value) as Array<'whisper'|'deepgram'|'assembly'>
+  const validTranscriptValues = Object.values(TRANSCRIPTION_SERVICES_CONFIG)
+    .map(s => s.value) as Array<'whisper' | 'deepgram' | 'assembly'>
+
   const transcriptServicesValue = requestData['transcriptServices'] as unknown
 
-  // Resolve transcriptServices to 'whisper', 'deepgram', or 'assembly'
-  transcriptServices = (typeof transcriptServicesValue === 'string'
-    && validTranscriptValues.includes(transcriptServicesValue as 'whisper'|'deepgram'|'assembly'))
+  // Default to 'whisper' if no recognized transcription service is provided
+  transcriptServices = (
+    typeof transcriptServicesValue === 'string' &&
+    validTranscriptValues.includes(transcriptServicesValue as 'whisper'|'deepgram'|'assembly')
+  )
     ? transcriptServicesValue as 'whisper'|'deepgram'|'assembly'
     : 'whisper'
 
-  // Pick whichever model was passed in
+  // Check if a transcript model is provided; fallback to first model if none
   const transcriptModelRaw =
     (typeof requestData['transcriptModel'] === 'string' ? requestData['transcriptModel'] : undefined)
-    || (typeof requestData[`${transcriptServices}Model`] === 'string' ? requestData[`${transcriptServices}Model`] : undefined)
+    || (typeof requestData[`${transcriptServices}Model`] === 'string'
+          ? requestData[`${transcriptServices}Model`]
+          : undefined)
+
   const transcriptModel = transcriptModelRaw as string | undefined
 
   if (transcriptServices) {
@@ -103,8 +110,6 @@ export const otherOptions: string[] = [
   'mnemonic'
 ]
 
-// Set server port from environment variable or default to 3000
-const port = Number(env['PORT']) || 3000
 
 // Explicitly set server mode for database service
 env['SERVER_MODE'] = 'true'
@@ -144,7 +149,7 @@ export const handleProcessRequest = async (
     options['walletAddress'] = walletAddress
     options['mnemonic'] = mnemonic
 
-    // Ensure the user-selected LLM model is passed through to the options object
+    // If a user-specified LLM model was passed in, ensure it is stored in options
     if (llmServices && requestData['llmModel']) {
       if (typeof llmServices === 'string' && llmServices in options) {
         options[llmServices] = requestData['llmModel']
@@ -164,9 +169,7 @@ export const handleProcessRequest = async (
         options.video = url
         const result = await processVideo(options, url, llmServices, transcriptServices)
 
-        /**
-         * Write the entire result to a .json file in the "content" directory
-         */
+        // Write the entire result to a .json file in the "content" directory
         const contentDir = join(process.cwd(), 'content')
         const timestamp = Date.now()
         const outputPath = join(contentDir, `video-${timestamp}.json`)
@@ -210,9 +213,7 @@ export const handleProcessRequest = async (
         options.file = filePath
         const result = await processFile(options, filePath, llmServices, transcriptServices)
 
-        /**
-         * Write the entire result to a .json file in the "content" directory
-         */
+        // Write the entire result to a .json file in the "content" directory
         const contentDir = join(process.cwd(), 'content')
         const timestamp = Date.now()
         const outputPath = join(contentDir, `file-${timestamp}.json`)
@@ -310,6 +311,7 @@ export const handleProcessRequest = async (
   }
 }
 
+// Retrieves a single show note by ID.
 export const getShowNote = async (request: FastifyRequest, reply: FastifyReply) => {
   try {
     const { id } = request.params as { id: string }
@@ -326,6 +328,7 @@ export const getShowNote = async (request: FastifyRequest, reply: FastifyReply) 
   }
 }
 
+// Retrieves all show notes in the database.
 export const getShowNotes = async (_request: FastifyRequest, reply: FastifyReply) => {
   try {
     // Fetch all show notes from the database
@@ -337,9 +340,14 @@ export const getShowNotes = async (_request: FastifyRequest, reply: FastifyReply
   }
 }
 
-async function start() {
+/**
+ * Builds and configures a Fastify instance without starting the server.
+ * This allows usage in tests or in a standalone environment.
+ */
+export function buildFastify() {
   const fastify = Fastify({ logger: true })
-  await fastify.register(cors, {
+
+  fastify.register(cors, {
     origin: '*',
     methods: ['GET', 'POST', 'OPTIONS'],
     allowedHeaders: ['Content-Type'],
@@ -365,13 +373,28 @@ async function start() {
   fastify.get('/show-notes', getShowNotes)
   fastify.get('/show-notes/:id', getShowNote)
 
+  return fastify
+}
+
+/**
+ * Starts the server by calling `.listen()` on the built Fastify instance.
+ * This is useful when running in a production or development environment
+ * outside of your test environment.
+ */
+export async function start() {
+  const fastify = buildFastify()
+  const port = Number(env['PORT']) || 3000
+
   try {
     await fastify.listen({ port, host: '0.0.0.0' })
     l(`\nServer running at http://localhost:${port}\n`)
-  } catch (err) {
-    fastify.log.error(err)
+  } catch (error) {
+    fastify.log.error(error)
     process.exit(1)
   }
 }
 
-start()
+// If this file is run directly (e.g. `node fastify.ts`), then start the server.
+if (import.meta.url === `file://${process.argv[1]}`) {
+  start()
+}

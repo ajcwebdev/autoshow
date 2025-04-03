@@ -1,8 +1,8 @@
 ## Server Tests
 
 ```bash
-npm run local-test
-npm run all-test
-npm run prompts-test
-npm run models-test
+npm run test:local
+npm run test:main
+npm run test:prompts
+npm run test:models
 ```

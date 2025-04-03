@@ -20,13 +20,11 @@
     "check": "npx tsc",
     "as": "npm run node:base -- src/commander.ts",
     "test:base": "tsx --test --env-file=.env --test-reporter=spec --test-reporter-destination=spec.log --test-concurrency=1",
-    "test:main": "npm run test:base -- test/main.test.ts",
     "test:local": "npm run test:base -- test/local.test.ts",
+    "test:main": "npm run test:base -- test/main.test.ts",
+    "test:models": "npm run test:base -- test/models.test.ts",
+    "test:prompts": "npm run node:base -- test/prompts.test.ts",
     "serve": "npm run node:base -- --watch src/fastify.ts",
-    "local-test": "npm run node:base -- test/server-local.ts",
-    "all-test": "npm run node:base -- test/server-all.ts",
-    "prompts-test": "npm run node:base -- test/server-prompts.ts",
-    "models-test": "npm run node:base -- test/server-models.ts",
     "docker-up": "docker-compose -f .github/docker-compose.yml --env-file .env up -d --build",
     "up": "docker-compose -f .github/docker-compose.yml --env-file .env up -d --build",
     "web": "npm run up && cd web && npm i && npm run dev",
@@ -39,7 +37,8 @@
     "get-db": "docker-compose -f .github/docker-compose.yml exec -T autoshow-postgres psql -U myuser -d mydatabase -t -q --set AUTOCOMMIT=on --set ON_ERROR_STOP=on -c 'SELECT row_to_json(s) FROM show_notes s'",
     "wipe-db": "docker-compose -f .github/docker-compose.yml exec -T autoshow-postgres psql -U myuser -d mydatabase -t -q --set AUTOCOMMIT=on --set ON_ERROR_STOP=on -c 'TRUNCATE show_notes, embeddings RESTART IDENTITY CASCADE;'",
     "railway-info": "railway list && railway status && railway volume list && railway variables -s autoshow && railway variables -s Postgres",
-    "create-data-contract": "npm run node:base -- .github/create-dash-contract.ts"
+    "create-data-contract": "npm run node:base -- .github/create-dash-contract.ts",
+    "repo": "repomix"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "0.39.0",
@@ -59,6 +58,7 @@
   },
   "devDependencies": {
     "@types/node": "22.13.7",
+    "repomix": "0.3.1",
     "tsx": "4.19.3",
     "typescript": "5.8.2"
   }

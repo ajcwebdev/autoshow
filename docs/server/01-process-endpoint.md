@@ -1,6 +1,17 @@
 # Process Endpoint
 
+## Outline
+
+- [Start Server](#start-server)
+  - [Docker Container](#docker-container)
+  - [Run Server without Docker](#run-server-without-docker)
+- [Process Types](#process-types)
+  - [Video Type](#video-type)
+  - [File Type](#file-type)
+
 ## Start Server
+
+### Docker Container
 
 Run the following command to start the server with a Docker container:
 
@@ -10,7 +21,15 @@ npm run up
 
 Once the server is running, send a `POST` request to `http://localhost:3000/api/process` containing a JSON object:
 
-## Video Type
+### Run Server without Docker
+
+```bash
+npm run serve
+```
+
+## Process Types
+
+### Video Type
 
 ```bash
 curl --json '{
@@ -40,7 +59,7 @@ curl --json '{
 }' http://localhost:3000/api/process
 ```
 
-## File Type
+### File Type
 
 ```bash
 curl --json '{

@@ -1,4 +1,4 @@
-## Server Tests
+# Server Tests
 
 ```bash
 npm run test:local

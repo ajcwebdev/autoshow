@@ -1,5 +1,10 @@
 # Dash
 
+## Outline
+
+- [Create Data Contract](#create-data-contract)
+- [Save Content on Dash Platform](#save-content-on-dash-platform)
+
 ## Create Data Contract
 
 ```bash

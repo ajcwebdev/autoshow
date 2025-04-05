@@ -1,5 +1,11 @@
 # Railway
 
+## Outline
+
+- [Setup Database on Railway](#setup-database-on-railway)
+- [Get Info](#get-info)
+- [Test Requests](#test-requests)
+
 ## Setup Database on Railway
 
 Link to staging environment in Autoshow project and deploy [`pgvector` template](https://railway.com/template/3jJFCA). Use your own team name in place of `--team Autoshow`.
@@ -20,6 +26,12 @@ Use remote Postgres database on Railway for local development:
 
 ```bash
 echo "\nDATABASE_URL=$(railway variables -s pgvector --kv | grep DATABASE_URL= | cut -d'=' -f2)?sslmode=require" >> .env
+```
+
+## Get Info
+
+```bash
+npm run railway-info
 ```
 
 ## Test Requests

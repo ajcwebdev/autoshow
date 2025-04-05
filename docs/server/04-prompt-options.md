@@ -2,12 +2,12 @@
 
 ## Outline
 
+- [Outline](#outline)
 - [Default Prompt](#default-prompt)
 - [Prompt Categories](#prompt-categories)
   - [Summaries, Chapters, and Titles](#summaries-chapters-and-titles)
   - [Takeaways, Questions, Quotes, and FAQ](#takeaways-questions-quotes-and-faq)
   - [Social Media Content, Blog Posts, and Songs](#social-media-content-blog-posts-and-songs)
-- [Print Select Prompts without Process Commands](#print-select-prompts-without-process-commands)
 - [Write a Custom Prompt](#write-a-custom-prompt)
 
 ## Default Prompt

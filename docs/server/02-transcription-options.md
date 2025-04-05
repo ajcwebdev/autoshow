@@ -1,5 +1,13 @@
 ## Transcription Options
 
+## Outline
+
+- [Transcription Options](#transcription-options)
+  - [Whisper.cpp](#whispercpp)
+  - [Deepgram](#deepgram)
+  - [Assembly](#assembly)
+  - [Estimate Transcription Cost](#estimate-transcription-cost)
+
 ### Whisper.cpp
 
 ```bash

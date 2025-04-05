@@ -1,5 +1,7 @@
 // test/server-models.ts
 
+import { describe } from 'node:test'
+import { runTestsForRequests } from './base.test.ts'
 import { env } from '../src/utils/node-utils.ts'
 
 const BASE_PATH = '/api/process'
@@ -358,3 +360,7 @@ export const requests = [
     outputFiles: ['31-together-qwen2.5-7b.md', '31-together-qwen2.5-7b.json'],
   },
 ]
+
+describe('Model Tests', () => {
+  runTestsForRequests(requests, 'models.test.ts requests')
+})

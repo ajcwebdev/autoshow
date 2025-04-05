@@ -1,5 +1,7 @@
 // test/main.test.ts
 
+import { describe } from 'node:test'
+import { runTestsForRequests } from './base.test.ts'
 import { env } from '../src/utils/node-utils.ts'
 
 const BASE_PATH = '/api/process'
@@ -169,3 +171,7 @@ export const requests = [
     ],
   },
 ]
+
+describe('Main Tests', () => {
+  runTestsForRequests(requests, 'main.test.ts requests')
+})

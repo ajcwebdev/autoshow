@@ -5,13 +5,8 @@ import { strict as assert } from 'node:assert'
 import { buildFastify } from '../src/fastify.ts'
 import { l } from '../src/utils/logging.ts'
 import { readdir, rename, join } from '../src/utils/node-utils.ts'
-import { requests as modelsRequests } from './models.test.ts'
-import { requests as localRequests } from './local.test.ts'
-import { requests as mainRequests } from './main.test.ts'
 
-const OUTPUT_DIR = 'content'
-
-function runTestsForRequests(requests, label) {
+export function runTestsForRequests(requests, label) {
   describe(label, () => {
     let app
     before(async () => {
@@ -22,6 +17,7 @@ function runTestsForRequests(requests, label) {
     })
     requests.forEach((request, index) => {
       it(`Request ${index + 1}`, async () => {
+        const OUTPUT_DIR = 'content'
         const filesBefore = await readdir(OUTPUT_DIR)
         const response = await app.inject({
           method: 'POST',
@@ -64,15 +60,3 @@ function runTestsForRequests(requests, label) {
     })
   })
 }
-
-describe('Models Tests', () => {
-  runTestsForRequests(modelsRequests, 'models.test.ts requests')
-})
-
-describe('Local Tests', () => {
-  runTestsForRequests(localRequests, 'local.test.ts requests')
-})
-
-describe('Main Tests', () => {
-  runTestsForRequests(mainRequests, 'main.test.ts requests')
-})

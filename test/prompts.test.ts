@@ -1,5 +1,7 @@
 // test/prompts.test.ts
 
+import { describe } from 'node:test'
+import { runTestsForRequests } from './base.test.ts'
 import { env } from '../src/utils/node-utils.ts'
 
 const {
@@ -242,3 +244,7 @@ export const requests = [
     outputFiles: ['21-country-song.md'],
   },
 ]
+
+describe('Prompts Tests', () => {
+  runTestsForRequests(requests, 'prompts.test.ts requests')
+})

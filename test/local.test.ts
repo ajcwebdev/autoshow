@@ -1,5 +1,9 @@
 // test/local.test.ts
 
+import { describe } from 'node:test'
+import { runTestsForRequests } from './base.test.ts'
+// import { requests } from './local.test.requests.ts'
+
 const BASE_PATH = '/api/process'
 const FILE_EXAMPLE = 'content/examples/audio.mp3'
 const VIDEO_EXAMPLE = 'https://www.youtube.com/watch?v=MORMZXEaONk'
@@ -41,3 +45,7 @@ export const requests = [
     outputFiles: ['04-video-default.md', '04-video-default.json'],
   },
 ]
+
+describe('Local Tests', () => {
+  runTestsForRequests(requests, 'local.test.ts requests')
+})

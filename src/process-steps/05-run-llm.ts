@@ -132,10 +132,10 @@ export function logLLMCost(info: {
   let modelConfig: {
     modelId: string
     modelName: string
-    inputCostPer1M?: number
-    outputCostPer1M?: number
-    inputCostPer1MCents?: number
-    outputCostPer1MCents?: number
+    inputCostD?: number
+    outputCostD?: number
+    inputCostC?: number
+    outputCostC?: number
   } | undefined
   for (const service of Object.values(LLM_SERVICES_CONFIG)) {
     for (const model of service.models) {
@@ -151,10 +151,10 @@ export function logLLMCost(info: {
   }
   const {
     modelName,
-    inputCostPer1M,
-    outputCostPer1M,
-    inputCostPer1MCents,
-    outputCostPer1MCents
+    inputCostD,
+    outputCostD,
+    inputCostC,
+    outputCostC
   } = modelConfig ?? {}
   const displayName = modelName ?? name
   l.dim(`  - ${stopReason ? `${stopReason} Reason` : 'Status'}: ${stopReason}\n  - Model: ${displayName}`)
@@ -171,8 +171,8 @@ export function logLLMCost(info: {
   if (!modelConfig) {
     console.warn(`Warning: Could not find cost configuration for model: ${modelName}`)
   } else {
-    const inCost = (typeof inputCostPer1MCents === 'number') ? inputCostPer1MCents / 100 : (inputCostPer1M || 0)
-    const outCost = (typeof outputCostPer1MCents === 'number') ? outputCostPer1MCents / 100 : (outputCostPer1M || 0)
+    const inCost = (typeof inputCostC === 'number') ? inputCostC / 100 : (inputCostD || 0)
+    const outCost = (typeof outputCostC === 'number') ? outputCostC / 100 : (outputCostD || 0)
     if (inCost < 0.0000001 && outCost < 0.0000001) {
       inputCost = 0
       outputCost = 0

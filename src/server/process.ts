@@ -6,75 +6,9 @@ import { estimateTranscriptCost } from '../process-steps/03-run-transcription.ts
 import { estimateLLMCost, runLLM } from '../process-steps/05-run-llm.ts'
 import { l, err } from '../utils/logging.ts'
 import { env, join, writeFile } from '../utils/node-utils.ts'
-import { TRANSCRIPTION_SERVICES_CONFIG, LLM_SERVICES_CONFIG } from '../../shared/constants.ts'
+import { TRANSCRIPTION_SERVICES_CONFIG } from '../../shared/constants.ts'
 import type { FastifyRequest, FastifyReply } from 'fastify'
 import type { ProcessingOptions } from '../../shared/types.ts'
-
-export function validateRequest(requestData: Record<string, unknown>) {
-  const options: ProcessingOptions = {}
-  let llmServices: string | undefined
-  let transcriptServices: 'whisper' | 'deepgram' | 'assembly' | undefined
-
-  const validLlmValues = Object.values(LLM_SERVICES_CONFIG)
-    .map(service => service.value)
-    .filter(v => v !== null) as string[]
-  const llm = requestData['llm']
-  if (typeof llm === 'string' && validLlmValues.includes(llm)) {
-    llmServices = llm
-    if (llmServices) {
-      const llmModel = requestData['llmModel']
-      options[llmServices] = (typeof llmModel === 'string' ? llmModel : true)
-    }
-  }
-
-  const validTranscriptValues = Object.values(TRANSCRIPTION_SERVICES_CONFIG)
-    .map(s => s.value) as Array<'whisper' | 'deepgram' | 'assembly'>
-  const transcriptServicesValue = requestData['transcriptServices'] as unknown
-  transcriptServices = (
-    typeof transcriptServicesValue === 'string' &&
-    validTranscriptValues.includes(transcriptServicesValue as 'whisper'|'deepgram'|'assembly')
-  )
-    ? transcriptServicesValue as 'whisper'|'deepgram'|'assembly'
-    : 'whisper'
-  const transcriptModelRaw =
-    (typeof requestData['transcriptModel'] === 'string' ? requestData['transcriptModel'] : undefined)
-    || (typeof requestData[`${transcriptServices}Model`] === 'string'
-          ? requestData[`${transcriptServices}Model`]
-          : undefined)
-  const transcriptModel = transcriptModelRaw as string | undefined
-  if (transcriptServices) {
-    const defaultModelId = TRANSCRIPTION_SERVICES_CONFIG[transcriptServices].models[0].modelId
-    options[transcriptServices] = transcriptModel ?? defaultModelId
-  }
-
-  for (const opt of otherOptions) {
-    if (requestData[opt] !== undefined) {
-      options[opt] = requestData[opt]
-    }
-  }
-
-  const result: {
-    options: ProcessingOptions
-    llmServices?: string
-    transcriptServices?: 'whisper' | 'deepgram' | 'assembly'
-  } = { options }
-  if (llmServices !== undefined) {
-    result.llmServices = llmServices
-  }
-  if (transcriptServices !== undefined) {
-    result.transcriptServices = transcriptServices
-  }
-  return result
-}
-
-export const otherOptions: string[] = [
-  'speakerLabels',
-  'prompt',
-  'saveAudio',
-  'info',
-  'walletAddress',
-  'mnemonic'
-]
 
 env['SERVER_MODE'] = 'true'
 
@@ -84,11 +18,11 @@ export const handleProcessRequest = async (
 ) => {
   l('\nEntered handleProcessRequest')
   try {
-    const requestData = request.body as Record<string, unknown>
+    const requestData = request.body as Record<string, any> || {}
     l('\nParsed request body:', requestData)
-    const type = requestData['type'] as string
-    const walletAddress = requestData['walletAddress'] as string | undefined
-    const mnemonic = requestData['mnemonic'] as string | undefined
+    const type = requestData['type']
+    const walletAddress = requestData['walletAddress']
+    const mnemonic = requestData['mnemonic']
     l(`walletAddress from request: ${walletAddress}, mnemonic from request: ${mnemonic}`)
 
     if (!['video', 'file', 'transcriptCost', 'llmCost', 'runLLM'].includes(type)) {
@@ -97,19 +31,37 @@ export const handleProcessRequest = async (
       return
     }
 
-    const { options, llmServices, transcriptServices } = validateRequest(requestData)
-    options['walletAddress'] = walletAddress
-    options['mnemonic'] = mnemonic
-
-    if (llmServices && requestData['llmModel']) {
-      if (typeof llmServices === 'string' && llmServices in options) {
-        options[llmServices] = requestData['llmModel']
+    const options: ProcessingOptions = {}
+    const otherOptions = [
+      'speakerLabels',
+      'prompt',
+      'saveAudio',
+      'info',
+      'walletAddress',
+      'mnemonic'
+    ]
+    for (const opt of otherOptions) {
+      if (requestData[opt] != null) {
+        options[opt] = requestData[opt]
       }
     }
 
+    const llmServices = requestData['llm']
+    if (llmServices) {
+      options[llmServices] = requestData['llmModel'] || true
+    }
+
+    const transcriptServicesRaw = requestData['transcriptServices'] || 'whisper'
+    const transcriptServices = transcriptServicesRaw as 'whisper' | 'deepgram' | 'assembly'
+    const modelField = requestData['transcriptModel'] || requestData[`${transcriptServices}Model`]
+    const defaultModelId = TRANSCRIPTION_SERVICES_CONFIG[transcriptServices].models[0].modelId
+    options[transcriptServices] = modelField || defaultModelId
+    options['walletAddress'] = walletAddress
+    options['mnemonic'] = mnemonic
+
     switch (type) {
       case 'video': {
-        const url = requestData['url'] as string
+        const url = requestData['url']
         if (!url) {
           reply.status(400).send({ error: 'YouTube URL is required' })
           return
@@ -120,7 +72,6 @@ export const handleProcessRequest = async (
         const timestamp = Date.now()
         const outputPath = join(contentDir, `video-${timestamp}.json`)
         await writeFile(outputPath, JSON.stringify(result, null, 2), 'utf8')
-
         reply.send({
           frontMatter: result.frontMatter,
           prompt: result.prompt,
@@ -129,9 +80,8 @@ export const handleProcessRequest = async (
         })
         break
       }
-
       case 'file': {
-        const filePath = requestData['filePath'] as string
+        const filePath = requestData['filePath']
         if (!filePath) {
           reply.status(400).send({ error: 'File path is required' })
           return
@@ -150,15 +100,10 @@ export const handleProcessRequest = async (
         })
         break
       }
-
       case 'transcriptCost': {
-        const filePath = requestData['filePath'] as string
+        const filePath = requestData['filePath']
         if (!filePath) {
           reply.status(400).send({ error: 'File path is required' })
-          return
-        }
-        if (!transcriptServices) {
-          reply.status(400).send({ error: 'Please specify a transcription service' })
           return
         }
         options.transcriptCost = filePath
@@ -167,17 +112,12 @@ export const handleProcessRequest = async (
         reply.send({ cost })
         break
       }
-
       case 'llmCost': {
         l('\n[llmCost] Received request to estimate LLM cost for service:', llmServices)
         l('[llmCost] filePath from requestData is:', requestData['filePath'])
-        const filePath = requestData['filePath'] as string
+        const filePath = requestData['filePath']
         if (!filePath) {
           reply.status(400).send({ error: 'File path is required' })
-          return
-        }
-        if (!llmServices) {
-          reply.status(400).send({ error: 'Please specify an LLM service' })
           return
         }
         options.llmCost = filePath
@@ -187,11 +127,10 @@ export const handleProcessRequest = async (
         reply.send({ cost })
         break
       }
-
       case 'runLLM': {
-        const frontMatter = requestData['frontMatter'] as string || ''
-        const prompt = requestData['prompt'] as string || ''
-        const transcript = requestData['transcript'] as string || ''
+        const frontMatter = requestData['frontMatter'] || ''
+        const prompt = requestData['prompt'] || ''
+        const transcript = requestData['transcript'] || ''
         const finalPath = `llm-run-${Date.now()}`
         const metadata = {
           showLink: '',
@@ -201,10 +140,6 @@ export const handleProcessRequest = async (
           description: '',
           publishDate: '',
           coverImage: ''
-        }
-        if (!llmServices) {
-          reply.status(400).send({ error: 'Please specify an LLM service' })
-          return
         }
         await runLLM(
           options,
@@ -219,7 +154,6 @@ export const handleProcessRequest = async (
         break
       }
     }
-
     l('\nProcess completed successfully')
   } catch (error) {
     err('Error processing request:', error)

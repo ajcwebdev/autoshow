@@ -15,7 +15,7 @@ curl --json '{
   "type": "llmCost",
   "filePath": "content/examples/audio-prompt.md",
   "llm": "chatgpt"
-}' http://localhost:3000/api/process
+}' http://localhost:3000/api/cost
 ```
 
 ```bash
@@ -23,7 +23,7 @@ curl --json '{
   "type": "llmCost",
   "filePath": "content/examples/audio-prompt.md",
   "llm": "claude"
-}' http://localhost:3000/api/process
+}' http://localhost:3000/api/cost
 ```
 
 ## Run Only LLM Process Step

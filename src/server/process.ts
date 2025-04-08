@@ -2,8 +2,7 @@
 
 import { processVideo } from '../process-commands/video.ts'
 import { processFile } from '../process-commands/file.ts'
-import { estimateTranscriptCost } from '../process-steps/03-run-transcription.ts'
-import { estimateLLMCost, runLLM } from '../process-steps/05-run-llm.ts'
+import { runLLM } from '../process-steps/05-run-llm.ts'
 import { l, err } from '../utils/logging.ts'
 import { env, join, writeFile } from '../utils/node-utils.ts'
 import { TRANSCRIPTION_SERVICES_CONFIG } from '../../shared/constants.ts'
@@ -25,7 +24,7 @@ export const handleProcessRequest = async (
     const mnemonic = requestData['mnemonic']
     l(`walletAddress from request: ${walletAddress}, mnemonic from request: ${mnemonic}`)
 
-    if (!['video', 'file', 'transcriptCost', 'llmCost', 'runLLM'].includes(type)) {
+    if (!['video', 'file', 'runLLM'].includes(type)) {
       l('Invalid or missing process type, sending 400')
       reply.status(400).send({ error: 'Valid process type is required' })
       return
@@ -50,7 +49,6 @@ export const handleProcessRequest = async (
     if (llmServices) {
       options[llmServices] = requestData['llmModel'] || true
     }
-
     const transcriptServicesRaw = requestData['transcriptServices'] || 'whisper'
     const transcriptServices = transcriptServicesRaw as 'whisper' | 'deepgram' | 'assembly'
     const modelField = requestData['transcriptModel'] || requestData[`${transcriptServices}Model`]
@@ -98,33 +96,6 @@ export const handleProcessRequest = async (
           llmOutput: result.llmOutput,
           transcript: result.transcript,
         })
-        break
-      }
-      case 'transcriptCost': {
-        const filePath = requestData['filePath']
-        if (!filePath) {
-          reply.status(400).send({ error: 'File path is required' })
-          return
-        }
-        options.transcriptCost = filePath
-        const cost = await estimateTranscriptCost(options, transcriptServices)
-        l(cost)
-        reply.send({ cost })
-        break
-      }
-      case 'llmCost': {
-        l('\n[llmCost] Received request to estimate LLM cost for service:', llmServices)
-        l('[llmCost] filePath from requestData is:', requestData['filePath'])
-        const filePath = requestData['filePath']
-        if (!filePath) {
-          reply.status(400).send({ error: 'File path is required' })
-          return
-        }
-        options.llmCost = filePath
-        l('[llmCost] calling estimateLLMCost with options:', options)
-        const cost = await estimateLLMCost(options, llmServices)
-        l('[llmCost] estimateLLMCost returned:', cost)
-        reply.send({ cost })
         break
       }
       case 'runLLM': {

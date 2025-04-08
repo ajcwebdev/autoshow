@@ -8,6 +8,7 @@ import { ENV_VARS_MAP } from '../shared/constants.ts'
 import { handleProcessRequest } from './server/process.ts'
 import { getShowNote } from './server/show-note.ts'
 import { getShowNotes } from './server/show-notes.ts'
+import { handleCostRequest } from './server/cost.ts'
 
 export function buildFastify() {
   const fastify = Fastify({ logger: true })
@@ -30,6 +31,7 @@ export function buildFastify() {
       })
     }
   })
+  fastify.post('/api/cost', handleCostRequest)
   fastify.post('/api/process', handleProcessRequest)
   fastify.get('/show-notes', getShowNotes)
   fastify.get('/show-notes/:id', getShowNote)

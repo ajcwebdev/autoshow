@@ -73,7 +73,7 @@ curl --json '{
   "type": "transcriptCost",
   "filePath": "content/examples/audio.mp3",
   "transcriptServices": "deepgram"
-}' http://localhost:3000/api/process
+}' http://localhost:3000/api/cost
 ```
 
 ```bash
@@ -81,5 +81,5 @@ curl --json '{
   "type": "transcriptCost",
   "filePath": "content/examples/audio.mp3",
   "transcriptServices": "assembly"
-}' http://localhost:3000/api/process
+}' http://localhost:3000/api/cost
 ```

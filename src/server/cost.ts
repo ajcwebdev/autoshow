@@ -1,10 +1,60 @@
 // src/server/cost.ts
 
-import { estimateTranscriptCost } from '../process-steps/03-run-transcription.ts'
-import { estimateLLMCost } from '../process-steps/05-run-llm.ts'
 import { l, err } from '../utils/logging.ts'
+import { execPromise, readFile } from '../utils/node-utils.ts'
+import { TRANSCRIPTION_SERVICES_CONFIG, LLM_SERVICES_CONFIG } from '../../shared/constants.ts'
+
 import type { FastifyRequest, FastifyReply } from 'fastify'
-import type { ProcessingOptions } from '../../shared/types.ts'
+
+// Gets audio duration in seconds via ffprobe
+async function getAudioDurationInSeconds(filePath: string) {
+  const cmd = `ffprobe -v error -show_entries format=duration -of csv=p=0 "${filePath}"`
+  const { stdout } = await execPromise(cmd)
+  const seconds = parseFloat(stdout.trim())
+  if (isNaN(seconds)) {
+    throw new Error(`Could not parse audio duration for file: ${filePath}`)
+  }
+  return seconds
+}
+
+// Computes cost for all transcription services/models
+async function computeAllTranscriptCosts(filePath: string) {
+  const seconds = await getAudioDurationInSeconds(filePath)
+  const minutes = seconds / 60
+  const result: Record<string, Array<{ modelId: string, cost: number }>> = {}
+  for (const [serviceName, config] of Object.entries(TRANSCRIPTION_SERVICES_CONFIG)) {
+    result[serviceName] = []
+    for (const model of config.models) {
+      const cost = model.costPerMinuteCents * minutes
+      result[serviceName].push({ modelId: model.modelId, cost: parseFloat(cost.toFixed(5)) })
+    }
+  }
+  return result
+}
+
+// Roughly calculates cost for all LLM services/models using the total tokens approach
+async function computeAllLLMCosts(filePath: string) {
+  const content = await readFile(filePath, 'utf8')
+  const tokenCount = Math.max(1, content.trim().split(/\s+/).length)
+  const estimatedOutputTokens = 4000
+  const result: Record<string, Array<{ modelId: string, cost: number }>> = {}
+  for (const [serviceName, config] of Object.entries(LLM_SERVICES_CONFIG)) {
+    // skip if no models
+    if (!config.models || config.models.length === 0) {
+      continue
+    }
+    result[serviceName] = []
+    for (const model of config.models) {
+      const inputCostRate = (model.inputCostC || 0) / 100
+      const outputCostRate = (model.outputCostC || 0) / 100
+      const inputCost = (tokenCount / 1_000_000) * inputCostRate
+      const outputCost = (estimatedOutputTokens / 1_000_000) * outputCostRate
+      const totalCost = parseFloat((inputCost + outputCost).toFixed(5))
+      result[serviceName].push({ modelId: model.modelId, cost: totalCost })
+    }
+  }
+  return result
+}
 
 export async function handleCostRequest(request: FastifyRequest, reply: FastifyReply) {
   try {
@@ -15,36 +65,18 @@ export async function handleCostRequest(request: FastifyRequest, reply: FastifyR
       return
     }
     l('\nEntered handleCostRequest for cost calculations')
-    const options: ProcessingOptions = {}
-    const otherOptions = ['speakerLabels', 'prompt', 'saveAudio', 'info', 'walletAddress', 'mnemonic']
-    for (const opt of otherOptions) {
-      if (requestData[opt] != null) {
-        options[opt] = requestData[opt]
-      }
-    }
-    const transcriptServicesRaw = requestData['transcriptServices'] || 'whisper'
-    if (type === 'transcriptCost') {
-      const modelField = requestData['transcriptModel'] || requestData[`${transcriptServicesRaw}Model`]
-      options[transcriptServicesRaw] = modelField
-    }
-    const llmServices = requestData['llm']
-    if (type === 'llmCost' && llmServices) {
-      options[llmServices] = requestData['llmModel'] || true
-    }
     const filePath = requestData['filePath']
     if (!filePath) {
-      reply.status(400).send({ error: 'File path is required' })
+      reply.status(400).send({ error: 'File path (or URL for audio) is required' })
       return
     }
-    let cost
     if (type === 'transcriptCost') {
-      options.transcriptCost = filePath
-      cost = await estimateTranscriptCost(options, transcriptServicesRaw)
+      const costResults = await computeAllTranscriptCosts(filePath)
+      reply.send({ transcriptCost: costResults })
     } else {
-      options.llmCost = filePath
-      cost = await estimateLLMCost(options, llmServices)
+      const costResults = await computeAllLLMCosts(filePath)
+      reply.send({ llmCost: costResults })
     }
-    reply.send({ cost })
   } catch (error) {
     err('Error processing cost request:', error)
     reply.status(500).send({ error: 'An error occurred while processing the cost request' })

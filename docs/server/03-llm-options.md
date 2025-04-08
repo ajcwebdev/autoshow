@@ -13,16 +13,7 @@
 ```bash
 curl --json '{
   "type": "llmCost",
-  "filePath": "content/examples/audio-prompt.md",
-  "llm": "chatgpt"
-}' http://localhost:3000/api/cost
-```
-
-```bash
-curl --json '{
-  "type": "llmCost",
-  "filePath": "content/examples/audio-prompt.md",
-  "llm": "claude"
+  "filePath": "content/examples/audio-prompt.md"
 }' http://localhost:3000/api/cost
 ```
 

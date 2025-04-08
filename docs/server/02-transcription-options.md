@@ -71,15 +71,6 @@ curl --json '{
 ```bash
 curl --json '{
   "type": "transcriptCost",
-  "filePath": "content/examples/audio.mp3",
-  "transcriptServices": "deepgram"
-}' http://localhost:3000/api/cost
-```
-
-```bash
-curl --json '{
-  "type": "transcriptCost",
-  "filePath": "content/examples/audio.mp3",
-  "transcriptServices": "assembly"
+  "filePath": "content/examples/audio.mp3"
 }' http://localhost:3000/api/cost
 ```

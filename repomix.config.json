@@ -43,7 +43,6 @@
       "new-*.md",
       "new*.md",
       "package-lock.json",
-      "package.json",
       "railway.json",
       "README.md",
       "repomix.config.json",

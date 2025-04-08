@@ -4,12 +4,12 @@ import { describe } from 'node:test'
 import { runTestsForRequests } from './base.test.ts'
 import { env } from '../src/utils/node-utils.ts'
 
+const BASE_PATH = '/api/process'
+const FILE_EXAMPLE = 'content/examples/audio.mp3'
+
 const {
   DEEPSEEK_API_KEY
 } = env
-
-const BASE_PATH = '/api/process'
-const FILE_EXAMPLE = 'content/examples/audio.mp3'
 
 export const requests = [
   {
@@ -21,7 +21,7 @@ export const requests = [
       deepseekApiKey: DEEPSEEK_API_KEY,
     },
     endpoint: BASE_PATH,
-    outputFiles: ['01-titles.md'],
+    outputFiles: ['01-titles.md', '01-titles.json'],
   },
   {
     data: {
@@ -32,7 +32,7 @@ export const requests = [
       deepseekApiKey: DEEPSEEK_API_KEY,
     },
     endpoint: BASE_PATH,
-    outputFiles: ['02-summary.md'],
+    outputFiles: ['02-summary.md', '02-summary.json'],
   },
   {
     data: {
@@ -43,7 +43,7 @@ export const requests = [
       deepseekApiKey: DEEPSEEK_API_KEY,
     },
     endpoint: BASE_PATH,
-    outputFiles: ['03-short-summary.md'],
+    outputFiles: ['03-short-summary.md', '03-short-summary.json'],
   },
   {
     data: {
@@ -54,7 +54,7 @@ export const requests = [
       deepseekApiKey: DEEPSEEK_API_KEY,
     },
     endpoint: BASE_PATH,
-    outputFiles: ['04-long-summary.md'],
+    outputFiles: ['04-long-summary.md', '04-long-summary.json'],
   },
   {
     data: {
@@ -65,7 +65,7 @@ export const requests = [
       deepseekApiKey: DEEPSEEK_API_KEY,
     },
     endpoint: BASE_PATH,
-    outputFiles: ['05-bullet-points.md'],
+    outputFiles: ['05-bullet-points.md', '05-bullet-points.json'],
   },
   {
     data: {
@@ -76,7 +76,7 @@ export const requests = [
       deepseekApiKey: DEEPSEEK_API_KEY,
     },
     endpoint: BASE_PATH,
-    outputFiles: ['06-quotes.md'],
+    outputFiles: ['06-quotes.md', '06-quotes.json'],
   },
   {
     data: {
@@ -87,7 +87,7 @@ export const requests = [
       deepseekApiKey: DEEPSEEK_API_KEY,
     },
     endpoint: BASE_PATH,
-    outputFiles: ['07-chapter-titles-quotes.md'],
+    outputFiles: ['07-chapter-titles-quotes.md', '07-chapter-titles-quotes.json'],
   },
   {
     data: {
@@ -98,7 +98,7 @@ export const requests = [
       deepseekApiKey: DEEPSEEK_API_KEY,
     },
     endpoint: BASE_PATH,
-    outputFiles: ['08-social-x.md'],
+    outputFiles: ['08-social-x.md', '08-social-x.json'],
   },
   {
     data: {
@@ -109,7 +109,7 @@ export const requests = [
       deepseekApiKey: DEEPSEEK_API_KEY,
     },
     endpoint: BASE_PATH,
-    outputFiles: ['09-social-facebook.md'],
+    outputFiles: ['09-social-facebook.md', '09-social-facebook.json'],
   },
   {
     data: {
@@ -120,7 +120,7 @@ export const requests = [
       deepseekApiKey: DEEPSEEK_API_KEY,
     },
     endpoint: BASE_PATH,
-    outputFiles: ['10-social-linkedin.md'],
+    outputFiles: ['10-social-linkedin.md', '10-social-linkedin.json'],
   },
   {
     data: {
@@ -131,7 +131,7 @@ export const requests = [
       deepseekApiKey: DEEPSEEK_API_KEY,
     },
     endpoint: BASE_PATH,
-    outputFiles: ['11-chapter-titles.md'],
+    outputFiles: ['11-chapter-titles.md', '11-chapter-titles.json'],
   },
   {
     data: {
@@ -142,7 +142,7 @@ export const requests = [
       deepseekApiKey: DEEPSEEK_API_KEY,
     },
     endpoint: BASE_PATH,
-    outputFiles: ['12-short-chapters.md'],
+    outputFiles: ['12-short-chapters.md', '12-short-chapters.json'],
   },
   {
     data: {
@@ -153,7 +153,7 @@ export const requests = [
       deepseekApiKey: DEEPSEEK_API_KEY,
     },
     endpoint: BASE_PATH,
-    outputFiles: ['13-medium-chapters.md'],
+    outputFiles: ['13-medium-chapters.md', '13-medium-chapters.json'],
   },
   {
     data: {
@@ -164,7 +164,7 @@ export const requests = [
       deepseekApiKey: DEEPSEEK_API_KEY,
     },
     endpoint: BASE_PATH,
-    outputFiles: ['14-long-chapters.md'],
+    outputFiles: ['14-long-chapters.md', '14-long-chapters.json'],
   },
   {
     data: {
@@ -175,7 +175,7 @@ export const requests = [
       deepseekApiKey: DEEPSEEK_API_KEY,
     },
     endpoint: BASE_PATH,
-    outputFiles: ['15-takeaways.md'],
+    outputFiles: ['15-takeaways.md', '15-takeaways.json'],
   },
   {
     data: {
@@ -186,7 +186,7 @@ export const requests = [
       deepseekApiKey: DEEPSEEK_API_KEY,
     },
     endpoint: BASE_PATH,
-    outputFiles: ['16-questions.md'],
+    outputFiles: ['16-questions.md', '16-questions.json'],
   },
   {
     data: {
@@ -197,7 +197,7 @@ export const requests = [
       deepseekApiKey: DEEPSEEK_API_KEY,
     },
     endpoint: BASE_PATH,
-    outputFiles: ['17-faq.md'],
+    outputFiles: ['17-faq.md', '17-faq.json'],
   },
   {
     data: {
@@ -208,7 +208,7 @@ export const requests = [
       deepseekApiKey: DEEPSEEK_API_KEY,
     },
     endpoint: BASE_PATH,
-    outputFiles: ['18-blog.md'],
+    outputFiles: ['18-blog.md', '18-blog.json'],
   },
   {
     data: {
@@ -219,7 +219,7 @@ export const requests = [
       deepseekApiKey: DEEPSEEK_API_KEY,
     },
     endpoint: BASE_PATH,
-    outputFiles: ['19-rap-song.md'],
+    outputFiles: ['19-rap-song.md', '19-rap-song.json'],
   },
   {
     data: {
@@ -230,7 +230,7 @@ export const requests = [
       deepseekApiKey: DEEPSEEK_API_KEY,
     },
     endpoint: BASE_PATH,
-    outputFiles: ['20-rock-song.md'],
+    outputFiles: ['20-rock-song.md', '20-rock-song.json'],
   },
   {
     data: {
@@ -241,7 +241,7 @@ export const requests = [
       deepseekApiKey: DEEPSEEK_API_KEY,
     },
     endpoint: BASE_PATH,
-    outputFiles: ['21-country-song.md'],
+    outputFiles: ['21-country-song.md', '21-country-song.json'],
   },
 ]
 

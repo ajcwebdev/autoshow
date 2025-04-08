@@ -80,6 +80,19 @@ export const requests = [
   },
   {
     data: {
+      type: 'file',
+      filePath: FILE_EXAMPLE,
+      llm: 'chatgpt',
+      openaiApiKey: OPENAI_API_KEY,
+    },
+    endpoint: BASE_PATH,
+    outputFiles: [
+      '06a-file-chatgpt.md',
+      '06a-file-chatgpt.json'
+    ],
+  },
+  {
+    data: {
       type: 'video',
       url: VIDEO_EXAMPLE,
       llm: 'chatgpt',

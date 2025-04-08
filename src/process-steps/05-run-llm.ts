@@ -132,8 +132,6 @@ export function logLLMCost(info: {
   let modelConfig: {
     modelId: string
     modelName: string
-    inputCostD?: number
-    outputCostD?: number
     inputCostC?: number
     outputCostC?: number
   } | undefined
@@ -151,8 +149,6 @@ export function logLLMCost(info: {
   }
   const {
     modelName,
-    inputCostD,
-    outputCostD,
     inputCostC,
     outputCostC
   } = modelConfig ?? {}
@@ -171,8 +167,8 @@ export function logLLMCost(info: {
   if (!modelConfig) {
     console.warn(`Warning: Could not find cost configuration for model: ${modelName}`)
   } else {
-    const inCost = (typeof inputCostC === 'number') ? inputCostC / 100 : (inputCostD || 0)
-    const outCost = (typeof outputCostC === 'number') ? outputCostC / 100 : (outputCostD || 0)
+    const inCost = (typeof inputCostC === 'number') ? inputCostC / 100 : 0
+    const outCost = (typeof outputCostC === 'number') ? outputCostC / 100 : 0
     if (inCost < 0.0000001 && outCost < 0.0000001) {
       inputCost = 0
       outputCost = 0
@@ -217,30 +213,6 @@ export function logLLMCost(info: {
     l.dim(`  - Cost Breakdown:\n    - ${costLines.join('\n    - ')}`)
   }
   return { inputCost, outputCost, totalCost }
-}
-
-export async function retryLLMCall(fn: () => Promise<any>) {
-  const maxRetries = 7
-  let attempt = 0
-  while (attempt < maxRetries) {
-    try {
-      attempt++
-      l.dim(`  Attempt ${attempt} - Processing LLM call...\n`)
-      const result = await fn()
-      l.dim(`\n  LLM call completed successfully on attempt ${attempt}.`)
-      return result
-    } catch (error) {
-      err(`  Attempt ${attempt} failed: ${(error as Error).message}`)
-      if (attempt >= maxRetries) {
-        err(`  Max retries (${maxRetries}) reached. Aborting LLM processing.`)
-        throw error
-      }
-      const delayMs = 1000 * 2 ** (attempt - 1)
-      l.dim(`  Retrying in ${delayMs / 1000} seconds...`)
-      await new Promise((resolve) => setTimeout(resolve, delayMs))
-    }
-  }
-  throw new Error('LLM call failed after maximum retries.')
 }
 
 export async function estimateLLMCost(
@@ -293,4 +265,28 @@ export async function estimateLLMCost(
     err(`Error estimating LLM cost: ${(error as Error).message}`)
     throw error
   }
+}
+
+export async function retryLLMCall(fn: () => Promise<any>) {
+  const maxRetries = 7
+  let attempt = 0
+  while (attempt < maxRetries) {
+    try {
+      attempt++
+      l.dim(`  Attempt ${attempt} - Processing LLM call...\n`)
+      const result = await fn()
+      l.dim(`\n  LLM call completed successfully on attempt ${attempt}.`)
+      return result
+    } catch (error) {
+      err(`  Attempt ${attempt} failed: ${(error as Error).message}`)
+      if (attempt >= maxRetries) {
+        err(`  Max retries (${maxRetries}) reached. Aborting LLM processing.`)
+        throw error
+      }
+      const delayMs = 1000 * 2 ** (attempt - 1)
+      l.dim(`  Retrying in ${delayMs / 1000} seconds...`)
+      await new Promise((resolve) => setTimeout(resolve, delayMs))
+    }
+  }
+  throw new Error('LLM call failed after maximum retries.')
 }

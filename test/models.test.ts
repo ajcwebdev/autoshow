@@ -6,6 +6,7 @@ import { env } from '../src/utils/node-utils.ts'
 
 const BASE_PATH = '/api/process'
 const FILE_EXAMPLE = 'content/examples/audio.mp3'
+
 const {
   DEEPGRAM_API_KEY,
   ASSEMBLY_API_KEY,

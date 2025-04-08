@@ -2,7 +2,6 @@
 
 import { describe } from 'node:test'
 import { runTestsForRequests } from './base.test.ts'
-// import { requests } from './local.test.requests.ts'
 
 const BASE_PATH = '/api/process'
 const FILE_EXAMPLE = 'content/examples/audio.mp3'

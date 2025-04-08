@@ -2,7 +2,7 @@
 
 import { l, err } from '../utils/logging.ts'
 import { readFile, env } from '../utils/node-utils.ts'
-import { TRANSCRIPTION_SERVICES_CONFIG } from '../../shared/constants.ts'
+import { T_CONFIG } from '../../shared/constants.ts'
 
 import type { ProcessingOptions } from '../../shared/types.ts'
 
@@ -89,14 +89,14 @@ export async function callAssembly(
     const { speakerLabels } = options
     const audioFilePath = `${finalPath}.wav`
 
-    const defaultAssemblyModel = TRANSCRIPTION_SERVICES_CONFIG.assembly.models.find(m => m.modelId === 'best')?.modelId || 'best'
+    const defaultAssemblyModel = T_CONFIG.assembly.models.find(m => m.modelId === 'best')?.modelId || 'best'
     const assemblyModel = typeof options.assembly === 'string'
       ? options.assembly
       : defaultAssemblyModel
 
     const modelInfo = 
-      TRANSCRIPTION_SERVICES_CONFIG.assembly.models.find(m => m.modelId.toLowerCase() === assemblyModel.toLowerCase())
-      || TRANSCRIPTION_SERVICES_CONFIG.assembly.models.find(m => m.modelId === 'best')
+      T_CONFIG.assembly.models.find(m => m.modelId.toLowerCase() === assemblyModel.toLowerCase())
+      || T_CONFIG.assembly.models.find(m => m.modelId === 'best')
 
     if (!modelInfo) {
       throw new Error(`Model information for model ${assemblyModel} is not available.`)

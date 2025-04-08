@@ -2,7 +2,7 @@
 
 import { l, err } from '../utils/logging.ts'
 import { readFile, unlink, execPromise, existsSync } from '../utils/node-utils.ts'
-import { TRANSCRIPTION_SERVICES_CONFIG } from '../../shared/constants.ts'
+import { T_CONFIG } from '../../shared/constants.ts'
 
 import type { ProcessingOptions, WhisperOutput } from '../../shared/types.ts'
 
@@ -115,7 +115,7 @@ export async function callWhisper(
         ? 'base'
         : (() => { throw new Error('Invalid whisper option') })()
 
-    const whisperModels = TRANSCRIPTION_SERVICES_CONFIG.whisper.models
+    const whisperModels = T_CONFIG.whisper.models
     const chosenModel = whisperModels.find(m => m.modelId === whisperModel)
       ?? (() => { throw new Error(`Unknown model type: ${whisperModel}`) })()
 

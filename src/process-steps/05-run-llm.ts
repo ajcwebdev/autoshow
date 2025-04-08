@@ -3,8 +3,8 @@
 import { dbService } from '../db.ts'
 import chalk from 'chalk'
 import { l, err, logInitialFunctionCall } from '../utils/logging.ts'
-import { writeFile, env, readFile } from '../utils/node-utils.ts'
-import { LLM_SERVICES_CONFIG } from '../../shared/constants.ts'
+import { writeFile, env } from '../utils/node-utils.ts'
+import { L_CONFIG } from '../../shared/constants.ts'
 import { callChatGPT, callClaude, callGemini, callDeepSeek, callFireworks, callTogether } from '../llms/llm-services.ts'
 import type { ChatGPTModelValue, ClaudeModelValue, GeminiModelValue, DeepSeekModelValue, FireworksModelValue, TogetherModelValue } from '../llms/llm-services.ts'
 import type { ProcessingOptions, ShowNoteMetadata, LLMResult } from '../../shared/types.ts'
@@ -34,7 +34,7 @@ export async function runLLM(
 
     if (llmServices) {
       l.dim(`\n  Preparing to process with '${llmServices}' Language Model...\n`)
-      const config = LLM_SERVICES_CONFIG[llmServices as keyof typeof LLM_SERVICES_CONFIG]
+      const config = L_CONFIG[llmServices as keyof typeof L_CONFIG]
       if (!config) {
         throw new Error(`Unknown LLM service: ${llmServices}`)
       }
@@ -145,7 +145,7 @@ export function logLLMCost(info: {
   const { input, output, total } = tokenUsage
   let modelConfig
 
-  for (const service of Object.values(LLM_SERVICES_CONFIG)) {
+  for (const service of Object.values(L_CONFIG)) {
     for (const model of service.models) {
       if (
         model.modelId === name ||
@@ -233,64 +233,6 @@ export function logLLMCost(info: {
   }
 
   return { inputCost, outputCost, totalCost }
-}
-
-export async function estimateLLMCost(
-  options: ProcessingOptions,
-  llmService: string
-) {
-  const filePath = options.llmCost
-  if (!filePath) {
-    throw new Error('No file path provided to estimate LLM cost.')
-  }
-  l.dim(`\nEstimating LLM cost for '${llmService}' with file: ${filePath}`)
-
-  try {
-    l.dim('[estimateLLMCost] reading file for cost estimate...')
-    const content = await readFile(filePath, 'utf8')
-    l.dim('[estimateLLMCost] file content length:', content.length)
-    const tokenCount = Math.max(1, content.trim().split(/\s+/).length)
-    l.dim('[estimateLLMCost] approximate token count:', tokenCount)
-
-    let userModel = typeof options[llmService] === 'string'
-      ? options[llmService] as string
-      : undefined
-
-    if (llmService === 'chatgpt' && (userModel === undefined || userModel === 'true')) {
-      userModel = 'gpt-4o-mini'
-    }
-    if (llmService === 'claude' && (userModel === undefined || userModel === 'true')) {
-      userModel = 'claude-3-5-haiku-latest'
-    }
-    if (llmService === 'gemini' && (userModel === undefined || userModel === 'true')) {
-      userModel = 'gemini-1.5-flash'
-    }
-    if (llmService === 'deepseek' && (userModel === undefined || userModel === 'true')) {
-      userModel = 'deepseek-chat'
-    }
-    if (llmService === 'together' && (userModel === undefined || userModel === 'true')) {
-      userModel = 'meta-llama/Llama-3.2-3B-Instruct-Turbo'
-    }
-
-    l.dim('[estimateLLMCost] determined userModel:', userModel)
-
-    const name = userModel || llmService
-    const costInfo = logLLMCost({
-      name,
-      stopReason: 'n/a',
-      tokenUsage: {
-        input: tokenCount,
-        output: 4000,
-        total: tokenCount
-      }
-    })
-
-    l.dim('[estimateLLMCost] final cost estimate (totalCost):', costInfo.totalCost)
-    return costInfo.totalCost ?? 0
-  } catch (error) {
-    err(`Error estimating LLM cost: ${(error as Error).message}`)
-    throw error
-  }
 }
 
 export async function retryLLMCall(fn: () => Promise<any>) {

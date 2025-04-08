@@ -85,7 +85,7 @@ export const PROMPT_CHOICES: Array<{ name: string; value: string }> = [
  * @property {string} label - The user-facing label for the service
  * @property {Array<TranscriptionModel>} models - The models available under this service
  */
-export const TRANSCRIPTION_SERVICES_CONFIG = {
+export const T_CONFIG = {
   whisper: {
     serviceName: 'Whisper.cpp',
     value: 'whisper',
@@ -150,7 +150,7 @@ export const TRANSCRIPTION_SERVICES_CONFIG = {
  * @property {string} [apiKeyPropName] - The request body property name for the API key
  * @property {Array<LLMModel>} models - The models available under this service
  */
-export const LLM_SERVICES_CONFIG = {
+export const L_CONFIG = {
   skip: {
     serviceName: 'Skip LLM Processing',
     value: null,

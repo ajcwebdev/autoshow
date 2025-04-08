@@ -11,7 +11,7 @@ import type {
   AlertProps, ResultType, FormProps, ProcessTypeEnum
 } from "@/types"
 
-import { TRANSCRIPTION_SERVICES_CONFIG, LLM_SERVICES_CONFIG } from '../../../shared/constants.ts'
+import { T_CONFIG, L_CONFIG } from '../../../shared/constants.ts'
 
 /**
  * Displays a styled alert message based on a variant type.
@@ -71,7 +71,7 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
 
     try {
       const costs: Array<{ service: string, cost: any }> = []
-      for (const svc of Object.values(TRANSCRIPTION_SERVICES_CONFIG)) {
+      for (const svc of Object.values(T_CONFIG)) {
         if (!svc.value) continue
 
         const body: Record<string, unknown> = {
@@ -181,7 +181,7 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
       const combinedFilePath = 'combined-transcript-and-prompts.txt'
       const costs: Array<{ service: string, cost: any }> = []
 
-      for (const svc of Object.values(LLM_SERVICES_CONFIG)) {
+      for (const svc of Object.values(L_CONFIG)) {
         if (!svc.value) continue
 
         const body: Record<string, unknown> = {
@@ -193,12 +193,12 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
         }
 
         // Cast svc.value to the LLM service's key type
-        const svcKey = svc.value as keyof typeof LLM_SERVICES_CONFIG
+        const svcKey = svc.value as keyof typeof L_CONFIG
         if (
           selectedLlmApiKeyService === svc.value &&
-          'apiKeyPropName' in LLM_SERVICES_CONFIG[svcKey]
+          'apiKeyPropName' in L_CONFIG[svcKey]
         ) {
-          const serviceConfig = LLM_SERVICES_CONFIG[svcKey as keyof typeof LLM_SERVICES_CONFIG];
+          const serviceConfig = L_CONFIG[svcKey as keyof typeof L_CONFIG];
           if ('apiKeyPropName' in serviceConfig) {
             body[serviceConfig.apiKeyPropName] = llmApiKey;
           }
@@ -247,10 +247,10 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
         mnemonic,
       }
 
-      const chosenKey = chosenLlm as keyof typeof LLM_SERVICES_CONFIG
+      const chosenKey = chosenLlm as keyof typeof L_CONFIG
       if (selectedLlmApiKeyService === chosenLlm && 
-          'apiKeyPropName' in LLM_SERVICES_CONFIG[chosenKey]) {
-        const serviceConfig = LLM_SERVICES_CONFIG[chosenKey];
+          'apiKeyPropName' in L_CONFIG[chosenKey]) {
+        const serviceConfig = L_CONFIG[chosenKey];
         if ('apiKeyPropName' in serviceConfig && typeof serviceConfig.apiKeyPropName === 'string') {
           requestBody[serviceConfig.apiKeyPropName] = llmApiKey;
         }

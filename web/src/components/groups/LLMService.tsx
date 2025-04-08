@@ -1,10 +1,10 @@
 // web/src/components/groups/LLMService.tsx
 
 import React from 'react'
-import { LLM_SERVICES_CONFIG } from '../../../../shared/constants.ts'
+import { L_CONFIG } from '../../../../shared/constants.ts'
 
 // Define the LLMServiceKey type
-type LLMServiceKey = keyof typeof LLM_SERVICES_CONFIG;
+type LLMServiceKey = keyof typeof L_CONFIG;
 
 /**
  * The LLMService component provides a dropdown for selecting the LLM service,
@@ -47,17 +47,17 @@ export const LLMService: React.FC<{
   * Automatically set the first model from the chosen service's array if none is selected.
   */
  React.useEffect(() => {
-   if (llmService && LLM_SERVICES_CONFIG[llmService]?.models?.length && !llmModel) {
-     setLlmModel(LLM_SERVICES_CONFIG[llmService].models[0].modelId)
+   if (llmService && L_CONFIG[llmService]?.models?.length && !llmModel) {
+     setLlmModel(L_CONFIG[llmService].models[0].modelId)
    }
  }, [llmService, llmModel, setLlmModel])
 
  // Build an array of services from the config (excluding "skip" which has null value)
- const allServices = Object.values(LLM_SERVICES_CONFIG).filter((s) => s.value)
+ const allServices = Object.values(L_CONFIG).filter((s) => s.value)
 
  // Get the models for the selected service
  const modelsForService = llmService
-   ? LLM_SERVICES_CONFIG[llmService]?.models ?? []
+   ? L_CONFIG[llmService]?.models ?? []
    : []
 
  return (

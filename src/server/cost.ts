@@ -2,7 +2,7 @@
 
 import { l, err } from '../utils/logging.ts'
 import { execPromise, readFile } from '../utils/node-utils.ts'
-import { TRANSCRIPTION_SERVICES_CONFIG, LLM_SERVICES_CONFIG } from '../../shared/constants.ts'
+import { T_CONFIG, L_CONFIG } from '../../shared/constants.ts'
 
 import type { FastifyRequest, FastifyReply } from 'fastify'
 
@@ -22,7 +22,7 @@ async function computeAllTranscriptCosts(filePath: string) {
   const seconds = await getAudioDurationInSeconds(filePath)
   const minutes = seconds / 60
   const result: Record<string, Array<{ modelId: string, cost: number }>> = {}
-  for (const [serviceName, config] of Object.entries(TRANSCRIPTION_SERVICES_CONFIG)) {
+  for (const [serviceName, config] of Object.entries(T_CONFIG)) {
     result[serviceName] = []
     for (const model of config.models) {
       const cost = model.costPerMinuteCents * minutes
@@ -38,7 +38,7 @@ async function computeAllLLMCosts(filePath: string) {
   const tokenCount = Math.max(1, content.trim().split(/\s+/).length)
   const estimatedOutputTokens = 4000
   const result: Record<string, Array<{ modelId: string, cost: number }>> = {}
-  for (const [serviceName, config] of Object.entries(LLM_SERVICES_CONFIG)) {
+  for (const [serviceName, config] of Object.entries(L_CONFIG)) {
     // skip if no models
     if (!config.models || config.models.length === 0) {
       continue

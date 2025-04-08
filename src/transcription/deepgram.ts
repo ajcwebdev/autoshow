@@ -2,7 +2,7 @@
 
 import { l, err } from '../utils/logging.ts'
 import { readFile, env } from '../utils/node-utils.ts'
-import { TRANSCRIPTION_SERVICES_CONFIG } from '../../shared/constants.ts'
+import { T_CONFIG } from '../../shared/constants.ts'
 
 import type { ProcessingOptions } from '../../shared/types.ts'
 
@@ -105,14 +105,14 @@ export async function callDeepgram(
   }
 
   try {
-    const defaultDeepgramModel = TRANSCRIPTION_SERVICES_CONFIG.deepgram.models.find(m => m.modelId === 'nova-2')?.modelId || 'nova-2'
+    const defaultDeepgramModel = T_CONFIG.deepgram.models.find(m => m.modelId === 'nova-2')?.modelId || 'nova-2'
     const deepgramModel = typeof options.deepgram === 'string'
       ? options.deepgram
       : defaultDeepgramModel
 
     const modelInfo =
-      TRANSCRIPTION_SERVICES_CONFIG.deepgram.models.find(m => m.modelId.toLowerCase() === deepgramModel.toLowerCase())
-      || TRANSCRIPTION_SERVICES_CONFIG.deepgram.models.find(m => m.modelId === 'nova-2')
+      T_CONFIG.deepgram.models.find(m => m.modelId.toLowerCase() === deepgramModel.toLowerCase())
+      || T_CONFIG.deepgram.models.find(m => m.modelId === 'nova-2')
 
     if (!modelInfo) {
       throw new Error(`Model information for model ${deepgramModel} is not defined.`)

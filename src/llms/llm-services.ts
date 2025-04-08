@@ -5,14 +5,14 @@ import Anthropic from '@anthropic-ai/sdk'
 import { GoogleGenerativeAI } from '@google/generative-ai'
 import { err } from '../utils/logging.ts'
 import { env } from '../utils/node-utils.ts'
-import { LLM_SERVICES_CONFIG } from '../../shared/constants.ts'
+import { L_CONFIG } from '../../shared/constants.ts'
 
-export type ChatGPTModelValue = (typeof LLM_SERVICES_CONFIG.chatgpt.models)[number]['modelId']
-export type ClaudeModelValue = (typeof LLM_SERVICES_CONFIG.claude.models)[number]['modelId']
-export type DeepSeekModelValue = (typeof LLM_SERVICES_CONFIG.deepseek.models)[number]['modelId']
-export type FireworksModelValue = (typeof LLM_SERVICES_CONFIG.fireworks.models)[number]['modelId']
-export type GeminiModelValue = (typeof LLM_SERVICES_CONFIG.gemini.models)[number]['modelId']
-export type TogetherModelValue = (typeof LLM_SERVICES_CONFIG.together.models)[number]['modelId']
+export type ChatGPTModelValue = (typeof L_CONFIG.chatgpt.models)[number]['modelId']
+export type ClaudeModelValue = (typeof L_CONFIG.claude.models)[number]['modelId']
+export type DeepSeekModelValue = (typeof L_CONFIG.deepseek.models)[number]['modelId']
+export type FireworksModelValue = (typeof L_CONFIG.fireworks.models)[number]['modelId']
+export type GeminiModelValue = (typeof L_CONFIG.gemini.models)[number]['modelId']
+export type TogetherModelValue = (typeof L_CONFIG.together.models)[number]['modelId']
 
 /**
  * Main function to call ChatGPT API.

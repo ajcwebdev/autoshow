@@ -5,7 +5,7 @@ import { callDeepgram } from '../transcription/deepgram.ts'
 import { callAssembly } from '../transcription/assembly.ts'
 import { l, err, logInitialFunctionCall } from '../utils/logging.ts'
 import { execPromise } from '../utils/node-utils.ts'
-import { TRANSCRIPTION_SERVICES_CONFIG } from '../../shared/constants.ts'
+import { T_CONFIG } from '../../shared/constants.ts'
 
 import type { ProcessingOptions, TranscriptionResult } from '../../shared/types.ts'
 
@@ -168,7 +168,7 @@ export async function estimateTranscriptCost(
     throw new Error(`Unsupported transcription service: ${transcriptServices}`)
   }
 
-  const config = TRANSCRIPTION_SERVICES_CONFIG[transcriptServices as 'whisper' | 'deepgram' | 'assembly']
+  const config = T_CONFIG[transcriptServices as 'whisper' | 'deepgram' | 'assembly']
   const optionValue = options[transcriptServices as 'whisper' | 'deepgram' | 'assembly']
   const defaultModelId = transcriptServices === 'deepgram'
     ? 'nova-2'

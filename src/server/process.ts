@@ -5,7 +5,7 @@ import { processFile } from '../process-commands/file.ts'
 import { runLLM } from '../process-steps/05-run-llm.ts'
 import { l, err } from '../utils/logging.ts'
 import { env, join, writeFile } from '../utils/node-utils.ts'
-import { TRANSCRIPTION_SERVICES_CONFIG } from '../../shared/constants.ts'
+import { T_CONFIG } from '../../shared/constants.ts'
 import type { FastifyRequest, FastifyReply } from 'fastify'
 import type { ProcessingOptions } from '../../shared/types.ts'
 
@@ -56,7 +56,7 @@ export const handleProcessRequest = async (
     const transcriptServicesRaw = requestData['transcriptServices'] || 'whisper'
     const transcriptServices = transcriptServicesRaw as 'whisper' | 'deepgram' | 'assembly'
     const modelField = requestData['transcriptModel'] || requestData[`${transcriptServices}Model`]
-    const defaultModelId = TRANSCRIPTION_SERVICES_CONFIG[transcriptServices].models[0].modelId
+    const defaultModelId = T_CONFIG[transcriptServices].models[0].modelId
     options[transcriptServices] = modelField || defaultModelId
 
     options['walletAddress'] = walletAddress

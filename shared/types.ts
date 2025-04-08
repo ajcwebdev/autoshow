@@ -1,6 +1,6 @@
 // shared/types.ts
 
-import { LLM_SERVICES_CONFIG } from './constants.ts'
+import { L_CONFIG } from './constants.ts'
 
 /**
  * Represents a single show note record in the database.
@@ -226,9 +226,9 @@ export interface AlertProps {
 }
 
 /**
- * Define the allowed LLM service keys from LLM_SERVICES_CONFIG.
+ * Define the allowed LLM service keys from L_CONFIG.
  */
-export type LlmServiceKey = keyof typeof LLM_SERVICES_CONFIG
+export type LlmServiceKey = keyof typeof L_CONFIG
 
 /**
  * Define props for the Form component.

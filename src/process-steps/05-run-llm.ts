@@ -23,24 +23,30 @@ export async function runLLM(
 ) {
   l.step(`\nStep 5 - Run Language Model\n`)
   logInitialFunctionCall('runLLM', { llmServices, metadata })
+
   metadata.walletAddress = options['walletAddress'] || metadata.walletAddress
   metadata.mnemonic = options['mnemonic'] || metadata.mnemonic
+
   try {
     let showNotesResult = ''
     let llmCost = 0
     let userModel = ''
+
     if (llmServices) {
       l.dim(`\n  Preparing to process with '${llmServices}' Language Model...\n`)
       const config = LLM_SERVICES_CONFIG[llmServices as keyof typeof LLM_SERVICES_CONFIG]
       if (!config) {
         throw new Error(`Unknown LLM service: ${llmServices}`)
       }
+
       const optionValue = options[llmServices as keyof typeof options]
       const defaultModelId = config.models[0]?.modelId ?? ''
-      const userModel = (typeof optionValue === 'string' && optionValue !== 'true' && optionValue.trim() !== '')
+      userModel = (typeof optionValue === 'string' && optionValue !== 'true' && optionValue.trim() !== '')
         ? optionValue
         : defaultModelId
+
       let showNotesData: LLMResult
+
       switch (llmServices) {
         case 'chatgpt':
           showNotesData = await retryLLMCall(() => callChatGPT(prompt, transcript, userModel as ChatGPTModelValue))
@@ -63,6 +69,7 @@ export async function runLLM(
         default:
           throw new Error(`Unknown LLM service: ${llmServices}`)
       }
+
       const costBreakdown = logLLMCost({
         name: userModel,
         stopReason: showNotesData.usage?.stopReason ?? 'unknown',
@@ -73,10 +80,12 @@ export async function runLLM(
         }
       })
       llmCost = costBreakdown.totalCost ?? 0
+
       const showNotes = showNotesData.content
       const outputFilename = `${finalPath}-${llmServices}-shownotes.md`
       await writeFile(outputFilename, `${frontMatter}\n${showNotes}\n\n## Transcript\n\n${transcript}`)
       l.dim(`\n  LLM processing completed, combined front matter + LLM output + transcript written to:\n    - ${outputFilename}`)
+
       showNotesResult = showNotes
     } else {
       l.dim('  No LLM selected, skipping processing...')
@@ -84,34 +93,39 @@ export async function runLLM(
       l.dim(`\n  Writing front matter + prompt + transcript to file:\n    - ${noLLMFile}`)
       await writeFile(noLLMFile, `${frontMatter}\n${prompt}\n## Transcript\n\n${transcript}`)
     }
+
     const finalCost = (transcriptionCost || 0) + llmCost
+
+    let insertedNote = {
+      showLink: metadata.showLink ?? '',
+      channel: metadata.channel ?? '',
+      channelURL: metadata.channelURL ?? '',
+      title: metadata.title,
+      description: metadata.description ?? '',
+      publishDate: metadata.publishDate,
+      coverImage: metadata.coverImage ?? '',
+      frontmatter: frontMatter,
+      prompt,
+      transcript,
+      llmOutput: showNotesResult,
+      walletAddress: metadata.walletAddress ?? '',
+      mnemonic: metadata.mnemonic ?? '',
+      llmService: llmServices ?? '',
+      llmModel: userModel,
+      llmCost,
+      transcriptionService: transcriptionServices ?? '',
+      transcriptionModel: transcriptionModel ?? '',
+      transcriptionCost,
+      finalCost
+    }
+
     if (env['SERVER_MODE'] === 'true') {
-      await dbService.insertShowNote({
-        showLink: metadata.showLink ?? '',
-        channel: metadata.channel ?? '',
-        channelURL: metadata.channelURL ?? '',
-        title: metadata.title,
-        description: metadata.description ?? '',
-        publishDate: metadata.publishDate,
-        coverImage: metadata.coverImage ?? '',
-        frontmatter: frontMatter,
-        prompt,
-        transcript,
-        llmOutput: showNotesResult,
-        walletAddress: metadata.walletAddress ?? '',
-        mnemonic: metadata.mnemonic ?? '',
-        llmService: llmServices ?? '',
-        llmModel: userModel,
-        llmCost,
-        transcriptionService: transcriptionServices ?? '',
-        transcriptionModel: transcriptionModel ?? '',
-        transcriptionCost,
-        finalCost
-      })
+      const newRecord = await dbService.insertShowNote(insertedNote)
+      return { showNote: newRecord, showNotesResult }
     } else {
       l.dim('\n  Skipping database insertion in CLI mode')
+      return { showNote: insertedNote, showNotesResult }
     }
-    return showNotesResult
   } catch (error) {
     err(`Error running Language Model: ${(error as Error).message}`)
     throw error
@@ -129,12 +143,8 @@ export function logLLMCost(info: {
 }) {
   const { name, stopReason, tokenUsage } = info
   const { input, output, total } = tokenUsage
-  let modelConfig: {
-    modelId: string
-    modelName: string
-    inputCostC?: number
-    outputCostC?: number
-  } | undefined
+  let modelConfig
+
   for (const service of Object.values(LLM_SERVICES_CONFIG)) {
     for (const model of service.models) {
       if (
@@ -147,20 +157,25 @@ export function logLLMCost(info: {
     }
     if (modelConfig) break
   }
+
   const {
     modelName,
     inputCostC,
     outputCostC
   } = modelConfig ?? {}
+
   const displayName = modelName ?? name
   l.dim(`  - ${stopReason ? `${stopReason} Reason` : 'Status'}: ${stopReason}\n  - Model: ${displayName}`)
+
   const tokenLines: string[] = []
   if (input) tokenLines.push(`${input} input tokens`)
   if (output) tokenLines.push(`${output} output tokens`)
   if (total) tokenLines.push(`${total} total tokens`)
+
   if (tokenLines.length > 0) {
     l.dim(`  - Token Usage:\n    - ${tokenLines.join('\n    - ')}`)
   }
+
   let inputCost
   let outputCost
   let totalCost
@@ -169,6 +184,7 @@ export function logLLMCost(info: {
   } else {
     const inCost = (typeof inputCostC === 'number') ? inputCostC / 100 : 0
     const outCost = (typeof outputCostC === 'number') ? outputCostC / 100 : 0
+
     if (inCost < 0.0000001 && outCost < 0.0000001) {
       inputCost = 0
       outputCost = 0
@@ -187,6 +203,7 @@ export function logLLMCost(info: {
       }
     }
   }
+
   const costLines: string[] = []
   function inlineCostLabel(cost: number | undefined) {
     if (cost === undefined) return 'N/A'
@@ -200,6 +217,7 @@ export function logLLMCost(info: {
     }
     return `$${cost.toFixed(2)}`
   }
+
   if (inputCost !== undefined) {
     costLines.push(`Input cost: ${inlineCostLabel(inputCost)}`)
   }
@@ -209,9 +227,11 @@ export function logLLMCost(info: {
   if (totalCost !== undefined) {
     costLines.push(`Total cost: ${chalk.bold(inlineCostLabel(totalCost))}`)
   }
+
   if (costLines.length > 0) {
     l.dim(`  - Cost Breakdown:\n    - ${costLines.join('\n    - ')}`)
   }
+
   return { inputCost, outputCost, totalCost }
 }
 
@@ -224,15 +244,18 @@ export async function estimateLLMCost(
     throw new Error('No file path provided to estimate LLM cost.')
   }
   l.dim(`\nEstimating LLM cost for '${llmService}' with file: ${filePath}`)
+
   try {
     l.dim('[estimateLLMCost] reading file for cost estimate...')
     const content = await readFile(filePath, 'utf8')
     l.dim('[estimateLLMCost] file content length:', content.length)
     const tokenCount = Math.max(1, content.trim().split(/\s+/).length)
     l.dim('[estimateLLMCost] approximate token count:', tokenCount)
+
     let userModel = typeof options[llmService] === 'string'
       ? options[llmService] as string
       : undefined
+
     if (llmService === 'chatgpt' && (userModel === undefined || userModel === 'true')) {
       userModel = 'gpt-4o-mini'
     }
@@ -248,7 +271,9 @@ export async function estimateLLMCost(
     if (llmService === 'together' && (userModel === undefined || userModel === 'true')) {
       userModel = 'meta-llama/Llama-3.2-3B-Instruct-Turbo'
     }
+
     l.dim('[estimateLLMCost] determined userModel:', userModel)
+
     const name = userModel || llmService
     const costInfo = logLLMCost({
       name,
@@ -259,6 +284,7 @@ export async function estimateLLMCost(
         total: tokenCount
       }
     })
+
     l.dim('[estimateLLMCost] final cost estimate (totalCost):', costInfo.totalCost)
     return costInfo.totalCost ?? 0
   } catch (error) {
@@ -270,6 +296,7 @@ export async function estimateLLMCost(
 export async function retryLLMCall(fn: () => Promise<any>) {
   const maxRetries = 7
   let attempt = 0
+
   while (attempt < maxRetries) {
     try {
       attempt++

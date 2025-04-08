@@ -16,9 +16,11 @@ export const handleProcessRequest = async (
   reply: FastifyReply
 ) => {
   l('\nEntered handleProcessRequest')
+
   try {
     const requestData = request.body as Record<string, any> || {}
     l('\nParsed request body:', requestData)
+
     const type = requestData['type']
     const walletAddress = requestData['walletAddress']
     const mnemonic = requestData['mnemonic']
@@ -39,6 +41,7 @@ export const handleProcessRequest = async (
       'walletAddress',
       'mnemonic'
     ]
+
     for (const opt of otherOptions) {
       if (requestData[opt] != null) {
         options[opt] = requestData[opt]
@@ -49,11 +52,13 @@ export const handleProcessRequest = async (
     if (llmServices) {
       options[llmServices] = requestData['llmModel'] || true
     }
+
     const transcriptServicesRaw = requestData['transcriptServices'] || 'whisper'
     const transcriptServices = transcriptServicesRaw as 'whisper' | 'deepgram' | 'assembly'
     const modelField = requestData['transcriptModel'] || requestData[`${transcriptServices}Model`]
     const defaultModelId = TRANSCRIPTION_SERVICES_CONFIG[transcriptServices].models[0].modelId
     options[transcriptServices] = modelField || defaultModelId
+
     options['walletAddress'] = walletAddress
     options['mnemonic'] = mnemonic
 
@@ -70,12 +75,7 @@ export const handleProcessRequest = async (
         const timestamp = Date.now()
         const outputPath = join(contentDir, `video-${timestamp}.json`)
         await writeFile(outputPath, JSON.stringify(result, null, 2), 'utf8')
-        reply.send({
-          frontMatter: result.frontMatter,
-          prompt: result.prompt,
-          llmOutput: result.llmOutput,
-          transcript: result.transcript
-        })
+        reply.send(result)
         break
       }
       case 'file': {
@@ -90,12 +90,7 @@ export const handleProcessRequest = async (
         const timestamp = Date.now()
         const outputPath = join(contentDir, `file-${timestamp}.json`)
         await writeFile(outputPath, JSON.stringify(result, null, 2), 'utf8')
-        reply.send({
-          frontMatter: result.frontMatter,
-          prompt: result.prompt,
-          llmOutput: result.llmOutput,
-          transcript: result.transcript,
-        })
+        reply.send(result)
         break
       }
       case 'runLLM': {
@@ -125,6 +120,7 @@ export const handleProcessRequest = async (
         break
       }
     }
+
     l('\nProcess completed successfully')
   } catch (error) {
     err('Error processing request:', error)

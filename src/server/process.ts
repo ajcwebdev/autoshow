@@ -2,7 +2,6 @@
 
 import { processVideo } from '../process-commands/video.ts'
 import { processFile } from '../process-commands/file.ts'
-import { runLLM } from '../process-steps/05-run-llm.ts'
 import { l, err } from '../utils/logging.ts'
 import { env, join, writeFile } from '../utils/node-utils.ts'
 import { T_CONFIG } from '../../shared/constants.ts'
@@ -16,22 +15,18 @@ export const handleProcessRequest = async (
   reply: FastifyReply
 ) => {
   l('\nEntered handleProcessRequest')
-
   try {
     const requestData = request.body as Record<string, any> || {}
     l('\nParsed request body:', requestData)
-
     const type = requestData['type']
     const walletAddress = requestData['walletAddress']
     const mnemonic = requestData['mnemonic']
     l(`walletAddress from request: ${walletAddress}, mnemonic from request: ${mnemonic}`)
-
-    if (!['video', 'file', 'runLLM'].includes(type)) {
+    if (!['video', 'file'].includes(type)) {
       l('Invalid or missing process type, sending 400')
       reply.status(400).send({ error: 'Valid process type is required' })
       return
     }
-
     const options: ProcessingOptions = {}
     const otherOptions = [
       'speakerLabels',
@@ -41,27 +36,22 @@ export const handleProcessRequest = async (
       'walletAddress',
       'mnemonic'
     ]
-
     for (const opt of otherOptions) {
       if (requestData[opt] != null) {
         options[opt] = requestData[opt]
       }
     }
-
     const llmServices = requestData['llm']
     if (llmServices) {
       options[llmServices] = requestData['llmModel'] || true
     }
-
     const transcriptServicesRaw = requestData['transcriptServices'] || 'whisper'
     const transcriptServices = transcriptServicesRaw as 'whisper' | 'deepgram' | 'assembly'
     const modelField = requestData['transcriptModel'] || requestData[`${transcriptServices}Model`]
     const defaultModelId = T_CONFIG[transcriptServices].models[0].modelId
     options[transcriptServices] = modelField || defaultModelId
-
     options['walletAddress'] = walletAddress
     options['mnemonic'] = mnemonic
-
     switch (type) {
       case 'video': {
         const url = requestData['url']
@@ -93,34 +83,7 @@ export const handleProcessRequest = async (
         reply.send(result)
         break
       }
-      case 'runLLM': {
-        const frontMatter = requestData['frontMatter'] || ''
-        const prompt = requestData['prompt'] || ''
-        const transcript = requestData['transcript'] || ''
-        const finalPath = `llm-run-${Date.now()}`
-        const metadata = {
-          showLink: '',
-          channel: '',
-          channelURL: '',
-          title: '',
-          description: '',
-          publishDate: '',
-          coverImage: ''
-        }
-        await runLLM(
-          options,
-          finalPath,
-          frontMatter,
-          prompt,
-          transcript,
-          metadata,
-          llmServices
-        )
-        reply.send({ message: 'LLM run completed successfully' })
-        break
-      }
     }
-
     l('\nProcess completed successfully')
   } catch (error) {
     err('Error processing request:', error)

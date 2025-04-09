@@ -190,3 +190,15 @@ curl --json '{
   "assemblyApiKey": ""
 }' http://localhost:3000/api/process
 ```
+
+### Groq
+
+```bash
+curl --json '{
+  "type": "video",
+  "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
+  "transcriptServices": "groq",
+  "transcriptModel": "whisper-large-v3",
+  "groqApiKey": ""
+}' http://localhost:3000/api/process
+```

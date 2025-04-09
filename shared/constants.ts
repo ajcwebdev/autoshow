@@ -1,49 +1,23 @@
 // shared/constants.ts
 
-/**
- * Map of environment variable keys to their corresponding system environment names.
- *
- * @typedef {Object} EnvVarsMap
- * @property {string} openaiApiKey - The environment variable for the OpenAI API key
- * @property {string} anthropicApiKey - The environment variable for the Anthropic API key
- * @property {string} deepgramApiKey - The environment variable for the Deepgram API key
- * @property {string} assemblyApiKey - The environment variable for the AssemblyAI API key
- * @property {string} geminiApiKey - The environment variable for the Google Gemini API key
- * @property {string} deepseekApiKey - The environment variable for the DeepSeek API key
- * @property {string} togetherApiKey - The environment variable for the Together AI API key
- * @property {string} fireworksApiKey - The environment variable for the Fireworks AI API key
- */
 export const ENV_VARS_MAP = {
-  openaiApiKey: 'OPENAI_API_KEY',
-  anthropicApiKey: 'ANTHROPIC_API_KEY',
   deepgramApiKey: 'DEEPGRAM_API_KEY',
   assemblyApiKey: 'ASSEMBLY_API_KEY',
+  groqApiKey: 'GROQ_API_KEY',
+  openaiApiKey: 'OPENAI_API_KEY',
+  anthropicApiKey: 'ANTHROPIC_API_KEY',
   geminiApiKey: 'GEMINI_API_KEY',
   deepseekApiKey: 'DEEPSEEK_API_KEY',
   togetherApiKey: 'TOGETHER_API_KEY',
   fireworksApiKey: 'FIREWORKS_API_KEY',
 }
 
-/**
- * List of possible process types for user files.
- *
- * @typedef {Object} ProcessType
- * @property {string} value - The internal value (e.g., 'video', 'file')
- * @property {string} label - The user-facing label
- */
 export const PROCESS_TYPES = [
   { value: 'video', label: 'Video' },
   { value: 'file', label: 'File' },
-] as const
+]
 
-/**
- * Represents a single prompt choice option.
- *
- * @typedef {Object} PromptChoice
- * @property {string} name - Display name of the prompt choice
- * @property {string} value - Internal value used for the prompt choice
- */
-export const PROMPT_CHOICES: Array<{ name: string; value: string }> = [
+export const PROMPT_CHOICES = [
   { name: 'Titles', value: 'titles' },
   { name: 'Summary', value: 'summary' },
   { name: 'Short Summary', value: 'shortSummary' },
@@ -67,24 +41,6 @@ export const PROMPT_CHOICES: Array<{ name: string; value: string }> = [
   { name: 'Social Post (LinkedIn)', value: 'linkedin' },
 ]
 
-/**
- * Configuration object for an individual transcription model.
- *
- * @typedef {object} TranscriptionModel
- * @property {string} modelId - The model's unique identifier (e.g., 'tiny', 'nova-2')
- * @property {number} costPerMinuteCents - The cost per minute in cents
- */
-
-/**
- * Configuration object for transcription service providers, including their available models
- * and relevant cost data.
- *
- * @typedef {object} TranscriptionServiceConfig
- * @property {string} serviceName - The service's display name
- * @property {string} value - The internal value or key for the service
- * @property {string} label - The user-facing label for the service
- * @property {Array<TranscriptionModel>} models - The models available under this service
- */
 export const T_CONFIG = {
   whisper: {
     serviceName: 'Whisper.cpp',
@@ -124,32 +80,18 @@ export const T_CONFIG = {
       { modelId: 'nano', costPerMinuteCents: 0.2 },
     ]
   },
-} as const
+  groq: {
+    serviceName: 'Groq',
+    value: 'groq',
+    label: 'Groq Whisper-v3',
+    models: [
+      { modelId: 'whisper-large-v3', costPerMinuteCents: 0.185 },
+      { modelId: 'whisper-large-v3-turbo', costPerMinuteCents: 0.067 },
+      { modelId: 'distil-whisper-large-v3-en', costPerMinuteCents: 0.033 },
+    ]
+  },
+}
 
-/**
- * Configuration object for an individual LLM model.
- *
- * @typedef {Object} LLMModel
- * @property {string} modelName - Display name of the model
- * @property {string} modelId - Unique identifier for the model
- * @property {number} [inputCostD] - Legacy input cost per 1M tokens in dollars
- * @property {number} [outputCostD] - Legacy output cost per 1M tokens in dollars
- * @property {number} [inputCostC] - New input cost per 1M tokens in cents
- * @property {number} [outputCostC] - New output cost per 1M tokens in cents
- */
-
-/**
- * Configuration object for LLM service providers, including their available models
- * and relevant cost data. Dollar-based fields remain for backward compatibility; new `cents` fields
- * should be used for all cost calculations going forward.
- *
- * @typedef {Object} LLMServiceConfig
- * @property {string} serviceName - The service's display name
- * @property {string|null} value - The internal value or key for the service
- * @property {string} label - The user-facing label for the service
- * @property {string} [apiKeyPropName] - The request body property name for the API key
- * @property {Array<LLMModel>} models - The models available under this service
- */
 export const L_CONFIG = {
   skip: {
     serviceName: 'Skip LLM Processing',
@@ -231,4 +173,4 @@ export const L_CONFIG = {
       { modelName: 'QWEN 2 5 7B', modelId: 'Qwen/Qwen2.5-7B-Instruct-Turbo', inputCostD: 0.30, outputCostD: 0.30, inputCostC: 30, outputCostC: 30 },
     ]
   }
-} as const
+}

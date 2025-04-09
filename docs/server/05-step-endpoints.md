@@ -85,6 +85,20 @@ curl --json '{
   -s | json_pp
 ```
 
+### Groq transcription
+
+```bash
+curl --json '{
+  "finalPath": "content/2024-09-24-ep0-fsjam-podcast",
+  "transcriptServices": "groq",
+  "options": {
+    "groq": "whisper-large-v3",
+    "groqApiKey": ""
+  }
+}' http://localhost:3000/run-transcription \
+  -s | json_pp
+```
+
 ### Deepgram with speaker labeling
 
 ```bash

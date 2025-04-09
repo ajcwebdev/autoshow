@@ -61,6 +61,8 @@ export type ProcessingOptions = {
   saveAudio?: boolean
   /** The Whisper model to use (e.g., 'tiny', 'base'). */
   whisper?: boolean | string
+  /** Flag to use Groq for transcription or Groq model to use. */
+  groq?: boolean | string
   /** Flag to use Deepgram for transcription or Deepgram model to use. */
   deepgram?: boolean | string
   /** Flag to use AssemblyAI for transcription or AssemblyAI model to use. */
@@ -95,14 +97,16 @@ export type ProcessingOptions = {
   llmServices?: string
   /** The selected transcription option. */
   transcriptServices?: string
-  /** Provide override for OpenAI API key. */
-  openaiApiKey?: string
-  /** Provide override for Anthropic API key. */
-  anthropicApiKey?: string
   /** Provide override for Deepgram API key. */
   deepgramApiKey?: string
   /** Provide override for AssemblyAI API key. */
   assemblyApiKey?: string
+  /** Provide override for Groq API key. */
+  groqApiKey?: string
+  /** Provide override for OpenAI API key. */
+  openaiApiKey?: string
+  /** Provide override for Anthropic API key. */
+  anthropicApiKey?: string
   /** Provide override for Gemini API key. */
   geminiApiKey?: string
   /** Provide override for Deepseek API key. */
@@ -157,15 +161,6 @@ export type WhisperOutput = {
     }
     text: string
   }>
-}
-
-/**
- * Represents the result returned by any transcription call.
- */
-export interface TranscriptionResult {
-  transcript: string
-  modelId: string
-  costPerMinuteCents: number
 }
 
 /**

@@ -3,11 +3,10 @@
 import { callWhisper } from '../transcription/whisper.ts'
 import { callDeepgram } from '../transcription/deepgram.ts'
 import { callAssembly } from '../transcription/assembly.ts'
+// import { callGroq } from '../transcription/groq.ts'
 import { l, err, logInitialFunctionCall } from '../utils/logging.ts'
 import { execPromise } from '../utils/node-utils.ts'
-// import { T_CONFIG } from '../../shared/constants.ts'
-
-import type { ProcessingOptions, TranscriptionResult } from '../../shared/types.ts'
+import type { ProcessingOptions } from '../../shared/types.ts'
 
 export async function runTranscription(
   options: ProcessingOptions,
@@ -24,7 +23,7 @@ export async function runTranscription(
   try {
     switch (transcriptServices) {
       case 'deepgram': {
-        const result = await retryTranscriptionCall<TranscriptionResult>(
+        const result = await retryTranscriptionCall(
           () => callDeepgram(options, finalPath)
         )
         l.dim('\n  Deepgram transcription completed successfully.\n')
@@ -35,7 +34,7 @@ export async function runTranscription(
       }
 
       case 'assembly': {
-        const result = await retryTranscriptionCall<TranscriptionResult>(
+        const result = await retryTranscriptionCall(
           () => callAssembly(options, finalPath)
         )
         l.dim('\n  AssemblyAI transcription completed successfully.\n')
@@ -46,7 +45,7 @@ export async function runTranscription(
       }
 
       case 'whisper': {
-        const result = await retryTranscriptionCall<TranscriptionResult>(
+        const result = await retryTranscriptionCall(
           () => callWhisper(options, finalPath)
         )
         l.dim('\n  Whisper transcription completed successfully.\n')
@@ -55,6 +54,15 @@ export async function runTranscription(
         finalCostPerMinuteCents = result.costPerMinuteCents
         break
       }
+
+      // case 'groq': {
+      //   const result = await retryTranscriptionCall(() => callGroq(options, finalPath))
+      //   l.dim('\n  Groq transcription completed successfully.\n')
+      //   finalTranscript = result.transcript
+      //   finalModelId = result.modelId
+      //   finalCostPerMinuteCents = result.costPerMinuteCents
+      //   break
+      // }
 
       default:
         throw new Error(`Unknown transcription service: ${transcriptServices}`)

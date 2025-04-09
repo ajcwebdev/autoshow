@@ -59,8 +59,6 @@ export type ProcessingOptions = {
   file?: string
   /** Flag to indicate whether to keep temporary audio WAV file after processing. */
   saveAudio?: boolean
-  /** The Whisper model to use (e.g., 'tiny', 'base'). */
-  whisper?: boolean | string
   /** Flag to use Groq for transcription or Groq model to use. */
   groq?: boolean | string
   /** Flag to use Deepgram for transcription or Deepgram model to use. */
@@ -116,51 +114,6 @@ export type ProcessingOptions = {
   /** Provide override for Fireworks API key. */
   fireworksApiKey?: string
   [key: string]: any
-}
-
-/**
- * Whisper transcription output structure.
- */
-export type WhisperOutput = {
-  systeminfo: string
-  model: {
-    type: string
-    multilingual: boolean
-    vocab: number
-    audio: {
-      ctx: number
-      state: number
-      head: number
-      layer: number
-    }
-    text: {
-      ctx: number
-      state: number
-      head: number
-      layer: number
-    }
-    mels: number
-    ftype: number
-  }
-  params: {
-    model: string
-    language: string
-    translate: boolean
-  }
-  result: {
-    language: string
-  }
-  transcription: Array<{
-    timestamps: {
-      from: string
-      to: string
-    }
-    offsets: {
-      from: number
-      to: number
-    }
-    text: string
-  }>
 }
 
 /**

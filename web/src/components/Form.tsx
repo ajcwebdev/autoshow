@@ -21,7 +21,6 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
   const [url, setUrl] = useState('https://www.youtube.com/watch?v=MORMZXEaONk')
   const [filePath, setFilePath] = useState('content/examples/audio.mp3')
   const [transcriptionService, setTranscriptionService] = useState('')
-  const [whisperModel, setWhisperModel] = useState('')
   const [llmService, setLlmService] = useState<LLMServiceKey>('skip')
   const [llmModel, setLlmModel] = useState('')
   const [selectedPrompts, setSelectedPrompts] = useState(['shortSummary'])
@@ -83,7 +82,6 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
     setIsLoading(true)
     setError(null)
     setTranscriptionService('')
-    setWhisperModel('')
     setTranscriptionCosts({})
     try {
       let localFilePath = filePath
@@ -164,7 +162,6 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
         transcriptServices: transcriptionService,
         options: {}
       }
-      if (transcriptionService.startsWith('whisper')) rtBody.options.whisper = whisperModel
       if (selectedTranscriptionApiKeyService === 'assembly') rtBody.options.assemblyApiKey = transcriptionApiKey
       else if (selectedTranscriptionApiKeyService === 'deepgram') rtBody.options.deepgramApiKey = transcriptionApiKey
       const rtRes = await fetch('http://localhost:3000/run-transcription', {
@@ -315,12 +312,10 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
                     name="transcriptionChoice"
                     value={`${svc}:${m.modelId}`}
                     checked={
-                      transcriptionService === svc &&
-                      whisperModel === m.modelId
+                      transcriptionService === svc
                     }
                     onChange={() => {
                       setTranscriptionService(svc)
-                      setWhisperModel(m.modelId)
                     }}
                   />
                   <label>{m.modelId} - Cost: {m.cost} cents ({Math.round(m.cost * 50000000)} credits)</label>
@@ -331,8 +326,6 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
           <TranscriptionService
             transcriptionService={transcriptionService}
             setTranscriptionService={setTranscriptionService}
-            whisperModel={whisperModel}
-            setWhisperModel={setWhisperModel}
             transcriptionApiKey={transcriptionApiKey}
             setTranscriptionApiKey={setTranscriptionApiKey}
             selectedTranscriptionApiKeyService={selectedTranscriptionApiKeyService}

@@ -58,48 +58,33 @@ curl --json '{
 
 Use this endpoint to run the transcription step on a `.wav` file. You must provide the `finalPath` (without extension) and specify which transcription service to use.
 
-### Whisper transcription
-
-```bash
-curl --json '{
-  "finalPath": "content/audio",
-  "transcriptServices": "whisper",
-  "options": {
-    "whisper": "tiny"
-  }
-}' http://localhost:3000/run-transcription \
-  -s | json_pp
-```
-
-### Assembly transcription
+### Assembly
 
 ```bash
 curl --json '{
   "finalPath": "content/audio",
   "transcriptServices": "assembly",
   "options": {
-    "assembly": "best",
+    "assembly": "nano",
     "assemblyApiKey": ""
   }
 }' http://localhost:3000/run-transcription \
   -s | json_pp
 ```
 
-### Groq transcription
+### Deepgram
 
 ```bash
 curl --json '{
-  "finalPath": "content/2024-09-24-ep0-fsjam-podcast",
-  "transcriptServices": "groq",
+  "finalPath": "content/audio",
+  "transcriptServices": "deepgram",
   "options": {
-    "groq": "whisper-large-v3",
-    "groqApiKey": ""
+    "deepgram": "nova-2",
+    "deepgramApiKey": ""
   }
 }' http://localhost:3000/run-transcription \
   -s | json_pp
 ```
-
-### Deepgram with speaker labeling
 
 ```bash
 curl --json '{

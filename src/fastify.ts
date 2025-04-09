@@ -5,15 +5,14 @@ import cors from '@fastify/cors'
 import { l } from './utils/logging.ts'
 import { env } from './utils/node-utils.ts'
 import { ENV_VARS_MAP } from '../shared/constants.ts'
-import { handleProcessRequest } from './server/process.ts'
 import { getShowNote } from './server/show-note.ts'
 import { getShowNotes } from './server/show-notes.ts'
 import { handleCostRequest } from './server/cost.ts'
-import { handleGenerateMarkdown } from './server/generate-markdown.ts'
-import { handleDownloadAudio } from './server/download-audio.ts'
-import { handleRunTranscription } from './server/run-transcription.ts'
-import { handleSelectPrompt } from './server/select-prompt.ts'
-import { handleRunLLM } from './server/run-llm.ts'
+import { handleGenerateMarkdown } from './server/01-generate-markdown.ts'
+import { handleDownloadAudio } from './server/02-download-audio.ts'
+import { handleRunTranscription } from './server/03-run-transcription.ts'
+import { handleSelectPrompt } from './server/04-select-prompt.ts'
+import { handleRunLLM } from './server/05-run-llm.ts'
 import { handleSaveMarkdown } from './server/save-markdown.ts'
 import { handleDashBalance } from './server/dash-balance.ts'
 
@@ -39,7 +38,6 @@ export function buildFastify() {
     }
   })
   fastify.post('/api/cost', handleCostRequest)
-  fastify.post('/api/process', handleProcessRequest)
   fastify.get('/show-notes', getShowNotes)
   fastify.get('/show-notes/:id', getShowNote)
   fastify.post('/generate-markdown', handleGenerateMarkdown)

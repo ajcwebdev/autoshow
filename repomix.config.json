@@ -36,7 +36,6 @@
       "src/utils/embeddings/create-embed.ts",
       "src/utils/embeddings/query-embed.ts",
       "src/utils/create-clips.ts",
-      "src/utils/dash-documents.ts",
       "test/",
       "web/public",
       "web/.astro",

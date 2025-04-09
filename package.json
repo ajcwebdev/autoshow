@@ -37,7 +37,8 @@
     "test:local": "npm run test:base -- test/local.test.ts",
     "test:main": "npm run test:base -- test/main.test.ts",
     "test:models": "npm run test:base -- test/models.test.ts",
-    "test:prompts": "npm run test:base -- test/prompts.test.ts"
+    "test:prompts": "npm run test:base -- test/prompts.test.ts",
+    "test:steps": "npm run test:base -- test/steps.test.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "0.39.0",

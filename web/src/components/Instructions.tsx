@@ -13,8 +13,8 @@ const Instructions: React.FC = () => {
       (<a href="#examples" className="text-emerald-400 underline">examples</a>)
     </p>
     <p>2. Select the Process Type and paste the link to the type of content you've chosen into Link</p>
-    <p>3. Select Transcript Service</p>
-    <p>4. Select Whisper Model</p>
+    <p>3. Select Transcription Service</p>
+    <p>4. Select Transcription Model</p>
     <p>5. Select LLM Model</p>
     <p>6. Select Prompts</p>
     <h3 id="examples" className="text-3xl font-bold mb-6">Examples</h3>

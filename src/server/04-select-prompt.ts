@@ -1,10 +1,10 @@
-// src/process-steps/04-select-prompt.ts
+// src/server/select-prompt.ts
 
 import { sections } from '../prompts/sections.ts'
 import { err, l, logInitialFunctionCall } from '../utils/logging.ts'
 import { readFile } from '../utils/node-utils.ts'
 import { PROMPT_CHOICES } from '../../shared/constants.ts'
-
+import type { FastifyRequest, FastifyReply } from 'fastify'
 import type { ProcessingOptions } from '../../shared/types.ts'
 
 const validPromptValues = new Set(PROMPT_CHOICES.map(choice => choice.value))
@@ -47,4 +47,18 @@ export async function selectPrompts(options: ProcessingOptions) {
   })
 
   return text
+}
+
+export async function handleSelectPrompt(request: FastifyRequest, reply: FastifyReply) {
+  type SelectPromptBody = {
+    options?: ProcessingOptions
+  }
+  const body = request.body as SelectPromptBody
+  const options: ProcessingOptions = body.options || {}
+  try {
+    const prompt = await selectPrompts(options)
+    reply.send({ prompt })
+  } catch (error) {
+    reply.status(500).send({ error: (error as Error).message })
+  }
 }

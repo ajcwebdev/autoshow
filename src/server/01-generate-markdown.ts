@@ -1,8 +1,8 @@
-// src/process-steps/01-generate-markdown.ts
+// src/server/generate-markdown.ts
 
 import { l, err, logInitialFunctionCall } from '../utils/logging.ts'
 import { execFilePromise, basename, extname } from '../utils/node-utils.ts'
-
+import type { FastifyRequest, FastifyReply } from 'fastify'
 import type { ProcessingOptions, ShowNoteMetadata } from '../../shared/types.ts'
 
 export function sanitizeTitle(title: string) {
@@ -127,4 +127,43 @@ export async function generateMarkdown(
   l.dim(`\n  generateMarkdown returning:\n\n    - finalPath: ${finalPath}\n    - filename: ${filename}\n`)
   l.dim(`frontMatterContent:\n\n${frontMatterContent}\n`)
   return { frontMatter: frontMatterContent, finalPath, filename, metadata }
+}
+
+export async function handleGenerateMarkdown(request: FastifyRequest, reply: FastifyReply) {
+  type GenerateMarkdownBody = {
+    type?: string
+    url?: string
+    filePath?: string
+  }
+  const body = request.body as GenerateMarkdownBody
+  const type = body.type
+  const url = body.url
+  const filePath = body.filePath
+  const options: ProcessingOptions = {}
+  if (!['video','file'].includes(type || '')) {
+    reply.status(400).send({ error: 'Valid type is required' })
+    return
+  }
+  let input
+  if (type === 'video') {
+    if (!url) {
+      reply.status(400).send({ error: 'URL is required for video' })
+      return
+    }
+    input = url
+    options.video = url
+  } else {
+    if (!filePath) {
+      reply.status(400).send({ error: 'File path is required for file' })
+      return
+    }
+    input = filePath
+    options.file = filePath
+  }
+  try {
+    const result = await generateMarkdown(options,input)
+    reply.send(result)
+  } catch (error) {
+    reply.status(500).send({ error: (error as Error).message })
+  }
 }

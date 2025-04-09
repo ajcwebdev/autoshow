@@ -14,6 +14,7 @@ import { handleDownloadAudio } from './server/download-audio.ts'
 import { handleRunTranscription } from './server/run-transcription.ts'
 import { handleSelectPrompt } from './server/select-prompt.ts'
 import { handleRunLLM } from './server/run-llm.ts'
+import { handleSaveMarkdown } from './server/save-markdown.ts'
 
 export function buildFastify() {
   const fastify = Fastify({ logger: true })
@@ -48,6 +49,7 @@ export function buildFastify() {
   fastify.post('/run-transcription', handleRunTranscription)
   fastify.post('/select-prompt', handleSelectPrompt)
   fastify.post('/run-llm', handleRunLLM)
+  fastify.post('/save-markdown', handleSaveMarkdown)
   return fastify
 }
 

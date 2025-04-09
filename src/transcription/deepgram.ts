@@ -6,51 +6,15 @@ import { T_CONFIG } from '../../shared/constants.ts'
 
 import type { ProcessingOptions } from '../../shared/types.ts'
 
-/**
- * Represents a single word object in the Deepgram transcription response,
- * which may include speaker labels when diarization is enabled.
- */
 export interface DeepgramWord {
-  /**
-   * The transcribed word
-   */
   word: string
-
-  /**
-   * The start timestamp (in seconds) of the word in the audio
-   */
   start: number
-
-  /**
-   * The end timestamp (in seconds) of the word in the audio
-   */
   end: number
-
-  /**
-   * The confidence score (0.0 - 1.0) for the recognized word
-   */
   confidence: number
-
-  /**
-   * The speaker number assigned to this word (e.g., 0, 1, 2)
-   * Only provided if diarization (speaker labels) is enabled
-   */
   speaker?: number
-
-  /**
-   * The confidence score for the assigned speaker (pre-recorded only)
-   */
   speaker_confidence?: number
 }
 
-/**
- * Formats the Deepgram transcript by either merging all words into a single text string
- * or, if speaker labels are enabled, grouping the transcription by speaker.
- *
- * @param {DeepgramWord[]} words - The array of word objects returned from the Deepgram API
- * @param {boolean} speakerLabels - Whether to include speaker labeling
- * @returns {string} - The formatted transcript, with or without speaker labels
- */
 export function formatDeepgramTranscript(
   words: DeepgramWord[],
   speakerLabels: boolean
@@ -82,17 +46,6 @@ export function formatDeepgramTranscript(
   return transcript
 }
 
-/**
- * Main function to handle transcription using Deepgram API.
- * If `options.speakerLabels` is true, diarization will be enabled and the returned transcript
- * will be formatted to include speaker labels. Otherwise, the transcript is returned as a
- * plain text string without speaker labeling.
- *
- * @param {ProcessingOptions} options - Additional processing options (e.g., speaker labels)
- * @param {string} finalPath - The base filename (without extension) for input/output files
- * @returns {Promise<TranscriptionResult>}
- * @throws {Error} If any step of the process fails (upload, transcription request, formatting)
- */
 export async function callDeepgram(
   options: ProcessingOptions,
   finalPath: string

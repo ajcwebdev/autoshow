@@ -6,285 +6,41 @@ import { TranscriptionService } from '@/components/groups/TranscriptionService'
 import { LLMService } from '@/components/groups/LLMService'
 import { Prompts } from '@/components/groups/Prompts'
 import { Wallet } from '@/components/groups/Wallet'
-
 import type {
-  AlertProps, ResultType, FormProps, ProcessTypeEnum
-} from "@/types"
+  AlertProps, ResultType, FormProps, ProcessTypeEnum, LLMServiceKey
+} from "../../../shared/types.ts"
 
-import { T_CONFIG, L_CONFIG } from '../../../shared/constants.ts'
-
-/**
- * Displays a styled alert message based on a variant type.
- *
- * @param {AlertProps} props - The properties for the alert, including a message and variant
- * @returns {JSX.Element} An alert element
- */
 const Alert: React.FC<AlertProps> = ({ message, variant }) => (
   <div className={`alert ${variant}`}>
     <p>{message}</p>
   </div>
 )
 
-/**
- * The Form component is now a multi-step process that:
- * 1) Asks for video/file input and calculates transcription cost.
- * 2) Lets the user pick a transcription service, transcribes, and select prompts.
- * 3) Calculates LLM cost based on the transcript+prompt and lets the user pick an LLM to run.
- *
- * @param {FormProps} props - The component props, including an onNewShowNote callback
- * @returns {JSX.Element} A multi-step form rendering various controls and submission logic
- */
 const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
   const [processType, setProcessType] = useState<ProcessTypeEnum>('file')
-  const [url, setUrl] = useState<string>('https://www.youtube.com/watch?v=MORMZXEaONk')
-  const [filePath, setFilePath] = useState<string>('content/examples/audio.mp3')
-  const [transcriptionService, setTranscriptionService] = useState<string>('whisper')
-  const [whisperModel, setWhisperModel] = useState<string>('tiny')
-  const [llmService, setLlmService] = useState<string>('chatgpt')
-  const [llmModel, setLlmModel] = useState<string>('')
-  const [selectedPrompts, setSelectedPrompts] = useState<string[]>(['shortSummary'])
+  const [url, setUrl] = useState('https://www.youtube.com/watch?v=MORMZXEaONk')
+  const [filePath, setFilePath] = useState('content/examples/audio.mp3')
+  const [transcriptionService, setTranscriptionService] = useState('')
+  const [whisperModel, setWhisperModel] = useState('')
+  const [llmService, setLlmService] = useState<LLMServiceKey>('skip')
+  const [llmModel, setLlmModel] = useState('')
+  const [selectedPrompts, setSelectedPrompts] = useState(['shortSummary'])
   const [result, setResult] = useState<ResultType | null>(null)
   const [error, setError] = useState<string | null>(null)
-  const [isLoading, setIsLoading] = useState<boolean>(false)
-
-  const [walletAddress, setWalletAddress] = useState<string>('')
-  const [mnemonic, setMnemonic] = useState<string>('')
-
-  const [transcriptionApiKey, setTranscriptionApiKey] = useState<string>('')
-  const [selectedTranscriptionApiKeyService, setSelectedTranscriptionApiKeyService] = useState<string>('')
-
-  const [llmApiKey, setLlmApiKey] = useState<string>('')
-  const [selectedLlmApiKeyService, setSelectedLlmApiKeyService] = useState<string>('chatgpt')
-
-  const [currentStep, setCurrentStep] = useState<number>(1)
-  const [transcriptionCosts, setTranscriptionCosts] = useState<Array<{ service: string, cost: any }>>([])
-  const [llmCosts, setLlmCosts] = useState<Array<{ service: string, cost: any }>>([])
-  const [transcriptContent, setTranscriptContent] = useState<string>('')
-
-  /**
-   * This function is triggered in Step 1 to get cost estimates from each transcription provider.
-   */
-  const handleCalculateTranscriptCost = async () => {
-    setIsLoading(true)
-    setError(null)
-    setTranscriptionCosts([])
-
-    try {
-      const costs: Array<{ service: string, cost: any }> = []
-      for (const svc of Object.values(T_CONFIG)) {
-        if (!svc.value) continue
-
-        const body: Record<string, unknown> = {
-          type: 'transcriptCost',
-          filePath: filePath,
-          transcriptServices: svc.value
-        }
-
-        if (processType === 'video') {
-          body.filePath = url
-        }
-
-        const response = await fetch('http://localhost:3000/api/process', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(body),
-        })
-
-        if (!response.ok) {
-          throw new Error(`Failed to fetch transcription cost for ${svc.value}`)
-        }
-
-        const data = await response.json()
-        costs.push({ service: svc.value, cost: data.cost })
-      }
-      setTranscriptionCosts(costs)
-      setCurrentStep(2)
-    } catch (err: unknown) {
-      if (err instanceof Error) {
-        setError(err.message)
-      } else {
-        setError('An unknown error occurred.')
-      }
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  /**
-   * This function is used in Step 2 to actually run transcription with the chosen service.
-   */
-  const handleRunTranscription = async (chosenService: string) => {
-    setIsLoading(true)
-    setError(null)
-    setTranscriptContent('')
-
-    try {
-      const requestBody: any = {
-        type: processType,
-        transcriptServices: chosenService,
-        walletAddress,
-        mnemonic,
-      }
-
-      if (processType === 'video') {
-        requestBody.url = url
-      } else if (processType === 'file') {
-        requestBody.filePath = filePath
-      }
-
-      if (chosenService.startsWith('whisper')) {
-        requestBody.whisperModel = whisperModel
-      }
-
-      if (selectedTranscriptionApiKeyService === 'assembly') {
-        requestBody.assemblyApiKey = transcriptionApiKey
-      } else if (selectedTranscriptionApiKeyService === 'deepgram') {
-        requestBody.deepgramApiKey = transcriptionApiKey
-      }
-
-      const response = await fetch('http://localhost:3000/api/process', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(requestBody),
-      })
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
-      }
-
-      const data = (await response.json()) as ResultType
-      setTranscriptContent(data.transcript || '')
-      setResult(null)
-      setCurrentStep(3)
-    } catch (err: unknown) {
-      if (err instanceof Error) {
-        setError(err.message)
-      } else {
-        setError('An unknown error occurred.')
-      }
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  /**
-   * In Step 3, we combine transcript + prompts and calculate LLM cost from each provider.
-   */
-  const handleCalculateLLMCosts = async () => {
-    setIsLoading(true)
-    setError(null)
-    setLlmCosts([])
-
-    try {
-      const combinedFilePath = 'combined-transcript-and-prompts.txt'
-      const costs: Array<{ service: string, cost: any }> = []
-
-      for (const svc of Object.values(L_CONFIG)) {
-        if (!svc.value) continue
-
-        const body: Record<string, unknown> = {
-          type: 'llmCost',
-          filePath: combinedFilePath,
-          llm: svc.value,
-          walletAddress,
-          mnemonic,
-        }
-
-        // Cast svc.value to the LLM service's key type
-        const svcKey = svc.value as keyof typeof L_CONFIG
-        if (
-          selectedLlmApiKeyService === svc.value &&
-          'apiKeyPropName' in L_CONFIG[svcKey]
-        ) {
-          const serviceConfig = L_CONFIG[svcKey as keyof typeof L_CONFIG];
-          if ('apiKeyPropName' in serviceConfig) {
-            body[serviceConfig.apiKeyPropName] = llmApiKey;
-          }
-        }
-
-        const response = await fetch('http://localhost:3000/api/process', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(body),
-        })
-
-        if (!response.ok) {
-          throw new Error(`Failed to fetch LLM cost for ${svc.value}`)
-        }
-
-        const data = await response.json()
-        costs.push({ service: svc.value, cost: data.cost })
-      }
-      setLlmCosts(costs)
-    } catch (err: unknown) {
-      if (err instanceof Error) {
-        setError(err.message)
-      } else {
-        setError('An unknown error occurred.')
-      }
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  /**
-   * Final Step: Run the chosen LLM with combined transcript and prompts, then display results.
-   */
-  const handleRunLLM = async (chosenLlm: string) => {
-    setIsLoading(true)
-    setError(null)
-    setResult(null)
-
-    try {
-      const combinedFilePath = 'combined-transcript-and-prompts.txt'
-      const requestBody: any = {
-        type: 'runLLM',
-        filePath: combinedFilePath,
-        llm: chosenLlm,
-        walletAddress,
-        mnemonic,
-      }
-
-      const chosenKey = chosenLlm as keyof typeof L_CONFIG
-      if (selectedLlmApiKeyService === chosenLlm && 
-          'apiKeyPropName' in L_CONFIG[chosenKey]) {
-        const serviceConfig = L_CONFIG[chosenKey];
-        if ('apiKeyPropName' in serviceConfig && typeof serviceConfig.apiKeyPropName === 'string') {
-          requestBody[serviceConfig.apiKeyPropName] = llmApiKey;
-        }
-      }
-
-      const response = await fetch('http://localhost:3000/api/process', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(requestBody),
-      })
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
-      }
-
-      const data = await response.json()
-      setResult({
-        llmOutput: data.message || 'LLM processing complete',
-        frontMatter: '',
-        prompt: '',
-        transcript: ''
-      })
-
-      onNewShowNote()
-    } catch (err: unknown) {
-      if (err instanceof Error) {
-        setError(err.message)
-      } else {
-        setError('An unknown error occurred.')
-      }
-    } finally {
-      setIsLoading(false)
-    }
-  }
+  const [isLoading, setIsLoading] = useState(false)
+  const [walletAddress, setWalletAddress] = useState('')
+  const [mnemonic, setMnemonic] = useState('')
+  const [transcriptionApiKey, setTranscriptionApiKey] = useState('')
+  const [selectedTranscriptionApiKeyService, setSelectedTranscriptionApiKeyService] = useState('')
+  const [llmApiKey, setLlmApiKey] = useState('')
+  const [selectedLlmApiKeyService, setSelectedLlmApiKeyService] = useState('chatgpt')
+  const [currentStep, setCurrentStep] = useState(1)
+  const [transcriptContent, setTranscriptContent] = useState('')
+  const [transcriptionCosts, setTranscriptionCosts] = useState<any>({})
+  const [llmCosts, setLlmCosts] = useState<any>({})
+  const [finalPath, setFinalPath] = useState('')
+  const [frontMatter, setFrontMatter] = useState('') 
+  const [finalMarkdownFile, setFinalMarkdownFile] = useState('')
 
   const formatContent = (text: string) => {
     return text.split('\n').map((line: string, index: number) => (
@@ -293,6 +49,186 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
         <br />
       </React.Fragment>
     ))
+  }
+
+  const handleStepOne = async () => {
+    setIsLoading(true)
+    setError(null)
+    setTranscriptionService('')
+    setWhisperModel('')
+    setTranscriptionCosts({})
+    try {
+      let localFilePath = filePath
+      if (processType === 'video') {
+        const mdBody: any = { type: 'video', url }
+        const mdRes = await fetch('http://localhost:3000/generate-markdown', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(mdBody)
+        })
+        if (!mdRes.ok) throw new Error('Error generating markdown')
+        const mdData = await mdRes.json()
+        setFrontMatter(mdData.frontMatter || '')
+        const dlBody: any = {
+          input: url,
+          filename: mdData.filename,
+          options: { video: url }
+        }
+        const dlRes = await fetch('http://localhost:3000/download-audio', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(dlBody)
+        })
+        if (!dlRes.ok) throw new Error('Error downloading audio')
+        const dlData = await dlRes.json()
+        localFilePath = dlData.outputPath
+        setFinalPath(mdData.finalPath || '')
+      } else {
+        const mdBody: any = { type: 'file', filePath }
+        const mdRes = await fetch('http://localhost:3000/generate-markdown', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(mdBody)
+        })
+        if (!mdRes.ok) throw new Error('Error generating markdown')
+        const mdData = await mdRes.json()
+        setFrontMatter(mdData.frontMatter || '')
+        setFinalPath(mdData.finalPath || '')
+        const dlBody: any = {
+          input: filePath,
+          filename: mdData.filename,
+          options: { file: filePath }
+        }
+        const dlRes = await fetch('http://localhost:3000/download-audio', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(dlBody)
+        })
+        if (!dlRes.ok) throw new Error('Error downloading audio')
+      }
+      const costBody: any = { type: 'transcriptCost', filePath: localFilePath }
+      const response = await fetch('http://localhost:3000/api/cost', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(costBody)
+      })
+      if (!response.ok) throw new Error(`Failed to get transcription cost`)
+      const data = await response.json()
+      setTranscriptionCosts(data.transcriptCost)
+      setCurrentStep(2)
+    } catch (err: unknown) {
+      if (err instanceof Error) setError(err.message)
+      else setError('An unknown error occurred.')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleStepTwo = async () => {
+    setIsLoading(true)
+    setError(null)
+    setTranscriptContent('')
+    try {
+      const rtBody: any = {
+        finalPath,
+        transcriptServices: transcriptionService,
+        options: {}
+      }
+      if (transcriptionService.startsWith('whisper')) rtBody.options.whisper = whisperModel
+      if (selectedTranscriptionApiKeyService === 'assembly') rtBody.options.assemblyApiKey = transcriptionApiKey
+      else if (selectedTranscriptionApiKeyService === 'deepgram') rtBody.options.deepgramApiKey = transcriptionApiKey
+      const rtRes = await fetch('http://localhost:3000/run-transcription', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(rtBody)
+      })
+      if (!rtRes.ok) throw new Error(`Error running transcription`)
+      const rtData = await rtRes.json()
+      setTranscriptContent(rtData.transcript || '')
+      setCurrentStep(3)
+    } catch (err: unknown) {
+      if (err instanceof Error) setError(err.message)
+      else setError('An unknown error occurred.')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleStepThree = async () => {
+    setIsLoading(true)
+    setError(null)
+    setLlmCosts({})
+    setFinalMarkdownFile('')
+    try {
+      const promptText = selectedPrompts.join('\n')
+      const saveBody: any = {
+        frontMatter,
+        transcript: transcriptContent,
+        prompt: promptText,
+        finalPath
+      }
+      const saveRes = await fetch('http://localhost:3000/save-markdown', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(saveBody)
+      })
+      if (!saveRes.ok) throw new Error(`Error saving final markdown`)
+      const saveData = await saveRes.json()
+      setFinalMarkdownFile(saveData.markdownFilePath)
+      const costBody: any = { type: 'llmCost', filePath: saveData.markdownFilePath }
+      const costRes = await fetch('http://localhost:3000/api/cost', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(costBody)
+      })
+      if (!costRes.ok) throw new Error(`Failed to get LLM cost`)
+      const costData = await costRes.json()
+      setLlmCosts(costData.llmCost)
+      setCurrentStep(4)
+    } catch (err: unknown) {
+      if (err instanceof Error) setError(err.message)
+      else setError('An unknown error occurred.')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleSelectLLM = async () => {
+    setIsLoading(true)
+    setError(null)
+    setResult(null)
+    try {
+      const runLLMBody: any = {
+        filePath: finalMarkdownFile,
+        llmServices: llmService,
+        options: {}
+      }
+      if (selectedLlmApiKeyService === 'chatgpt') runLLMBody.options.openaiApiKey = llmApiKey
+      if (selectedLlmApiKeyService === 'claude') runLLMBody.options.anthropicApiKey = llmApiKey
+      if (selectedLlmApiKeyService === 'gemini') runLLMBody.options.geminiApiKey = llmApiKey
+      if (selectedLlmApiKeyService === 'deepseek') runLLMBody.options.deepseekApiKey = llmApiKey
+      if (selectedLlmApiKeyService === 'together') runLLMBody.options.togetherApiKey = llmApiKey
+      if (selectedLlmApiKeyService === 'fireworks') runLLMBody.options.fireworksApiKey = llmApiKey
+      const runLLMRes = await fetch('http://localhost:3000/run-llm', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(runLLMBody)
+      })
+      if (!runLLMRes.ok) throw new Error(`Error running LLM`)
+      const data = await runLLMRes.json()
+      setResult({
+        llmOutput: data.showNotesResult || '',
+        frontMatter: data.showNote?.frontmatter || '',
+        prompt: data.showNote?.prompt || '',
+        transcript: data.showNote?.transcript || ''
+      })
+      onNewShowNote()
+    } catch (err: unknown) {
+      if (err instanceof Error) setError(err.message)
+      else setError('An unknown error occurred.')
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -305,7 +241,6 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
             mnemonic={mnemonic}
             setMnemonic={setMnemonic}
           />
-
           <ProcessType
             processType={processType}
             setProcessType={setProcessType}
@@ -314,35 +249,38 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
             filePath={filePath}
             setFilePath={setFilePath}
           />
-
-          <button
-            disabled={isLoading}
-            onClick={handleCalculateTranscriptCost}
-          >
+          <button disabled={isLoading} onClick={handleStepOne}>
             {isLoading ? 'Calculating...' : 'Calculate Transcription Cost'}
           </button>
         </div>
       )}
-
       {currentStep === 2 && (
         <div>
-          <h3>Select a Transcription Service (Cost Estimates)</h3>
-          {transcriptionCosts.length === 0 && (
-            <p>No cost data available</p>
-          )}
-          {transcriptionCosts.map((item) => (
-            <div key={item.service}>
-              <input
-                type="radio"
-                name="transcriptionChoice"
-                value={item.service}
-                checked={transcriptionService === item.service}
-                onChange={() => setTranscriptionService(item.service)}
-              />
-              <label>{item.service} - Cost: {item.cost}</label>
+          <h3>Select a Transcription Service</h3>
+          {!Object.keys(transcriptionCosts).length && <p>No cost data available</p>}
+          {Object.entries(transcriptionCosts).map(([svc, models]) => (
+            <div key={svc}>
+              <h4>{svc}</h4>
+              {(models as any[]).map(m => (
+                <div key={m.modelId}>
+                  <input
+                    type="radio"
+                    name="transcriptionChoice"
+                    value={`${svc}:${m.modelId}`}
+                    checked={
+                      transcriptionService === svc &&
+                      whisperModel === m.modelId
+                    }
+                    onChange={() => {
+                      setTranscriptionService(svc)
+                      setWhisperModel(m.modelId)
+                    }}
+                  />
+                  <label>{m.modelId} - Cost: {m.cost}</label>
+                </div>
+              ))}
             </div>
           ))}
-
           <TranscriptionService
             transcriptionService={transcriptionService}
             setTranscriptionService={setTranscriptionService}
@@ -353,83 +291,69 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
             selectedTranscriptionApiKeyService={selectedTranscriptionApiKeyService}
             setSelectedTranscriptionApiKeyService={setSelectedTranscriptionApiKeyService}
           />
-
-          <button
-            disabled={isLoading}
-            onClick={() => handleRunTranscription(transcriptionService)}
-          >
-            {isLoading ? 'Transcribing...' : 'Transcribe'}
+          <button disabled={isLoading} onClick={handleStepTwo}>
+            {isLoading ? 'Transcribing...' : 'Generate Transcription'}
           </button>
-
-          <hr />
-
+        </div>
+      )}
+      {currentStep === 3 && (
+        <div>
+          <h3>Transcript</h3>
+          <div style={{ border: '1px solid #ccc', padding: '10px', maxHeight: '200px', overflow: 'auto' }}>
+            {transcriptContent ? formatContent(transcriptContent) : 'No transcript content yet'}
+          </div>
           <Prompts
             selectedPrompts={selectedPrompts}
             setSelectedPrompts={setSelectedPrompts}
           />
+          <button disabled={isLoading} onClick={handleStepThree}>
+            {isLoading ? 'Saving & Estimating LLM...' : 'Save & Calculate LLM Cost'}
+          </button>
         </div>
       )}
-
-      {currentStep === 3 && (
+      {currentStep === 4 && (
         <div>
-          <h3>Transcript Ready</h3>
-          <div style={{ border: '1px solid #ccc', padding: '10px', maxHeight: '200px', overflow: 'auto' }}>
-            {transcriptContent ? formatContent(transcriptContent) : 'No transcript content yet'}
-          </div>
-
-          <br />
-          <button
-            disabled={isLoading}
-            onClick={handleCalculateLLMCosts}
-          >
-            {isLoading ? 'Estimating LLM Costs...' : 'Calculate LLM Costs'}
-          </button>
-
-          {llmCosts.length > 0 && (
-            <div>
-              <h3>LLM Cost Estimates</h3>
-              {llmCosts.map((item) => (
-                <div key={item.service}>
+          <h3>Select an LLM Service</h3>
+          {!Object.keys(llmCosts).length && <p>No LLM cost data available</p>}
+          {Object.entries(llmCosts).map(([svc, models]) => (
+            <div key={svc}>
+              <h4>{svc}</h4>
+              {(models as any[]).map(m => (
+                <div key={m.modelId}>
                   <input
                     type="radio"
                     name="llmChoice"
-                    value={item.service}
-                    checked={llmService === item.service}
-                    onChange={() => setLlmService(item.service)}
+                    value={`${svc}:${m.modelId}`}
+                    checked={
+                      llmService === svc &&
+                      llmModel === m.modelId
+                    }
+                    onChange={() => {
+                      setLlmService(svc as LLMServiceKey)
+                      setLlmModel(m.modelId)
+                    }}
                   />
-                  <label>{item.service} - Cost: {item.cost}</label>
+                  <label>{m.modelId} - Cost: {m.cost}</label>
                 </div>
               ))}
             </div>
-          )}
-
-          {llmCosts.length > 0 && (
-            <LLMService
-              // @ts-ignore
-              llmService={llmService}
-              setLlmService={setLlmService}
-              llmModel={llmModel}
-              setLlmModel={setLlmModel}
-              llmApiKey={llmApiKey}
-              setLlmApiKey={setLlmApiKey}
-              selectedLlmApiKeyService={selectedLlmApiKeyService}
-              setSelectedLlmApiKeyService={setSelectedLlmApiKeyService}
-            />
-          )}
-
-          {llmCosts.length > 0 && (
-            <button
-              disabled={isLoading}
-              onClick={() => handleRunLLM(llmService)}
-            >
-              {isLoading ? 'Running LLM...' : 'Run LLM'}
-            </button>
-          )}
+          ))}
+          <LLMService
+            llmService={llmService}
+            setLlmService={setLlmService}
+            llmModel={llmModel}
+            setLlmModel={setLlmModel}
+            llmApiKey={llmApiKey}
+            setLlmApiKey={setLlmApiKey}
+            selectedLlmApiKeyService={selectedLlmApiKeyService}
+            setSelectedLlmApiKeyService={setSelectedLlmApiKeyService}
+          />
+          <button disabled={isLoading} onClick={handleSelectLLM}>
+            {isLoading ? 'Generating Show Notes...' : 'Generate Show Notes'}
+          </button>
         </div>
       )}
-
       {error && <Alert message={error} variant="error" />}
-
       {result && (
         <div className="result">
           {result.llmOutput && (

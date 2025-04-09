@@ -3,25 +3,6 @@
 import React from 'react'
 import { T_CONFIG } from '../../../../shared/constants.ts'
 
-/**
- * The TranscriptionService component provides a dropdown for selecting
- * the transcription service, and conditionally displays a second dropdown
- * when a Whisper service is chosen. It also displays fields for specifying
- * an external transcription API key and service if the chosen service
- * is not Whisper-based.
- *
- * @param {{
-*   transcriptionService: string,
-*   setTranscriptionService: React.Dispatch<React.SetStateAction<string>>,
-*   whisperModel: string,
-*   setWhisperModel: React.Dispatch<React.SetStateAction<string>>,
-*   transcriptionApiKey: string,
-*   setTranscriptionApiKey: React.Dispatch<React.SetStateAction<string>>,
-*   selectedTranscriptionApiKeyService: string,
-*   setSelectedTranscriptionApiKeyService: React.Dispatch<React.SetStateAction<string>>
-* }} props
-* @returns {JSX.Element}
-*/
 export const TranscriptionService: React.FC<{
  transcriptionService: string
  setTranscriptionService: React.Dispatch<React.SetStateAction<string>>

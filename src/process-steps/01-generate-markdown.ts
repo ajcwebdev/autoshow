@@ -5,19 +5,6 @@ import { execFilePromise, basename, extname } from '../utils/node-utils.ts'
 
 import type { ProcessingOptions, ShowNoteMetadata } from '../../shared/types.ts'
 
-/**
- * Sanitizes a title string for use in filenames by:
- * - Removing special characters except spaces and hyphens
- * - Converting spaces and underscores to hyphens
- * - Converting to lowercase
- * - Limiting length to 200 characters
- * 
- * @param {string} title - The title to sanitize.
- * @returns {string} The sanitized title safe for use in filenames.
- * 
- * @example
- * sanitizeTitle('My Video Title! (2024)') // returns 'my-video-title-2024'
- */
 export function sanitizeTitle(title: string) {
   return title
     .replace(/[^\w\s-]/g, '')
@@ -28,19 +15,6 @@ export function sanitizeTitle(title: string) {
     .slice(0, 200)
 }
 
-/**
- * Builds the front matter content string array from the provided metadata object
- * 
- * @param {object} metadata - The metadata object
- * @param {string} metadata.showLink
- * @param {string} metadata.channel
- * @param {string} metadata.channelURL
- * @param {string} metadata.title
- * @param {string} metadata.description
- * @param {string} metadata.publishDate
- * @param {string} metadata.coverImage
- * @returns {string[]} The front matter array
- */
 export function buildFrontMatter(metadata: {
   showLink: string
   channel: string
@@ -63,44 +37,6 @@ export function buildFrontMatter(metadata: {
   ]
 }
 
-/**
- * Generates markdown content with front matter based on the provided options and input.
- * Handles different content types including YouTube videos, playlists, local files, and RSS items.
- * 
- * The function performs the following steps:
- * 1. Sanitizes input titles for safe filename creation
- * 2. Extracts metadata based on content type
- * 3. Generates appropriate front matter
- * 
- * @param {ProcessingOptions} options - The processing options specifying the type of content to generate.
- *                                     Valid options include: video, playlist, urls, file, and rss.
- * @param {string | ShowNoteMetadata} input - The input data to process:
- *                                   - For video/playlist/urls: A URL string
- *                                   - For file: A file path string
- *                                   - For RSS: An RSSItem object containing feed item details
- * @throws {Error} If invalid options are provided or if metadata extraction fails.
- * 
- * @example
- * // For a YouTube video
- * const result = await generateMarkdown(
- *   { video: true },
- *   'https://www.youtube.com/watch?v=...'
- * )
- * 
- * @example
- * // For an RSS item
- * const result = await generateMarkdown(
- *   { rss: true },
- *   { 
- *     publishDate: '2024-03-21',
- *     title: 'Episode Title',
- *     coverImage: 'https://...',
- *     showLink: 'https://...',
- *     channel: 'Podcast Name',
- *     channelURL: 'https://...'
- *   }
- * )
- */
 export async function generateMarkdown(
   options: ProcessingOptions,
   input: string | ShowNoteMetadata

@@ -3,16 +3,6 @@
 import React from 'react'
 import { PROMPT_CHOICES } from '../../../../shared/constants.ts'
 
-/**
- * The Prompts component contains checkboxes for all available prompts.
- * Users can select multiple prompts, which are stored in the selectedPrompts state.
- *
- * @param {{
- *   selectedPrompts: string[],
- *   setSelectedPrompts: React.Dispatch<React.SetStateAction<string[]>>
- * }} props
- * @returns {JSX.Element}
- */
 export const Prompts: React.FC<{
   selectedPrompts: string[]
   setSelectedPrompts: React.Dispatch<React.SetStateAction<string[]>>

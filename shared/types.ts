@@ -9,7 +9,7 @@ import { L_CONFIG } from './constants.ts'
  * Added fields to store LLM and transcription details, including service, model, costs, and final cost.
  * Now includes the 'content' field from the frontend type.
  */
-export interface ShowNote {
+export interface ShowNoteType {
   id?: number
   showLink?: string
   channel?: string
@@ -253,3 +253,5 @@ export interface ResultType {
  * Enum-like union for different process options on the frontend.
  */
 export type ProcessTypeEnum = 'video' | 'file'
+
+export type LLMServiceKey = keyof typeof L_CONFIG

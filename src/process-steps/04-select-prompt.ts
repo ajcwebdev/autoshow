@@ -9,15 +9,6 @@ import type { ProcessingOptions } from '../../shared/types.ts'
 
 const validPromptValues = new Set(PROMPT_CHOICES.map(choice => choice.value))
 
-/**
- * Generates a prompt by combining instructions and examples based on requested sections
- * or uses a custom prompt if provided. If a custom prompt file path is provided,
- * it will be read from a markdown file and returned directly.
- * 
- * @param {ProcessingOptions} options - The processing options containing customPrompt and prompt
- * @returns {Promise<string>} The generated prompt text
- * @throws {Error} If the file cannot be read or is invalid
- */
 export async function selectPrompts(options: ProcessingOptions) {
   l.step(`\nStep 4 - Select Prompts\n`)
   logInitialFunctionCall('selectPrompts', { options })

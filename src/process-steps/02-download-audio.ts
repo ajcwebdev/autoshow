@@ -6,33 +6,6 @@ import { execPromise, readFile, access, rename, execFilePromise, unlink } from '
 
 import type { ProcessingOptions } from '../../shared/types.ts'
 
-/**
- * Removes temporary files generated during content processing.
- * Attempts to delete files with specific extensions and logs the results.
- * Silently ignores attempts to delete non-existent files.
- * 
- * Files cleaned up include:
- * - .wav: Audio files
- * 
- * @param {string} id - Base filename (without extension) used to identify related files.
- * @param {boolean} [ensureFolders] - If true, skip deletion to allow creation or preservation of metadata folders.
- * 
- * @returns {Promise<void>} Resolves when cleanup is complete.
- * 
- * @throws {Error} If deletion fails for reasons other than file not existing:
- *   - Permission denied
- *   - File is locked/in use
- *   - I/O errors
- * 
- * @example
- * try {
- *   await saveAudio('content/my-video-2024-03-21')
- *   // Will attempt to delete:
- *   // - content/my-video-2024-03-21.wav
- * } catch (error) {
- *   err('Cleanup failed:', error)
- * }
- */
 export async function saveAudio(id: string, ensureFolders?: boolean) {
   if (ensureFolders) {
     l.dim('\nSkipping cleanup to preserve or ensure metadata directories.\n')
@@ -54,16 +27,6 @@ export async function saveAudio(id: string, ensureFolders?: boolean) {
   }
 }
 
-/**
- * Executes a command with retry logic to recover from transient failures.
- * 
- * Does an exponential backoff with 7 total attempts, starting at 1 second for the first attempt.
- * 
- * @param {string} command - The command to execute.
- * @param {string[]} args - Arguments for the command.
- * @returns {Promise<void>} Resolves if the command succeeds.
- * @throws {Error} If the command fails after all retry attempts.
- */
 export async function executeWithRetry(
   command: string,
   args: string[],
@@ -96,62 +59,6 @@ export async function executeWithRetry(
   }
 }
 
-/**
- * Downloads or processes audio content from various sources and converts it to a standardized WAV format.
- * 
- * The function handles two main scenarios:
- * 1. Online content (YouTube, RSS feeds) - Downloads using yt-dlp
- * 2. Local files - Converts using ffmpeg
- * 
- * In both cases, the output is converted to:
- * - WAV format
- * - 16kHz sample rate
- * - Mono channel
- * - 16-bit PCM encoding
- * 
- * Additionally, yt-dlp command execution includes retry logic to recover
- * from transient errors like HTTP 500 responses.
- * 
- * @param {ProcessingOptions} options - Processing configuration containing:
- *   - video: Flag for YouTube video processing
- *   - file: Flag for local file processing
- * 
- * @param {string} input - The source to process:
- *   - For online content: URL of the content
- *   - For local files: File path on the system
- * 
- * @param {string} filename - Base filename for the output WAV file
- *                           (without extension, will be saved in content/ directory)
- * 
- * @returns {Promise<string>} Path to the processed WAV file
- * 
- * @throws {Error} If:
- *   - Required dependencies (yt-dlp, ffmpeg) are missing
- *   - File access fails
- *   - File type is unsupported
- *   - Conversion process fails
- *   - Invalid options are provided
- * 
- * Supported file formats include:
- * - Audio: wav, mp3, m4a, aac, ogg, flac
- * - Video: mp4, mkv, avi, mov, webm
- * 
- * @example
- * // Download from YouTube
- * const wavPath = await downloadAudio(
- *   { video: true },
- *   'https://www.youtube.com/watch?v=...',
- *   'my-video'
- * )
- * 
- * @example
- * // Process local file
- * const wavPath = await downloadAudio(
- *   { file: true },
- *   '/path/to/audio.mp3',
- *   'my-audio'
- * )
- */
 export async function downloadAudio(
   options: ProcessingOptions,
   input: string,

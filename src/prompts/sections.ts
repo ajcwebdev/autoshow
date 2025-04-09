@@ -1,8 +1,5 @@
 // src/prompts/prompts.ts
 
-/**
- * Define the structure for different sections of the prompt
- */
 export const sections = {
   titles: {
     instruction: `- Write 5 potential titles for the video.

@@ -2,15 +2,8 @@
 
 import React, { useState, useEffect } from 'react'
 
-import type { ShowNoteType } from "@/types"
+import type { ShowNoteType } from '../../../shared/types.ts'
 
-/**
- * A React component that fetches and displays a single show note from a backend API.
- * It derives the show note's ID from the current URL path and retrieves detailed
- * information such as title, publish date, transcript, front matter, prompt, and LLM output.
- *
- * @returns {JSX.Element} A fully rendered component containing show note data
- */
 export const ShowNote: React.FC = () => {
   const [showNote, setShowNote] = useState<ShowNoteType | null>(null)
 
@@ -46,7 +39,7 @@ export const ShowNote: React.FC = () => {
   return (
     <div className="show-note">
       <h2>{showNote.title}</h2>
-      <p>Date: {showNote.publishdate}</p>
+      <p>Date: {showNote.publishDate}</p>
 
       <h3>LLM Output</h3>
       <div>{showNote.llmOutput && formatContent(showNote.llmOutput)}</div>

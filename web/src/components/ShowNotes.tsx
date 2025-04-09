@@ -2,18 +2,8 @@
 
 import React, { useState, useEffect } from 'react'
 
-import type { ShowNoteType } from "@/types"
+import type { ShowNoteType } from "../../../shared/types.ts"
 
-/**
- * The ShowNotes component fetches and displays a list of show notes from a backend API.
- * It also updates when the refreshCount prop changes, allowing the parent component
- * to trigger re-fetching of show notes.
- *
- * @param {{ refreshCount: number }} props - The properties for the ShowNotes component
- * including a numeric refreshCount value used to trigger updates
- *
- * @returns {JSX.Element} A list of show notes with their titles and publish dates
- */
 export const ShowNotes: React.FC<{ refreshCount: number }> = ({ refreshCount }) => {
   const [showNotes, setShowNotes] = useState<ShowNoteType[]>([])
 
@@ -45,7 +35,7 @@ export const ShowNotes: React.FC<{ refreshCount: number }> = ({ refreshCount }) 
       <h1>Show Notes</h1>
       {showNotes.map((note) => (
         <li key={note.id}>
-          <a href={`/show-notes/${note.id}`}>{note.title}</a> - {note.publishdate}
+          <a href={`/show-notes/${note.id}`}>{note.title}</a> - {note.publishDate}
         </li>
       ))}
     </ul>

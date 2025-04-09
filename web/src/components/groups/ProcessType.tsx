@@ -3,22 +3,8 @@
 import React from 'react'
 import { PROCESS_TYPES } from '../../../../shared/constants.ts'
 
-import type { ProcessTypeEnum } from '@/types'
+import type { ProcessTypeEnum } from '../../../../shared/types.ts'
 
-/**
- * The ProcessType component encapsulates the selection of process type
- * (video or file) along with the related input fields for URLs and file paths.
- *
- * @param {{
- *   processType: ProcessTypeEnum,
- *   setProcessType: React.Dispatch<React.SetStateAction<ProcessTypeEnum>>,
- *   url: string,
- *   setUrl: React.Dispatch<React.SetStateAction<string>>,
- *   filePath: string,
- *   setFilePath: React.Dispatch<React.SetStateAction<string>>
- * }} props
- * @returns {JSX.Element}
- */
 export const ProcessType: React.FC<{
   processType: ProcessTypeEnum
   setProcessType: React.Dispatch<React.SetStateAction<ProcessTypeEnum>>

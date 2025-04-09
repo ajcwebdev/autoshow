@@ -2,16 +2,16 @@
 
 import { l } from './utils/logging.ts'
 import { env } from './utils/node-utils.ts'
-import type { ShowNote } from '../shared/types.ts'
+import type { ShowNoteType } from '../shared/types.ts'
 
 export interface DatabaseService {
-  insertShowNote: (showNote: ShowNote) => Promise<any>
+  insertShowNote: (showNote: ShowNoteType) => Promise<any>
   getShowNote: (id: number) => Promise<any>
   getShowNotes: () => Promise<any[]>
 }
 
 export class NoOpDatabaseService implements DatabaseService {
-  async insertShowNote(_showNote: ShowNote) {
+  async insertShowNote(_showNote: ShowNoteType) {
     l.dim('\n  CLI mode: Database operations disabled - skipping show note insertion')
     return Promise.resolve({ ..._showNote })
   }
@@ -45,7 +45,7 @@ export class PrismaDatabaseService implements DatabaseService {
     return this
   }
 
-  async insertShowNote(showNote: ShowNote) {
+  async insertShowNote(showNote: ShowNoteType) {
     if (!this.initialized) await this.init()
     if (!this.prismaClient) {
       l.dim('\n  Database unavailable - skipping show note insertion')

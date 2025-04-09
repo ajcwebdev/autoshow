@@ -8,18 +8,6 @@ import type { ProcessingOptions } from '../../shared/types.ts'
 
 const BASE_URL = 'https://api.assemblyai.com/v2'
 
-/**
- * Formats the AssemblyAI transcript into text with timestamps and optional speaker labels.
- * Logic:
- * - If transcript.utterances are present, format each utterance line with optional speaker labels and timestamps.
- * - If only transcript.words are available, group them into lines ~80 chars, prepend each line with a timestamp.
- * - If no structured data is available, use the raw transcript text or 'No transcription available.' as fallback.
- *
- * @param transcript - The polling response from AssemblyAI after transcription completes
- * @param speakerLabels - Whether to include speaker labels in the output
- * @returns The fully formatted transcript as a string
- * @throws If words are expected but not found (no content to format)
- */
 export function formatAssemblyTranscript(transcript: any, speakerLabels: boolean) {
   const inlineFormatTime = (timestamp: number): string => {
     const totalSeconds = Math.floor(timestamp / 1000)
@@ -62,13 +50,6 @@ export function formatAssemblyTranscript(transcript: any, speakerLabels: boolean
   return txtContent
 }
 
-/**
- * Main function to handle transcription using AssemblyAI.
- * @param options - Additional processing options (e.g., speaker labels)
- * @param finalPath - The base filename (without extension) for input/output files
- * @returns {Promise<TranscriptionResult>}
- * @throws {Error} If any step of the process fails (upload, transcription request, polling, formatting)
- */
 export async function callAssembly(
   options: ProcessingOptions,
   finalPath: string

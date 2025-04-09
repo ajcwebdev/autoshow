@@ -2,31 +2,11 @@
 
 import React from 'react'
 import { L_CONFIG } from '../../../../shared/constants.ts'
+import type { LLMServiceKey } from '../../../../shared/types.ts'
 
-// Define the LLMServiceKey type
-type LLMServiceKey = keyof typeof L_CONFIG;
-
-/**
- * The LLMService component provides a dropdown for selecting the LLM service,
- * and conditionally displays a second dropdown for choosing a model based on
- * the selected service. It also displays fields for specifying an external
- * LLM API key and service if the chosen service is not 'none'.
- *
- * @param {{
-*   llmService: LLMServiceKey,
-*   setLlmService: React.Dispatch<React.SetStateAction<string>>,
-*   llmModel: string,
-*   setLlmModel: React.Dispatch<React.SetStateAction<string>>,
-*   llmApiKey: string,
-*   setLlmApiKey: React.Dispatch<React.SetStateAction<string>>,
-*   selectedLlmApiKeyService: string,
-*   setSelectedLlmApiKeyService: React.Dispatch<React.SetStateAction<string>>
-* }} props
-* @returns {JSX.Element}
-*/
 export const LLMService: React.FC<{
  llmService: LLMServiceKey
- setLlmService: React.Dispatch<React.SetStateAction<string>>
+ setLlmService: React.Dispatch<React.SetStateAction<LLMServiceKey>>
  llmModel: string
  setLlmModel: React.Dispatch<React.SetStateAction<string>>
  llmApiKey: string
@@ -43,19 +23,13 @@ export const LLMService: React.FC<{
  selectedLlmApiKeyService,
  setSelectedLlmApiKeyService
 }) => {
- /**
-  * Automatically set the first model from the chosen service's array if none is selected.
-  */
  React.useEffect(() => {
    if (llmService && L_CONFIG[llmService]?.models?.length && !llmModel) {
      setLlmModel(L_CONFIG[llmService].models[0].modelId)
    }
  }, [llmService, llmModel, setLlmModel])
 
- // Build an array of services from the config (excluding "skip" which has null value)
  const allServices = Object.values(L_CONFIG).filter((s) => s.value)
-
- // Get the models for the selected service
  const modelsForService = llmService
    ? L_CONFIG[llmService]?.models ?? []
    : []
@@ -68,7 +42,7 @@ export const LLMService: React.FC<{
          id="llmService"
          value={llmService}
          onChange={(e) => {
-           setLlmService(e.target.value)
+           setLlmService(e.target.value as LLMServiceKey)
            setLlmModel('')
          }}
        >
@@ -80,7 +54,6 @@ export const LLMService: React.FC<{
          ))}
        </select>
      </div>
-
      {llmService && modelsForService.length > 0 && (
        <div className="form-group">
          <label htmlFor="llmModel">LLM Model</label>
@@ -97,7 +70,6 @@ export const LLMService: React.FC<{
          </select>
        </div>
      )}
-
      {llmService && (
        <>
          <div className="form-group">
@@ -115,7 +87,6 @@ export const LLMService: React.FC<{
              <option value="fireworks">Fireworks</option>
            </select>
          </div>
-
          <div className="form-group">
            <label htmlFor="llmApiKey">LLM API Key</label>
            <input

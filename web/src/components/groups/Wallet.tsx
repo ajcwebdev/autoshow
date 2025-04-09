@@ -2,18 +2,6 @@
 
 import React from 'react'
 
-/**
- * The Wallet component encapsulates fields for capturing a user's
- * wallet address and mnemonic phrase.
- *
- * @param {{
- *   walletAddress: string,
- *   setWalletAddress: React.Dispatch<React.SetStateAction<string>>,
- *   mnemonic: string,
- *   setMnemonic: React.Dispatch<React.SetStateAction<string>>
- * }} props
- * @returns {JSX.Element}
-*/
 export const Wallet: React.FC<{
   walletAddress: string
   setWalletAddress: React.Dispatch<React.SetStateAction<string>>

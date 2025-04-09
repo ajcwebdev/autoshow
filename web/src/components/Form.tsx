@@ -216,6 +216,7 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
       if (selectedLlmApiKeyService === 'deepseek') runLLMBody.options.deepseekApiKey = llmApiKey
       if (selectedLlmApiKeyService === 'together') runLLMBody.options.togetherApiKey = llmApiKey
       if (selectedLlmApiKeyService === 'fireworks') runLLMBody.options.fireworksApiKey = llmApiKey
+      runLLMBody.options[llmService] = llmModel
       runLLMBody.options.transcriptionServices = transcriptionService
       runLLMBody.options.transcriptionModel = transcriptionModelUsed
       runLLMBody.options.transcriptionCost = transcriptionCostUsed

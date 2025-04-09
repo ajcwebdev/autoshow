@@ -5,7 +5,7 @@ import { callDeepgram } from '../transcription/deepgram.ts'
 import { callAssembly } from '../transcription/assembly.ts'
 import { l, err, logInitialFunctionCall } from '../utils/logging.ts'
 import { execPromise } from '../utils/node-utils.ts'
-import { T_CONFIG } from '../../shared/constants.ts'
+// import { T_CONFIG } from '../../shared/constants.ts'
 
 import type { ProcessingOptions, TranscriptionResult } from '../../shared/types.ts'
 

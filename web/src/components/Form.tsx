@@ -34,7 +34,7 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
   const [selectedTranscriptionApiKeyService, setSelectedTranscriptionApiKeyService] = useState('')
   const [llmApiKey, setLlmApiKey] = useState('')
   const [selectedLlmApiKeyService, setSelectedLlmApiKeyService] = useState('chatgpt')
-  const [currentStep, setCurrentStep] = useState(1)
+  const [currentStep, setCurrentStep] = useState(0)
   const [transcriptContent, setTranscriptContent] = useState('')
   const [transcriptionCosts, setTranscriptionCosts] = useState<any>({})
   const [llmCosts, setLlmCosts] = useState<any>({})
@@ -44,6 +44,7 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
   const [metadata, setMetadata] = useState<any>({})
   const [transcriptionModelUsed, setTranscriptionModelUsed] = useState('')
   const [transcriptionCostUsed, setTranscriptionCostUsed] = useState<number | null>(null)
+  const [dashBalance, setDashBalance] = useState<number | null>(null)
 
   const formatContent = (text: string) => {
     return text.split('\n').map((line: string, index: number) => (
@@ -52,6 +53,30 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
         <br />
       </React.Fragment>
     ))
+  }
+
+  const handleCheckBalance = async () => {
+    setIsLoading(true)
+    setError(null)
+    try {
+      if (!walletAddress || !mnemonic) {
+        throw new Error('Please enter wallet address and mnemonic')
+      }
+      const balanceRes = await fetch('http://localhost:3000/dash-balance', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mnemonic, walletAddress })
+      })
+      if (!balanceRes.ok) throw new Error('Error getting balance')
+      const data = await balanceRes.json()
+      setDashBalance(data.balance)
+      setCurrentStep(1)
+    } catch (err: unknown) {
+      if (err instanceof Error) setError(err.message)
+      else setError('An unknown error occurred.')
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const handleStepOne = async () => {
@@ -245,7 +270,7 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
 
   return (
     <>
-      {currentStep === 1 && (
+      {currentStep === 0 && (
         <div>
           <Wallet
             walletAddress={walletAddress}
@@ -253,6 +278,16 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
             mnemonic={mnemonic}
             setMnemonic={setMnemonic}
           />
+          <button disabled={isLoading} onClick={handleCheckBalance}>
+            {isLoading ? 'Checking...' : 'Check Balance'}
+          </button>
+          {dashBalance !== null && (
+            <p>Balance: {dashBalance}</p>
+          )}
+        </div>
+      )}
+      {currentStep === 1 && (
+        <div>
           <ProcessType
             processType={processType}
             setProcessType={setProcessType}

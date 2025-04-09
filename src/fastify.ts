@@ -15,6 +15,7 @@ import { handleRunTranscription } from './server/run-transcription.ts'
 import { handleSelectPrompt } from './server/select-prompt.ts'
 import { handleRunLLM } from './server/run-llm.ts'
 import { handleSaveMarkdown } from './server/save-markdown.ts'
+import { handleDashBalance } from './server/dash-balance.ts'
 
 export function buildFastify() {
   const fastify = Fastify({ logger: true })
@@ -23,11 +24,9 @@ export function buildFastify() {
     methods: ['GET', 'POST', 'OPTIONS'],
     allowedHeaders: ['Content-Type'],
   })
-
   fastify.addHook('onRequest', async (request) => {
     l(`\n[${new Date().toISOString()}] Received ${request.method} request for ${request.url}\n`)
   })
-
   fastify.addHook('preHandler', async (request) => {
     const body = request.body as Record<string, any>
     if (body) {
@@ -39,7 +38,6 @@ export function buildFastify() {
       })
     }
   })
-
   fastify.post('/api/cost', handleCostRequest)
   fastify.post('/api/process', handleProcessRequest)
   fastify.get('/show-notes', getShowNotes)
@@ -50,6 +48,7 @@ export function buildFastify() {
   fastify.post('/select-prompt', handleSelectPrompt)
   fastify.post('/run-llm', handleRunLLM)
   fastify.post('/save-markdown', handleSaveMarkdown)
+  fastify.post('/dash-balance', handleDashBalance)
   return fastify
 }
 

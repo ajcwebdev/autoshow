@@ -14,6 +14,7 @@
     "@astrojs/sitemap": "3.2.1",
     "astro": "5.4.1",
     "astro-expressive-code": "0.40.2",
+    "dash": "4.8.0",
     "react": "19.0.0",
     "react-dom": "19.0.0",
     "sharp": "0.33.5"

@@ -11,6 +11,14 @@
 npm run create-data-contract
 ```
 
+## Get Wallet Balance
+
+```bash
+curl -X POST http://localhost:3000/dash-balance \
+  -H 'Content-Type: application/json' \
+  -d '{"mnemonic":"YOUR_MNEMONIC","walletAddress":"YOUR_WALLET_ADDRESS"}'
+```
+
 ## Save Content on Dash Platform
 
 ```bash

@@ -39,8 +39,11 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
   const [transcriptionCosts, setTranscriptionCosts] = useState<any>({})
   const [llmCosts, setLlmCosts] = useState<any>({})
   const [finalPath, setFinalPath] = useState('')
-  const [frontMatter, setFrontMatter] = useState('') 
+  const [frontMatter, setFrontMatter] = useState('')
   const [finalMarkdownFile, setFinalMarkdownFile] = useState('')
+  const [metadata, setMetadata] = useState<any>({})
+  const [transcriptionModelUsed, setTranscriptionModelUsed] = useState('')
+  const [transcriptionCostUsed, setTranscriptionCostUsed] = useState<number | null>(null)
 
   const formatContent = (text: string) => {
     return text.split('\n').map((line: string, index: number) => (
@@ -69,6 +72,7 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
         if (!mdRes.ok) throw new Error('Error generating markdown')
         const mdData = await mdRes.json()
         setFrontMatter(mdData.frontMatter || '')
+        setMetadata(mdData.metadata || {})
         const dlBody: any = {
           input: url,
           filename: mdData.filename,
@@ -93,6 +97,7 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
         if (!mdRes.ok) throw new Error('Error generating markdown')
         const mdData = await mdRes.json()
         setFrontMatter(mdData.frontMatter || '')
+        setMetadata(mdData.metadata || {})
         setFinalPath(mdData.finalPath || '')
         const dlBody: any = {
           input: filePath,
@@ -145,6 +150,8 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
       if (!rtRes.ok) throw new Error(`Error running transcription`)
       const rtData = await rtRes.json()
       setTranscriptContent(rtData.transcript || '')
+      if (rtData.modelId) setTranscriptionModelUsed(rtData.modelId)
+      if (rtData.transcriptionCost != null) setTranscriptionCostUsed(rtData.transcriptionCost)
       setCurrentStep(3)
     } catch (err: unknown) {
       if (err instanceof Error) setError(err.message)
@@ -209,6 +216,10 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
       if (selectedLlmApiKeyService === 'deepseek') runLLMBody.options.deepseekApiKey = llmApiKey
       if (selectedLlmApiKeyService === 'together') runLLMBody.options.togetherApiKey = llmApiKey
       if (selectedLlmApiKeyService === 'fireworks') runLLMBody.options.fireworksApiKey = llmApiKey
+      runLLMBody.options.transcriptionServices = transcriptionService
+      runLLMBody.options.transcriptionModel = transcriptionModelUsed
+      runLLMBody.options.transcriptionCost = transcriptionCostUsed
+      runLLMBody.options.metadata = metadata
       const runLLMRes = await fetch('http://localhost:3000/run-llm', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -254,6 +265,7 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
           </button>
         </div>
       )}
+
       {currentStep === 2 && (
         <div>
           <h3>Select a Transcription Service</h3>
@@ -296,6 +308,7 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
           </button>
         </div>
       )}
+
       {currentStep === 3 && (
         <div>
           <h3>Transcript</h3>
@@ -311,6 +324,7 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
           </button>
         </div>
       )}
+
       {currentStep === 4 && (
         <div>
           <h3>Select an LLM Service</h3>
@@ -353,7 +367,9 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
           </button>
         </div>
       )}
+
       {error && <Alert message={error} variant="error" />}
+
       {result && (
         <div className="result">
           {result.llmOutput && (

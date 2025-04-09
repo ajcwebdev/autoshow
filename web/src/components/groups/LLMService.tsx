@@ -23,12 +23,6 @@ export const LLMService: React.FC<{
  selectedLlmApiKeyService,
  setSelectedLlmApiKeyService
 }) => {
- React.useEffect(() => {
-   if (llmService && L_CONFIG[llmService]?.models?.length && !llmModel) {
-     setLlmModel(L_CONFIG[llmService].models[0].modelId)
-   }
- }, [llmService, llmModel, setLlmModel])
-
  const allServices = Object.values(L_CONFIG).filter((s) => s.value)
  const modelsForService = llmService
    ? L_CONFIG[llmService]?.models ?? []
@@ -54,6 +48,7 @@ export const LLMService: React.FC<{
          ))}
        </select>
      </div>
+
      {llmService && modelsForService.length > 0 && (
        <div className="form-group">
          <label htmlFor="llmModel">LLM Model</label>
@@ -70,6 +65,7 @@ export const LLMService: React.FC<{
          </select>
        </div>
      )}
+
      {llmService && (
        <>
          <div className="form-group">
@@ -87,6 +83,7 @@ export const LLMService: React.FC<{
              <option value="fireworks">Fireworks</option>
            </select>
          </div>
+
          <div className="form-group">
            <label htmlFor="llmApiKey">LLM API Key</label>
            <input

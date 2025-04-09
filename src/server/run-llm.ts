@@ -16,6 +16,12 @@ export async function handleRunLLM(request: FastifyRequest, reply: FastifyReply)
   const filePath = body.filePath
   const llmServices = body.llmServices
   const options = body.options || {}
+
+  const transcriptionServices = options['transcriptionServices']
+  const transcriptionModel = options['transcriptionModel']
+  const transcriptionCost = options['transcriptionCost']
+  const metaFromBody = options['metadata']
+
   if (!filePath) {
     reply.status(400).send({ error: 'filePath is required' })
     return
@@ -44,9 +50,49 @@ export async function handleRunLLM(request: FastifyRequest, reply: FastifyReply)
       prompt = restLines.slice(0, transcriptIndex).join('\n').trim()
       transcript = restLines.slice(transcriptIndex + 1).join('\n').trim()
     }
-    const metadata: ShowNoteMetadata = { title: '', publishDate: '' }
-    const finalPath = filePath.replace(/\.[^/.]+$/, '')
-    const result = await runLLM(options, finalPath, frontMatter, prompt, transcript, metadata, llmServices)
+
+    const metadata: ShowNoteMetadata = {
+      showLink: '',
+      channel: '',
+      channelURL: '',
+      title: '',
+      description: '',
+      publishDate: '',
+      coverImage: '',
+      walletAddress: '',
+      mnemonic: ''
+    }
+
+    frontMatterLines.forEach(line => {
+      if (line) {
+        const m = line.match(/^(\w+):\s*"(.*?)"$/)
+        if (m && m[1]) {
+          const key = m[1]
+          const val = m[2] || ''
+          if (Object.hasOwn(metadata, key)) {
+            metadata[key as keyof ShowNoteMetadata] = val
+          }
+        }
+      }
+    })
+
+    if (metaFromBody) {
+      Object.assign(metadata, metaFromBody)
+    }
+
+    const result = await runLLM(
+      options,
+      filePath.replace(/\.[^/.]+$/, ''),
+      frontMatter,
+      prompt,
+      transcript,
+      metadata,
+      llmServices,
+      transcriptionServices,
+      transcriptionModel,
+      transcriptionCost
+    )
+
     reply.send(result)
   } catch (error) {
     reply.status(500).send({ error: (error as Error).message })

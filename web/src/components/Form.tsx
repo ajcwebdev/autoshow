@@ -266,7 +266,6 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
           </button>
         </div>
       )}
-
       {currentStep === 2 && (
         <div>
           <h3>Select a Transcription Service</h3>
@@ -289,7 +288,7 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
                       setWhisperModel(m.modelId)
                     }}
                   />
-                  <label>{m.modelId} - Cost: {m.cost}</label>
+                  <label>{m.modelId} - Cost: {m.cost} cents ({Math.round(m.cost * 50000000)} credits)</label>
                 </div>
               ))}
             </div>
@@ -309,7 +308,6 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
           </button>
         </div>
       )}
-
       {currentStep === 3 && (
         <div>
           <h3>Transcript</h3>
@@ -325,7 +323,6 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
           </button>
         </div>
       )}
-
       {currentStep === 4 && (
         <div>
           <h3>Select an LLM Service</h3>
@@ -348,7 +345,7 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
                       setLlmModel(m.modelId)
                     }}
                   />
-                  <label>{m.modelId} - Cost: {m.cost}</label>
+                  <label>{m.modelId} - Cost: {m.cost} cents ({Math.round(m.cost * 50000000)} credits)</label>
                 </div>
               ))}
             </div>
@@ -368,9 +365,7 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
           </button>
         </div>
       )}
-
       {error && <Alert message={error} variant="error" />}
-
       {result && (
         <div className="result">
           {result.llmOutput && (

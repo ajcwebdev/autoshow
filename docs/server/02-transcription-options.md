@@ -1,12 +1,23 @@
-## Transcription Options
+# Transcription
 
 ## Outline
 
-- [Transcription Options](#transcription-options)
+- [Estimate Transcription Cost](#estimate-transcription-cost)
+- [Transcription Service and Model Options](#transcription-service-and-model-options)
   - [Whisper.cpp](#whispercpp)
   - [Deepgram](#deepgram)
   - [Assembly](#assembly)
-  - [Estimate Transcription Cost](#estimate-transcription-cost)
+
+## Estimate Transcription Cost
+
+```bash
+curl --json '{
+  "type": "transcriptCost",
+  "filePath": "content/examples/audio.mp3"
+}' http://localhost:3000/api/cost
+```
+
+## Transcription Service and Model Options
 
 ### Whisper.cpp
 
@@ -104,7 +115,8 @@ curl --json '{
 curl --json '{
   "type": "video",
   "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
-  "transcriptServices": "deepgram"
+  "transcriptServices": "deepgram",
+  "deepgramApiKey": ""
 }' http://localhost:3000/api/process
 ```
 
@@ -123,7 +135,8 @@ curl --json '{
   "type": "video",
   "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "transcriptServices": "deepgram",
-  "transcriptModel": "nova-2"
+  "transcriptModel": "nova-2",
+  "deepgramApiKey": ""
 }' http://localhost:3000/api/process
 ```
 
@@ -132,7 +145,8 @@ curl --json '{
   "type": "video",
   "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "transcriptServices": "deepgram",
-  "transcriptModel": "enhanced"
+  "transcriptModel": "enhanced",
+  "deepgramApiKey": ""
 }' http://localhost:3000/api/process
 ```
 
@@ -142,7 +156,8 @@ curl --json '{
 curl --json '{
   "type": "video",
   "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
-  "transcriptServices": "assembly"
+  "transcriptServices": "assembly",
+  "assemblyApiKey": ""
 }' http://localhost:3000/api/process
 ```
 
@@ -151,7 +166,8 @@ curl --json '{
   "type": "video",
   "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "transcriptServices": "assembly",
-  "transcriptModel": "best"
+  "transcriptModel": "best",
+  "assemblyApiKey": ""
 }' http://localhost:3000/api/process
 ```
 
@@ -160,7 +176,8 @@ curl --json '{
   "type": "video",
   "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "transcriptServices": "assembly",
-  "transcriptModel": "nano"
+  "transcriptModel": "nano",
+  "assemblyApiKey": ""
 }' http://localhost:3000/api/process
 ```
 
@@ -169,15 +186,7 @@ curl --json '{
   "type": "video",
   "url": "https://ajc.pics/audio/fsjam-short.mp3",
   "transcriptServices": "assembly",
-  "speakerLabels": true
+  "speakerLabels": true,
+  "assemblyApiKey": ""
 }' http://localhost:3000/api/process
-```
-
-### Estimate Transcription Cost
-
-```bash
-curl --json '{
-  "type": "transcriptCost",
-  "filePath": "content/examples/audio.mp3"
-}' http://localhost:3000/api/cost
 ```

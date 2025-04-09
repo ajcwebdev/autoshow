@@ -27,12 +27,11 @@ Skip steps 1-4 and run LLM (ChatGPT) on a file with prompt and transcript.
 
 ```bash
 curl --json '{
-  "type": "runLLM",
   "filePath": "content/examples/audio-prompt.md",
   "llm": "chatgpt",
   "llmModel": "gpt-4o-mini",
   "openaiApiKey": ""
-}' http://localhost:3000/api/process
+}' http://localhost:3000/api/llm
 ```
 
 ## LLM Services and Models
@@ -94,7 +93,8 @@ curl --json '{
 curl --json '{
   "type": "video",
   "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
-  "llm": "claude"
+  "llm": "claude",
+  "anthropicApiKey": ""
 }' http://localhost:3000/api/process
 ```
 
@@ -103,7 +103,8 @@ curl --json '{
   "type": "video",
   "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "llm": "claude",
-  "llmModel": "claude-3-7-sonnet-latest"
+  "llmModel": "claude-3-7-sonnet-latest",
+  "anthropicApiKey": ""
 }' http://localhost:3000/api/process
 ```
 
@@ -112,7 +113,8 @@ curl --json '{
   "type": "video",
   "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "llm": "claude",
-  "llmModel": "claude-3-5-haiku-latest"
+  "llmModel": "claude-3-5-haiku-latest",
+  "anthropicApiKey": ""
 }' http://localhost:3000/api/process
 ```
 
@@ -121,7 +123,8 @@ curl --json '{
   "type": "video",
   "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "llm": "claude",
-  "llmModel": "claude-3-opus-latest"
+  "llmModel": "claude-3-opus-latest",
+  "anthropicApiKey": ""
 }' http://localhost:3000/api/process
 ```
 
@@ -131,7 +134,8 @@ curl --json '{
 curl --json '{
   "type": "video",
   "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
-  "llm": "gemini"
+  "llm": "gemini",
+  "geminiApiKey": ""
 }' http://localhost:3000/api/process
 ```
 
@@ -140,7 +144,8 @@ curl --json '{
   "type": "video",
   "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "llm": "gemini",
-  "llmModel": "gemini-1.5-flash"
+  "llmModel": "gemini-1.5-flash",
+  "geminiApiKey": ""
 }' http://localhost:3000/api/process
 ```
 
@@ -149,7 +154,8 @@ curl --json '{
   "type": "video",
   "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "llm": "gemini",
-  "llmModel": "gemini-1.5-pro"
+  "llmModel": "gemini-1.5-pro",
+  "geminiApiKey": ""
 }' http://localhost:3000/api/process
 ```
 
@@ -158,7 +164,8 @@ curl --json '{
   "type": "video",
   "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "llm": "gemini",
-  "llmModel": "gemini-1.5-flash-8b"
+  "llmModel": "gemini-1.5-flash-8b",
+  "geminiApiKey": ""
 }' http://localhost:3000/api/process
 ```
 
@@ -167,7 +174,8 @@ curl --json '{
   "type": "video",
   "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "llm": "gemini",
-  "llmModel": "gemini-2.0-flash-lite"
+  "llmModel": "gemini-2.0-flash-lite",
+  "geminiApiKey": ""
 }' http://localhost:3000/api/process
 ```
 
@@ -176,7 +184,8 @@ curl --json '{
   "type": "video",
   "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "llm": "gemini",
-  "llmModel": "gemini-2.0-flash"
+  "llmModel": "gemini-2.0-flash",
+  "geminiApiKey": ""
 }' http://localhost:3000/api/process
 ```
 
@@ -186,7 +195,8 @@ curl --json '{
 curl --json '{
   "type": "video",
   "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
-  "llm": "deepseek"
+  "llm": "deepseek",
+  "deepseekApiKey": ""
 }' http://localhost:3000/api/process
 ```
 
@@ -195,7 +205,8 @@ curl --json '{
   "type": "video",
   "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "llm": "deepseek",
-  "llmModel": "deepseek-chat"
+  "llmModel": "deepseek-chat",
+  "deepseekApiKey": ""
 }' http://localhost:3000/api/process
 ```
 
@@ -204,7 +215,8 @@ curl --json '{
   "type": "video",
   "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "llm": "deepseek",
-  "llmModel": "deepseek-reasoner"
+  "llmModel": "deepseek-reasoner",
+  "deepseekApiKey": ""
 }' http://localhost:3000/api/process
 ```
 
@@ -215,7 +227,8 @@ curl --json '{
   "type": "video",
   "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "llm": "fireworks",
-  "llmModel": "accounts/fireworks/models/llama-v3p1-405b-instruct"
+  "llmModel": "accounts/fireworks/models/llama-v3p1-405b-instruct",
+  "fireworksApiKey": ""
 }' http://localhost:3000/api/process
 ```
 
@@ -224,7 +237,8 @@ curl --json '{
   "type": "video",
   "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "llm": "fireworks",
-  "llmModel": "accounts/fireworks/models/llama-v3p1-70b-instruct"
+  "llmModel": "accounts/fireworks/models/llama-v3p1-70b-instruct",
+  "fireworksApiKey": ""
 }' http://localhost:3000/api/process
 ```
 
@@ -233,7 +247,8 @@ curl --json '{
   "type": "video",
   "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "llm": "fireworks",
-  "llmModel": "accounts/fireworks/models/llama-v3p1-8b-instruct"
+  "llmModel": "accounts/fireworks/models/llama-v3p1-8b-instruct",
+  "fireworksApiKey": ""
 }' http://localhost:3000/api/process
 ```
 
@@ -242,7 +257,8 @@ curl --json '{
   "type": "video",
   "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "llm": "fireworks",
-  "llmModel": "accounts/fireworks/models/qwen2p5-72b-instruct"
+  "llmModel": "accounts/fireworks/models/qwen2p5-72b-instruct",
+  "fireworksApiKey": ""
 }' http://localhost:3000/api/process
 ```
 
@@ -253,7 +269,8 @@ curl --json '{
   "type": "video",
   "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "llm": "together",
-  "llmModel": "meta-llama/Llama-3.2-3B-Instruct-Turbo"
+  "llmModel": "meta-llama/Llama-3.2-3B-Instruct-Turbo",
+  "togetherApiKey": ""
 }' http://localhost:3000/api/process
 ```
 
@@ -262,7 +279,8 @@ curl --json '{
   "type": "video",
   "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "llm": "together",
-  "llmModel": "meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo"
+  "llmModel": "meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo",
+  "togetherApiKey": ""
 }' http://localhost:3000/api/process
 ```
 
@@ -271,7 +289,8 @@ curl --json '{
   "type": "video",
   "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "llm": "together",
-  "llmModel": "meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo"
+  "llmModel": "meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo",
+  "togetherApiKey": ""
 }' http://localhost:3000/api/process
 ```
 
@@ -280,7 +299,8 @@ curl --json '{
   "type": "video",
   "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "llm": "together",
-  "llmModel": "meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo"
+  "llmModel": "meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo",
+  "togetherApiKey": ""
 }' http://localhost:3000/api/process
 ```
 
@@ -289,7 +309,8 @@ curl --json '{
   "type": "video",
   "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "llm": "together",
-  "llmModel": "google/gemma-2-27b-it"
+  "llmModel": "google/gemma-2-27b-it",
+  "togetherApiKey": ""
 }' http://localhost:3000/api/process
 ```
 
@@ -298,7 +319,8 @@ curl --json '{
   "type": "video",
   "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "llm": "together",
-  "llmModel": "google/gemma-2-9b-it"
+  "llmModel": "google/gemma-2-9b-it",
+  "togetherApiKey": ""
 }' http://localhost:3000/api/process
 ```
 
@@ -307,7 +329,8 @@ curl --json '{
   "type": "video",
   "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "llm": "together",
-  "llmModel": "Qwen/Qwen2.5-72B-Instruct-Turbo"
+  "llmModel": "Qwen/Qwen2.5-72B-Instruct-Turbo",
+  "togetherApiKey": ""
 }' http://localhost:3000/api/process
 ```
 
@@ -316,6 +339,7 @@ curl --json '{
   "type": "video",
   "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "llm": "together",
-  "llmModel": "Qwen/Qwen2.5-7B-Instruct-Turbo"
+  "llmModel": "Qwen/Qwen2.5-7B-Instruct-Turbo",
+  "togetherApiKey": ""
 }' http://localhost:3000/api/process
 ```

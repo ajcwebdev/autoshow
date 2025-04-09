@@ -3,7 +3,6 @@
 ## Outline
 
 - [Estimate LLM Cost](#estimate-llm-cost)
-- [Run Only LLM Process Step](#run-only-llm-process-step)
 - [LLM Services and Models](#llm-services-and-models)
   - [ChatGPT](#chatgpt)
   - [Claude](#claude)
@@ -19,19 +18,6 @@ curl --json '{
   "type": "llmCost",
   "filePath": "content/examples/audio-prompt.md"
 }' http://localhost:3000/api/cost
-```
-
-## Run Only LLM Process Step
-
-Skip steps 1-4 and run LLM (ChatGPT) on a file with prompt and transcript.
-
-```bash
-curl --json '{
-  "filePath": "content/examples/audio-prompt.md",
-  "llm": "chatgpt",
-  "llmModel": "gpt-4o-mini",
-  "openaiApiKey": ""
-}' http://localhost:3000/api/llm
 ```
 
 ## LLM Services and Models

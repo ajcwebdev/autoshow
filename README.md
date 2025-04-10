@@ -53,7 +53,7 @@ AutoShow can generate diverse content formats including:
 - Support for multiple input types (YouTube links, RSS feeds, local video and audio files)
 - Integration with various:
   - LLMs (ChatGPT, Claude, Gemini, Deepseek, Fireworks, Together)
-  - Transcription services (Whisper.cpp, Deepgram, Assembly)
+  - Transcription services (Deepgram, Assembly)
 - Customizable prompts for generating titles, summaries, chapter titles/descriptions, key takeaways, and questions to test comprehension
 - Markdown output with metadata and formatted content
 
@@ -69,7 +69,7 @@ The AutoShow workflow includes the following steps that feed sequentially into e
 
 ## Setup
 
-`scripts/setup.sh` checks to ensure a `.env` file exists, Node dependencies are installed, and the `whisper.cpp` repository is cloned and built. Run the script with the `setup` script in `package.json`.
+`.github/workflows/setup.sh` checks to ensure a `.env` file exists and Node dependencies are installed. Run the workflow with the `setup` script in `package.json`.
 
 ```bash
 npm run setup
@@ -137,6 +137,7 @@ Example commands for all available CLI options can be found in [`docs/examples.m
 
 - Shared Resources (`shared`)
   - `shared/constants.ts`: Globally shared constants across multiple modules.
+  - `shared/types.ts`: Commonly used TypeScript types.
 
 ### Node CLI and Server Backend
 
@@ -144,13 +145,9 @@ Example commands for all available CLI options can be found in [`docs/examples.m
   - `db.ts`: Initializes the database connection via Prisma.
   - `fastify.ts`: Sets up and configures the Fastify web server.
 
-### Process Commands and Process Steps
+### Server Endpoints
 
-- Process Commands (`src/process-commands`)
-  - `file.ts`: Processes local audio/video files.
-  - `video.ts`: Processes single YouTube videos.
-
-- Process Steps (`src/process-steps`)
+- Process Steps (`src/server`)
   - `01-generate-markdown.ts`: Creates initial markdown file with metadata.
   - `02-download-audio.ts`: Downloads audio from YouTube videos.
   - `03-run-transcription.ts`: Manages transcription processes.
@@ -160,7 +157,6 @@ Example commands for all available CLI options can be found in [`docs/examples.m
 ### Transcription and LLM Services
 
 - Transcription Services (`src/transcription`)
-  - `whisper.ts`: Implements transcription with Whisper.cpp.
   - `deepgram.ts`: Integration with Deepgram API for transcription.
   - `assembly.ts`: Integration with AssemblyAI API for transcription.
 
@@ -172,8 +168,6 @@ Example commands for all available CLI options can be found in [`docs/examples.m
 - Utility Files (`src/utils`)
   - `create-clips.ts`: Utility to create video/audio clips.
   - `logging.ts`: Reusable logging utilities using Chalk for colorized output.
-  - `types.ts`: Commonly used TypeScript types.
-  - `dash-documents.ts`: Helpers or scripts related to Dash payments.
   - `node-utils.ts`: Node.js-specific utilities.
 
 - Embeddings Utilities (`src/utils/embeddings`)

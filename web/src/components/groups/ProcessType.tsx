@@ -40,56 +40,25 @@ export const ProcessTypeStep: React.FC<{
     setError(null)
     setTranscriptionCosts({})
     try {
-      let localFilePath = filePath
+      const body: any = { type: processType, options: {} }
       if (processType === 'video') {
-        const mdBody = { type: 'video', url }
-        const mdRes = await fetch('http://localhost:3000/generate-markdown', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(mdBody)
-        })
-        if (!mdRes.ok) throw new Error('Error generating markdown')
-        const mdData = await mdRes.json()
-        setFrontMatter(mdData.frontMatter || '')
-        setMetadata(mdData.metadata || {})
-        const dlBody = {
-          input: url,
-          filename: mdData.filename,
-          options: { video: url }
-        }
-        const dlRes = await fetch('http://localhost:3000/download-audio', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(dlBody)
-        })
-        if (!dlRes.ok) throw new Error('Error downloading audio')
-        const dlData = await dlRes.json()
-        localFilePath = dlData.outputPath
-        setFinalPath(mdData.finalPath || '')
+        body.url = url
+        body.options.video = url
       } else {
-        const mdBody = { type: 'file', filePath }
-        const mdRes = await fetch('http://localhost:3000/generate-markdown', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(mdBody)
-        })
-        if (!mdRes.ok) throw new Error('Error generating markdown')
-        const mdData = await mdRes.json()
-        setFrontMatter(mdData.frontMatter || '')
-        setMetadata(mdData.metadata || {})
-        setFinalPath(mdData.finalPath || '')
-        const dlBody = {
-          input: filePath,
-          filename: mdData.filename,
-          options: { file: filePath }
-        }
-        const dlRes = await fetch('http://localhost:3000/download-audio', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(dlBody)
-        })
-        if (!dlRes.ok) throw new Error('Error downloading audio')
+        body.filePath = filePath
+        body.options.file = filePath
       }
+      const res = await fetch('http://localhost:3000/download-audio', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      })
+      if (!res.ok) throw new Error('Error downloading audio and metadata')
+      const resData = await res.json()
+      setFrontMatter(resData.frontMatter || '')
+      setMetadata(resData.metadata || {})
+      setFinalPath(resData.finalPath || '')
+      const localFilePath = resData.outputPath
       const costBody = { type: 'transcriptCost', filePath: localFilePath }
       const response = await fetch('http://localhost:3000/api/cost', {
         method: 'POST',
@@ -127,7 +96,6 @@ export const ProcessTypeStep: React.FC<{
       {processType === 'video' && (
         <div className="form-group">
           <label htmlFor="url">
-            {processType === 'video'}
             YouTube URL
           </label>
           <input

@@ -87,9 +87,9 @@ export const L_CONFIG = {
     apiKeyPropName: 'openaiApiKey',
     models: [
       { modelName: 'GPT 4.5 PREVIEW', modelId: 'gpt-4.5-preview', inputCostC: 7500, outputCostC: 15000 },
+      { modelName: 'GPT o1 MINI', modelId: 'o1-mini', inputCostC: 110, outputCostC: 440 },
       { modelName: 'GPT 4o', modelId: 'gpt-4o', inputCostC: 250, outputCostC: 1000 },
       { modelName: 'GPT 4o MINI', modelId: 'gpt-4o-mini', inputCostC: 15, outputCostC: 60 },
-      { modelName: 'GPT o1 MINI', modelId: 'o1-mini', inputCostC: 110, outputCostC: 440 }
     ]
   },
   claude: {
@@ -98,9 +98,9 @@ export const L_CONFIG = {
     label: 'Claude',
     apiKeyPropName: 'anthropicApiKey',
     models: [
+      { modelName: 'Claude 3 Opus', modelId: 'claude-3-opus-latest', inputCostC: 1500, outputCostC: 7500 },
       { modelName: 'Claude 3.7 Sonnet', modelId: 'claude-3-7-sonnet-latest', inputCostC: 300, outputCostC: 1500 },
       { modelName: 'Claude 3.5 Haiku', modelId: 'claude-3-5-haiku-latest', inputCostC: 80, outputCostC: 400 },
-      { modelName: 'Claude 3 Opus', modelId: 'claude-3-opus-latest', inputCostC: 1500, outputCostC: 7500 },
     ]
   },
   gemini: {
@@ -110,10 +110,10 @@ export const L_CONFIG = {
     apiKeyPropName: 'geminiApiKey',
     models: [
       { modelName: 'Gemini 1.5 Pro', modelId: 'gemini-1.5-pro', inputCostC: 250, outputCostC: 1000 },
-      { modelName: 'Gemini 1.5 Flash-8B', modelId: 'gemini-1.5-flash-8b', inputCostC: 7.5, outputCostC: 30 },
       { modelName: 'Gemini 1.5 Flash', modelId: 'gemini-1.5-flash', inputCostC: 15, outputCostC: 60 },
-      { modelName: 'Gemini 2.0 Flash-Lite', modelId: 'gemini-2.0-flash-lite', inputCostC: 7.5, outputCostC: 30 },
       { modelName: 'Gemini 2.0 Flash', modelId: 'gemini-2.0-flash', inputCostC: 10, outputCostC: 40 },
+      { modelName: 'Gemini 1.5 Flash-8B', modelId: 'gemini-1.5-flash-8b', inputCostC: 7.5, outputCostC: 30 },
+      { modelName: 'Gemini 2.0 Flash-Lite', modelId: 'gemini-2.0-flash-lite', inputCostC: 7.5, outputCostC: 30 },
     ]
   },
   deepseek: {
@@ -122,8 +122,8 @@ export const L_CONFIG = {
     label: 'Deepseek',
     apiKeyPropName: 'deepseekApiKey',
     models: [
-      { modelName: 'DeepSeek Chat', modelId: 'deepseek-chat', inputCostC: 7, outputCostC: 110 },
       { modelName: 'DeepSeek Reasoner', modelId: 'deepseek-reasoner', inputCostC: 14, outputCostC: 219 },
+      { modelName: 'DeepSeek Chat', modelId: 'deepseek-chat', inputCostC: 7, outputCostC: 110 },
     ]
   },
   fireworks: {
@@ -134,7 +134,6 @@ export const L_CONFIG = {
     models: [
       { modelName: 'LLAMA 3 1 405B', modelId: 'accounts/fireworks/models/llama-v3p1-405b-instruct', inputCostC: 300, outputCostC: 300 },
       { modelName: 'LLAMA 3 1 70B', modelId: 'accounts/fireworks/models/llama-v3p1-70b-instruct', inputCostC: 90, outputCostC: 90 },
-      { modelName: 'LLAMA 3 1 8B', modelId: 'accounts/fireworks/models/llama-v3p1-8b-instruct', inputCostC: 20, outputCostC: 20 },
       { modelName: 'QWEN 2 5 72B', modelId: 'accounts/fireworks/models/qwen2p5-72b-instruct', inputCostC: 90, outputCostC: 90 },
     ]
   },
@@ -144,14 +143,10 @@ export const L_CONFIG = {
     label: 'Together AI',
     apiKeyPropName: 'togetherApiKey',
     models: [
-      { modelName: 'LLAMA 3 2 3B', modelId: 'meta-llama/Llama-3.2-3B-Instruct-Turbo', inputCostC: 6, outputCostC: 6 },
       { modelName: 'LLAMA 3 1 405B', modelId: 'meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo', inputCostC: 350, outputCostC: 350 },
-      { modelName: 'LLAMA 3 1 70B', modelId: 'meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo', inputCostC: 88, outputCostC: 88 },
-      { modelName: 'LLAMA 3 1 8B', modelId: 'meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo', inputCostC: 18, outputCostC: 18 },
-      { modelName: 'Gemma 2 27B', modelId: 'google/gemma-2-27b-it', inputCostC: 80, outputCostC: 80 },
-      { modelName: 'Gemma 2 9B', modelId: 'google/gemma-2-9b-it', inputCostC: 30, outputCostC: 30 },
       { modelName: 'QWEN 2 5 72B', modelId: 'Qwen/Qwen2.5-72B-Instruct-Turbo', inputCostC: 120, outputCostC: 120 },
-      { modelName: 'QWEN 2 5 7B', modelId: 'Qwen/Qwen2.5-7B-Instruct-Turbo', inputCostC: 30, outputCostC: 30 },
+      { modelName: 'LLAMA 3 1 70B', modelId: 'meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo', inputCostC: 88, outputCostC: 88 },
+      { modelName: 'Gemma 2 27B', modelId: 'google/gemma-2-27b-it', inputCostC: 80, outputCostC: 80 },
     ]
   }
 }

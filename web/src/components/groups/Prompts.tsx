@@ -86,6 +86,7 @@ export const PromptsStep: React.FC<{
       <div style={{ border: '1px solid #ccc', padding: '10px', maxHeight: '200px', overflow: 'auto' }}>
         {transcriptContent ? formatContent(transcriptContent) : 'No transcript content yet'}
       </div>
+      <br />
       <div className="form-group">
         <label>Prompts</label>
         <div className="checkbox-group">

@@ -78,11 +78,11 @@ export const TranscriptionStep: React.FC<{
 
   return (
     <>
-      <h3>Select a Transcription Service</h3>
+      <h2>Select a Transcription Service</h2>
       {!Object.keys(transcriptionCosts).length && <p>No cost data available</p>}
       {Object.entries(transcriptionCosts).map(([svc, models]) => (
         <div key={svc}>
-          <h4>{svc}</h4>
+          <h3>{svc}</h3>
           {models.map(m => (
             <div key={m.modelId}>
               <input
@@ -95,11 +95,13 @@ export const TranscriptionStep: React.FC<{
                   setTranscriptionModel(m.modelId)
                 }}
               />
-              <label>{m.modelId} - Cost: {m.cost} cents ({Math.round(m.cost * 50000000)} credits)</label>
+              <label>{m.modelId}</label>
+              <div>{(m.cost * 500).toFixed(1)} credits ({m.cost}¢)</div>
             </div>
           ))}
         </div>
       ))}
+      <br /><br />
       <div className="form-group">
         <label htmlFor="transcriptionApiKey">Transcription API Key</label>
         <input

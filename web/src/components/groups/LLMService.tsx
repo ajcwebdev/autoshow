@@ -95,10 +95,10 @@ export const LLMServiceStep: React.FC<{
       {allServices.length === 0 && <p>No services found</p>}
       {allServices.length > 0 && (
         <>
-          <h3>Select an LLM Model</h3>
+          <h2>Select an LLM Model</h2>
           {allServices.map(service => (
             <div key={service.value}>
-              <h4>{service.label}</h4>
+              <h3>{service.label}</h3>
               {service.models && service.models.length === 0 && <p>No models for {service.label}</p>}
               {service.models && service.models.map(m => {
                 const modelCost = llmCosts[service.value as string]?.find((x: any) => x.modelId === m.modelId)?.cost ?? 0
@@ -114,7 +114,8 @@ export const LLMServiceStep: React.FC<{
                         setLlmModel(m.modelId)
                       }}
                     />
-                    <label>{m.modelName} (Estimated cost: {modelCost})</label>
+                    <label>{m.modelName}</label>
+                    <div>{(modelCost * 500).toFixed(1)} credits ({modelCost}¢)</div>
                   </div>
                 )
               })}
@@ -122,6 +123,7 @@ export const LLMServiceStep: React.FC<{
           ))}
         </>
       )}
+      <br /><br />
       <div className="form-group">
         <label htmlFor="llmApiKey">LLM API Key</label>
         <input

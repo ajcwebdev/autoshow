@@ -3,7 +3,7 @@
 import { l, err, logInitialFunctionCall } from '../utils/logging.ts'
 import { execFilePromise, basename, extname } from '../utils/node-utils.ts'
 import type { FastifyRequest, FastifyReply } from 'fastify'
-import type { ProcessingOptions, ShowNoteMetadata } from '../../shared/types.ts'
+import type { ProcessingOptions, ShowNoteMetadata, GenerateMarkdownBody } from '../../shared/types.ts'
 
 export function sanitizeTitle(title: string) {
   return title
@@ -43,7 +43,6 @@ export async function generateMarkdown(
 ) {
   l.step(`\nStep 1 - Generate Markdown\n`)
   logInitialFunctionCall('generateMarkdown', { options, input })
-
   const { filename, metadata } = await (async () => {
     switch (true) {
       case !!options.video:
@@ -51,15 +50,14 @@ export async function generateMarkdown(
           l.dim('  Extracting metadata with yt-dlp. Parsing output...')
           const { stdout } = await execFilePromise('yt-dlp', [
             '--restrict-filenames',
-            '--print', '%(webpage_url)s',
-            '--print', '%(channel)s',
-            '--print', '%(uploader_url)s',
-            '--print', '%(title)s',
-            '--print', '%(upload_date>%Y-%m-%d)s',
-            '--print', '%(thumbnail)s',
+            '--print','%(webpage_url)s',
+            '--print','%(channel)s',
+            '--print','%(uploader_url)s',
+            '--print','%(title)s',
+            '--print','%(upload_date>%Y-%m-%d)s',
+            '--print','%(thumbnail)s',
             input as string,
           ])
-
           const [
             showLink = '',
             videoChannel = '',
@@ -68,9 +66,7 @@ export async function generateMarkdown(
             formattedDate = '',
             thumbnail = '',
           ] = stdout.trim().split('\n')
-
           const filenameResult = `${formattedDate}-${sanitizeTitle(videoTitle)}`
-
           return {
             filename: filenameResult,
             metadata: {
@@ -87,13 +83,11 @@ export async function generateMarkdown(
           err(`Error extracting metadata for ${input}: ${error instanceof Error ? error.message : String(error)}`)
           throw error
         }
-
       case !!options.file:
         l.dim('\n  Generating markdown for a local file...')
         const originalFilename = basename(input as string)
         const filenameWithoutExt = originalFilename.replace(extname(originalFilename), '')
         const localFilename = sanitizeTitle(filenameWithoutExt)
-
         return {
           filename: localFilename,
           metadata: {
@@ -106,12 +100,10 @@ export async function generateMarkdown(
             coverImage: '',
           }
         }
-
       default:
         throw new Error('Invalid option provided for markdown generation.')
     }
   })()
-
   const finalPath = `content/${filename}`
   const frontMatter = buildFrontMatter({
     showLink: metadata.showLink || '',
@@ -123,18 +115,12 @@ export async function generateMarkdown(
     coverImage: metadata.coverImage || ''
   })
   const frontMatterContent = frontMatter.join('\n')
-
   l.dim(`\n  generateMarkdown returning:\n\n    - finalPath: ${finalPath}\n    - filename: ${filename}\n`)
   l.dim(`frontMatterContent:\n\n${frontMatterContent}\n`)
   return { frontMatter: frontMatterContent, finalPath, filename, metadata }
 }
 
 export async function handleGenerateMarkdown(request: FastifyRequest, reply: FastifyReply) {
-  type GenerateMarkdownBody = {
-    type?: string
-    url?: string
-    filePath?: string
-  }
   const body = request.body as GenerateMarkdownBody
   const type = body.type
   const url = body.url

@@ -2,67 +2,43 @@
 
 import { callDeepgram } from '../transcription/deepgram.ts'
 import { callAssembly } from '../transcription/assembly.ts'
-// import { callGroq } from '../transcription/groq.ts'
 import { l, err, logInitialFunctionCall } from '../utils/logging.ts'
 import { execPromise } from '../utils/node-utils.ts'
 import type { FastifyRequest, FastifyReply } from 'fastify'
-import type { ProcessingOptions } from '../../shared/types.ts'
+import type { ProcessingOptions, RunTranscriptionBody } from '../../shared/types.ts'
 
-export async function runTranscription(
-  options: ProcessingOptions,
-  finalPath: string,
-  transcriptServices?: string
-) {
+export async function runTranscription(options: ProcessingOptions, finalPath: string, transcriptServices?: string) {
   l.step(`\nStep 3 - Run Transcription\n`)
   logInitialFunctionCall('runTranscription', { options, finalPath, transcriptServices })
-
   let finalTranscript = ''
   let finalModelId = ''
   let finalCostPerMinuteCents = 0
-
   try {
     switch (transcriptServices) {
       case 'deepgram': {
-        const result = await retryTranscriptionCall(
-          () => callDeepgram(options, finalPath)
-        )
+        const result = await retryTranscriptionCall(() => callDeepgram(options,finalPath))
         l.dim('\n  Deepgram transcription completed successfully.\n')
         finalTranscript = result.transcript
         finalModelId = result.modelId
         finalCostPerMinuteCents = result.costPerMinuteCents
         break
       }
-
       case 'assembly': {
-        const result = await retryTranscriptionCall(
-          () => callAssembly(options, finalPath)
-        )
+        const result = await retryTranscriptionCall(() => callAssembly(options,finalPath))
         l.dim('\n  AssemblyAI transcription completed successfully.\n')
         finalTranscript = result.transcript
         finalModelId = result.modelId
         finalCostPerMinuteCents = result.costPerMinuteCents
         break
       }
-
-      // case 'groq': {
-      //   const result = await retryTranscriptionCall(() => callGroq(options, finalPath))
-      //   l.dim('\n  Groq transcription completed successfully.\n')
-      //   finalTranscript = result.transcript
-      //   finalModelId = result.modelId
-      //   finalCostPerMinuteCents = result.costPerMinuteCents
-      //   break
-      // }
-
       default:
         throw new Error(`Unknown transcription service: ${transcriptServices}`)
     }
-
     const transcriptionCost = await logTranscriptionCost({
       modelId: finalModelId,
       costPerMinuteCents: finalCostPerMinuteCents,
       filePath: `${finalPath}.wav`
     })
-
     return {
       transcript: finalTranscript,
       transcriptionCost,
@@ -75,12 +51,9 @@ export async function runTranscription(
   }
 }
 
-export async function retryTranscriptionCall<T>(
-  fn: () => Promise<T>
-) {
+export async function retryTranscriptionCall(fn: () => Promise<any>) {
   const maxRetries = 7
   let attempt = 0
-
   while (attempt < maxRetries) {
     try {
       attempt++
@@ -98,7 +71,6 @@ export async function retryTranscriptionCall<T>(
       await new Promise((resolve) => setTimeout(resolve, delayMs))
     }
   }
-
   throw new Error('Transcription call failed after maximum retries.')
 }
 
@@ -115,22 +87,15 @@ export async function logTranscriptionCost(info: {
   }
   const minutes = seconds / 60
   const cost = info.costPerMinuteCents * minutes
-
   l.dim(
     `  - Estimated Transcription Cost for ${info.modelId}:\n` +
     `    - Audio Length: ${minutes.toFixed(2)} minutes\n` +
     `    - Cost: ¢${cost.toFixed(5)}`
   )
-
   return cost
 }
 
 export async function handleRunTranscription(request: FastifyRequest, reply: FastifyReply) {
-  type RunTranscriptionBody = {
-    finalPath?: string
-    transcriptServices?: string
-    options?: ProcessingOptions
-  }
   const body = request.body as RunTranscriptionBody
   const finalPath = body.finalPath
   const transcriptServices = body.transcriptServices

@@ -7,8 +7,7 @@ import { readFile, writeFile } from '../utils/node-utils.ts'
 import { L_CONFIG } from '../../shared/constants.ts'
 import { callChatGPT, callClaude, callGemini, callDeepSeek, callFireworks, callTogether } from '../llms/llm-services.ts'
 import type { FastifyRequest, FastifyReply } from 'fastify'
-import type { ChatGPTModelValue, ClaudeModelValue, GeminiModelValue, DeepSeekModelValue, FireworksModelValue, TogetherModelValue } from '../llms/llm-services.ts'
-import type { ProcessingOptions, ShowNoteMetadata, LLMResult } from '../../shared/types.ts'
+import type { ProcessingOptions, ShowNoteMetadata, LLMResult, RunLLMBody, ChatGPTModelValue, ClaudeModelValue, GeminiModelValue, DeepSeekModelValue, FireworksModelValue, TogetherModelValue } from '../../shared/types.ts'
 
 export async function runLLM(
   options: ProcessingOptions,
@@ -26,12 +25,10 @@ export async function runLLM(
   logInitialFunctionCall('runLLM', { llmServices, metadata })
   metadata.walletAddress = options['walletAddress'] || metadata.walletAddress
   metadata.mnemonic = options['mnemonic'] || metadata.mnemonic
-
   try {
     let showNotesResult = ''
     let llmCost = 0
     let userModel = ''
-
     if (llmServices) {
       l.dim(`\n  Preparing to process with '${llmServices}' Language Model...\n`)
       const config = L_CONFIG[llmServices as keyof typeof L_CONFIG]
@@ -46,22 +43,22 @@ export async function runLLM(
       let showNotesData: LLMResult
       switch (llmServices) {
         case 'chatgpt':
-          showNotesData = await retryLLMCall(() => callChatGPT(prompt, transcript, userModel as ChatGPTModelValue))
+          showNotesData = await retryLLMCall(() => callChatGPT(prompt,transcript,userModel as ChatGPTModelValue))
           break
         case 'claude':
-          showNotesData = await retryLLMCall(() => callClaude(prompt, transcript, userModel as ClaudeModelValue))
+          showNotesData = await retryLLMCall(() => callClaude(prompt,transcript,userModel as ClaudeModelValue))
           break
         case 'gemini':
-          showNotesData = await retryLLMCall(() => callGemini(prompt, transcript, userModel as GeminiModelValue))
+          showNotesData = await retryLLMCall(() => callGemini(prompt,transcript,userModel as GeminiModelValue))
           break
         case 'deepseek':
-          showNotesData = await retryLLMCall(() => callDeepSeek(prompt, transcript, userModel as DeepSeekModelValue))
+          showNotesData = await retryLLMCall(() => callDeepSeek(prompt,transcript,userModel as DeepSeekModelValue))
           break
         case 'fireworks':
-          showNotesData = await retryLLMCall(() => callFireworks(prompt, transcript, userModel as FireworksModelValue))
+          showNotesData = await retryLLMCall(() => callFireworks(prompt,transcript,userModel as FireworksModelValue))
           break
         case 'together':
-          showNotesData = await retryLLMCall(() => callTogether(prompt, transcript, userModel as TogetherModelValue))
+          showNotesData = await retryLLMCall(() => callTogether(prompt,transcript,userModel as TogetherModelValue))
           break
         default:
           throw new Error(`Unknown LLM service: ${llmServices}`)
@@ -87,7 +84,6 @@ export async function runLLM(
       l.dim(`\n  Writing front matter + prompt + transcript to file:\n    - ${noLLMFile}`)
       await writeFile(noLLMFile, `${frontMatter}\n${prompt}\n## Transcript\n\n${transcript}`)
     }
-
     const finalCost = (transcriptionCost || 0) + llmCost
     let insertedNote = {
       showLink: metadata.showLink ?? '',
@@ -111,7 +107,6 @@ export async function runLLM(
       transcriptionCost,
       finalCost
     }
-
     const newRecord = await dbService.insertShowNote(insertedNote)
     return { showNote: newRecord, showNotesResult }
   } catch (error) {
@@ -134,10 +129,7 @@ export function logLLMCost(info: {
   let modelConfig
   for (const service of Object.values(L_CONFIG)) {
     for (const model of service.models) {
-      if (
-        model.modelId === name ||
-        model.modelId.toLowerCase() === name.toLowerCase()
-      ) {
+      if (model.modelId === name || model.modelId.toLowerCase() === name.toLowerCase()) {
         modelConfig = model
         break
       }
@@ -237,11 +229,6 @@ export async function retryLLMCall(fn: () => Promise<any>) {
 }
 
 export async function handleRunLLM(request: FastifyRequest, reply: FastifyReply) {
-  type RunLLMBody = {
-    filePath?: string
-    llmServices?: string
-    options?: ProcessingOptions
-  }
   const body = request.body as RunLLMBody
   const filePath = body.filePath
   const llmServices = body.llmServices

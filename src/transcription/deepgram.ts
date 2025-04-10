@@ -3,17 +3,7 @@
 import { l, err } from '../utils/logging.ts'
 import { readFile, env } from '../utils/node-utils.ts'
 import { T_CONFIG } from '../../shared/constants.ts'
-
-import type { ProcessingOptions } from '../../shared/types.ts'
-
-export interface DeepgramWord {
-  word: string
-  start: number
-  end: number
-  confidence: number
-  speaker?: number
-  speaker_confidence?: number
-}
+import type { ProcessingOptions, DeepgramWord } from '../../shared/types.ts'
 
 export function formatDeepgramTranscript(
   words: DeepgramWord[],

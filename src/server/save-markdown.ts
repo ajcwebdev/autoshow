@@ -2,13 +2,7 @@
 
 import { writeFile, join } from '../utils/node-utils.ts'
 import type { FastifyRequest, FastifyReply } from 'fastify'
-
-interface SaveMarkdownRequest {
-  frontMatter: string;
-  prompt?: string;
-  transcript: string;
-  finalPath: string;
-}
+import type { SaveMarkdownRequest } from '../../shared/types.ts'
 
 export async function handleSaveMarkdown(request: FastifyRequest<{Body: SaveMarkdownRequest}>, reply: FastifyReply) {
   try {

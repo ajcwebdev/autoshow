@@ -5,14 +5,7 @@ import Anthropic from '@anthropic-ai/sdk'
 import { GoogleGenerativeAI } from '@google/generative-ai'
 import { err } from '../utils/logging.ts'
 import { env } from '../utils/node-utils.ts'
-import { L_CONFIG } from '../../shared/constants.ts'
-
-export type ChatGPTModelValue = (typeof L_CONFIG.chatgpt.models)[number]['modelId']
-export type ClaudeModelValue = (typeof L_CONFIG.claude.models)[number]['modelId']
-export type DeepSeekModelValue = (typeof L_CONFIG.deepseek.models)[number]['modelId']
-export type FireworksModelValue = (typeof L_CONFIG.fireworks.models)[number]['modelId']
-export type GeminiModelValue = (typeof L_CONFIG.gemini.models)[number]['modelId']
-export type TogetherModelValue = (typeof L_CONFIG.together.models)[number]['modelId']
+import type { ChatGPTModelValue, ClaudeModelValue, GeminiModelValue, DeepSeekModelValue, FireworksModelValue, TogetherModelValue } from '../../shared/types.ts'
 
 export async function callChatGPT(
   prompt: string,

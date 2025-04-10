@@ -41,11 +41,18 @@ export const PromptsStep: React.FC<{
     setLlmCosts({})
     setFinalMarkdownFile('')
     try {
-      const promptText = selectedPrompts.join('\n')
+      const promptRes = await fetch('http://localhost:3000/select-prompt', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ options: { prompt: selectedPrompts } })
+      })
+      if (!promptRes.ok) throw new Error('Error generating combined prompt')
+      const promptData = await promptRes.json()
+      const combinedPrompt = promptData.prompt
       const saveBody = {
         frontMatter,
         transcript: transcriptContent,
-        prompt: promptText,
+        prompt: combinedPrompt,
         finalPath
       }
       const saveRes = await fetch('http://localhost:3000/save-markdown', {

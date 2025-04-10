@@ -16,7 +16,7 @@
   "scripts": {
     "repo": "repomix",
     "setup": "bash .github/workflows/setup.sh",
-    "check": "npx tsc",
+    "check": "npx tsc && cd web && npx tsc && cd ..",
     "node:base": "node --no-warnings --experimental-transform-types --es-module-specifier-resolution=node",
     "serve": "npm run node:base -- --watch src/fastify.ts",
     "web": "npm run up && cd web && npm i && npm run dev",

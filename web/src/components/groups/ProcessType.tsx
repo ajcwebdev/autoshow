@@ -2,7 +2,7 @@
 
 import React from 'react'
 import { PROCESS_TYPES } from '../../../../shared/constants.ts'
-import type { ProcessTypeEnum } from '../../../../shared/types.ts'
+import type { ProcessTypeEnum, ShowNoteMetadata, TranscriptionCosts } from '../../../../shared/types.ts'
 
 export const ProcessTypeStep: React.FC<{
   isLoading: boolean
@@ -16,8 +16,8 @@ export const ProcessTypeStep: React.FC<{
   setFilePath: React.Dispatch<React.SetStateAction<string>>
   setFinalPath: React.Dispatch<React.SetStateAction<string>>
   setFrontMatter: React.Dispatch<React.SetStateAction<string>>
-  setMetadata: React.Dispatch<React.SetStateAction<any>>
-  setTranscriptionCosts: React.Dispatch<React.SetStateAction<any>>
+  setMetadata: React.Dispatch<React.SetStateAction<Partial<ShowNoteMetadata>>>
+  setTranscriptionCosts: React.Dispatch<React.SetStateAction<TranscriptionCosts>>
   setCurrentStep: React.Dispatch<React.SetStateAction<number>>
 }> = ({
   isLoading,
@@ -97,7 +97,7 @@ export const ProcessTypeStep: React.FC<{
         body: JSON.stringify(costBody)
       })
       if (!response.ok) throw new Error('Failed to get transcription cost')
-      const data = await response.json()
+      const data = await response.json() as { transcriptCost: TranscriptionCosts }
       setTranscriptionCosts(data.transcriptCost)
       setCurrentStep(2)
     } catch (err) {

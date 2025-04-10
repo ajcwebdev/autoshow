@@ -1,6 +1,7 @@
 // web/src/components/groups/TranscriptionService.tsx
 
 import React from 'react'
+import type { TranscriptionCosts } from '../../../../shared/types.ts'
 
 export const TranscriptionStep: React.FC<{
   isLoading: boolean
@@ -16,7 +17,7 @@ export const TranscriptionStep: React.FC<{
   setTranscriptContent: React.Dispatch<React.SetStateAction<string>>
   setTranscriptionModelUsed: React.Dispatch<React.SetStateAction<string>>
   setTranscriptionCostUsed: React.Dispatch<React.SetStateAction<number | null>>
-  transcriptionCosts: any
+  transcriptionCosts: TranscriptionCosts
   setCurrentStep: React.Dispatch<React.SetStateAction<number>>
 }> = ({
   isLoading,
@@ -40,10 +41,14 @@ export const TranscriptionStep: React.FC<{
     setError(null)
     setTranscriptContent('')
     try {
-      const rtBody: any = {
+      const rtBody = {
         finalPath,
         transcriptServices: transcriptionService,
         options: {}
+      } as {
+        finalPath: string
+        transcriptServices: string
+        options: Record<string, unknown>
       }
       rtBody.options[transcriptionService] = transcriptionModel
       if (transcriptionService === 'assembly') rtBody.options.assemblyApiKey = transcriptionApiKey
@@ -54,7 +59,11 @@ export const TranscriptionStep: React.FC<{
         body: JSON.stringify(rtBody)
       })
       if (!rtRes.ok) throw new Error('Error running transcription')
-      const rtData = await rtRes.json()
+      const rtData = await rtRes.json() as {
+        transcript?: string
+        modelId?: string
+        transcriptionCost?: number
+      }
       setTranscriptContent(rtData.transcript || '')
       if (rtData.modelId) setTranscriptionModelUsed(rtData.modelId)
       if (rtData.transcriptionCost != null) setTranscriptionCostUsed(rtData.transcriptionCost)
@@ -74,7 +83,7 @@ export const TranscriptionStep: React.FC<{
       {Object.entries(transcriptionCosts).map(([svc, models]) => (
         <div key={svc}>
           <h4>{svc}</h4>
-          {(models as any[]).map(m => (
+          {models.map(m => (
             <div key={m.modelId}>
               <input
                 type="radio"

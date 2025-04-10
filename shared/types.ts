@@ -2,6 +2,11 @@
 
 import { L_CONFIG } from './constants.ts'
 
+export interface LocalResult {
+  showNote: ShowNoteType
+  llmOutput: string
+}
+
 export interface ShowNoteType {
   id?: number
   showLink?: string
@@ -87,6 +92,13 @@ export interface DeepgramWord {
   confidence: number
   speaker?: number
   speaker_confidence?: number
+}
+
+export type TranscriptionCosts = {
+  [svc: string]: {
+    modelId: string
+    cost: number
+  }[]
 }
 
 export type LLMUsage = {

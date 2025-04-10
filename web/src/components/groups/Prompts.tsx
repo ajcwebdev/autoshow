@@ -13,7 +13,6 @@ export const PromptsStep: React.FC<{
   finalPath: string
   frontMatter: string
   setFinalMarkdownFile: React.Dispatch<React.SetStateAction<string>>
-  setLlmCosts: React.Dispatch<React.SetStateAction<any>>
   setCurrentStep: React.Dispatch<React.SetStateAction<number>>
 }> = ({
   isLoading,
@@ -25,7 +24,6 @@ export const PromptsStep: React.FC<{
   finalPath,
   frontMatter,
   setFinalMarkdownFile,
-  setLlmCosts,
   setCurrentStep
 }) => {
   const formatContent = (text: string) => text.split('\n').map((line, index) => (
@@ -38,7 +36,6 @@ export const PromptsStep: React.FC<{
   const handleStepThree = async () => {
     setIsLoading(true)
     setError(null)
-    setLlmCosts({})
     setFinalMarkdownFile('')
     try {
       const promptRes = await fetch('http://localhost:3000/select-prompt', {
@@ -70,8 +67,7 @@ export const PromptsStep: React.FC<{
         body: JSON.stringify(costBody)
       })
       if (!costRes.ok) throw new Error('Failed to get LLM cost')
-      const costData = await costRes.json()
-      setLlmCosts(costData.llmCost)
+      await costRes.json()
       setCurrentStep(4)
     } catch (err) {
       if (err instanceof Error) setError(err.message)

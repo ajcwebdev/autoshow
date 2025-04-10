@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react'
 import { L_CONFIG } from '../../../../shared/constants.ts'
-import type { LLMServiceKey } from '../../../../shared/types.ts'
+import type { LLMServiceKey, ShowNoteType, ShowNoteMetadata, LocalResult } from '../../../../shared/types.ts'
 
 export const LLMServiceStep: React.FC<{
   isLoading: boolean
@@ -14,13 +14,11 @@ export const LLMServiceStep: React.FC<{
   setLlmModel: React.Dispatch<React.SetStateAction<string>>
   llmApiKey: string
   setLlmApiKey: React.Dispatch<React.SetStateAction<string>>
-  selectedLlmApiKeyService: string
-  setSelectedLlmApiKeyService: React.Dispatch<React.SetStateAction<string>>
   finalMarkdownFile: string
   transcriptionService: string
   transcriptionModelUsed: string
   transcriptionCostUsed: number | null
-  metadata: any
+  metadata: Partial<ShowNoteMetadata>
   onNewShowNote: () => void
 }> = ({
   isLoading,
@@ -39,7 +37,7 @@ export const LLMServiceStep: React.FC<{
   metadata,
   onNewShowNote
 }) => {
-  const [localResult, setLocalResult] = useState<any>(null)
+  const [localResult, setLocalResult] = useState<LocalResult | null>(null)
   const allServices = Object.values(L_CONFIG).filter(s => s.value)
 
   const handleSelectLLM = async () => {
@@ -47,10 +45,14 @@ export const LLMServiceStep: React.FC<{
     setError(null)
     setLocalResult(null)
     try {
-      const runLLMBody: any = {
+      const runLLMBody = {
         filePath: finalMarkdownFile,
         llmServices: llmService,
         options: {}
+      } as {
+        filePath: string
+        llmServices: string
+        options: Record<string, unknown>
       }
       if (llmService === 'chatgpt') runLLMBody.options.openaiApiKey = llmApiKey
       if (llmService === 'claude') runLLMBody.options.anthropicApiKey = llmApiKey
@@ -69,7 +71,10 @@ export const LLMServiceStep: React.FC<{
         body: JSON.stringify(runLLMBody)
       })
       if (!runLLMRes.ok) throw new Error('Error running LLM')
-      const data = await runLLMRes.json()
+      const data = await runLLMRes.json() as {
+        showNote: ShowNoteType
+        showNotesResult: string
+      }
       setLocalResult({ showNote: data.showNote, llmOutput: data.showNotesResult })
       onNewShowNote()
     } catch (err) {

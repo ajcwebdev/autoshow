@@ -32,8 +32,6 @@ export const LLMServiceStep: React.FC<{
   setLlmModel,
   llmApiKey,
   setLlmApiKey,
-  selectedLlmApiKeyService,
-  setSelectedLlmApiKeyService,
   finalMarkdownFile,
   transcriptionService,
   transcriptionModelUsed,
@@ -41,11 +39,8 @@ export const LLMServiceStep: React.FC<{
   metadata,
   onNewShowNote
 }) => {
-  const [localResult, setLocalResult] = useState(null)
+  const [localResult, setLocalResult] = useState<any>(null)
   const allServices = Object.values(L_CONFIG).filter(s => s.value)
-  const modelsForService = llmService
-    ? L_CONFIG[llmService]?.models ?? []
-    : []
 
   const handleSelectLLM = async () => {
     setIsLoading(true)
@@ -75,7 +70,7 @@ export const LLMServiceStep: React.FC<{
       })
       if (!runLLMRes.ok) throw new Error('Error running LLM')
       const data = await runLLMRes.json()
-      setLocalResult(data.showNotesResult || '')
+      setLocalResult({ showNote: data.showNote, llmOutput: data.showNotesResult })
       onNewShowNote()
     } catch (err) {
       if (err instanceof Error) setError(err.message)
@@ -88,121 +83,51 @@ export const LLMServiceStep: React.FC<{
   return (
     <>
       {!Object.keys(L_CONFIG).length && <p>No LLM config available</p>}
-      <h3>Select an LLM Service</h3>
-      <div>
-        {Object.entries(L_CONFIG).map(([key, val]) => val.value && (
-          <div key={key}>
-          </div>
-        ))}
-      </div>
-      <div>
-        {!allServices.length && <p>No services found</p>}
-        {allServices.length > 0 && (
-          <div>
-            {allServices.map(service => (
-              <div key={service.value}>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-      <div>
-        {!modelsForService.length && <p>No models for selected service</p>}
-        {Object.entries(L_CONFIG).length > 0 && (
-          <div>
-            {Object.entries(L_CONFIG).map(([svc, val]) => (
-              svc === llmService && val.models.length > 0 ? (
-                <div key={svc}>
-                  {(val.models as any[]).map(m => (
-                    <div key={m.modelId}>
-                      <input
-                        type="radio"
-                        name="llmChoice"
-                        value={`${svc}:${m.modelId}`}
-                        checked={llmService === svc && llmModel === m.modelId}
-                        onChange={() => {
-                          setLlmService(svc as LLMServiceKey)
-                          setLlmModel(m.modelId)
-                        }}
-                      />
-                      <label>{m.modelId}</label>
-                    </div>
-                  ))}
-                </div>
-              ) : null
-            ))}
-          </div>
-        )}
-      </div>
-      <div className="form-group">
-        <label htmlFor="llmService">LLM Service</label>
-        <select
-          id="llmService"
-          value={llmService}
-          onChange={e => {
-            setLlmService(e.target.value as LLMServiceKey)
-            setLlmModel('')
-          }}
-        >
-          <option value="">None</option>
-          {allServices.map(service => (
-            <option key={service.value} value={service.value as string}>
-              {service.label}
-            </option>
-          ))}
-        </select>
-      </div>
-      {llmService && modelsForService.length > 0 && (
-        <div className="form-group">
-          <label htmlFor="llmModel">LLM Model</label>
-          <select
-            id="llmModel"
-            value={llmModel}
-            onChange={e => setLlmModel(e.target.value)}
-          >
-            {modelsForService.map(model => (
-              <option key={model.modelId} value={model.modelId}>
-                {model.modelName}
-              </option>
-            ))}
-          </select>
-        </div>
-      )}
-      {llmService && (
+      {allServices.length === 0 && <p>No services found</p>}
+      {allServices.length > 0 && (
         <>
-          <div className="form-group">
-            <label htmlFor="llmApiKeyService">LLM API Key Service</label>
-            <select
-              id="llmApiKeyService"
-              value={selectedLlmApiKeyService}
-              onChange={e => setSelectedLlmApiKeyService(e.target.value)}
-            >
-              <option value="chatgpt">ChatGPT</option>
-              <option value="claude">Claude</option>
-              <option value="gemini">Gemini</option>
-              <option value="deepseek">Deepseek</option>
-              <option value="together">Together</option>
-              <option value="fireworks">Fireworks</option>
-            </select>
-          </div>
-          <div className="form-group">
-            <label htmlFor="llmApiKey">LLM API Key</label>
-            <input
-              type="text"
-              id="llmApiKey"
-              value={llmApiKey}
-              onChange={e => setLlmApiKey(e.target.value)}
-            />
-          </div>
+          <h3>Select an LLM Model</h3>
+          {allServices.map(service => (
+            <div key={service.value}>
+              <h4>{service.label}</h4>
+              {service.models && service.models.length === 0 && <p>No models for {service.label}</p>}
+              {service.models && service.models.map(m => (
+                <div key={m.modelId}>
+                  <input
+                    type="radio"
+                    name="llmChoice"
+                    value={`${service.value}:${m.modelId}`}
+                    checked={llmService === service.value && llmModel === m.modelId}
+                    onChange={() => {
+                      setLlmService(service.value as LLMServiceKey)
+                      setLlmModel(m.modelId)
+                    }}
+                  />
+                  <label>{m.modelName} (Input: {m.inputCostC}c, Output: {m.outputCostC}c)</label>
+                </div>
+              ))}
+            </div>
+          ))}
         </>
       )}
+      <div className="form-group">
+        <label htmlFor="llmApiKey">LLM API Key</label>
+        <input
+          type="text"
+          id="llmApiKey"
+          value={llmApiKey}
+          onChange={e => setLlmApiKey(e.target.value)}
+        />
+      </div>
       <button disabled={isLoading} onClick={handleSelectLLM}>
         {isLoading ? 'Generating Show Notes...' : 'Generate Show Notes'}
       </button>
       {localResult && (
         <div className="result">
+          <h3>Show Note</h3>
+          <pre>{JSON.stringify(localResult.showNote, null, 2)}</pre>
           <h3>LLM Output</h3>
-          <p>{localResult}</p>
+          <p>{localResult.llmOutput}</p>
         </div>
       )}
     </>

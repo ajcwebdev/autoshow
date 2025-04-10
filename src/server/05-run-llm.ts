@@ -3,7 +3,7 @@
 import chalk from 'chalk'
 import { dbService } from '../db.ts'
 import { l, err, logInitialFunctionCall } from '../utils/logging.ts'
-import { readFile, writeFile, env } from '../utils/node-utils.ts'
+import { readFile, writeFile } from '../utils/node-utils.ts'
 import { L_CONFIG } from '../../shared/constants.ts'
 import { callChatGPT, callClaude, callGemini, callDeepSeek, callFireworks, callTogether } from '../llms/llm-services.ts'
 import type { FastifyRequest, FastifyReply } from 'fastify'
@@ -24,7 +24,6 @@ export async function runLLM(
 ) {
   l.step(`\nStep 5 - Run Language Model\n`)
   logInitialFunctionCall('runLLM', { llmServices, metadata })
-
   metadata.walletAddress = options['walletAddress'] || metadata.walletAddress
   metadata.mnemonic = options['mnemonic'] || metadata.mnemonic
 
@@ -39,15 +38,12 @@ export async function runLLM(
       if (!config) {
         throw new Error(`Unknown LLM service: ${llmServices}`)
       }
-
       const optionValue = options[llmServices as keyof typeof options]
       const defaultModelId = config.models[0]?.modelId ?? ''
       userModel = (typeof optionValue === 'string' && optionValue !== 'true' && optionValue.trim() !== '')
         ? optionValue
         : defaultModelId
-
       let showNotesData: LLMResult
-
       switch (llmServices) {
         case 'chatgpt':
           showNotesData = await retryLLMCall(() => callChatGPT(prompt, transcript, userModel as ChatGPTModelValue))
@@ -70,7 +66,6 @@ export async function runLLM(
         default:
           throw new Error(`Unknown LLM service: ${llmServices}`)
       }
-
       const costBreakdown = logLLMCost({
         name: userModel,
         stopReason: showNotesData.usage?.stopReason ?? 'unknown',
@@ -81,12 +76,10 @@ export async function runLLM(
         }
       })
       llmCost = costBreakdown.totalCost ?? 0
-
       const showNotes = showNotesData.content
       const outputFilename = `${finalPath}-${llmServices}-shownotes.md`
       await writeFile(outputFilename, `${frontMatter}\n${showNotes}\n\n## Transcript\n\n${transcript}`)
       l.dim(`\n  LLM processing completed, combined front matter + LLM output + transcript written to:\n    - ${outputFilename}`)
-
       showNotesResult = showNotes
     } else {
       l.dim('  No LLM selected, skipping processing...')
@@ -96,7 +89,6 @@ export async function runLLM(
     }
 
     const finalCost = (transcriptionCost || 0) + llmCost
-
     let insertedNote = {
       showLink: metadata.showLink ?? '',
       channel: metadata.channel ?? '',
@@ -120,13 +112,8 @@ export async function runLLM(
       finalCost
     }
 
-    if (env['SERVER_MODE'] === 'true') {
-      const newRecord = await dbService.insertShowNote(insertedNote)
-      return { showNote: newRecord, showNotesResult }
-    } else {
-      l.dim('\n  Skipping database insertion in CLI mode')
-      return { showNote: insertedNote, showNotesResult }
-    }
+    const newRecord = await dbService.insertShowNote(insertedNote)
+    return { showNote: newRecord, showNotesResult }
   } catch (error) {
     err(`Error running Language Model: ${(error as Error).message}`)
     throw error
@@ -145,7 +132,6 @@ export function logLLMCost(info: {
   const { name, stopReason, tokenUsage } = info
   const { input, output, total } = tokenUsage
   let modelConfig
-
   for (const service of Object.values(L_CONFIG)) {
     for (const model of service.models) {
       if (
@@ -158,25 +144,20 @@ export function logLLMCost(info: {
     }
     if (modelConfig) break
   }
-
   const {
     modelName,
     inputCostC,
     outputCostC
   } = modelConfig ?? {}
-
   const displayName = modelName ?? name
   l.dim(`  - ${stopReason ? `${stopReason} Reason` : 'Status'}: ${stopReason}\n  - Model: ${displayName}`)
-
   const tokenLines: string[] = []
   if (input) tokenLines.push(`${input} input tokens`)
   if (output) tokenLines.push(`${output} output tokens`)
   if (total) tokenLines.push(`${total} total tokens`)
-
   if (tokenLines.length > 0) {
     l.dim(`  - Token Usage:\n    - ${tokenLines.join('\n    - ')}`)
   }
-
   let inputCost
   let outputCost
   let totalCost
@@ -185,7 +166,6 @@ export function logLLMCost(info: {
   } else {
     const inCost = (typeof inputCostC === 'number') ? inputCostC / 100 : 0
     const outCost = (typeof outputCostC === 'number') ? outputCostC / 100 : 0
-
     if (inCost < 0.0000001 && outCost < 0.0000001) {
       inputCost = 0
       outputCost = 0
@@ -204,7 +184,6 @@ export function logLLMCost(info: {
       }
     }
   }
-
   const costLines: string[] = []
   function inlineCostLabel(cost: number | undefined) {
     if (cost === undefined) return 'N/A'
@@ -218,7 +197,6 @@ export function logLLMCost(info: {
     }
     return `$${cost.toFixed(2)}`
   }
-
   if (inputCost !== undefined) {
     costLines.push(`Input cost: ${inlineCostLabel(inputCost)}`)
   }
@@ -228,18 +206,15 @@ export function logLLMCost(info: {
   if (totalCost !== undefined) {
     costLines.push(`Total cost: ${chalk.bold(inlineCostLabel(totalCost))}`)
   }
-
   if (costLines.length > 0) {
     l.dim(`  - Cost Breakdown:\n    - ${costLines.join('\n    - ')}`)
   }
-
   return { inputCost, outputCost, totalCost }
 }
 
 export async function retryLLMCall(fn: () => Promise<any>) {
   const maxRetries = 7
   let attempt = 0
-
   while (attempt < maxRetries) {
     try {
       attempt++
@@ -267,22 +242,18 @@ export async function handleRunLLM(request: FastifyRequest, reply: FastifyReply)
     llmServices?: string
     options?: ProcessingOptions
   }
-
   const body = request.body as RunLLMBody
   const filePath = body.filePath
   const llmServices = body.llmServices
   const options = body.options || {}
-
   const transcriptionServices = options['transcriptionServices']
   const transcriptionModel = options['transcriptionModel']
   const transcriptionCost = options['transcriptionCost']
   const metaFromBody = options['metadata']
-
   if (!filePath) {
     reply.status(400).send({ error: 'filePath is required' })
     return
   }
-
   try {
     const raw = await readFile(filePath, 'utf8')
     const lines = raw.split('\n')
@@ -306,7 +277,6 @@ export async function handleRunLLM(request: FastifyRequest, reply: FastifyReply)
       prompt = restLines.slice(0, transcriptIndex).join('\n').trim()
       transcript = restLines.slice(transcriptIndex + 1).join('\n').trim()
     }
-
     const metadata: ShowNoteMetadata = {
       showLink: '',
       channel: '',
@@ -318,7 +288,6 @@ export async function handleRunLLM(request: FastifyRequest, reply: FastifyReply)
       walletAddress: '',
       mnemonic: ''
     }
-
     frontMatterLines.forEach(line => {
       if (line) {
         const m = line.match(/^(\w+):\s*"(.*?)"$/)
@@ -331,11 +300,9 @@ export async function handleRunLLM(request: FastifyRequest, reply: FastifyReply)
         }
       }
     })
-
     if (metaFromBody) {
       Object.assign(metadata, metaFromBody)
     }
-
     const result = await runLLM(
       options,
       filePath.replace(/\.[^/.]+$/, ''),
@@ -348,7 +315,6 @@ export async function handleRunLLM(request: FastifyRequest, reply: FastifyReply)
       transcriptionModel,
       transcriptionCost
     )
-
     reply.send(result)
   } catch (error) {
     reply.status(500).send({ error: (error as Error).message })

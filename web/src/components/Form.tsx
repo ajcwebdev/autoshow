@@ -21,7 +21,7 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
   const [filePath, setFilePath] = useState('content/examples/audio.mp3')
   const [transcriptionService, setTranscriptionService] = useState('')
   const [transcriptionModel, setTranscriptionModel] = useState('')
-  const [llmService, setLlmService] = useState<LLMServiceKey>('skip')
+  const [llmService, setLlmService] = useState<LLMServiceKey>('chatgpt')
   const [llmModel, setLlmModel] = useState('')
   const [selectedPrompts, setSelectedPrompts] = useState(['shortSummary'])
   const [result] = useState<ResultType | null>(null)

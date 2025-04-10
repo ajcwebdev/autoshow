@@ -8,14 +8,6 @@ import { exec, execFile, spawn } from 'node:child_process'
 import { readFile, readdir, writeFile, access, unlink, rename } from 'node:fs/promises'
 import { basename, extname, join, dirname, isAbsolute, resolve, relative } from 'node:path'
 
-import { XMLParser } from 'fast-xml-parser'
-
-export const parser = new XMLParser({
-  ignoreAttributes: false,
-  attributeNamePrefix: '',
-  allowBooleanAttributes: true,
-})
-
 export const execPromise = promisify(exec)
 export const execFilePromise = promisify(execFile)
 

@@ -23,9 +23,7 @@
     "useDefaultPatterns": true,
     "customPatterns": [
       ".github",
-      ".github/setup/",
       ".github/workflows/",
-      ".github/*.ts",
       ".github/*.md",
       ".github/FUNDING.yml",
       "content/",
@@ -48,7 +46,6 @@
       "web/package.json",
       "web/README.md",
       "web/tsconfig.json",
-      "whisper.cpp",
       ".dockerignore",
       ".env",
       ".env.example",

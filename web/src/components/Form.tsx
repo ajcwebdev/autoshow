@@ -21,6 +21,7 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
   const [url, setUrl] = useState('https://www.youtube.com/watch?v=MORMZXEaONk')
   const [filePath, setFilePath] = useState('content/examples/audio.mp3')
   const [transcriptionService, setTranscriptionService] = useState('')
+  const [transcriptionModel, setTranscriptionModel] = useState('')
   const [llmService, setLlmService] = useState<LLMServiceKey>('skip')
   const [llmModel, setLlmModel] = useState('')
   const [selectedPrompts, setSelectedPrompts] = useState(['shortSummary'])
@@ -30,7 +31,6 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
   const [walletAddress, setWalletAddress] = useState('yhGfbjKDuTnJyx8wzje7n9wsoWC51WH7Y5')
   const [mnemonic, setMnemonic] = useState('tip punch promote click scheme guitar skirt lucky hamster clip denial ecology')
   const [transcriptionApiKey, setTranscriptionApiKey] = useState('')
-  const [selectedTranscriptionApiKeyService, setSelectedTranscriptionApiKeyService] = useState('')
   const [llmApiKey, setLlmApiKey] = useState('')
   const [selectedLlmApiKeyService, setSelectedLlmApiKeyService] = useState('chatgpt')
   const [currentStep, setCurrentStep] = useState(0)
@@ -45,14 +45,12 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
   const [transcriptionCostUsed, setTranscriptionCostUsed] = useState<number | null>(null)
   const [dashBalance, setDashBalance] = useState<number | null>(null)
 
-  const formatContent = (text: string) => {
-    return text.split('\n').map((line: string, index: number) => (
-      <React.Fragment key={index}>
-        {line}
-        <br />
-      </React.Fragment>
-    ))
-  }
+  const formatContent = (text: string) => text.split('\n').map((line, index) => (
+    <React.Fragment key={index}>
+      {line}
+      <br />
+    </React.Fragment>
+  ))
 
   const handleCheckBalance = async () => {
     setIsLoading(true)
@@ -70,7 +68,7 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
       const data = await balanceRes.json()
       setDashBalance(data.balance)
       setCurrentStep(1)
-    } catch (err: unknown) {
+    } catch (err) {
       if (err instanceof Error) setError(err.message)
       else setError('An unknown error occurred.')
     } finally {
@@ -86,7 +84,7 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
     try {
       let localFilePath = filePath
       if (processType === 'video') {
-        const mdBody: any = { type: 'video', url }
+        const mdBody = { type: 'video', url }
         const mdRes = await fetch('http://localhost:3000/generate-markdown', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -96,7 +94,7 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
         const mdData = await mdRes.json()
         setFrontMatter(mdData.frontMatter || '')
         setMetadata(mdData.metadata || {})
-        const dlBody: any = {
+        const dlBody = {
           input: url,
           filename: mdData.filename,
           options: { video: url }
@@ -111,7 +109,7 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
         localFilePath = dlData.outputPath
         setFinalPath(mdData.finalPath || '')
       } else {
-        const mdBody: any = { type: 'file', filePath }
+        const mdBody = { type: 'file', filePath }
         const mdRes = await fetch('http://localhost:3000/generate-markdown', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -122,7 +120,7 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
         setFrontMatter(mdData.frontMatter || '')
         setMetadata(mdData.metadata || {})
         setFinalPath(mdData.finalPath || '')
-        const dlBody: any = {
+        const dlBody = {
           input: filePath,
           filename: mdData.filename,
           options: { file: filePath }
@@ -134,17 +132,17 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
         })
         if (!dlRes.ok) throw new Error('Error downloading audio')
       }
-      const costBody: any = { type: 'transcriptCost', filePath: localFilePath }
+      const costBody = { type: 'transcriptCost', filePath: localFilePath }
       const response = await fetch('http://localhost:3000/api/cost', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(costBody)
       })
-      if (!response.ok) throw new Error(`Failed to get transcription cost`)
+      if (!response.ok) throw new Error('Failed to get transcription cost')
       const data = await response.json()
       setTranscriptionCosts(data.transcriptCost)
       setCurrentStep(2)
-    } catch (err: unknown) {
+    } catch (err) {
       if (err instanceof Error) setError(err.message)
       else setError('An unknown error occurred.')
     } finally {
@@ -162,20 +160,21 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
         transcriptServices: transcriptionService,
         options: {}
       }
-      if (selectedTranscriptionApiKeyService === 'assembly') rtBody.options.assemblyApiKey = transcriptionApiKey
-      else if (selectedTranscriptionApiKeyService === 'deepgram') rtBody.options.deepgramApiKey = transcriptionApiKey
+      rtBody.options[transcriptionService] = transcriptionModel
+      if (transcriptionService === 'assembly') rtBody.options.assemblyApiKey = transcriptionApiKey
+      if (transcriptionService === 'deepgram') rtBody.options.deepgramApiKey = transcriptionApiKey
       const rtRes = await fetch('http://localhost:3000/run-transcription', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(rtBody)
       })
-      if (!rtRes.ok) throw new Error(`Error running transcription`)
+      if (!rtRes.ok) throw new Error('Error running transcription')
       const rtData = await rtRes.json()
       setTranscriptContent(rtData.transcript || '')
       if (rtData.modelId) setTranscriptionModelUsed(rtData.modelId)
       if (rtData.transcriptionCost != null) setTranscriptionCostUsed(rtData.transcriptionCost)
       setCurrentStep(3)
-    } catch (err: unknown) {
+    } catch (err) {
       if (err instanceof Error) setError(err.message)
       else setError('An unknown error occurred.')
     } finally {
@@ -190,7 +189,7 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
     setFinalMarkdownFile('')
     try {
       const promptText = selectedPrompts.join('\n')
-      const saveBody: any = {
+      const saveBody = {
         frontMatter,
         transcript: transcriptContent,
         prompt: promptText,
@@ -201,20 +200,20 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(saveBody)
       })
-      if (!saveRes.ok) throw new Error(`Error saving final markdown`)
+      if (!saveRes.ok) throw new Error('Error saving final markdown')
       const saveData = await saveRes.json()
       setFinalMarkdownFile(saveData.markdownFilePath)
-      const costBody: any = { type: 'llmCost', filePath: saveData.markdownFilePath }
+      const costBody = { type: 'llmCost', filePath: saveData.markdownFilePath }
       const costRes = await fetch('http://localhost:3000/api/cost', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(costBody)
       })
-      if (!costRes.ok) throw new Error(`Failed to get LLM cost`)
+      if (!costRes.ok) throw new Error('Failed to get LLM cost')
       const costData = await costRes.json()
       setLlmCosts(costData.llmCost)
       setCurrentStep(4)
-    } catch (err: unknown) {
+    } catch (err) {
       if (err instanceof Error) setError(err.message)
       else setError('An unknown error occurred.')
     } finally {
@@ -232,12 +231,12 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
         llmServices: llmService,
         options: {}
       }
-      if (selectedLlmApiKeyService === 'chatgpt') runLLMBody.options.openaiApiKey = llmApiKey
-      if (selectedLlmApiKeyService === 'claude') runLLMBody.options.anthropicApiKey = llmApiKey
-      if (selectedLlmApiKeyService === 'gemini') runLLMBody.options.geminiApiKey = llmApiKey
-      if (selectedLlmApiKeyService === 'deepseek') runLLMBody.options.deepseekApiKey = llmApiKey
-      if (selectedLlmApiKeyService === 'together') runLLMBody.options.togetherApiKey = llmApiKey
-      if (selectedLlmApiKeyService === 'fireworks') runLLMBody.options.fireworksApiKey = llmApiKey
+      if (llmService === 'chatgpt') runLLMBody.options.openaiApiKey = llmApiKey
+      if (llmService === 'claude') runLLMBody.options.anthropicApiKey = llmApiKey
+      if (llmService === 'gemini') runLLMBody.options.geminiApiKey = llmApiKey
+      if (llmService === 'deepseek') runLLMBody.options.deepseekApiKey = llmApiKey
+      if (llmService === 'together') runLLMBody.options.togetherApiKey = llmApiKey
+      if (llmService === 'fireworks') runLLMBody.options.fireworksApiKey = llmApiKey
       runLLMBody.options[llmService] = llmModel
       runLLMBody.options.transcriptionServices = transcriptionService
       runLLMBody.options.transcriptionModel = transcriptionModelUsed
@@ -248,7 +247,7 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(runLLMBody)
       })
-      if (!runLLMRes.ok) throw new Error(`Error running LLM`)
+      if (!runLLMRes.ok) throw new Error('Error running LLM')
       const data = await runLLMRes.json()
       setResult({
         llmOutput: data.showNotesResult || '',
@@ -257,7 +256,7 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
         transcript: data.showNote?.transcript || ''
       })
       onNewShowNote()
-    } catch (err: unknown) {
+    } catch (err) {
       if (err instanceof Error) setError(err.message)
       else setError('An unknown error occurred.')
     } finally {
@@ -311,11 +310,10 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
                     type="radio"
                     name="transcriptionChoice"
                     value={`${svc}:${m.modelId}`}
-                    checked={
-                      transcriptionService === svc
-                    }
+                    checked={transcriptionService === svc && transcriptionModel === m.modelId}
                     onChange={() => {
                       setTranscriptionService(svc)
+                      setTranscriptionModel(m.modelId)
                     }}
                   />
                   <label>{m.modelId} - Cost: {m.cost} cents ({Math.round(m.cost * 50000000)} credits)</label>
@@ -324,12 +322,8 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
             </div>
           ))}
           <TranscriptionService
-            transcriptionService={transcriptionService}
-            setTranscriptionService={setTranscriptionService}
             transcriptionApiKey={transcriptionApiKey}
             setTranscriptionApiKey={setTranscriptionApiKey}
-            selectedTranscriptionApiKeyService={selectedTranscriptionApiKeyService}
-            setSelectedTranscriptionApiKeyService={setSelectedTranscriptionApiKeyService}
           />
           <button disabled={isLoading} onClick={handleStepTwo}>
             {isLoading ? 'Transcribing...' : 'Generate Transcription'}
@@ -364,10 +358,7 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
                     type="radio"
                     name="llmChoice"
                     value={`${svc}:${m.modelId}`}
-                    checked={
-                      llmService === svc &&
-                      llmModel === m.modelId
-                    }
+                    checked={llmService === svc && llmModel === m.modelId}
                     onChange={() => {
                       setLlmService(svc as LLMServiceKey)
                       setLlmModel(m.modelId)

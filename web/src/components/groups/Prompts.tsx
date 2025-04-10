@@ -14,6 +14,7 @@ export const PromptsStep: React.FC<{
   frontMatter: string
   setFinalMarkdownFile: React.Dispatch<React.SetStateAction<string>>
   setCurrentStep: React.Dispatch<React.SetStateAction<number>>
+  setLlmCosts: React.Dispatch<React.SetStateAction<Record<string, any>>>
 }> = ({
   isLoading,
   setIsLoading,
@@ -24,7 +25,8 @@ export const PromptsStep: React.FC<{
   finalPath,
   frontMatter,
   setFinalMarkdownFile,
-  setCurrentStep
+  setCurrentStep,
+  setLlmCosts
 }) => {
   const formatContent = (text: string) => text.split('\n').map((line, index) => (
     <React.Fragment key={index}>
@@ -67,7 +69,8 @@ export const PromptsStep: React.FC<{
         body: JSON.stringify(costBody)
       })
       if (!costRes.ok) throw new Error('Failed to get LLM cost')
-      await costRes.json()
+      const costData = await costRes.json()
+      setLlmCosts(costData.llmCost)
       setCurrentStep(4)
     } catch (err) {
       if (err instanceof Error) setError(err.message)

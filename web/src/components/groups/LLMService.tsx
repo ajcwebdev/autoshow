@@ -20,6 +20,7 @@ export const LLMServiceStep: React.FC<{
   transcriptionCostUsed: number | null
   metadata: Partial<ShowNoteMetadata>
   onNewShowNote: () => void
+  llmCosts: Record<string, any>
 }> = ({
   isLoading,
   setIsLoading,
@@ -35,7 +36,8 @@ export const LLMServiceStep: React.FC<{
   transcriptionModelUsed,
   transcriptionCostUsed,
   metadata,
-  onNewShowNote
+  onNewShowNote,
+  llmCosts
 }) => {
   const [localResult, setLocalResult] = useState<LocalResult | null>(null)
   const allServices = Object.values(L_CONFIG).filter(s => s.value)
@@ -45,6 +47,7 @@ export const LLMServiceStep: React.FC<{
     setError(null)
     setLocalResult(null)
     try {
+      const cost = llmCosts[llmService as string]?.find((x: any) => x.modelId === llmModel)?.cost ?? 0
       const runLLMBody = {
         filePath: finalMarkdownFile,
         llmServices: llmService,
@@ -65,6 +68,7 @@ export const LLMServiceStep: React.FC<{
       runLLMBody.options.transcriptionModel = transcriptionModelUsed
       runLLMBody.options.transcriptionCost = transcriptionCostUsed
       runLLMBody.options.metadata = metadata
+      runLLMBody.options.llmCost = cost
       const runLLMRes = await fetch('http://localhost:3000/run-llm', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -96,21 +100,24 @@ export const LLMServiceStep: React.FC<{
             <div key={service.value}>
               <h4>{service.label}</h4>
               {service.models && service.models.length === 0 && <p>No models for {service.label}</p>}
-              {service.models && service.models.map(m => (
-                <div key={m.modelId}>
-                  <input
-                    type="radio"
-                    name="llmChoice"
-                    value={`${service.value}:${m.modelId}`}
-                    checked={llmService === service.value && llmModel === m.modelId}
-                    onChange={() => {
-                      setLlmService(service.value as LLMServiceKey)
-                      setLlmModel(m.modelId)
-                    }}
-                  />
-                  <label>{m.modelName} (Input: {m.inputCostC}c, Output: {m.outputCostC}c)</label>
-                </div>
-              ))}
+              {service.models && service.models.map(m => {
+                const modelCost = llmCosts[service.value as string]?.find((x: any) => x.modelId === m.modelId)?.cost ?? 0
+                return (
+                  <div key={m.modelId}>
+                    <input
+                      type="radio"
+                      name="llmChoice"
+                      value={`${service.value}:${m.modelId}`}
+                      checked={llmService === service.value && llmModel === m.modelId}
+                      onChange={() => {
+                        setLlmService(service.value as LLMServiceKey)
+                        setLlmModel(m.modelId)
+                      }}
+                    />
+                    <label>{m.modelName} (Estimated cost: {modelCost})</label>
+                  </div>
+                )
+              })}
             </div>
           ))}
         </>

@@ -3,7 +3,7 @@
 import React, { useState } from 'react'
 import Form from '@/components/Form'
 import { ShowNotes } from '@/components/ShowNotes'
-import Instructions from '@/components/Instructions'
+// import Instructions from '@/components/Instructions'
 import '@/styles'
 
 const App: React.FC = () => {
@@ -15,7 +15,7 @@ const App: React.FC = () => {
 
   return (
     <div className="container">
-      <Instructions />
+      {/* <Instructions /> */}
       <Form onNewShowNote={handleNewShowNote} />
       <ShowNotes refreshCount={refreshCount} />
     </div>

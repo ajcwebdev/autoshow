@@ -1,6 +1,5 @@
 // src/server/run-llm.ts
 
-import chalk from 'chalk'
 import { dbService } from '../db.ts'
 import { l, err, logInitialFunctionCall } from '../utils/logging.ts'
 import { readFile, writeFile } from '../utils/node-utils.ts'
@@ -27,8 +26,8 @@ export async function runLLM(
   metadata.mnemonic = options['mnemonic'] || metadata.mnemonic
   try {
     let showNotesResult = ''
-    let llmCost = 0
     let userModel = ''
+    const numericLLMCost = Number(options.llmCost) || 0
     if (llmServices) {
       l.dim(`\n  Preparing to process with '${llmServices}' Language Model...\n`)
       const config = L_CONFIG[llmServices as keyof typeof L_CONFIG]
@@ -63,16 +62,6 @@ export async function runLLM(
         default:
           throw new Error(`Unknown LLM service: ${llmServices}`)
       }
-      const costBreakdown = logLLMCost({
-        name: userModel,
-        stopReason: showNotesData.usage?.stopReason ?? 'unknown',
-        tokenUsage: {
-          input: showNotesData.usage?.input,
-          output: showNotesData.usage?.output,
-          total: showNotesData.usage?.total
-        }
-      })
-      llmCost = costBreakdown.totalCost ?? 0
       const showNotes = showNotesData.content
       const outputFilename = `${finalPath}-${llmServices}-shownotes.md`
       await writeFile(outputFilename, `${frontMatter}\n${showNotes}\n\n## Transcript\n\n${transcript}`)
@@ -84,7 +73,7 @@ export async function runLLM(
       l.dim(`\n  Writing front matter + prompt + transcript to file:\n    - ${noLLMFile}`)
       await writeFile(noLLMFile, `${frontMatter}\n${prompt}\n## Transcript\n\n${transcript}`)
     }
-    const finalCost = (transcriptionCost || 0) + llmCost
+    const finalCost = (transcriptionCost || 0) + numericLLMCost
     let insertedNote = {
       showLink: metadata.showLink ?? '',
       channel: metadata.channel ?? '',
@@ -101,7 +90,7 @@ export async function runLLM(
       mnemonic: metadata.mnemonic ?? '',
       llmService: llmServices ?? '',
       llmModel: userModel,
-      llmCost,
+      llmCost: numericLLMCost,
       transcriptionService: transcriptionServices ?? '',
       transcriptionModel: transcriptionModel ?? '',
       transcriptionCost,
@@ -113,95 +102,6 @@ export async function runLLM(
     err(`Error running Language Model: ${(error as Error).message}`)
     throw error
   }
-}
-
-export function logLLMCost(info: {
-  name: string
-  stopReason: string
-  tokenUsage: {
-    input: number | undefined
-    output: number | undefined
-    total: number | undefined
-  }
-}) {
-  const { name, stopReason, tokenUsage } = info
-  const { input, output, total } = tokenUsage
-  let modelConfig
-  for (const service of Object.values(L_CONFIG)) {
-    for (const model of service.models) {
-      if (model.modelId === name || model.modelId.toLowerCase() === name.toLowerCase()) {
-        modelConfig = model
-        break
-      }
-    }
-    if (modelConfig) break
-  }
-  const {
-    modelName,
-    inputCostC,
-    outputCostC
-  } = modelConfig ?? {}
-  const displayName = modelName ?? name
-  l.dim(`  - ${stopReason ? `${stopReason} Reason` : 'Status'}: ${stopReason}\n  - Model: ${displayName}`)
-  const tokenLines: string[] = []
-  if (input) tokenLines.push(`${input} input tokens`)
-  if (output) tokenLines.push(`${output} output tokens`)
-  if (total) tokenLines.push(`${total} total tokens`)
-  if (tokenLines.length > 0) {
-    l.dim(`  - Token Usage:\n    - ${tokenLines.join('\n    - ')}`)
-  }
-  let inputCost
-  let outputCost
-  let totalCost
-  if (!modelConfig) {
-    console.warn(`Warning: Could not find cost configuration for model: ${modelName}`)
-  } else {
-    const inCost = (typeof inputCostC === 'number') ? inputCostC / 100 : 0
-    const outCost = (typeof outputCostC === 'number') ? outputCostC / 100 : 0
-    if (inCost < 0.0000001 && outCost < 0.0000001) {
-      inputCost = 0
-      outputCost = 0
-      totalCost = 0
-    } else {
-      if (input) {
-        const rawInputCost = (input / 1_000_000) * inCost
-        inputCost = Math.abs(rawInputCost) < 0.00001 ? 0 : rawInputCost
-      }
-      if (output) {
-        const rawOutputCost = (output / 1_000_000) * outCost
-        outputCost = Math.abs(rawOutputCost) < 0.00001 ? 0 : rawOutputCost
-      }
-      if (inputCost !== undefined && outputCost !== undefined) {
-        totalCost = inputCost + outputCost
-      }
-    }
-  }
-  const costLines: string[] = []
-  function inlineCostLabel(cost: number | undefined) {
-    if (cost === undefined) return 'N/A'
-    if (cost === 0) return '0¢'
-    const costInCents = cost * 100
-    if (costInCents < 1) {
-      return `¢${costInCents.toFixed(4)}`
-    }
-    if (cost < 1) {
-      return `¢${costInCents.toFixed(2)}`
-    }
-    return `$${cost.toFixed(2)}`
-  }
-  if (inputCost !== undefined) {
-    costLines.push(`Input cost: ${inlineCostLabel(inputCost)}`)
-  }
-  if (outputCost !== undefined) {
-    costLines.push(`Output cost: ${inlineCostLabel(outputCost)}`)
-  }
-  if (totalCost !== undefined) {
-    costLines.push(`Total cost: ${chalk.bold(inlineCostLabel(totalCost))}`)
-  }
-  if (costLines.length > 0) {
-    l.dim(`  - Cost Breakdown:\n    - ${costLines.join('\n    - ')}`)
-  }
-  return { inputCost, outputCost, totalCost }
 }
 
 export async function retryLLMCall(fn: () => Promise<any>) {

@@ -26,7 +26,7 @@ async function computeAllTranscriptCosts(filePath: string) {
     result[serviceName] = []
     for (const model of config.models) {
       const cost = model.costPerMinuteCents * minutes
-      result[serviceName].push({ modelId: model.modelId, cost: parseFloat(cost.toFixed(5)) })
+      result[serviceName].push({ modelId: model.modelId, cost: parseFloat(cost.toFixed(3)) })
     }
   }
   return result
@@ -49,7 +49,7 @@ async function computeAllLLMCosts(filePath: string) {
       const outputCostRate = (model.outputCostC || 0) / 100
       const inputCost = (tokenCount / 1_000_000) * inputCostRate
       const outputCost = (estimatedOutputTokens / 1_000_000) * outputCostRate
-      const totalCost = parseFloat((inputCost + outputCost).toFixed(5))
+      const totalCost = parseFloat((inputCost + outputCost).toFixed(3))
       result[serviceName].push({ modelId: model.modelId, cost: totalCost })
     }
   }

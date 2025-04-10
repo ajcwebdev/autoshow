@@ -47,7 +47,6 @@ export type ShowNoteMetadata = {
 export type ProcessingOptions = {
   video?: string
   file?: string
-  saveAudio?: boolean
   groq?: boolean | string
   deepgram?: boolean | string
   assembly?: boolean | string

@@ -16,29 +16,30 @@ export const Alert: React.FC<AlertProps> = ({ message, variant }) => (
 )
 
 const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
-  const [processType, setProcessType] = useState<ProcessTypeEnum>('file')
-  const [url, setUrl] = useState('https://www.youtube.com/watch?v=MORMZXEaONk')
-  const [filePath, setFilePath] = useState('content/examples/audio.mp3')
-  const [transcriptionService, setTranscriptionService] = useState('')
-  const [transcriptionModel, setTranscriptionModel] = useState('')
-  const [llmService, setLlmService] = useState<LLMServiceKey>('chatgpt')
-  const [llmModel, setLlmModel] = useState('')
-  const [selectedPrompts, setSelectedPrompts] = useState(['shortSummary'])
-  const [error, setError] = useState<string | null>(null)
-  const [isLoading, setIsLoading] = useState(false)
+  const [currentStep, setCurrentStep] = useState(1)
   const [walletAddress, setWalletAddress] = useState('yhGfbjKDuTnJyx8wzje7n9wsoWC51WH7Y5')
   const [mnemonic, setMnemonic] = useState('tip punch promote click scheme guitar skirt lucky hamster clip denial ecology')
-  const [transcriptionApiKey, setTranscriptionApiKey] = useState('')
-  const [llmApiKey, setLlmApiKey] = useState('')
-  const [currentStep, setCurrentStep] = useState(0)
-  const [transcriptContent, setTranscriptContent] = useState('')
-  const [transcriptionCosts, setTranscriptionCosts] = useState<TranscriptionCosts>({})
+  const [processType, setProcessType] = useState<ProcessTypeEnum>('video')
+  const [url, setUrl] = useState('https://www.youtube.com/watch?v=MORMZXEaONk')
+  const [filePath, setFilePath] = useState('content/examples/audio.mp3')
   const [finalPath, setFinalPath] = useState('')
+  const [metadata, setMetadata] = useState<Partial<ShowNoteMetadata>>({})
   const [frontMatter, setFrontMatter] = useState('')
   const [finalMarkdownFile, setFinalMarkdownFile] = useState('')
-  const [metadata, setMetadata] = useState<Partial<ShowNoteMetadata>>({})
+  const [transcriptionService, setTranscriptionService] = useState('deepgram')
+  const [transcriptionModel, setTranscriptionModel] = useState('nano')
   const [transcriptionModelUsed, setTranscriptionModelUsed] = useState('')
+  const [transcriptionApiKey, setTranscriptionApiKey] = useState('')
+  const [transcriptionCosts, setTranscriptionCosts] = useState<TranscriptionCosts>({})
   const [transcriptionCostUsed, setTranscriptionCostUsed] = useState<number | null>(null)
+  const [transcriptContent, setTranscriptContent] = useState('')
+  const [selectedPrompts, setSelectedPrompts] = useState(['shortSummary'])
+  const [llmService, setLlmService] = useState<LLMServiceKey>('chatgpt')
+  const [llmModel, setLlmModel] = useState('chatgpt-4o-mini')
+  const [llmApiKey, setLlmApiKey] = useState('')
+  const [llmCosts, setLlmCosts] = useState<Record<string, any>>({})
+  const [error, setError] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
   const [dashBalance, setDashBalance] = useState<number | null>(null)
 
   return (
@@ -106,6 +107,7 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
           frontMatter={frontMatter}
           setFinalMarkdownFile={setFinalMarkdownFile}
           setCurrentStep={setCurrentStep}
+          setLlmCosts={setLlmCosts}
         />
       )}
       {currentStep === 4 && (
@@ -125,6 +127,7 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
           transcriptionCostUsed={transcriptionCostUsed}
           metadata={metadata}
           onNewShowNote={onNewShowNote}
+          llmCosts={llmCosts}
         />
       )}
       {error && <Alert message={error} variant="error" />}

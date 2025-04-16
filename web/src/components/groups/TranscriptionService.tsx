@@ -105,7 +105,7 @@ export const TranscriptionStep: React.FC<{
       <div className="form-group">
         <label htmlFor="transcriptionApiKey">Transcription API Key</label>
         <input
-          type="text"
+          type="password"
           id="transcriptionApiKey"
           value={transcriptionApiKey}
           onChange={e => setTranscriptionApiKey(e.target.value)}

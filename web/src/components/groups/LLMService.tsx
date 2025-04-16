@@ -127,7 +127,7 @@ export const LLMServiceStep: React.FC<{
       <div className="form-group">
         <label htmlFor="llmApiKey">LLM API Key</label>
         <input
-          type="text"
+          type="password"
           id="llmApiKey"
           value={llmApiKey}
           onChange={e => setLlmApiKey(e.target.value)}

@@ -36,6 +36,10 @@ services:
       PGPASSWORD: mypassword
       PGDATABASE: mydatabase
       DATABASE_URL: postgres://myuser:mypassword@autoshow-postgres:5432/mydatabase
+      AWS_REGION: ${AWS_REGION}
+      S3_BUCKET_NAME: ${S3_BUCKET_NAME}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
     depends_on:
       autoshow-postgres:
         condition: service_healthy

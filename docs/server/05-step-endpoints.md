@@ -45,8 +45,8 @@ curl --json '{
 
 ```bash
 curl --json '{
-  "input": "content/examples/audio.mp3",
-  "filename": "audio",
+  "type": "file",
+  "filePath": "content/examples/audio.mp3",
   "options": {
     "file": "content/examples/audio.mp3"
   }

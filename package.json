@@ -39,6 +39,8 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "0.39.0",
+    "@aws-sdk/client-s3": "3.787.0",
+    "@aws-sdk/s3-request-presigner": "3.787.0",
     "@deepgram/sdk": "3.11.1",
     "@fastify/cors": "11.0.0",
     "@google/generative-ai": "0.22.0",

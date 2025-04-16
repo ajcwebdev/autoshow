@@ -9,7 +9,7 @@ import { getShowNote } from './server/show-note.ts'
 import { getShowNotes } from './server/show-notes.ts'
 import { handleCostRequest } from './server/cost.ts'
 import { handleDashBalance } from './server/01-dash-balance.ts'
-import { handleDownloadAudio } from './server/02-download-audio.ts'
+import { handleDownloadAudio, handleGetAudioUrl } from './server/02-download-audio.ts'
 import { handleRunTranscription } from './server/03-run-transcription.ts'
 import { handleSelectPrompt } from './server/04-select-prompt.ts'
 import { handleRunLLM } from './server/05-run-llm.ts'
@@ -18,7 +18,11 @@ import { handleSaveMarkdown } from './server/save-markdown.ts'
 export function buildFastify() {
   const fastify = Fastify({ logger: true })
   fastify.register(cors,{origin:'*',methods:['GET','POST','OPTIONS'],allowedHeaders:['Content-Type']})
-  fastify.addHook('onRequest',async(request)=>{l(`[${new Date().toISOString()}] Received ${request.method} request for ${request.url}`)})
+
+  fastify.addHook('onRequest',async(request)=>{
+    l(`[${new Date().toISOString()}] Received ${request.method} request for ${request.url}`)
+  })
+
   fastify.addHook('preHandler',async(request)=>{
     const body = request.body as Record<string,any>
     if(body){
@@ -28,6 +32,7 @@ export function buildFastify() {
       })
     }
   })
+
   fastify.post('/api/cost',handleCostRequest)
   fastify.get('/show-notes',getShowNotes)
   fastify.get('/show-notes/:id',getShowNote)
@@ -37,6 +42,8 @@ export function buildFastify() {
   fastify.post('/run-llm',handleRunLLM)
   fastify.post('/save-markdown',handleSaveMarkdown)
   fastify.post('/dash-balance',handleDashBalance)
+  fastify.post('/get-audio-url',handleGetAudioUrl)
+
   return fastify
 }
 

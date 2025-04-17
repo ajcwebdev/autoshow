@@ -40,7 +40,6 @@ export const WalletStep: React.FC<{
       if (!balanceRes.ok) throw new Error('Error getting balance')
       const data = await balanceRes.json()
       setDashBalance(data.balance)
-      setCurrentStep(1)
     } catch (err) {
       if (err instanceof Error) setError(err.message)
       else setError('An unknown error occurred.')
@@ -68,6 +67,9 @@ export const WalletStep: React.FC<{
       <button disabled={isLoading} onClick={handleCheckBalance}>
         {isLoading ? 'Checking...' : 'Check Balance'}
       </button>
+      <br />
+      <br />
+      <button onClick={() => setCurrentStep(1)}>Next Step</button>
       {dashBalance !== null && (
         <p>Balance: {dashBalance}</p>
       )}

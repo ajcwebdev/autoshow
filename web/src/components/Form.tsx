@@ -16,10 +16,10 @@ export const Alert: React.FC<AlertProps> = ({ message, variant }) => (
 )
 
 const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
-  const [currentStep, setCurrentStep] = useState(1)
+  const [currentStep, setCurrentStep] = useState(0)
   const [walletAddress, setWalletAddress] = useState('yhGfbjKDuTnJyx8wzje7n9wsoWC51WH7Y5')
   const [mnemonic, setMnemonic] = useState('tip punch promote click scheme guitar skirt lucky hamster clip denial ecology')
-  const [processType, setProcessType] = useState<ProcessTypeEnum>('video')
+  const [processType, setProcessType] = useState<ProcessTypeEnum>('file')
   const [url, setUrl] = useState('https://www.youtube.com/watch?v=MORMZXEaONk')
   const [filePath, setFilePath] = useState('content/examples/audio.mp3')
   const [finalPath, setFinalPath] = useState('')

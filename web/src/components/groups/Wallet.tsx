@@ -29,9 +29,7 @@ export const WalletStep: React.FC<{
     setIsLoading(true)
     setError(null)
     try {
-      if (!walletAddress || !mnemonic) {
-        throw new Error('Please enter wallet address and mnemonic')
-      }
+      if (!walletAddress || !mnemonic) throw new Error('Please enter wallet address and mnemonic')
       const balanceRes = await fetch('http://localhost:3000/dash-balance', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -51,27 +49,22 @@ export const WalletStep: React.FC<{
   return (
     <>
       <label htmlFor="walletAddress">Wallet Address</label>
-      <input
-        type="text"
-        id="walletAddress"
-        value={walletAddress}
-        onChange={e => setWalletAddress(e.target.value)}
-      />
+      <input type="text" id="walletAddress" value={walletAddress} onChange={e => setWalletAddress(e.target.value)} />
+
       <label htmlFor="mnemonic">Mnemonic</label>
-      <input
-        type="text"
-        id="mnemonic"
-        value={mnemonic}
-        onChange={e => setMnemonic(e.target.value)}
-      />
-      <button disabled={isLoading} onClick={handleCheckBalance}>
-        {isLoading ? 'Checking...' : 'Check Balance'}
-      </button>
-      <br />
-      <br />
+      <input type="text" id="mnemonic" value={mnemonic} onChange={e => setMnemonic(e.target.value)} />
+
+      <button disabled={isLoading} onClick={handleCheckBalance}>{isLoading ? 'Checking...' : 'Check Balance'}</button>
+
+      <br /><br />
+
       <button onClick={() => setCurrentStep(1)}>Next Step</button>
+
       {dashBalance !== null && (
-        <p>Balance: {dashBalance}</p>
+        <>
+          <p>Balance: {dashBalance} duff</p>
+          <p>Credits: {(dashBalance / 500).toFixed(0)}</p>
+        </>
       )}
     </>
   )

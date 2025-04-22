@@ -1,4 +1,4 @@
-I'm going to ask you to refactor my code or write a new feature.
+I'm going to ask you to refactor my code, write a new feature, or fix a bug.
 
 - Include one or two sentences before the code file explaining what has been changed, do not include this information inside comments in the code file.
 - In your responses when you respond with code, you will respond with the entire code files with no comments and very minimal extra lines in the code for formatting. There's should be empty lines between imports and initial variable declarations, variable declarations and the first declared function, and in between multiple top level functions in a file. Otherwise, all code within function should be very compact with no extra lines.

@@ -33,16 +33,16 @@ export function buildFastify() {
     }
   })
 
-  fastify.post('/api/cost',handleCostRequest)
   fastify.get('/show-notes',getShowNotes)
   fastify.get('/show-notes/:id',getShowNote)
+  fastify.post('/dash-balance',handleDashBalance)
+  fastify.post('/cost',handleCostRequest)
   fastify.post('/download-audio',handleDownloadAudio)
+  fastify.post('/get-audio-url',handleGetAudioUrl)
   fastify.post('/run-transcription',handleRunTranscription)
   fastify.post('/select-prompt',handleSelectPrompt)
   fastify.post('/run-llm',handleRunLLM)
   fastify.post('/save-markdown',handleSaveMarkdown)
-  fastify.post('/dash-balance',handleDashBalance)
-  fastify.post('/get-audio-url',handleGetAudioUrl)
 
   return fastify
 }

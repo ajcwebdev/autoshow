@@ -1,6 +1,6 @@
 # Server Docs
 
-1. [Process Endpoint](./01-process-endpoint.md)
+1. [Server Setup](./01-server-setup.md)
 2. [Transcription Options](./02-transcription-options.md)
 3. [LLM Options](./03-llm-options.md)
 4. [Prompt Options](./04-prompt-options.md)

@@ -10,29 +10,11 @@ const {
   OPENAI_API_KEY,
 } = env
 
-const step1Requests = [
-  {
-    data: {
-      type: 'video',
-      url: 'https://www.youtube.com/watch?v=MORMZXEaONk'
-    },
-    endpoint: '/generate-markdown',
-    outputFiles: []
-  },
-  {
-    data: {
-      type: 'file',
-      filePath: 'content/examples/audio.mp3'
-    },
-    endpoint: '/generate-markdown',
-    outputFiles: []
-  }
-]
-
 const step2Requests = [
   {
     data: {
-      input: 'https://www.youtube.com/watch?v=MORMZXEaONk',
+      type: 'video',
+      url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
       filename: 'ep0-fsjam-podcast',
       options: {
         video: 'https://www.youtube.com/watch?v=MORMZXEaONk'
@@ -43,7 +25,8 @@ const step2Requests = [
   },
   {
     data: {
-      input: 'content/examples/audio.mp3',
+      type: 'file',
+      filePath: 'content/examples/audio.mp3',
       filename: 'audio',
       options: {
         file: 'content/examples/audio.mp3'
@@ -117,10 +100,6 @@ const step5Requests = [
     outputFiles: ['audio-prompt-chatgpt-shownotes.md']
   }
 ]
-
-describe('Step 1 - Generate Markdown', () => {
-  runTestsForRequests(step1Requests, 'step1Requests')
-})
 
 describe('Step 2 - Download Audio', () => {
   runTestsForRequests(step2Requests, 'step2Requests')

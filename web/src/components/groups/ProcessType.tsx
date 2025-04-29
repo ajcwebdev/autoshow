@@ -46,7 +46,7 @@ export const ProcessTypeStep = (props: {
       props.setFinalPath(resData.finalPath || '')
       const localFilePath = resData.outputPath
       const costBody = { type: 'transcriptCost', filePath: localFilePath }
-      const response = await fetch('http://localhost:3000/api/cost', {
+      const response = await fetch('http://localhost:3000/cost', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(costBody)

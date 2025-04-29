@@ -1,5 +1,7 @@
 # Server Prompt Options
 
+*Needs to be updated to `/run-llm` endpoint.*
+
 ## Outline
 
 - [Outline](#outline)

@@ -1,13 +1,12 @@
 // src/server/02-download-audio.ts
 
 import { fileTypeFromBuffer } from 'file-type'
-// import { l, err, logInitialFunctionCall } from '../utils/logging.ts'
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
+import { S3Client, PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3'
+import { dbService } from '../db.ts'
 import { execPromise, readFile, access, rename, execFilePromise, env } from '../utils/node-utils.ts'
 import type { FastifyRequest, FastifyReply } from 'fastify'
 import type { ProcessingOptions, ShowNoteMetadata } from '../../shared/types.ts'
-import { S3Client, PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3'
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
-import { dbService } from '../db.ts'
 
 function sanitizeTitle(title: string) {
   return title

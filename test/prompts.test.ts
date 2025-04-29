@@ -4,243 +4,451 @@ import { describe } from 'node:test'
 import { runTestsForRequests } from './base.test.ts'
 import { env } from '../src/utils/node-utils.ts'
 
-const BASE_PATH = '/api/process'
-const FILE_EXAMPLE = 'content/examples/audio.mp3'
-
+const FILE_EXAMPLE = 'content/examples/audio-prompt.md'
 const {
-  DEEPSEEK_API_KEY
+  OPENAI_API_KEY
 } = env
 
 export const requests = [
   {
     data: {
-      type: 'file',
-      filePath: FILE_EXAMPLE,
-      prompts: ['titles'],
-      llm: 'deepseek',
-      deepseekApiKey: DEEPSEEK_API_KEY,
+      options: {
+        prompt: ['titles']
+      }
     },
-    endpoint: BASE_PATH,
+    endpoint: '/select-prompt',
+    outputFiles: ['01-titles-prompt.md'],
+  },
+  {
+    data: {
+      filePath: FILE_EXAMPLE,
+      llmServices: 'chatgpt',
+      options: {
+        llmModel: 'gpt-4o-mini',
+        openaiApiKey: OPENAI_API_KEY
+      }
+    },
+    endpoint: '/run-llm',
     outputFiles: ['01-titles.md', '01-titles.json'],
   },
   {
     data: {
-      type: 'file',
-      filePath: FILE_EXAMPLE,
-      prompts: ['summary'],
-      llm: 'deepseek',
-      deepseekApiKey: DEEPSEEK_API_KEY,
+      options: {
+        prompt: ['summary']
+      }
     },
-    endpoint: BASE_PATH,
+    endpoint: '/select-prompt',
+    outputFiles: ['02-summary-prompt.md'],
+  },
+  {
+    data: {
+      filePath: FILE_EXAMPLE,
+      llmServices: 'chatgpt',
+      options: {
+        llmModel: 'gpt-4o-mini',
+        openaiApiKey: OPENAI_API_KEY
+      }
+    },
+    endpoint: '/run-llm',
     outputFiles: ['02-summary.md', '02-summary.json'],
   },
   {
     data: {
-      type: 'file',
-      filePath: FILE_EXAMPLE,
-      prompts: ['shortSummary'],
-      llm: 'deepseek',
-      deepseekApiKey: DEEPSEEK_API_KEY,
+      options: {
+        prompt: ['shortSummary']
+      }
     },
-    endpoint: BASE_PATH,
+    endpoint: '/select-prompt',
+    outputFiles: ['03-short-summary-prompt.md'],
+  },
+  {
+    data: {
+      filePath: FILE_EXAMPLE,
+      llmServices: 'chatgpt',
+      options: {
+        llmModel: 'gpt-4o-mini',
+        openaiApiKey: OPENAI_API_KEY
+      }
+    },
+    endpoint: '/run-llm',
     outputFiles: ['03-short-summary.md', '03-short-summary.json'],
   },
   {
     data: {
-      type: 'file',
-      filePath: FILE_EXAMPLE,
-      prompts: ['longSummary'],
-      llm: 'deepseek',
-      deepseekApiKey: DEEPSEEK_API_KEY,
+      options: {
+        prompt: ['longSummary']
+      }
     },
-    endpoint: BASE_PATH,
+    endpoint: '/select-prompt',
+    outputFiles: ['04-long-summary-prompt.md'],
+  },
+  {
+    data: {
+      filePath: FILE_EXAMPLE,
+      llmServices: 'chatgpt',
+      options: {
+        llmModel: 'gpt-4o-mini',
+        openaiApiKey: OPENAI_API_KEY
+      }
+    },
+    endpoint: '/run-llm',
     outputFiles: ['04-long-summary.md', '04-long-summary.json'],
   },
   {
     data: {
-      type: 'file',
-      filePath: FILE_EXAMPLE,
-      prompts: ['bulletPoints'],
-      llm: 'deepseek',
-      deepseekApiKey: DEEPSEEK_API_KEY,
+      options: {
+        prompt: ['bulletPoints']
+      }
     },
-    endpoint: BASE_PATH,
+    endpoint: '/select-prompt',
+    outputFiles: ['05-bullet-points-prompt.md'],
+  },
+  {
+    data: {
+      filePath: FILE_EXAMPLE,
+      llmServices: 'chatgpt',
+      options: {
+        llmModel: 'gpt-4o-mini',
+        openaiApiKey: OPENAI_API_KEY
+      }
+    },
+    endpoint: '/run-llm',
     outputFiles: ['05-bullet-points.md', '05-bullet-points.json'],
   },
   {
     data: {
-      type: 'file',
-      filePath: FILE_EXAMPLE,
-      prompts: ['quotes'],
-      llm: 'deepseek',
-      deepseekApiKey: DEEPSEEK_API_KEY,
+      options: {
+        prompt: ['quotes']
+      }
     },
-    endpoint: BASE_PATH,
+    endpoint: '/select-prompt',
+    outputFiles: ['06-quotes-prompt.md'],
+  },
+  {
+    data: {
+      filePath: FILE_EXAMPLE,
+      llmServices: 'chatgpt',
+      options: {
+        llmModel: 'gpt-4o-mini',
+        openaiApiKey: OPENAI_API_KEY
+      }
+    },
+    endpoint: '/run-llm',
     outputFiles: ['06-quotes.md', '06-quotes.json'],
   },
   {
     data: {
-      type: 'file',
-      filePath: FILE_EXAMPLE,
-      prompts: ['chapterTitlesAndQuotes'],
-      llm: 'deepseek',
-      deepseekApiKey: DEEPSEEK_API_KEY,
+      options: {
+        prompt: ['chapterTitlesAndQuotes']
+      }
     },
-    endpoint: BASE_PATH,
+    endpoint: '/select-prompt',
+    outputFiles: ['07-chapter-titles-quotes-prompt.md'],
+  },
+  {
+    data: {
+      filePath: FILE_EXAMPLE,
+      llmServices: 'chatgpt',
+      options: {
+        llmModel: 'gpt-4o-mini',
+        openaiApiKey: OPENAI_API_KEY
+      }
+    },
+    endpoint: '/run-llm',
     outputFiles: ['07-chapter-titles-quotes.md', '07-chapter-titles-quotes.json'],
   },
   {
     data: {
-      type: 'file',
-      filePath: FILE_EXAMPLE,
-      prompts: ['x'],
-      llm: 'deepseek',
-      deepseekApiKey: DEEPSEEK_API_KEY,
+      options: {
+        prompt: ['x']
+      }
     },
-    endpoint: BASE_PATH,
+    endpoint: '/select-prompt',
+    outputFiles: ['08-social-x-prompt.md'],
+  },
+  {
+    data: {
+      filePath: FILE_EXAMPLE,
+      llmServices: 'chatgpt',
+      options: {
+        llmModel: 'gpt-4o-mini',
+        openaiApiKey: OPENAI_API_KEY
+      }
+    },
+    endpoint: '/run-llm',
     outputFiles: ['08-social-x.md', '08-social-x.json'],
   },
   {
     data: {
-      type: 'file',
-      filePath: FILE_EXAMPLE,
-      prompts: ['facebook'],
-      llm: 'deepseek',
-      deepseekApiKey: DEEPSEEK_API_KEY,
+      options: {
+        prompt: ['facebook']
+      }
     },
-    endpoint: BASE_PATH,
+    endpoint: '/select-prompt',
+    outputFiles: ['09-social-facebook-prompt.md'],
+  },
+  {
+    data: {
+      filePath: FILE_EXAMPLE,
+      llmServices: 'chatgpt',
+      options: {
+        llmModel: 'gpt-4o-mini',
+        openaiApiKey: OPENAI_API_KEY
+      }
+    },
+    endpoint: '/run-llm',
     outputFiles: ['09-social-facebook.md', '09-social-facebook.json'],
   },
   {
     data: {
-      type: 'file',
-      filePath: FILE_EXAMPLE,
-      prompts: ['linkedin'],
-      llm: 'deepseek',
-      deepseekApiKey: DEEPSEEK_API_KEY,
+      options: {
+        prompt: ['linkedin']
+      }
     },
-    endpoint: BASE_PATH,
+    endpoint: '/select-prompt',
+    outputFiles: ['10-social-linkedin-prompt.md'],
+  },
+  {
+    data: {
+      filePath: FILE_EXAMPLE,
+      llmServices: 'chatgpt',
+      options: {
+        llmModel: 'gpt-4o-mini',
+        openaiApiKey: OPENAI_API_KEY
+      }
+    },
+    endpoint: '/run-llm',
     outputFiles: ['10-social-linkedin.md', '10-social-linkedin.json'],
   },
   {
     data: {
-      type: 'file',
-      filePath: FILE_EXAMPLE,
-      prompts: ['chapterTitles'],
-      llm: 'deepseek',
-      deepseekApiKey: DEEPSEEK_API_KEY,
+      options: {
+        prompt: ['chapterTitles']
+      }
     },
-    endpoint: BASE_PATH,
+    endpoint: '/select-prompt',
+    outputFiles: ['11-chapter-titles-prompt.md'],
+  },
+  {
+    data: {
+      filePath: FILE_EXAMPLE,
+      llmServices: 'chatgpt',
+      options: {
+        llmModel: 'gpt-4o-mini',
+        openaiApiKey: OPENAI_API_KEY
+      }
+    },
+    endpoint: '/run-llm',
     outputFiles: ['11-chapter-titles.md', '11-chapter-titles.json'],
   },
   {
     data: {
-      type: 'file',
-      filePath: FILE_EXAMPLE,
-      prompts: ['shortChapters'],
-      llm: 'deepseek',
-      deepseekApiKey: DEEPSEEK_API_KEY,
+      options: {
+        prompt: ['shortChapters']
+      }
     },
-    endpoint: BASE_PATH,
+    endpoint: '/select-prompt',
+    outputFiles: ['12-short-chapters-prompt.md'],
+  },
+  {
+    data: {
+      filePath: FILE_EXAMPLE,
+      llmServices: 'chatgpt',
+      options: {
+        llmModel: 'gpt-4o-mini',
+        openaiApiKey: OPENAI_API_KEY
+      }
+    },
+    endpoint: '/run-llm',
     outputFiles: ['12-short-chapters.md', '12-short-chapters.json'],
   },
   {
     data: {
-      type: 'file',
-      filePath: FILE_EXAMPLE,
-      prompts: ['mediumChapters'],
-      llm: 'deepseek',
-      deepseekApiKey: DEEPSEEK_API_KEY,
+      options: {
+        prompt: ['mediumChapters']
+      }
     },
-    endpoint: BASE_PATH,
+    endpoint: '/select-prompt',
+    outputFiles: ['13-medium-chapters-prompt.md'],
+  },
+  {
+    data: {
+      filePath: FILE_EXAMPLE,
+      llmServices: 'chatgpt',
+      options: {
+        llmModel: 'gpt-4o-mini',
+        openaiApiKey: OPENAI_API_KEY
+      }
+    },
+    endpoint: '/run-llm',
     outputFiles: ['13-medium-chapters.md', '13-medium-chapters.json'],
   },
   {
     data: {
-      type: 'file',
-      filePath: FILE_EXAMPLE,
-      prompts: ['longChapters'],
-      llm: 'deepseek',
-      deepseekApiKey: DEEPSEEK_API_KEY,
+      options: {
+        prompt: ['longChapters']
+      }
     },
-    endpoint: BASE_PATH,
+    endpoint: '/select-prompt',
+    outputFiles: ['14-long-chapters-prompt.md'],
+  },
+  {
+    data: {
+      filePath: FILE_EXAMPLE,
+      llmServices: 'chatgpt',
+      options: {
+        llmModel: 'gpt-4o-mini',
+        openaiApiKey: OPENAI_API_KEY
+      }
+    },
+    endpoint: '/run-llm',
     outputFiles: ['14-long-chapters.md', '14-long-chapters.json'],
   },
   {
     data: {
-      type: 'file',
-      filePath: FILE_EXAMPLE,
-      prompts: ['takeaways'],
-      llm: 'deepseek',
-      deepseekApiKey: DEEPSEEK_API_KEY,
+      options: {
+        prompt: ['takeaways']
+      }
     },
-    endpoint: BASE_PATH,
+    endpoint: '/select-prompt',
+    outputFiles: ['15-takeaways-prompt.md'],
+  },
+  {
+    data: {
+      filePath: FILE_EXAMPLE,
+      llmServices: 'chatgpt',
+      options: {
+        llmModel: 'gpt-4o-mini',
+        openaiApiKey: OPENAI_API_KEY
+      }
+    },
+    endpoint: '/run-llm',
     outputFiles: ['15-takeaways.md', '15-takeaways.json'],
   },
   {
     data: {
-      type: 'file',
-      filePath: FILE_EXAMPLE,
-      prompts: ['questions'],
-      llm: 'deepseek',
-      deepseekApiKey: DEEPSEEK_API_KEY,
+      options: {
+        prompt: ['questions']
+      }
     },
-    endpoint: BASE_PATH,
+    endpoint: '/select-prompt',
+    outputFiles: ['16-questions-prompt.md'],
+  },
+  {
+    data: {
+      filePath: FILE_EXAMPLE,
+      llmServices: 'chatgpt',
+      options: {
+        llmModel: 'gpt-4o-mini',
+        openaiApiKey: OPENAI_API_KEY
+      }
+    },
+    endpoint: '/run-llm',
     outputFiles: ['16-questions.md', '16-questions.json'],
   },
   {
     data: {
-      type: 'file',
-      filePath: FILE_EXAMPLE,
-      prompts: ['faq'],
-      llm: 'deepseek',
-      deepseekApiKey: DEEPSEEK_API_KEY,
+      options: {
+        prompt: ['faq']
+      }
     },
-    endpoint: BASE_PATH,
+    endpoint: '/select-prompt',
+    outputFiles: ['17-faq-prompt.md'],
+  },
+  {
+    data: {
+      filePath: FILE_EXAMPLE,
+      llmServices: 'chatgpt',
+      options: {
+        llmModel: 'gpt-4o-mini',
+        openaiApiKey: OPENAI_API_KEY
+      }
+    },
+    endpoint: '/run-llm',
     outputFiles: ['17-faq.md', '17-faq.json'],
   },
   {
     data: {
-      type: 'file',
-      filePath: FILE_EXAMPLE,
-      prompts: ['blog'],
-      llm: 'deepseek',
-      deepseekApiKey: DEEPSEEK_API_KEY,
+      options: {
+        prompt: ['blog']
+      }
     },
-    endpoint: BASE_PATH,
+    endpoint: '/select-prompt',
+    outputFiles: ['18-blog-prompt.md'],
+  },
+  {
+    data: {
+      filePath: FILE_EXAMPLE,
+      llmServices: 'chatgpt',
+      options: {
+        llmModel: 'gpt-4o-mini',
+        openaiApiKey: OPENAI_API_KEY
+      }
+    },
+    endpoint: '/run-llm',
     outputFiles: ['18-blog.md', '18-blog.json'],
   },
   {
     data: {
-      type: 'file',
-      filePath: FILE_EXAMPLE,
-      prompts: ['rapSong'],
-      llm: 'deepseek',
-      deepseekApiKey: DEEPSEEK_API_KEY,
+      options: {
+        prompt: ['rapSong']
+      }
     },
-    endpoint: BASE_PATH,
+    endpoint: '/select-prompt',
+    outputFiles: ['19-rap-song-prompt.md'],
+  },
+  {
+    data: {
+      filePath: FILE_EXAMPLE,
+      llmServices: 'chatgpt',
+      options: {
+        llmModel: 'gpt-4o-mini',
+        openaiApiKey: OPENAI_API_KEY
+      }
+    },
+    endpoint: '/run-llm',
     outputFiles: ['19-rap-song.md', '19-rap-song.json'],
   },
   {
     data: {
-      type: 'file',
-      filePath: FILE_EXAMPLE,
-      prompts: ['rockSong'],
-      llm: 'deepseek',
-      deepseekApiKey: DEEPSEEK_API_KEY,
+      options: {
+        prompt: ['rockSong']
+      }
     },
-    endpoint: BASE_PATH,
+    endpoint: '/select-prompt',
+    outputFiles: ['20-rock-song-prompt.md'],
+  },
+  {
+    data: {
+      filePath: FILE_EXAMPLE,
+      llmServices: 'chatgpt',
+      options: {
+        llmModel: 'gpt-4o-mini',
+        openaiApiKey: OPENAI_API_KEY
+      }
+    },
+    endpoint: '/run-llm',
     outputFiles: ['20-rock-song.md', '20-rock-song.json'],
   },
   {
     data: {
-      type: 'file',
-      filePath: FILE_EXAMPLE,
-      prompts: ['countrySong'],
-      llm: 'deepseek',
-      deepseekApiKey: DEEPSEEK_API_KEY,
+      options: {
+        prompt: ['countrySong']
+      }
     },
-    endpoint: BASE_PATH,
+    endpoint: '/select-prompt',
+    outputFiles: ['21-country-song-prompt.md'],
+  },
+  {
+    data: {
+      filePath: FILE_EXAMPLE,
+      llmServices: 'chatgpt',
+      options: {
+        llmModel: 'gpt-4o-mini',
+        openaiApiKey: OPENAI_API_KEY
+      }
+    },
+    endpoint: '/run-llm',
     outputFiles: ['21-country-song.md', '21-country-song.json'],
   },
 ]

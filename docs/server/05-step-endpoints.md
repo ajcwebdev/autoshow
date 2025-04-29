@@ -1,38 +1,13 @@
 # Step Endpoints
 
-## Step 1 - Generate Markdown
-
-Use this endpoint to just generate the metadata and front matter.
-
-### Video input example
-
-```bash
-curl --json '{
-  "type": "video",
-  "url": "https://www.youtube.com/watch?v=MORMZXEaONk"
-}' http://localhost:3000/generate-markdown \
-  -s | json_pp
-```
-
-### File input example
-
-```bash
-curl --json '{
-  "type": "file",
-  "filePath": "content/examples/audio.mp3"
-}' http://localhost:3000/generate-markdown \
-  -s | json_pp
-```
-
 ## Step 2 - Download Audio
-
-Use this endpoint to download or convert the audio into a WAV file. Provide the `input`, `filename`, and optional `options` object with flags like `video` or `file`.
 
 ### Download audio from a YouTube URL
 
 ```bash
 curl --json '{
-  "input": "https://www.youtube.com/watch?v=MORMZXEaONk",
+  "type": "video",
+  "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
   "filename": "ep0-fsjam-podcast",
   "options": {
     "video": "https://www.youtube.com/watch?v=MORMZXEaONk"

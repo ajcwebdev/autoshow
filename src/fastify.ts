@@ -8,7 +8,7 @@ import { ENV_VARS_MAP } from '../shared/constants.ts'
 import { getShowNote } from './server/show-note.ts'
 import { getShowNotes } from './server/show-notes.ts'
 import { handleCostRequest } from './server/cost.ts'
-import { handleDashBalance } from './server/01-dash-balance.ts'
+// import { handleDashBalance } from './server/01-dash-balance.ts'
 import { handleDownloadAudio, handleGetAudioUrl } from './server/02-download-audio.ts'
 import { handleRunTranscription } from './server/03-run-transcription.ts'
 import { handleSelectPrompt } from './server/04-select-prompt.ts'
@@ -35,7 +35,7 @@ export function buildFastify() {
 
   fastify.get('/show-notes',getShowNotes)
   fastify.get('/show-notes/:id',getShowNote)
-  fastify.post('/dash-balance',handleDashBalance)
+  // fastify.post('/dash-balance',handleDashBalance)
   fastify.post('/cost',handleCostRequest)
   fastify.post('/download-audio',handleDownloadAudio)
   fastify.post('/get-audio-url',handleGetAudioUrl)

@@ -46,7 +46,7 @@ export const ProcessTypeStep = (props: {
       props.setFinalPath(resData.finalPath || '')
       const localFilePath = resData.outputPath
       const costBody = { type: 'transcriptCost', filePath: localFilePath }
-      const response = await fetch('http://localhost:3000/cost', {
+      const response = await fetch('http://localhost:4321/api/cost', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(costBody)
@@ -62,7 +62,7 @@ export const ProcessTypeStep = (props: {
       props.setIsLoading(false)
     }
   }
-  
+
   return (
     <>
       <div class="form-group">
@@ -81,7 +81,6 @@ export const ProcessTypeStep = (props: {
           </For>
         </select>
       </div>
-      
       <Show when={props.processType === 'video'}>
         <div class="form-group">
           <label for="url">
@@ -96,7 +95,6 @@ export const ProcessTypeStep = (props: {
           />
         </div>
       </Show>
-      
       <Show when={props.processType === 'file'}>
         <div class="form-group">
           <label for="filePath">File Path</label>
@@ -109,7 +107,6 @@ export const ProcessTypeStep = (props: {
           />
         </div>
       </Show>
-      
       <button disabled={props.isLoading} onClick={handleStepOne}>
         {props.isLoading ? 'Calculating...' : 'Calculate Transcription Cost'}
       </button>

@@ -18,7 +18,7 @@ Fastify endpoint:
 curl --json '{
   "type": "llmCost",
   "filePath": "content/examples/audio-prompt.md"
-}' http://localhost:3000/cost
+}' http://localhost:3000/cost -s | json_pp
 ```
 
 Astro endpoint:
@@ -27,7 +27,7 @@ Astro endpoint:
 curl --json '{
   "type": "llmCost",
   "filePath": "content/examples/audio-prompt.md"
-}' http://localhost:4321/api/cost
+}' http://localhost:4321/api/cost -s | json_pp
 ```
 
 ## LLM Services and Models

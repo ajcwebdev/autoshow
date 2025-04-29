@@ -30,32 +30,29 @@
     "wipe-db": "./.github/workflows/wipe-db.sh",
     "railway-info": "./.github/workflows/railway-info.sh",
     "test:base": "tsx --test --env-file=.env --test-reporter=spec --test-reporter-destination=spec.log --test-concurrency=1",
-    "test:local": "npm run test:base -- test/local.test.ts",
-    "test:main": "npm run test:base -- test/main.test.ts",
     "test:models": "npm run test:base -- test/models.test.ts",
     "test:prompts": "npm run test:base -- test/prompts.test.ts",
     "test:steps": "npm run test:base -- test/steps.test.ts"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "0.39.0",
-    "@aws-sdk/client-s3": "3.787.0",
-    "@aws-sdk/s3-request-presigner": "3.787.0",
-    "@deepgram/sdk": "3.11.1",
-    "@fastify/cors": "11.0.0",
-    "@google/generative-ai": "0.22.0",
-    "@prisma/client": "6.4.1",
-    "assemblyai": "4.9.0",
+    "@anthropic-ai/sdk": "0.40.1",
+    "@aws-sdk/client-s3": "3.799.0",
+    "@aws-sdk/s3-request-presigner": "3.799.0",
+    "@deepgram/sdk": "3.12.1",
+    "@fastify/cors": "11.0.1",
+    "@google/generative-ai": "0.24.1",
+    "@prisma/client": "6.7.0",
+    "assemblyai": "4.12.2",
     "chalk": "5.4.1",
-    "dash": "4.8.0",
-    "fastify": "5.2.1",
-    "file-type": "20.4.0",
-    "openai": "4.86.1",
-    "prisma": "6.4.1"
+    "fastify": "5.3.2",
+    "file-type": "20.5.0",
+    "openai": "4.96.2",
+    "prisma": "6.7.0"
   },
   "devDependencies": {
-    "@types/node": "22.13.7",
-    "repomix": "0.3.1",
-    "tsx": "4.19.3",
-    "typescript": "5.8.2"
+    "@types/node": "22.15.3",
+    "repomix": "0.3.3",
+    "tsx": "4.19.4",
+    "typescript": "5.8.3"
   }
 }

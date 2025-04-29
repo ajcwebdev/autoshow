@@ -23,7 +23,6 @@ export const PromptsStep = (props: {
       <br />
     </>
   ))
-  
   const handleStepThree = async () => {
     props.setIsLoading(true)
     props.setError(null)
@@ -52,7 +51,7 @@ export const PromptsStep = (props: {
       const saveData = await saveRes.json()
       props.setFinalMarkdownFile(saveData.markdownFilePath)
       const costBody = { type: 'llmCost', filePath: saveData.markdownFilePath }
-      const costRes = await fetch('http://localhost:3000/cost', {
+      const costRes = await fetch('http://localhost:4321/api/cost', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(costBody)
@@ -68,7 +67,7 @@ export const PromptsStep = (props: {
       props.setIsLoading(false)
     }
   }
-  
+
   return (
     <>
       <h3>Transcript</h3>

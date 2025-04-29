@@ -1,15 +1,11 @@
 // web/src/components/ShowNotes.tsx
 
-import React, { useState, useEffect } from 'react'
-
+import { createSignal, onMount, createEffect } from 'solid-js'
 import type { ShowNoteType } from "../../../shared/types.ts"
 
-export const ShowNotes: React.FC<{ refreshCount: number }> = ({ refreshCount }) => {
-  const [showNotes, setShowNotes] = useState<ShowNoteType[]>([])
-
-  /**
-   * Fetches the list of show notes from the backend API and updates component state.
-   */
+export function ShowNotes(props: { refreshCount: number }) {
+  const [showNotes, setShowNotes] = createSignal<ShowNoteType[]>([])
+  
   const fetchShowNotes = async () => {
     try {
       const response = await fetch('http://localhost:3000/show-notes')
@@ -22,19 +18,22 @@ export const ShowNotes: React.FC<{ refreshCount: number }> = ({ refreshCount }) 
       console.error('Error fetching show notes:', error)
     }
   }
-
-  /**
-   * Triggers fetchShowNotes on initial render and whenever refreshCount changes.
-   */
-  useEffect(() => {
+  
+  createEffect(() => {
+    if (props.refreshCount) {
+      fetchShowNotes()
+    }
+  })
+  
+  onMount(() => {
     fetchShowNotes()
-  }, [refreshCount])
-
+  })
+  
   return (
-    <ul className="show-notes-list">
+    <ul class="show-notes-list">
       <h1>Show Notes</h1>
-      {showNotes.map((note) => (
-        <li key={note.id}>
+      {showNotes().map((note) => (
+        <li>
           <a href={`/show-notes/${note.id}`}>{note.title}</a> - {note.publishDate}
         </li>
       ))}

@@ -1,73 +1,73 @@
 // web/src/components/Form.tsx
 
-import React, { useState } from 'react'
-import { WalletStep } from '@/components/groups/Wallet'
-import { ProcessTypeStep } from '@/components/groups/ProcessType'
-import { TranscriptionStep } from '@/components/groups/TranscriptionService'
-import { PromptsStep } from '@/components/groups/Prompts'
-import { LLMServiceStep } from '@/components/groups/LLMService'
-import '@/styles'
+import { createSignal } from 'solid-js'
+import { WalletStep } from './groups/Wallet'
+import { ProcessTypeStep } from './groups/ProcessType'
+import { TranscriptionStep } from './groups/TranscriptionService'
+import { PromptsStep } from './groups/Prompts'
+import { LLMServiceStep } from './groups/LLMService'
+import '../styles/global.css'
 import type { AlertProps, FormProps, ProcessTypeEnum, LLMServiceKey, ShowNoteMetadata, TranscriptionCosts } from "../../../shared/types.ts"
 
-export const Alert: React.FC<AlertProps> = ({ message, variant }) => (
-  <div className={`alert ${variant}`}>
-    <p>{message}</p>
+export const Alert = (props: AlertProps) => (
+  <div class={`alert ${props.variant}`}>
+    <p>{props.message}</p>
   </div>
 )
 
-const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
-  const [currentStep, setCurrentStep] = useState(0)
-  const [walletAddress, setWalletAddress] = useState('yhGfbjKDuTnJyx8wzje7n9wsoWC51WH7Y5')
-  const [mnemonic, setMnemonic] = useState('tip punch promote click scheme guitar skirt lucky hamster clip denial ecology')
-  const [processType, setProcessType] = useState<ProcessTypeEnum>('file')
-  const [url, setUrl] = useState('https://www.youtube.com/watch?v=MORMZXEaONk')
-  const [filePath, setFilePath] = useState('content/examples/audio.mp3')
-  const [finalPath, setFinalPath] = useState('')
-  const [metadata, setMetadata] = useState<Partial<ShowNoteMetadata>>({})
-  const [frontMatter, setFrontMatter] = useState('')
-  const [finalMarkdownFile, setFinalMarkdownFile] = useState('')
-  const [transcriptionService, setTranscriptionService] = useState('deepgram')
-  const [transcriptionModel, setTranscriptionModel] = useState('nano')
-  const [transcriptionModelUsed, setTranscriptionModelUsed] = useState('')
-  const [transcriptionApiKey, setTranscriptionApiKey] = useState('')
-  const [transcriptionCosts, setTranscriptionCosts] = useState<TranscriptionCosts>({})
-  const [transcriptionCostUsed, setTranscriptionCostUsed] = useState<number | null>(null)
-  const [transcriptContent, setTranscriptContent] = useState('')
-  const [selectedPrompts, setSelectedPrompts] = useState(['shortSummary'])
-  const [llmService, setLlmService] = useState<LLMServiceKey>('chatgpt')
-  const [llmModel, setLlmModel] = useState('chatgpt-4o-mini')
-  const [llmApiKey, setLlmApiKey] = useState('')
-  const [llmCosts, setLlmCosts] = useState<Record<string, any>>({})
-  const [error, setError] = useState<string | null>(null)
-  const [isLoading, setIsLoading] = useState(false)
-  const [dashBalance, setDashBalance] = useState<number | null>(null)
+export default function Form(props: FormProps) {
+  const [currentStep, setCurrentStep] = createSignal(0)
+  const [walletAddress, setWalletAddress] = createSignal('yhGfbjKDuTnJyx8wzje7n9wsoWC51WH7Y5')
+  const [mnemonic, setMnemonic] = createSignal('tip punch promote click scheme guitar skirt lucky hamster clip denial ecology')
+  const [processType, setProcessType] = createSignal<ProcessTypeEnum>('file')
+  const [url, setUrl] = createSignal('https://www.youtube.com/watch?v=MORMZXEaONk')
+  const [filePath, setFilePath] = createSignal('content/examples/audio.mp3')
+  const [finalPath, setFinalPath] = createSignal('')
+  const [metadata, setMetadata] = createSignal<Partial<ShowNoteMetadata>>({})
+  const [frontMatter, setFrontMatter] = createSignal('')
+  const [finalMarkdownFile, setFinalMarkdownFile] = createSignal('')
+  const [transcriptionService, setTranscriptionService] = createSignal('deepgram')
+  const [transcriptionModel, setTranscriptionModel] = createSignal('nano')
+  const [transcriptionModelUsed, setTranscriptionModelUsed] = createSignal('')
+  const [transcriptionApiKey, setTranscriptionApiKey] = createSignal('')
+  const [transcriptionCosts, setTranscriptionCosts] = createSignal<TranscriptionCosts>({})
+  const [transcriptionCostUsed, setTranscriptionCostUsed] = createSignal<number | null>(null)
+  const [transcriptContent, setTranscriptContent] = createSignal('')
+  const [selectedPrompts, setSelectedPrompts] = createSignal(['shortSummary'])
+  const [llmService, setLlmService] = createSignal<LLMServiceKey>('chatgpt')
+  const [llmModel, setLlmModel] = createSignal('chatgpt-4o-mini')
+  const [llmApiKey, setLlmApiKey] = createSignal('')
+  const [llmCosts, setLlmCosts] = createSignal<Record<string, any>>({})
+  const [error, setError] = createSignal<string | null>(null)
+  const [isLoading, setIsLoading] = createSignal(false)
+  const [dashBalance, setDashBalance] = createSignal<number | null>(null)
 
   return (
     <>
-      {currentStep === 0 && (
+      {currentStep() === 0 && (
         <WalletStep
-          isLoading={isLoading}
+          isLoading={isLoading()}
           setIsLoading={setIsLoading}
           setError={setError}
-          walletAddress={walletAddress}
+          walletAddress={walletAddress()}
           setWalletAddress={setWalletAddress}
-          mnemonic={mnemonic}
+          mnemonic={mnemonic()}
           setMnemonic={setMnemonic}
-          dashBalance={dashBalance}
+          dashBalance={dashBalance()}
           setDashBalance={setDashBalance}
           setCurrentStep={setCurrentStep}
         />
       )}
-      {currentStep === 1 && (
+      {currentStep() === 1 && (
         <ProcessTypeStep
-          isLoading={isLoading}
+          isLoading={isLoading()}
           setIsLoading={setIsLoading}
           setError={setError}
-          processType={processType}
+          processType={processType()}
           setProcessType={setProcessType}
-          url={url}
+          url={url()}
           setUrl={setUrl}
-          filePath={filePath}
+          filePath={filePath()}
           setFilePath={setFilePath}
           setFinalPath={setFinalPath}
           setFrontMatter={setFrontMatter}
@@ -76,63 +76,61 @@ const Form: React.FC<FormProps> = ({ onNewShowNote }) => {
           setCurrentStep={setCurrentStep}
         />
       )}
-      {currentStep === 2 && (
+      {currentStep() === 2 && (
         <TranscriptionStep
-          isLoading={isLoading}
+          isLoading={isLoading()}
           setIsLoading={setIsLoading}
           setError={setError}
-          transcriptionService={transcriptionService}
+          transcriptionService={transcriptionService()}
           setTranscriptionService={setTranscriptionService}
-          transcriptionModel={transcriptionModel}
+          transcriptionModel={transcriptionModel()}
           setTranscriptionModel={setTranscriptionModel}
-          transcriptionApiKey={transcriptionApiKey}
+          transcriptionApiKey={transcriptionApiKey()}
           setTranscriptionApiKey={setTranscriptionApiKey}
-          finalPath={finalPath}
+          finalPath={finalPath()}
           setTranscriptContent={setTranscriptContent}
           setTranscriptionModelUsed={setTranscriptionModelUsed}
           setTranscriptionCostUsed={setTranscriptionCostUsed}
-          transcriptionCosts={transcriptionCosts}
+          transcriptionCosts={transcriptionCosts()}
           setCurrentStep={setCurrentStep}
         />
       )}
-      {currentStep === 3 && (
+      {currentStep() === 3 && (
         <PromptsStep
-          isLoading={isLoading}
+          isLoading={isLoading()}
           setIsLoading={setIsLoading}
           setError={setError}
-          transcriptContent={transcriptContent}
-          selectedPrompts={selectedPrompts}
+          transcriptContent={transcriptContent()}
+          selectedPrompts={selectedPrompts()}
           setSelectedPrompts={setSelectedPrompts}
-          finalPath={finalPath}
-          frontMatter={frontMatter}
+          finalPath={finalPath()}
+          frontMatter={frontMatter()}
           setFinalMarkdownFile={setFinalMarkdownFile}
           setCurrentStep={setCurrentStep}
           setLlmCosts={setLlmCosts}
         />
       )}
-      {currentStep === 4 && (
+      {currentStep() === 4 && (
         <LLMServiceStep
-          isLoading={isLoading}
+          isLoading={isLoading()}
           setIsLoading={setIsLoading}
           setError={setError}
-          llmService={llmService}
+          llmService={llmService()}
           setLlmService={setLlmService}
-          llmModel={llmModel}
+          llmModel={llmModel()}
           setLlmModel={setLlmModel}
-          llmApiKey={llmApiKey}
+          llmApiKey={llmApiKey()}
           setLlmApiKey={setLlmApiKey}
-          finalMarkdownFile={finalMarkdownFile}
-          transcriptionService={transcriptionService}
-          transcriptionModelUsed={transcriptionModelUsed}
-          transcriptionCostUsed={transcriptionCostUsed}
-          metadata={metadata}
-          onNewShowNote={onNewShowNote}
-          llmCosts={llmCosts}
+          finalMarkdownFile={finalMarkdownFile()}
+          transcriptionService={transcriptionService()}
+          transcriptionModelUsed={transcriptionModelUsed()}
+          transcriptionCostUsed={transcriptionCostUsed()}
+          metadata={metadata()}
+          onNewShowNote={props.onNewShowNote}
+          llmCosts={llmCosts()}
         />
       )}
-      {error && <Alert message={error} variant="error" />}
+      {error() && <Alert message={error()!} variant="error" />}
     </>
   )
 }
-
-export default Form

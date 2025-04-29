@@ -1,19 +1,19 @@
 // web/src/components/groups/LLMService.tsx
 
-import React, { useState } from 'react'
+import { createSignal, For, Show } from 'solid-js'
 import { L_CONFIG } from '../../../../shared/constants.ts'
 import type { LLMServiceKey, ShowNoteType, ShowNoteMetadata, LocalResult } from '../../../../shared/types.ts'
 
-export const LLMServiceStep: React.FC<{
+export const LLMServiceStep = (props: {
   isLoading: boolean
-  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>
-  setError: React.Dispatch<React.SetStateAction<string | null>>
+  setIsLoading: (value: boolean) => void
+  setError: (value: string | null) => void
   llmService: LLMServiceKey
-  setLlmService: React.Dispatch<React.SetStateAction<LLMServiceKey>>
+  setLlmService: (value: LLMServiceKey) => void
   llmModel: string
-  setLlmModel: React.Dispatch<React.SetStateAction<string>>
+  setLlmModel: (value: string) => void
   llmApiKey: string
-  setLlmApiKey: React.Dispatch<React.SetStateAction<string>>
+  setLlmApiKey: (value: string) => void
   finalMarkdownFile: string
   transcriptionService: string
   transcriptionModelUsed: string
@@ -21,53 +21,36 @@ export const LLMServiceStep: React.FC<{
   metadata: Partial<ShowNoteMetadata>
   onNewShowNote: () => void
   llmCosts: Record<string, any>
-}> = ({
-  isLoading,
-  setIsLoading,
-  setError,
-  llmService,
-  setLlmService,
-  llmModel,
-  setLlmModel,
-  llmApiKey,
-  setLlmApiKey,
-  finalMarkdownFile,
-  transcriptionService,
-  transcriptionModelUsed,
-  transcriptionCostUsed,
-  metadata,
-  onNewShowNote,
-  llmCosts
 }) => {
-  const [localResult, setLocalResult] = useState<LocalResult | null>(null)
-  const allServices = Object.values(L_CONFIG).filter(s => s.value)
+  const [localResult, setLocalResult] = createSignal<LocalResult | null>(null)
+  const allServices = () => Object.values(L_CONFIG).filter(s => s.value)
 
   const handleSelectLLM = async () => {
-    setIsLoading(true)
-    setError(null)
+    props.setIsLoading(true)
+    props.setError(null)
     setLocalResult(null)
     try {
-      const cost = llmCosts[llmService as string]?.find((x: any) => x.modelId === llmModel)?.cost ?? 0
+      const cost = props.llmCosts[props.llmService as string]?.find((x: any) => x.modelId === props.llmModel)?.cost ?? 0
       const runLLMBody = {
-        filePath: finalMarkdownFile,
-        llmServices: llmService,
+        filePath: props.finalMarkdownFile,
+        llmServices: props.llmService,
         options: {}
       } as {
         filePath: string
         llmServices: string
         options: Record<string, unknown>
       }
-      if (llmService === 'chatgpt') runLLMBody.options.openaiApiKey = llmApiKey
-      if (llmService === 'claude') runLLMBody.options.anthropicApiKey = llmApiKey
-      if (llmService === 'gemini') runLLMBody.options.geminiApiKey = llmApiKey
-      if (llmService === 'deepseek') runLLMBody.options.deepseekApiKey = llmApiKey
-      if (llmService === 'together') runLLMBody.options.togetherApiKey = llmApiKey
-      if (llmService === 'fireworks') runLLMBody.options.fireworksApiKey = llmApiKey
-      runLLMBody.options[llmService] = llmModel
-      runLLMBody.options.transcriptionServices = transcriptionService
-      runLLMBody.options.transcriptionModel = transcriptionModelUsed
-      runLLMBody.options.transcriptionCost = transcriptionCostUsed
-      runLLMBody.options.metadata = metadata
+      if (props.llmService === 'chatgpt') runLLMBody.options.openaiApiKey = props.llmApiKey
+      if (props.llmService === 'claude') runLLMBody.options.anthropicApiKey = props.llmApiKey
+      if (props.llmService === 'gemini') runLLMBody.options.geminiApiKey = props.llmApiKey
+      if (props.llmService === 'deepseek') runLLMBody.options.deepseekApiKey = props.llmApiKey
+      if (props.llmService === 'together') runLLMBody.options.togetherApiKey = props.llmApiKey
+      if (props.llmService === 'fireworks') runLLMBody.options.fireworksApiKey = props.llmApiKey
+      runLLMBody.options[props.llmService] = props.llmModel
+      runLLMBody.options.transcriptionServices = props.transcriptionService
+      runLLMBody.options.transcriptionModel = props.transcriptionModelUsed
+      runLLMBody.options.transcriptionCost = props.transcriptionCostUsed
+      runLLMBody.options.metadata = props.metadata
       runLLMBody.options.llmCost = cost
       const runLLMRes = await fetch('http://localhost:3000/run-llm', {
         method: 'POST',
@@ -80,70 +63,78 @@ export const LLMServiceStep: React.FC<{
         showNotesResult: string
       }
       setLocalResult({ showNote: data.showNote, llmOutput: data.showNotesResult })
-      onNewShowNote()
+      props.onNewShowNote()
     } catch (err) {
-      if (err instanceof Error) setError(err.message)
-      else setError('An unknown error occurred.')
+      if (err instanceof Error) props.setError(err.message)
+      else props.setError('An unknown error occurred.')
     } finally {
-      setIsLoading(false)
+      props.setIsLoading(false)
     }
   }
 
   return (
     <>
-      {!Object.keys(L_CONFIG).length && <p>No LLM config available</p>}
-      {allServices.length === 0 && <p>No services found</p>}
-      {allServices.length > 0 && (
-        <>
-          <h2>Select an LLM Model</h2>
-          {allServices.map(service => (
-            <div key={service.value}>
+      <Show when={!Object.keys(L_CONFIG).length}>
+        <p>No LLM config available</p>
+      </Show>
+      <Show when={allServices().length === 0}>
+        <p>No services found</p>
+      </Show>
+      <Show when={allServices().length > 0}>
+        <h2>Select an LLM Model</h2>
+        <For each={allServices()}>
+          {service => (
+            <div>
               <h3>{service.label}</h3>
-              {service.models && service.models.length === 0 && <p>No models for {service.label}</p>}
-              {service.models && service.models.map(m => {
-                const modelCost = llmCosts[service.value as string]?.find((x: any) => x.modelId === m.modelId)?.cost ?? 0
-                return (
-                  <div key={m.modelId}>
-                    <input
-                      type="radio"
-                      name="llmChoice"
-                      value={`${service.value}:${m.modelId}`}
-                      checked={llmService === service.value && llmModel === m.modelId}
-                      onChange={() => {
-                        setLlmService(service.value as LLMServiceKey)
-                        setLlmModel(m.modelId)
-                      }}
-                    />
-                    <label>{m.modelName}</label>
-                    <div>{(modelCost * 500).toFixed(1)} credits ({modelCost}¢)</div>
-                  </div>
-                )
-              })}
+              <Show when={service.models && service.models.length === 0}>
+                <p>No models for {service.label}</p>
+              </Show>
+              <For each={service.models || []}>
+                {m => {
+                  const modelCost = props.llmCosts[service.value as string]?.find((x: any) => x.modelId === m.modelId)?.cost ?? 0
+                  return (
+                    <div>
+                      <input
+                        type="radio"
+                        name="llmChoice"
+                        value={`${service.value}:${m.modelId}`}
+                        checked={props.llmService === service.value && props.llmModel === m.modelId}
+                        onInput={() => {
+                          props.setLlmService(service.value as LLMServiceKey)
+                          props.setLlmModel(m.modelId)
+                        }}
+                      />
+                      <label>{m.modelName}</label>
+                      <div>{(modelCost * 500).toFixed(1)} credits ({modelCost}¢)</div>
+                    </div>
+                  )
+                }}
+              </For>
             </div>
-          ))}
-        </>
-      )}
+          )}
+        </For>
+      </Show>
       <br /><br />
-      <div className="form-group">
-        <label htmlFor="llmApiKey">LLM API Key</label>
+      <div class="form-group">
+        <label for="llmApiKey">LLM API Key</label>
         <input
           type="password"
           id="llmApiKey"
-          value={llmApiKey}
-          onChange={e => setLlmApiKey(e.target.value)}
+          value={props.llmApiKey}
+          onInput={e => props.setLlmApiKey(e.target.value)}
         />
       </div>
-      <button disabled={isLoading} onClick={handleSelectLLM}>
-        {isLoading ? 'Generating Show Notes...' : 'Generate Show Notes'}
+      <button disabled={props.isLoading} onClick={handleSelectLLM}>
+        {props.isLoading ? 'Generating Show Notes...' : 'Generate Show Notes'}
       </button>
-      {localResult && (
-        <div className="result">
+      <Show when={localResult()}>
+        <div class="result">
           <h3>Show Note</h3>
-          <pre>{JSON.stringify(localResult.showNote, null, 2)}</pre>
+          <pre>{JSON.stringify(localResult()!.showNote, null, 2)}</pre>
           <h3>LLM Output</h3>
-          <p>{localResult.llmOutput}</p>
+          <p>{localResult()!.llmOutput}</p>
         </div>
-      )}
+      </Show>
     </>
   )
 }

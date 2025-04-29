@@ -1,25 +1,23 @@
 // web/src/components/App.tsx
 
-import React, { useState } from 'react'
-import Form from '@/components/Form'
-import { ShowNotes } from '@/components/ShowNotes'
-// import Instructions from '@/components/Instructions'
-import '@/styles'
+import { createSignal } from 'solid-js'
+import Form from './Form'
+import { ShowNotes } from './ShowNotes'
+// import Instructions from './Instructions'
+import '../styles/global.css'
 
-const App: React.FC = () => {
-  const [refreshCount, setRefreshCount] = useState(0)
-
+export default function App() {
+  const [refreshCount, setRefreshCount] = createSignal(0)
+  
   const handleNewShowNote = () => {
-    setRefreshCount((prevCount) => prevCount + 1)
+    setRefreshCount(prev => prev + 1)
   }
-
+  
   return (
-    <div className="container">
+    <div class="container">
       {/* <Instructions /> */}
       <Form onNewShowNote={handleNewShowNote} />
-      <ShowNotes refreshCount={refreshCount} />
+      <ShowNotes refreshCount={refreshCount()} />
     </div>
   )
 }
-
-export default App

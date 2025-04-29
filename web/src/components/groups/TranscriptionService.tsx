@@ -1,58 +1,43 @@
 // web/src/components/groups/TranscriptionService.tsx
 
-import React from 'react'
+import { For, Show } from 'solid-js'
+import type { Setter } from 'solid-js'
 import type { TranscriptionCosts } from '../../../../shared/types.ts'
 
-export const TranscriptionStep: React.FC<{
+export const TranscriptionStep = (props: {
   isLoading: boolean
-  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>
-  setError: React.Dispatch<React.SetStateAction<string | null>>
+  setIsLoading: Setter<boolean>
+  setError: Setter<string | null>
   transcriptionService: string
-  setTranscriptionService: React.Dispatch<React.SetStateAction<string>>
+  setTranscriptionService: Setter<string>
   transcriptionModel: string
-  setTranscriptionModel: React.Dispatch<React.SetStateAction<string>>
+  setTranscriptionModel: Setter<string>
   transcriptionApiKey: string
-  setTranscriptionApiKey: React.Dispatch<React.SetStateAction<string>>
+  setTranscriptionApiKey: Setter<string>
   finalPath: string
-  setTranscriptContent: React.Dispatch<React.SetStateAction<string>>
-  setTranscriptionModelUsed: React.Dispatch<React.SetStateAction<string>>
-  setTranscriptionCostUsed: React.Dispatch<React.SetStateAction<number | null>>
+  setTranscriptContent: Setter<string>
+  setTranscriptionModelUsed: Setter<string>
+  setTranscriptionCostUsed: Setter<number | null>
   transcriptionCosts: TranscriptionCosts
-  setCurrentStep: React.Dispatch<React.SetStateAction<number>>
-}> = ({
-  isLoading,
-  setIsLoading,
-  setError,
-  transcriptionService,
-  setTranscriptionService,
-  transcriptionModel,
-  setTranscriptionModel,
-  transcriptionApiKey,
-  setTranscriptionApiKey,
-  finalPath,
-  setTranscriptContent,
-  setTranscriptionModelUsed,
-  setTranscriptionCostUsed,
-  transcriptionCosts,
-  setCurrentStep
+  setCurrentStep: Setter<number>
 }) => {
   const handleStepTwo = async () => {
-    setIsLoading(true)
-    setError(null)
-    setTranscriptContent('')
+    props.setIsLoading(true)
+    props.setError(null)
+    props.setTranscriptContent('')
     try {
       const rtBody = {
-        finalPath,
-        transcriptServices: transcriptionService,
+        finalPath: props.finalPath,
+        transcriptServices: props.transcriptionService,
         options: {}
       } as {
         finalPath: string
         transcriptServices: string
         options: Record<string, unknown>
       }
-      rtBody.options[transcriptionService] = transcriptionModel
-      if (transcriptionService === 'assembly') rtBody.options.assemblyApiKey = transcriptionApiKey
-      if (transcriptionService === 'deepgram') rtBody.options.deepgramApiKey = transcriptionApiKey
+      rtBody.options[props.transcriptionService] = props.transcriptionModel
+      if (props.transcriptionService === 'assembly') rtBody.options.assemblyApiKey = props.transcriptionApiKey
+      if (props.transcriptionService === 'deepgram') rtBody.options.deepgramApiKey = props.transcriptionApiKey
       const rtRes = await fetch('http://localhost:3000/run-transcription', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -64,55 +49,61 @@ export const TranscriptionStep: React.FC<{
         modelId?: string
         transcriptionCost?: number
       }
-      setTranscriptContent(rtData.transcript || '')
-      if (rtData.modelId) setTranscriptionModelUsed(rtData.modelId)
-      if (rtData.transcriptionCost != null) setTranscriptionCostUsed(rtData.transcriptionCost)
-      setCurrentStep(3)
+      props.setTranscriptContent(rtData.transcript || '')
+      if (rtData.modelId) props.setTranscriptionModelUsed(rtData.modelId)
+      if (rtData.transcriptionCost != null) props.setTranscriptionCostUsed(rtData.transcriptionCost)
+      props.setCurrentStep(3)
     } catch (err) {
-      if (err instanceof Error) setError(err.message)
-      else setError('An unknown error occurred.')
+      if (err instanceof Error) props.setError(err.message)
+      else props.setError('An unknown error occurred.')
     } finally {
-      setIsLoading(false)
+      props.setIsLoading(false)
     }
   }
 
   return (
     <>
       <h2>Select a Transcription Service</h2>
-      {!Object.keys(transcriptionCosts).length && <p>No cost data available</p>}
-      {Object.entries(transcriptionCosts).map(([svc, models]) => (
-        <div key={svc}>
-          <h3>{svc}</h3>
-          {models.map(m => (
-            <div key={m.modelId}>
-              <input
-                type="radio"
-                name="transcriptionChoice"
-                value={`${svc}:${m.modelId}`}
-                checked={transcriptionService === svc && transcriptionModel === m.modelId}
-                onChange={() => {
-                  setTranscriptionService(svc)
-                  setTranscriptionModel(m.modelId)
-                }}
-              />
-              <label>{m.modelId}</label>
-              <div>{(m.cost * 500).toFixed(1)} credits ({m.cost}¢)</div>
-            </div>
-          ))}
-        </div>
-      ))}
+      <Show when={!Object.keys(props.transcriptionCosts).length}>
+        <p>No cost data available</p>
+      </Show>
+      <For each={Object.entries(props.transcriptionCosts)}>
+        {([svc, models]) => (
+          <div>
+            <h3>{svc}</h3>
+            <For each={models}>
+              {m => (
+                <div>
+                  <input
+                    type="radio"
+                    name="transcriptionChoice"
+                    value={`${svc}:${m.modelId}`}
+                    checked={props.transcriptionService === svc && props.transcriptionModel === m.modelId}
+                    onInput={() => {
+                      props.setTranscriptionService(svc)
+                      props.setTranscriptionModel(m.modelId)
+                    }}
+                  />
+                  <label>{m.modelId}</label>
+                  <div>{(m.cost * 500).toFixed(1)} credits ({m.cost}¢)</div>
+                </div>
+              )}
+            </For>
+          </div>
+        )}
+      </For>
       <br /><br />
-      <div className="form-group">
-        <label htmlFor="transcriptionApiKey">Transcription API Key</label>
+      <div class="form-group">
+        <label for="transcriptionApiKey">Transcription API Key</label>
         <input
           type="password"
           id="transcriptionApiKey"
-          value={transcriptionApiKey}
-          onChange={e => setTranscriptionApiKey(e.target.value)}
+          value={props.transcriptionApiKey}
+          onInput={e => props.setTranscriptionApiKey(e.target.value)}
         />
       </div>
-      <button disabled={isLoading} onClick={handleStepTwo}>
-        {isLoading ? 'Transcribing...' : 'Generate Transcription'}
+      <button disabled={props.isLoading} onClick={handleStepTwo}>
+        {props.isLoading ? 'Transcribing...' : 'Generate Transcription'}
       </button>
     </>
   )

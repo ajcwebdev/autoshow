@@ -1,69 +1,53 @@
 // web/src/components/groups/Wallet.tsx
 
-import React from 'react'
+import type { Setter } from 'solid-js'
 
-export const WalletStep: React.FC<{
+export const WalletStep = (props: {
   isLoading: boolean
-  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>
-  setError: React.Dispatch<React.SetStateAction<string | null>>
+  setIsLoading: Setter<boolean>
+  setError: Setter<string | null>
   walletAddress: string
-  setWalletAddress: React.Dispatch<React.SetStateAction<string>>
+  setWalletAddress: Setter<string>
   mnemonic: string
-  setMnemonic: React.Dispatch<React.SetStateAction<string>>
+  setMnemonic: Setter<string>
   dashBalance: number | null
-  setDashBalance: React.Dispatch<React.SetStateAction<number | null>>
-  setCurrentStep: React.Dispatch<React.SetStateAction<number>>
-}> = ({
-  isLoading,
-  setIsLoading,
-  setError,
-  walletAddress,
-  setWalletAddress,
-  mnemonic,
-  setMnemonic,
-  dashBalance,
-  setDashBalance,
-  setCurrentStep
+  setDashBalance: Setter<number | null>
+  setCurrentStep: Setter<number>
 }) => {
   const handleCheckBalance = async () => {
-    setIsLoading(true)
-    setError(null)
+    props.setIsLoading(true)
+    props.setError(null)
     try {
-      if (!walletAddress || !mnemonic) throw new Error('Please enter wallet address and mnemonic')
+      if (!props.walletAddress || !props.mnemonic) throw new Error('Please enter wallet address and mnemonic')
       const balanceRes = await fetch('http://localhost:3000/dash-balance', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mnemonic, walletAddress })
+        body: JSON.stringify({ mnemonic: props.mnemonic, walletAddress: props.walletAddress })
       })
       if (!balanceRes.ok) throw new Error('Error getting balance')
       const data = await balanceRes.json()
-      setDashBalance(data.balance)
+      props.setDashBalance(data.balance)
     } catch (err) {
-      if (err instanceof Error) setError(err.message)
-      else setError('An unknown error occurred.')
+      if (err instanceof Error) props.setError(err.message)
+      else props.setError('An unknown error occurred.')
     } finally {
-      setIsLoading(false)
+      props.setIsLoading(false)
     }
   }
-
+  
   return (
     <>
-      <label htmlFor="walletAddress">Wallet Address</label>
-      <input type="text" id="walletAddress" value={walletAddress} onChange={e => setWalletAddress(e.target.value)} />
-
-      <label htmlFor="mnemonic">Mnemonic</label>
-      <input type="text" id="mnemonic" value={mnemonic} onChange={e => setMnemonic(e.target.value)} />
-
-      <button disabled={isLoading} onClick={handleCheckBalance}>{isLoading ? 'Checking...' : 'Check Balance'}</button>
-
+      <label for="walletAddress">Wallet Address</label>
+      <input type="text" id="walletAddress" value={props.walletAddress} onInput={e => props.setWalletAddress(e.target.value)} />
+      <label for="mnemonic">Mnemonic</label>
+      <input type="text" id="mnemonic" value={props.mnemonic} onInput={e => props.setMnemonic(e.target.value)} />
+      <button disabled={props.isLoading} onClick={handleCheckBalance}>{props.isLoading ? 'Checking...' : 'Check Balance'}</button>
       <br /><br />
-
-      <button onClick={() => setCurrentStep(1)}>Next Step</button>
-
-      {dashBalance !== null && (
+      <button onClick={() => props.setCurrentStep(1)}>Next Step</button>
+      {props.dashBalance !== null && (
         <>
-          <p>Balance: {dashBalance} duff</p>
-          <p>Credits: {(dashBalance / 500).toFixed(0)}</p>
+          <p>Balance: {props.dashBalance} duff</p>
+          <p>Credits: {(props.dashBalance / 500).toFixed(0)}</p>
         </>
       )}
     </>

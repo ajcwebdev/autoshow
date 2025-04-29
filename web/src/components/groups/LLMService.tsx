@@ -43,7 +43,6 @@ export const LLMServiceStep = (props: {
       if (props.llmService === 'chatgpt') runLLMBody.options.openaiApiKey = props.llmApiKey
       if (props.llmService === 'claude') runLLMBody.options.anthropicApiKey = props.llmApiKey
       if (props.llmService === 'gemini') runLLMBody.options.geminiApiKey = props.llmApiKey
-      if (props.llmService === 'deepseek') runLLMBody.options.deepseekApiKey = props.llmApiKey
       if (props.llmService === 'together') runLLMBody.options.togetherApiKey = props.llmApiKey
       if (props.llmService === 'fireworks') runLLMBody.options.fireworksApiKey = props.llmApiKey
       runLLMBody.options[props.llmService] = props.llmModel

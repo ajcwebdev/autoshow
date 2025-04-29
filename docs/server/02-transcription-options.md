@@ -9,11 +9,22 @@
 
 ## Estimate Transcription Cost
 
+Fastify endpoint:
+
 ```bash
 curl --json '{
   "type": "transcriptCost",
   "filePath": "content/examples/audio.mp3"
 }' http://localhost:3000/cost
+```
+
+Astro endpoint:
+
+```bash
+curl --json '{
+  "type": "transcriptCost",
+  "filePath": "content/examples/audio.mp3"
+}' http://localhost:4321/api/cost
 ```
 
 ## Transcription Service and Model Options

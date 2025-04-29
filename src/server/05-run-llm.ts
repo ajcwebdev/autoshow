@@ -8,7 +8,7 @@ import { l, err, logInitialFunctionCall } from '../utils/logging.ts'
 import { readFile, writeFile, env } from '../utils/node-utils.ts'
 import { L_CONFIG } from '../../shared/constants.ts'
 import type { FastifyRequest, FastifyReply } from 'fastify'
-import type { ProcessingOptions, ShowNoteMetadata, LLMResult, RunLLMBody, ChatGPTModelValue, ClaudeModelValue, GeminiModelValue, DeepSeekModelValue, FireworksModelValue, TogetherModelValue } from '../../shared/types.ts'
+import type { ProcessingOptions, ShowNoteMetadata, LLMResult, RunLLMBody, ChatGPTModelValue, ClaudeModelValue, GeminiModelValue, FireworksModelValue, TogetherModelValue } from '../../shared/types.ts'
 
 export async function callChatGPT(
   prompt: string,
@@ -80,43 +80,6 @@ export async function callClaude(
     }
   } catch (error) {
     err(`Error in callClaude: ${(error as Error).message}`)
-    throw error
-  }
-}
-
-export async function callDeepSeek(
-  prompt: string,
-  transcript: string,
-  modelValue: DeepSeekModelValue
-) {
-  if (!env['DEEPSEEK_API_KEY']) {
-    throw new Error('Missing DEEPSEEK_API_KEY environment variable.')
-  }
-  const openai = new OpenAI({
-    apiKey: env['DEEPSEEK_API_KEY'],
-    baseURL: 'https://api.deepseek.com'
-  })
-  const combinedPrompt = `${prompt}\n${transcript}`
-  try {
-    const res = await openai.chat.completions.create({
-      model: modelValue,
-      messages: [{ role: 'user', content: combinedPrompt }]
-    })
-    const firstChoice = res.choices?.[0]
-    if (!firstChoice?.message?.content) {
-      throw new Error('No valid response from DeepSeek.')
-    }
-    return {
-      content: firstChoice.message.content,
-      usage: {
-        stopReason: firstChoice.finish_reason ?? 'unknown',
-        input: res.usage?.prompt_tokens,
-        output: res.usage?.completion_tokens,
-        total: res.usage?.total_tokens
-      }
-    }
-  } catch (error) {
-    err(`Error in callDeepSeek: ${(error as Error).message}`)
     throw error
   }
 }
@@ -307,9 +270,6 @@ export async function runLLM(
           break
         case 'gemini':
           showNotesData = await retryLLMCall(() => callGemini(prompt,transcript,userModel as GeminiModelValue))
-          break
-        case 'deepseek':
-          showNotesData = await retryLLMCall(() => callDeepSeek(prompt,transcript,userModel as DeepSeekModelValue))
           break
         case 'fireworks':
           showNotesData = await retryLLMCall(() => callFireworks(prompt,transcript,userModel as FireworksModelValue))

@@ -52,7 +52,7 @@ AutoShow can generate diverse content formats including:
 
 - Support for multiple input types (YouTube links, RSS feeds, local video and audio files)
 - Integration with various:
-  - LLMs (ChatGPT, Claude, Gemini, Deepseek, Fireworks, Together)
+  - LLMs (ChatGPT, Claude, Gemini, Fireworks, Together)
   - Transcription services (Deepgram, Assembly)
 - Customizable prompts for generating titles, summaries, chapter titles/descriptions, key takeaways, and questions to test comprehension
 - Markdown output with metadata and formatted content
@@ -113,7 +113,6 @@ Use 3rd party LLM providers.
 npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --chatgpt
 npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --claude
 npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --gemini
-npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --deepseek
 npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --fireworks
 npm run as -- --video "https://www.youtube.com/watch?v=MORMZXEaONk" --together
 ```
@@ -161,12 +160,11 @@ Example commands for all available CLI options can be found in [`docs/examples.m
   - `assembly.ts`: Integration with AssemblyAI API for transcription.
 
 - Language Models (`src/llms`)
-  - `llm-services.ts`: Integration with OpenAI's GPT, Anthropic's Claude, Google's Gemini, DeepSeek, Fireworks, and Together.
+  - `llm-services.ts`: Integration with OpenAI's GPT, Anthropic's Claude, Google's Gemini, Fireworks, and Together.
 
 ### Utility Files
 
 - Utility Files (`src/utils`)
-  - `create-clips.ts`: Utility to create video/audio clips.
   - `logging.ts`: Reusable logging utilities using Chalk for colorized output.
   - `node-utils.ts`: Node.js-specific utilities.
 

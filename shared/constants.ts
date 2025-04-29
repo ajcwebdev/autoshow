@@ -7,7 +7,6 @@ export const ENV_VARS_MAP = {
   openaiApiKey: 'OPENAI_API_KEY',
   anthropicApiKey: 'ANTHROPIC_API_KEY',
   geminiApiKey: 'GEMINI_API_KEY',
-  deepseekApiKey: 'DEEPSEEK_API_KEY',
   togetherApiKey: 'TOGETHER_API_KEY',
   fireworksApiKey: 'FIREWORKS_API_KEY',
 }
@@ -86,10 +85,16 @@ export const L_CONFIG = {
     label: 'ChatGPT',
     apiKeyPropName: 'openaiApiKey',
     models: [
-      { modelName: 'GPT 4.5 PREVIEW', modelId: 'gpt-4.5-preview', inputCostC: 7500, outputCostC: 15000 },
-      { modelName: 'GPT o1 MINI', modelId: 'o1-mini', inputCostC: 110, outputCostC: 440 },
-      { modelName: 'GPT 4o', modelId: 'gpt-4o', inputCostC: 250, outputCostC: 1000 },
-      { modelName: 'GPT 4o MINI', modelId: 'gpt-4o-mini', inputCostC: 15, outputCostC: 60 },
+      { modelName: 'GPT o1', modelId: 'o1', inputCostC: 750, outputCostC: 3000 },
+      { modelName: 'GPT o3', modelId: 'o3', inputCostC: 500, outputCostC: 2000 },
+      { modelName: 'GPT 4o', modelId: 'gpt-4o', inputCostC: 125, outputCostC: 500 },
+      { modelName: 'GPT 4.1', modelId: 'gpt-4.1', inputCostC: 100, outputCostC: 400 },
+      { modelName: 'GPT o4 MINI', modelId: 'o4-mini', inputCostC: 55, outputCostC: 220 },
+      { modelName: 'GPT o3 MINI', modelId: 'o3-mini', inputCostC: 55, outputCostC: 220 },
+      { modelName: 'GPT o1 MINI', modelId: 'o1-mini', inputCostC: 55, outputCostC: 220 },
+      { modelName: 'GPT 4.1 MINI', modelId: 'gpt-4.1-mini', inputCostC: 20, outputCostC: 80 },
+      { modelName: 'GPT 4o MINI', modelId: 'gpt-4o-mini', inputCostC: 7.5, outputCostC: 30 },
+      { modelName: 'GPT 4.1 NANO', modelId: 'gpt-4.1-nano', inputCostC: 5, outputCostC: 20 },
     ]
   },
   claude: {
@@ -109,21 +114,13 @@ export const L_CONFIG = {
     label: 'Gemini',
     apiKeyPropName: 'geminiApiKey',
     models: [
+      { modelName: 'Gemini 2.5 Pro Preview', modelId: 'gemini-2.5-pro-preview-03-25', inputCostC: 250, outputCostC: 1500 },
       { modelName: 'Gemini 1.5 Pro', modelId: 'gemini-1.5-pro', inputCostC: 250, outputCostC: 1000 },
+      { modelName: 'Gemini 2.5 Flash Preview', modelId: 'gemini-2.5-flash-preview-04-17', inputCostC: 100, outputCostC: 350 },
+      { modelName: 'Gemini 2.0 Flash', modelId: 'gemini-2.0-flash', inputCostC: 70, outputCostC: 40 },
       { modelName: 'Gemini 1.5 Flash', modelId: 'gemini-1.5-flash', inputCostC: 15, outputCostC: 60 },
-      { modelName: 'Gemini 2.0 Flash', modelId: 'gemini-2.0-flash', inputCostC: 10, outputCostC: 40 },
-      { modelName: 'Gemini 1.5 Flash-8B', modelId: 'gemini-1.5-flash-8b', inputCostC: 7.5, outputCostC: 30 },
       { modelName: 'Gemini 2.0 Flash-Lite', modelId: 'gemini-2.0-flash-lite', inputCostC: 7.5, outputCostC: 30 },
-    ]
-  },
-  deepseek: {
-    serviceName: 'DeepSeek',
-    value: 'deepseek',
-    label: 'Deepseek',
-    apiKeyPropName: 'deepseekApiKey',
-    models: [
-      { modelName: 'DeepSeek Reasoner', modelId: 'deepseek-reasoner', inputCostC: 14, outputCostC: 219 },
-      { modelName: 'DeepSeek Chat', modelId: 'deepseek-chat', inputCostC: 7, outputCostC: 110 },
+      { modelName: 'Gemini 1.5 Flash-8B', modelId: 'gemini-1.5-flash-8b', inputCostC: 7.5, outputCostC: 30 },
     ]
   },
   fireworks: {

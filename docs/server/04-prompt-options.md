@@ -24,17 +24,6 @@ curl --json '{
 }' http://localhost:3000/api/process
 ```
 
-Use an LLM (e.g., `deepseek`) for generating content with the selected prompt:
-
-```bash
-curl --json '{
-  "type": "video",
-  "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
-  "prompts": ["titles"],
-  "llm": "deepseek"
-}' http://localhost:3000/api/process
-```
-
 ## Prompt Categories
 
 ### Summaries, Chapters, and Titles

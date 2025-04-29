@@ -1,4 +1,4 @@
-// test/server-models.ts
+// test/models.test.ts
 
 import { describe } from 'node:test'
 import { runTestsForRequests } from './base.test.ts'
@@ -12,7 +12,6 @@ const {
   OPENAI_API_KEY,
   ANTHROPIC_API_KEY,
   GEMINI_API_KEY,
-  DEEPSEEK_API_KEY,
   FIREWORKS_API_KEY,
   TOGETHER_API_KEY,
 } = env
@@ -78,18 +77,18 @@ export const requests = [
     endpoint: '/run-transcription',
     outputFiles: ['05-deepgram-enhanced.md', '05-deepgram-enhanced.json'],
   },
-  // {
-  //   data: {
-  //     filePath: FILE_EXAMPLE,
-  //     llmServices: 'chatgpt',
-  //     options: {
-  //       llmModel: 'gpt-4.5-preview',
-  //       openaiApiKey: OPENAI_API_KEY
-  //     }
-  //   },
-  //   endpoint: '/run-llm',
-  //   outputFiles: ['06-chatgpt-gpt-4.5-preview.md', '06-chatgpt-gpt-4.5-preview.json'],
-  // },
+  {
+    data: {
+      filePath: FILE_EXAMPLE,
+      llmServices: 'chatgpt',
+      options: {
+        llmModel: 'gpt-4.5-preview',
+        openaiApiKey: OPENAI_API_KEY
+      }
+    },
+    endpoint: '/run-llm',
+    outputFiles: ['06-chatgpt-gpt-4.5-preview.md', '06-chatgpt-gpt-4.5-preview.json'],
+  },
   {
     data: {
       filePath: FILE_EXAMPLE,
@@ -161,30 +160,6 @@ export const requests = [
     },
     endpoint: '/run-llm',
     outputFiles: ['12-claude-3-opus-latest.md', '12-claude-3-opus-latest.json'],
-  },
-  {
-    data: {
-      filePath: FILE_EXAMPLE,
-      llmServices: 'deepseek',
-      options: {
-        llmModel: 'deepseek-chat',
-        deepseekApiKey: DEEPSEEK_API_KEY
-      }
-    },
-    endpoint: '/run-llm',
-    outputFiles: ['13-deepseek-chat.md', '13-deepseek-chat.json'],
-  },
-  {
-    data: {
-      filePath: FILE_EXAMPLE,
-      llmServices: 'deepseek',
-      options: {
-        llmModel: 'deepseek-reasoner',
-        deepseekApiKey: DEEPSEEK_API_KEY
-      }
-    },
-    endpoint: '/run-llm',
-    outputFiles: ['14-deepseek-reasoner.md', '14-deepseek-reasoner.json'],
   },
   {
     data: {

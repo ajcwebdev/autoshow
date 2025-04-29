@@ -24,7 +24,7 @@ export const requests = [
       filePath: FILE_EXAMPLE,
       llmServices: 'chatgpt',
       options: {
-        llmModel: 'gpt-4o-mini',
+        chatgpt: 'gpt-4o-mini',
         openaiApiKey: OPENAI_API_KEY
       }
     },
@@ -45,7 +45,7 @@ export const requests = [
       filePath: FILE_EXAMPLE,
       llmServices: 'chatgpt',
       options: {
-        llmModel: 'gpt-4o-mini',
+        chatgpt: 'gpt-4o-mini',
         openaiApiKey: OPENAI_API_KEY
       }
     },
@@ -66,7 +66,7 @@ export const requests = [
       filePath: FILE_EXAMPLE,
       llmServices: 'chatgpt',
       options: {
-        llmModel: 'gpt-4o-mini',
+        chatgpt: 'gpt-4o-mini',
         openaiApiKey: OPENAI_API_KEY
       }
     },
@@ -87,7 +87,7 @@ export const requests = [
       filePath: FILE_EXAMPLE,
       llmServices: 'chatgpt',
       options: {
-        llmModel: 'gpt-4o-mini',
+        chatgpt: 'gpt-4o-mini',
         openaiApiKey: OPENAI_API_KEY
       }
     },
@@ -108,7 +108,7 @@ export const requests = [
       filePath: FILE_EXAMPLE,
       llmServices: 'chatgpt',
       options: {
-        llmModel: 'gpt-4o-mini',
+        chatgpt: 'gpt-4o-mini',
         openaiApiKey: OPENAI_API_KEY
       }
     },
@@ -129,7 +129,7 @@ export const requests = [
       filePath: FILE_EXAMPLE,
       llmServices: 'chatgpt',
       options: {
-        llmModel: 'gpt-4o-mini',
+        chatgpt: 'gpt-4o-mini',
         openaiApiKey: OPENAI_API_KEY
       }
     },
@@ -150,7 +150,7 @@ export const requests = [
       filePath: FILE_EXAMPLE,
       llmServices: 'chatgpt',
       options: {
-        llmModel: 'gpt-4o-mini',
+        chatgpt: 'gpt-4o-mini',
         openaiApiKey: OPENAI_API_KEY
       }
     },
@@ -171,7 +171,7 @@ export const requests = [
       filePath: FILE_EXAMPLE,
       llmServices: 'chatgpt',
       options: {
-        llmModel: 'gpt-4o-mini',
+        chatgpt: 'gpt-4o-mini',
         openaiApiKey: OPENAI_API_KEY
       }
     },
@@ -192,7 +192,7 @@ export const requests = [
       filePath: FILE_EXAMPLE,
       llmServices: 'chatgpt',
       options: {
-        llmModel: 'gpt-4o-mini',
+        chatgpt: 'gpt-4o-mini',
         openaiApiKey: OPENAI_API_KEY
       }
     },
@@ -213,7 +213,7 @@ export const requests = [
       filePath: FILE_EXAMPLE,
       llmServices: 'chatgpt',
       options: {
-        llmModel: 'gpt-4o-mini',
+        chatgpt: 'gpt-4o-mini',
         openaiApiKey: OPENAI_API_KEY
       }
     },
@@ -234,7 +234,7 @@ export const requests = [
       filePath: FILE_EXAMPLE,
       llmServices: 'chatgpt',
       options: {
-        llmModel: 'gpt-4o-mini',
+        chatgpt: 'gpt-4o-mini',
         openaiApiKey: OPENAI_API_KEY
       }
     },
@@ -255,7 +255,7 @@ export const requests = [
       filePath: FILE_EXAMPLE,
       llmServices: 'chatgpt',
       options: {
-        llmModel: 'gpt-4o-mini',
+        chatgpt: 'gpt-4o-mini',
         openaiApiKey: OPENAI_API_KEY
       }
     },
@@ -276,7 +276,7 @@ export const requests = [
       filePath: FILE_EXAMPLE,
       llmServices: 'chatgpt',
       options: {
-        llmModel: 'gpt-4o-mini',
+        chatgpt: 'gpt-4o-mini',
         openaiApiKey: OPENAI_API_KEY
       }
     },
@@ -297,7 +297,7 @@ export const requests = [
       filePath: FILE_EXAMPLE,
       llmServices: 'chatgpt',
       options: {
-        llmModel: 'gpt-4o-mini',
+        chatgpt: 'gpt-4o-mini',
         openaiApiKey: OPENAI_API_KEY
       }
     },
@@ -318,7 +318,7 @@ export const requests = [
       filePath: FILE_EXAMPLE,
       llmServices: 'chatgpt',
       options: {
-        llmModel: 'gpt-4o-mini',
+        chatgpt: 'gpt-4o-mini',
         openaiApiKey: OPENAI_API_KEY
       }
     },
@@ -339,7 +339,7 @@ export const requests = [
       filePath: FILE_EXAMPLE,
       llmServices: 'chatgpt',
       options: {
-        llmModel: 'gpt-4o-mini',
+        chatgpt: 'gpt-4o-mini',
         openaiApiKey: OPENAI_API_KEY
       }
     },
@@ -360,7 +360,7 @@ export const requests = [
       filePath: FILE_EXAMPLE,
       llmServices: 'chatgpt',
       options: {
-        llmModel: 'gpt-4o-mini',
+        chatgpt: 'gpt-4o-mini',
         openaiApiKey: OPENAI_API_KEY
       }
     },
@@ -381,7 +381,7 @@ export const requests = [
       filePath: FILE_EXAMPLE,
       llmServices: 'chatgpt',
       options: {
-        llmModel: 'gpt-4o-mini',
+        chatgpt: 'gpt-4o-mini',
         openaiApiKey: OPENAI_API_KEY
       }
     },
@@ -402,7 +402,7 @@ export const requests = [
       filePath: FILE_EXAMPLE,
       llmServices: 'chatgpt',
       options: {
-        llmModel: 'gpt-4o-mini',
+        chatgpt: 'gpt-4o-mini',
         openaiApiKey: OPENAI_API_KEY
       }
     },
@@ -423,7 +423,7 @@ export const requests = [
       filePath: FILE_EXAMPLE,
       llmServices: 'chatgpt',
       options: {
-        llmModel: 'gpt-4o-mini',
+        chatgpt: 'gpt-4o-mini',
         openaiApiKey: OPENAI_API_KEY
       }
     },
@@ -444,7 +444,7 @@ export const requests = [
       filePath: FILE_EXAMPLE,
       llmServices: 'chatgpt',
       options: {
-        llmModel: 'gpt-4o-mini',
+        chatgpt: 'gpt-4o-mini',
         openaiApiKey: OPENAI_API_KEY
       }
     },

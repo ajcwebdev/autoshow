@@ -1,8 +1,8 @@
 // src/server/03-run-transcription.ts
 
-import { l, err, logInitialFunctionCall } from '../utils/logging.ts'
+import { l, err, logInitialFunctionCall } from '../logging.ts'
 import { T_CONFIG } from '../../shared/constants.ts'
-import { execPromise, readFile, env } from '../utils/node-utils.ts'
+import { execPromise, readFile, env } from '../utils.ts'
 import type { FastifyRequest, FastifyReply } from 'fastify'
 import type { ProcessingOptions, RunTranscriptionBody, DeepgramWord } from '../../shared/types.ts'
 

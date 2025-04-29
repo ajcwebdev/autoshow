@@ -2,12 +2,6 @@
 
 import chalk from 'chalk'
 
-/**
- * Logs the first step of a top-level function call with its relevant options or parameters.
- *
- * @param functionName - The name of the top-level function being invoked.
- * @param details - An object containing relevant parameters to log
- */
 export function logInitialFunctionCall(functionName: string, details: Record<string, unknown>): void {
   l.opts(`${functionName} called with the following arguments:\n`)
   for (const [key, value] of Object.entries(details)) {
@@ -21,16 +15,6 @@ export function logInitialFunctionCall(functionName: string, details: Record<str
   l.opts('')
 }
 
-/**
- * Logs a visual separator for different processing contexts, including channels, playlists, RSS feeds, URLs, 
- * and a final completion message. 
- *
- * - For `channel`, `playlist`, or `urls`, provide `index`, `total`, and `descriptor` representing the URL.
- * - For `rss`, provide `index`, `total`, and `descriptor` representing the RSS item title.
- * - For `completion`, provide only the `descriptor` representing the completed action.
- *
- * @param params - An object describing the context and values needed to log the separator.
- */
 export function logSeparator(params:
   | { type: 'channel' | 'playlist' | 'urls', index: number, total: number, descriptor: string  }
   | { type: 'rss', index: number, total: number, descriptor: string  }
@@ -63,13 +47,6 @@ export function logSeparator(params:
   }
 }
 
-/**
- * Creates a chainable logger function that uses the provided base logging function
- * and attaches chalk-styled methods for consistent usage.
- *
- * @param baseLogger - The underlying logging function (e.g., `console.log` or `console.error`).
- * @returns A chainable logger instance with styled methods.
- */
 function createChainableLogger(baseLogger: (...args: any[]) => void) {
   const logger = (...args: any[]) => baseLogger(...args)
   const styledLogger = Object.assign(logger, {

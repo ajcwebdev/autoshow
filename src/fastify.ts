@@ -2,8 +2,8 @@
 
 import Fastify from 'fastify'
 import cors from '@fastify/cors'
-import { l } from './utils/logging.ts'
-import { env } from './utils/node-utils.ts'
+import { l } from './logging.ts'
+import { env } from './utils.ts'
 import { ENV_VARS_MAP } from '../shared/constants.ts'
 import { getShowNote } from './server/show-note.ts'
 import { getShowNotes } from './server/show-notes.ts'

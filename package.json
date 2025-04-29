@@ -13,7 +13,7 @@
   ],
   "type": "module",
   "scripts": {
-    "repo": "repomix",
+    "repo": "bash .github/workflows/repomix.sh",
     "setup": "bash .github/workflows/setup.sh",
     "check": "npx tsc && cd web && npx tsc && cd ..",
     "node:base": "node --no-warnings --experimental-transform-types --es-module-specifier-resolution=node",

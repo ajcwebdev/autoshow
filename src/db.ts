@@ -1,7 +1,7 @@
 // src/db.ts
 
-import { l } from './utils/logging.ts'
-import { env } from './utils/node-utils.ts'
+import { l } from './logging.ts'
+import { env } from './utils.ts'
 import type { ShowNoteType } from '../shared/types.ts'
 
 export interface DatabaseService {

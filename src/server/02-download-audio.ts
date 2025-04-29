@@ -4,7 +4,7 @@ import { fileTypeFromBuffer } from 'file-type'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 import { S3Client, PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3'
 import { dbService } from '../db.ts'
-import { execPromise, readFile, access, rename, execFilePromise, env } from '../utils/node-utils.ts'
+import { execPromise, readFile, access, rename, execFilePromise, env } from '../utils.ts'
 import type { FastifyRequest, FastifyReply } from 'fastify'
 import type { ProcessingOptions, ShowNoteMetadata } from '../../shared/types.ts'
 

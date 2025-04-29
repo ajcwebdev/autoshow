@@ -2,7 +2,7 @@
 
 import { describe } from 'node:test'
 import { runTestsForRequests } from './base.test.ts'
-import { env } from '../src/utils/node-utils.ts'
+import { env } from '../src/utils.ts'
 
 const {
   DEEPGRAM_API_KEY,

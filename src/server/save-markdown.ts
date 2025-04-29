@@ -1,6 +1,6 @@
 // src/server/save-markdown.ts
 
-import { writeFile, join } from '../utils/node-utils.ts'
+import { writeFile, join } from '../utils.ts'
 import type { FastifyRequest, FastifyReply } from 'fastify'
 import type { SaveMarkdownRequest } from '../../shared/types.ts'
 

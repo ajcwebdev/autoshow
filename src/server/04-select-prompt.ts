@@ -1,7 +1,7 @@
 // src/server/04-select-prompt.ts
 
-import { err, l, logInitialFunctionCall } from '../utils/logging.ts'
-import { readFile } from '../utils/node-utils.ts'
+import { err, l, logInitialFunctionCall } from '../logging.ts'
+import { readFile } from '../utils.ts'
 import { PROMPT_CHOICES } from '../../shared/constants.ts'
 import type { FastifyRequest, FastifyReply } from 'fastify'
 import type { ProcessingOptions, SelectPromptBody } from '../../shared/types.ts'

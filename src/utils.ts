@@ -1,4 +1,4 @@
-// src/utils/node-utils.ts
+// src/utils.ts
 
 import { promisify } from 'node:util'
 import { argv, env, exit } from 'node:process'

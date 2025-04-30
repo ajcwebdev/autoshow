@@ -17,7 +17,7 @@ export const PromptsStep = (props: {
   setCurrentStep: Setter<number>
   setLlmCosts: Setter<Record<string, any>>
 }) => {
-  const formatContent = (text: string) => text.split('\n').map((line, index) => (
+  const formatContent = (text: string) => text.split('\n').map((line, _index) => (
     <>
       {line}
       <br />

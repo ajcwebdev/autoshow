@@ -235,7 +235,7 @@ export const POST: APIRoute = async ({ request }) => {
       for (let attempt = 1; attempt <= maxRetries; attempt++) {
         try {
           const result = await geminiModel.generateContent(combinedPrompt)
-          const response = await result.response
+          const response = result.response
           const text = response.text()
           const { usageMetadata } = response
           const { promptTokenCount, candidatesTokenCount, totalTokenCount } = usageMetadata ?? {}

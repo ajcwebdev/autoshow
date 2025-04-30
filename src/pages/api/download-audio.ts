@@ -118,7 +118,7 @@ export const POST: APIRoute = async ({ request }) => {
         mnemonic: ''
       }
     }
-    const finalPath = `content/${filename}`
+    const finalPath = `autoshow/content/${filename}`
     const outputPath = `${finalPath}.wav`
     const absoluteOutputPath = path.resolve(projectRoot, outputPath)
     console.log(`[api/download-audio] Final filename: ${filename}`)

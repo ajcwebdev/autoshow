@@ -17,21 +17,19 @@ const step2Requests = [
     data: {
       type: 'video',
       url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
-      filename: 'ep0-fsjam-podcast',
       options: {
         video: 'https://www.youtube.com/watch?v=MORMZXEaONk'
       }
     },
     endpoint: 'http://localhost:4321/api/download-audio',
-    outputFiles: ['01-ep0-fsjam-podcast.wav']
+    outputFiles: ['01-youtube-audio.wav']
   },
   {
     data: {
       type: 'file',
-      filePath: 'content/examples/audio.mp3',
-      filename: 'audio',
+      filePath: 'autoshow/content/examples/audio.mp3',
       options: {
-        file: 'content/examples/audio.mp3'
+        file: 'autoshow/content/examples/audio.mp3'
       }
     },
     endpoint: 'http://localhost:4321/api/download-audio',
@@ -42,7 +40,7 @@ const step2Requests = [
 const step3Requests = [
   {
     data: {
-      finalPath: 'content/02-audio',
+      finalPath: 'autoshow/content/02-audio',
       transcriptServices: 'assembly',
       options: {
         assembly: 'best',
@@ -54,7 +52,7 @@ const step3Requests = [
   },
   {
     data: {
-      finalPath: 'content/02-audio',
+      finalPath: 'autoshow/content/02-audio',
       transcriptServices: 'deepgram',
       options: {
         deepgram: 'nova-2',
@@ -80,7 +78,7 @@ const step4Requests = [
   {
     data: {
       options: {
-        customPrompt: 'content/examples/custom-prompt.md'
+        customPrompt: 'autoshow/content/examples/custom-prompt.md'
       }
     },
     endpoint: 'http://localhost:4321/api/select-prompt',
@@ -91,7 +89,7 @@ const step4Requests = [
 const step5Requests = [
   {
     data: {
-      filePath: 'content/examples/audio-prompt.md',
+      filePath: 'autoshow/content/examples/audio-prompt.md',
       llmServices: 'chatgpt',
       options: {
         chatgpt: 'gpt-4o-mini',
@@ -103,7 +101,7 @@ const step5Requests = [
   },
   {
     data: {
-      filePath: 'content/examples/audio-prompt.md',
+      filePath: 'autoshow/content/examples/audio-prompt.md',
       llmServices: 'claude',
       options: {
         claude: 'claude-3-opus-latest',
@@ -115,7 +113,7 @@ const step5Requests = [
   },
   {
     data: {
-      filePath: 'content/examples/audio-prompt.md',
+      filePath: 'autoshow/content/examples/audio-prompt.md',
       llmServices: 'gemini',
       options: {
         gemini: 'gemini-1.5-flash-8b',

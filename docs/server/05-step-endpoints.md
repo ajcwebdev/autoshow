@@ -1,14 +1,24 @@
 # Step Endpoints
 
+## Step 1 - Dash Balance
+
+### Get Wallet Balance
+
+```bash
+curl --json '{
+  "mnemonic":"coil evidence seed guide craft thrive kangaroo height goat pilot bless visa",
+  "walletAddress":"yQHygFk4px2zxtvHk33o5YCySUWjZNqdPh"
+}' http://localhost:4321/api/dash-balance -s | json_pp
+```
+
 ## Step 2 - Download Audio
 
-### Download audio from a YouTube URL
+### Download Audio from YouTube URL
 
 ```bash
 curl --json '{
   "type": "video",
   "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
-  "filename": "ep0-fsjam-podcast",
   "options": {
     "video": "https://www.youtube.com/watch?v=MORMZXEaONk"
   }
@@ -16,14 +26,14 @@ curl --json '{
   -s | json_pp
 ```
 
-### Convert local file to WAV
+### Convert Local File to WAV
 
 ```bash
 curl --json '{
   "type": "file",
-  "filePath": "content/examples/audio.mp3",
+  "filePath": "autoshow/content/examples/audio.mp3",
   "options": {
-    "file": "content/examples/audio.mp3"
+    "file": "autoshow/content/examples/audio.mp3"
   }
 }' http://localhost:4321/api/download-audio \
   -s | json_pp
@@ -37,7 +47,7 @@ Use this endpoint to run the transcription step on a `.wav` file. You must provi
 
 ```bash
 curl --json '{
-  "finalPath": "content/examples/audio",
+  "finalPath": "autoshow/content/examples/audio",
   "transcriptServices": "assembly",
   "options": {
     "assembly": "nano",
@@ -51,7 +61,7 @@ curl --json '{
 
 ```bash
 curl --json '{
-  "finalPath": "content/examples/audio",
+  "finalPath": "autoshow/content/examples/audio",
   "transcriptServices": "deepgram",
   "options": {
     "deepgram": "nova-2",
@@ -63,7 +73,7 @@ curl --json '{
 
 ```bash
 curl --json '{
-  "finalPath": "content/examples/audio",
+  "finalPath": "autoshow/content/examples/audio",
   "transcriptServices": "deepgram",
   "options": {
     "deepgram": "nova-2",
@@ -78,7 +88,7 @@ curl --json '{
 
 Use this endpoint to generate a final prompt string from various prompt section choices, or a custom prompt file.
 
-### Choose multiple built-in prompts
+### Choose Multiple Prompts
 
 ```bash
 curl --json '{
@@ -89,12 +99,12 @@ curl --json '{
   -s | json_pp
 ```
 
-### Use a custom prompt file
+### Use Custom Prompt File
 
 ```bash
 curl --json '{
   "options": {
-    "customPrompt": "content/custom-prompt.md"
+    "customPrompt": "autoshow/content/custom-prompt.md"
   }
 }' http://localhost:4321/api/select-prompt \
   -s | json_pp
@@ -106,7 +116,7 @@ Use this endpoint to run the final LLM step.
 
 ```bash
 curl --json '{
-  "filePath": "content/examples/audio-prompt.md",
+  "filePath": "autoshow/content/examples/audio-prompt.md",
   "llmServices": "chatgpt",
   "options": {
     "chatgpt": "gpt-4o-mini",

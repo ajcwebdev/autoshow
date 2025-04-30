@@ -8,8 +8,7 @@
 ## Get All Show Notes
 
 ```bash
-curl http://localhost:4321/api/show-notes \
-  -s | json_pp
+curl http://localhost:4321/api/show-notes -s | json_pp
 ```
 
 Returns:

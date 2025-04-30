@@ -5,8 +5,8 @@ import path from "path"
 import { fileURLToPath } from "url"
 import { OpenAI } from "openai"
 import { GoogleGenerativeAI } from "@google/generative-ai"
-import { readFile, writeFile } from "../../../../src/utils.ts"
-import { dbService } from "../../../../src/db.ts"
+import { readFile, writeFile } from "../../utils.ts"
+import { dbService } from "../../db.ts"
 import { L_CONFIG, ENV_VARS_MAP } from '../../constants.ts'
 import type {
   ProcessingOptions,

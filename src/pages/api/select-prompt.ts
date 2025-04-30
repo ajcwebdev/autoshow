@@ -1,10 +1,9 @@
 // web/src/pages/api/select-prompt.ts
 
 import type { APIRoute } from "astro"
-import { readFile } from "../../../../src/utils.ts"
+import { readFile } from "../../utils.ts"
 import { PROMPT_CHOICES } from '../../constants.ts'
 import type { ProcessingOptions } from '../../types.ts'
-
 
 export const sections = {
   titles: {

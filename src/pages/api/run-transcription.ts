@@ -3,7 +3,7 @@
 import type { APIRoute } from "astro"
 import path from "path"
 import { fileURLToPath } from "url"
-import { execPromise, readFile } from "../../../../src/utils.ts"
+import { execPromise, readFile } from "../../utils.ts"
 import { T_CONFIG } from '../../constants.ts'
 import type { ProcessingOptions, DeepgramWord } from '../../types.ts'
 
@@ -79,7 +79,6 @@ export function formatDeepgramTranscript(
 
   return transcript
 }
-
 
 export const POST: APIRoute = async ({ request }) => {
   console.log("[api/run-transcription] POST request started")

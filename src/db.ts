@@ -2,7 +2,7 @@
 
 import { l } from './utils.ts'
 import { env } from './utils.ts'
-import type { ShowNoteType } from '../shared/types.ts'
+import type { ShowNoteType } from './types.ts'
 
 export interface DatabaseService {
   insertShowNote: (showNote: ShowNoteType) => Promise<any>

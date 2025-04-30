@@ -3,8 +3,8 @@
 import type { APIRoute } from "astro"
 import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3"
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner"
-import { dbService } from "../../../../src/db.ts"
-import { env } from "../../../../src/utils.ts"
+import { dbService } from "../../db.ts"
+import { env } from "../../utils.ts"
 
 export const POST: APIRoute = async ({ request }) => {
   console.log("[api/get-audio-url] POST request started")

@@ -3,7 +3,7 @@
 import { PrismaClient } from '@prisma/client'
 import {
   env, fileURLToPath, readdir, readFile, readFileSync, join, dirname, isAbsolute, resolve, relative, writeFileSync
-} from './utils.ts'
+} from '../../utils.ts'
 
 async function getAllMarkdownFiles(dir: string): Promise<string[]> {
   const dirEntries = await readdir(dir, { withFileTypes: true })

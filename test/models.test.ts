@@ -11,9 +11,7 @@ const {
   ASSEMBLY_API_KEY,
   OPENAI_API_KEY,
   ANTHROPIC_API_KEY,
-  GEMINI_API_KEY,
-  FIREWORKS_API_KEY,
-  TOGETHER_API_KEY,
+  GEMINI_API_KEY
 } = env
 
 export const requests = [
@@ -82,19 +80,7 @@ export const requests = [
       filePath: FILE_EXAMPLE,
       llmServices: 'chatgpt',
       options: {
-        llmModel: 'gpt-4.5-preview',
-        openaiApiKey: OPENAI_API_KEY
-      }
-    },
-    endpoint: '/run-llm',
-    outputFiles: ['06-chatgpt-gpt-4.5-preview.md', '06-chatgpt-gpt-4.5-preview.json'],
-  },
-  {
-    data: {
-      filePath: FILE_EXAMPLE,
-      llmServices: 'chatgpt',
-      options: {
-        llmModel: 'gpt-4o',
+        chatgpt: 'gpt-4o',
         openaiApiKey: OPENAI_API_KEY
       }
     },
@@ -106,7 +92,7 @@ export const requests = [
       filePath: FILE_EXAMPLE,
       llmServices: 'chatgpt',
       options: {
-        llmModel: 'gpt-4o-mini',
+        chatgpt: 'gpt-4o-mini',
         openaiApiKey: OPENAI_API_KEY
       }
     },
@@ -118,7 +104,7 @@ export const requests = [
       filePath: FILE_EXAMPLE,
       llmServices: 'chatgpt',
       options: {
-        llmModel: 'o1-mini',
+        chatgpt: 'o1-mini',
         openaiApiKey: OPENAI_API_KEY
       }
     },
@@ -130,7 +116,7 @@ export const requests = [
       filePath: FILE_EXAMPLE,
       llmServices: 'claude',
       options: {
-        llmModel: 'claude-3-7-sonnet-latest',
+        claude: 'claude-3-7-sonnet-latest',
         anthropicApiKey: ANTHROPIC_API_KEY
       }
     },
@@ -142,7 +128,7 @@ export const requests = [
       filePath: FILE_EXAMPLE,
       llmServices: 'claude',
       options: {
-        llmModel: 'claude-3-5-haiku-latest',
+        claude: 'claude-3-5-haiku-latest',
         anthropicApiKey: ANTHROPIC_API_KEY
       }
     },
@@ -154,7 +140,7 @@ export const requests = [
       filePath: FILE_EXAMPLE,
       llmServices: 'claude',
       options: {
-        llmModel: 'claude-3-opus-latest',
+        claude: 'claude-3-opus-latest',
         anthropicApiKey: ANTHROPIC_API_KEY
       }
     },
@@ -166,7 +152,7 @@ export const requests = [
       filePath: FILE_EXAMPLE,
       llmServices: 'gemini',
       options: {
-        llmModel: 'gemini-1.5-pro',
+        gemini: 'gemini-1.5-pro',
         geminiApiKey: GEMINI_API_KEY
       }
     },
@@ -178,7 +164,7 @@ export const requests = [
       filePath: FILE_EXAMPLE,
       llmServices: 'gemini',
       options: {
-        llmModel: 'gemini-1.5-flash-8b',
+        gemini: 'gemini-1.5-flash-8b',
         geminiApiKey: GEMINI_API_KEY
       }
     },
@@ -190,7 +176,7 @@ export const requests = [
       filePath: FILE_EXAMPLE,
       llmServices: 'gemini',
       options: {
-        llmModel: 'gemini-1.5-flash',
+        gemini: 'gemini-1.5-flash',
         geminiApiKey: GEMINI_API_KEY
       }
     },
@@ -202,7 +188,7 @@ export const requests = [
       filePath: FILE_EXAMPLE,
       llmServices: 'gemini',
       options: {
-        llmModel: 'gemini-2.0-flash-lite',
+        gemini: 'gemini-2.0-flash-lite',
         geminiApiKey: GEMINI_API_KEY
       }
     },
@@ -214,157 +200,13 @@ export const requests = [
       filePath: FILE_EXAMPLE,
       llmServices: 'gemini',
       options: {
-        llmModel: 'gemini-2.0-flash',
+        gemini: 'gemini-2.0-flash',
         geminiApiKey: GEMINI_API_KEY
       }
     },
     endpoint: '/run-llm',
     outputFiles: ['19-gemini-2.0-flash.md', '19-gemini-2.0-flash.json'],
-  },
-  {
-    data: {
-      filePath: FILE_EXAMPLE,
-      llmServices: 'fireworks',
-      options: {
-        llmModel: 'accounts/fireworks/models/llama-v3p1-405b-instruct',
-        fireworksApiKey: FIREWORKS_API_KEY
-      }
-    },
-    endpoint: '/run-llm',
-    outputFiles: ['20-fireworks-llama-v3p1-405b.md', '20-fireworks-llama-v3p1-405b.json'],
-  },
-  {
-    data: {
-      filePath: FILE_EXAMPLE,
-      llmServices: 'fireworks',
-      options: {
-        llmModel: 'accounts/fireworks/models/llama-v3p1-70b-instruct',
-        fireworksApiKey: FIREWORKS_API_KEY
-      }
-    },
-    endpoint: '/run-llm',
-    outputFiles: ['21-fireworks-llama-v3p1-70b.md', '21-fireworks-llama-v3p1-70b.json'],
-  },
-  {
-    data: {
-      filePath: FILE_EXAMPLE,
-      llmServices: 'fireworks',
-      options: {
-        llmModel: 'accounts/fireworks/models/llama-v3p1-8b-instruct',
-        fireworksApiKey: FIREWORKS_API_KEY
-      }
-    },
-    endpoint: '/run-llm',
-    outputFiles: ['22-fireworks-llama-v3p1-8b.md', '22-fireworks-llama-v3p1-8b.json'],
-  },
-  {
-    data: {
-      filePath: FILE_EXAMPLE,
-      llmServices: 'fireworks',
-      options: {
-        llmModel: 'accounts/fireworks/models/qwen2p5-72b-instruct',
-        fireworksApiKey: FIREWORKS_API_KEY
-      }
-    },
-    endpoint: '/run-llm',
-    outputFiles: ['23-fireworks-qwen2p5-72b.md', '23-fireworks-qwen2p5-72b.json'],
-  },
-  {
-    data: {
-      filePath: FILE_EXAMPLE,
-      llmServices: 'together',
-      options: {
-        llmModel: 'meta-llama/Llama-3.2-3B-Instruct-Turbo',
-        togetherApiKey: TOGETHER_API_KEY
-      }
-    },
-    endpoint: '/run-llm',
-    outputFiles: ['24-together-llama-3.2-3b.md', '24-together-llama-3.2-3b.json'],
-  },
-  {
-    data: {
-      filePath: FILE_EXAMPLE,
-      llmServices: 'together',
-      options: {
-        llmModel: 'meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo',
-        togetherApiKey: TOGETHER_API_KEY
-      }
-    },
-    endpoint: '/run-llm',
-    outputFiles: ['25-together-llama-3.1-405b.md', '25-together-llama-3.1-405b.json'],
-  },
-  {
-    data: {
-      filePath: FILE_EXAMPLE,
-      llmServices: 'together',
-      options: {
-        llmModel: 'meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo',
-        togetherApiKey: TOGETHER_API_KEY
-      }
-    },
-    endpoint: '/run-llm',
-    outputFiles: ['26-together-llama-3.1-70b.md', '26-together-llama-3.1-70b.json'],
-  },
-  {
-    data: {
-      filePath: FILE_EXAMPLE,
-      llmServices: 'together',
-      options: {
-        llmModel: 'meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo',
-        togetherApiKey: TOGETHER_API_KEY
-      }
-    },
-    endpoint: '/run-llm',
-    outputFiles: ['27-together-llama-3.1-8b.md', '27-together-llama-3.1-8b.json'],
-  },
-  {
-    data: {
-      filePath: FILE_EXAMPLE,
-      llmServices: 'together',
-      options: {
-        llmModel: 'google/gemma-2-27b-it',
-        togetherApiKey: TOGETHER_API_KEY
-      }
-    },
-    endpoint: '/run-llm',
-    outputFiles: ['28-together-gemma-2-27b.md', '28-together-gemma-2-27b.json'],
-  },
-  {
-    data: {
-      filePath: FILE_EXAMPLE,
-      llmServices: 'together',
-      options: {
-        llmModel: 'google/gemma-2-9b-it',
-        togetherApiKey: TOGETHER_API_KEY
-      }
-    },
-    endpoint: '/run-llm',
-    outputFiles: ['29-together-gemma-2-9b.md', '29-together-gemma-2-9b.json'],
-  },
-  {
-    data: {
-      filePath: FILE_EXAMPLE,
-      llmServices: 'together',
-      options: {
-        llmModel: 'Qwen/Qwen2.5-72B-Instruct-Turbo',
-        togetherApiKey: TOGETHER_API_KEY
-      }
-    },
-    endpoint: '/run-llm',
-    outputFiles: ['30-together-qwen2.5-72b.md', '30-together-qwen2.5-72b.json'],
-  },
-  {
-    data: {
-      filePath: FILE_EXAMPLE,
-      llmServices: 'together',
-      options: {
-        llmModel: 'Qwen/Qwen2.5-7B-Instruct-Turbo',
-        togetherApiKey: TOGETHER_API_KEY
-      }
-    },
-    endpoint: '/run-llm',
-    outputFiles: ['31-together-qwen2.5-7b.md', '31-together-qwen2.5-7b.json'],
-  },
+  }
 ]
 
 describe('Model Tests', () => {

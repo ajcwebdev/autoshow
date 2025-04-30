@@ -7,8 +7,6 @@ export const ENV_VARS_MAP = {
   openaiApiKey: 'OPENAI_API_KEY',
   anthropicApiKey: 'ANTHROPIC_API_KEY',
   geminiApiKey: 'GEMINI_API_KEY',
-  togetherApiKey: 'TOGETHER_API_KEY',
-  fireworksApiKey: 'FIREWORKS_API_KEY',
 }
 
 export const PROCESS_TYPES = [
@@ -121,29 +119,6 @@ export const L_CONFIG = {
       { modelName: 'Gemini 1.5 Flash', modelId: 'gemini-1.5-flash', inputCostC: 15, outputCostC: 60 },
       { modelName: 'Gemini 2.0 Flash-Lite', modelId: 'gemini-2.0-flash-lite', inputCostC: 7.5, outputCostC: 30 },
       { modelName: 'Gemini 1.5 Flash-8B', modelId: 'gemini-1.5-flash-8b', inputCostC: 7.5, outputCostC: 30 },
-    ]
-  },
-  fireworks: {
-    serviceName: 'Fireworks AI',
-    value: 'fireworks',
-    label: 'Fireworks',
-    apiKeyPropName: 'fireworksApiKey',
-    models: [
-      { modelName: 'LLAMA 3 1 405B', modelId: 'accounts/fireworks/models/llama-v3p1-405b-instruct', inputCostC: 300, outputCostC: 300 },
-      { modelName: 'LLAMA 3 1 70B', modelId: 'accounts/fireworks/models/llama-v3p1-70b-instruct', inputCostC: 90, outputCostC: 90 },
-      { modelName: 'QWEN 2 5 72B', modelId: 'accounts/fireworks/models/qwen2p5-72b-instruct', inputCostC: 90, outputCostC: 90 },
-    ]
-  },
-  together: {
-    serviceName: 'Together AI',
-    value: 'together',
-    label: 'Together AI',
-    apiKeyPropName: 'togetherApiKey',
-    models: [
-      { modelName: 'LLAMA 3 1 405B', modelId: 'meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo', inputCostC: 350, outputCostC: 350 },
-      { modelName: 'QWEN 2 5 72B', modelId: 'Qwen/Qwen2.5-72B-Instruct-Turbo', inputCostC: 120, outputCostC: 120 },
-      { modelName: 'LLAMA 3 1 70B', modelId: 'meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo', inputCostC: 88, outputCostC: 88 },
-      { modelName: 'Gemma 2 27B', modelId: 'google/gemma-2-27b-it', inputCostC: 80, outputCostC: 80 },
     ]
   }
 }

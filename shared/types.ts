@@ -56,8 +56,6 @@ export type ProcessingOptions = {
   runLLM?: string
   chatgpt?: string
   claude?: string
-  fireworks?: string
-  together?: string
   gemini?: string
   prompt?: string[]
   printPrompt?: string[]
@@ -70,16 +68,12 @@ export type ProcessingOptions = {
   openaiApiKey?: string
   anthropicApiKey?: string
   geminiApiKey?: string
-  togetherApiKey?: string
-  fireworksApiKey?: string
   [key: string]: any
 }
 
 export type ChatGPTModelValue = (typeof L_CONFIG.chatgpt.models)[number]['modelId']
 export type ClaudeModelValue = (typeof L_CONFIG.claude.models)[number]['modelId']
-export type FireworksModelValue = (typeof L_CONFIG.fireworks.models)[number]['modelId']
 export type GeminiModelValue = (typeof L_CONFIG.gemini.models)[number]['modelId']
-export type TogetherModelValue = (typeof L_CONFIG.together.models)[number]['modelId']
 
 export interface DeepgramWord {
   word: string

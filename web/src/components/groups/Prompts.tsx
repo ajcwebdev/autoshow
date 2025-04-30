@@ -51,7 +51,7 @@ export const PromptsStep = (props: {
       const saveData = await saveRes.json()
       props.setFinalMarkdownFile(saveData.markdownFilePath)
       const costBody = { type: 'llmCost', filePath: saveData.markdownFilePath }
-      const costRes = await fetch('http://localhost:4321/api/cost', {
+      const costRes = await fetch('http://localhost:3000/cost', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(costBody)

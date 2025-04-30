@@ -8,6 +8,8 @@ const {
   DEEPGRAM_API_KEY,
   ASSEMBLY_API_KEY,
   OPENAI_API_KEY,
+  ANTHROPIC_API_KEY,
+  GEMINI_API_KEY,
 } = env
 
 const step2Requests = [
@@ -48,7 +50,7 @@ const step3Requests = [
       }
     },
     endpoint: '/run-transcription',
-    outputFiles: []
+    outputFiles: ['03-assembly-best.md']
   },
   {
     data: {
@@ -61,7 +63,7 @@ const step3Requests = [
       }
     },
     endpoint: '/run-transcription',
-    outputFiles: []
+    outputFiles: ['04-deepgram-nova-2.md']
   }
 ]
 
@@ -73,7 +75,7 @@ const step4Requests = [
       }
     },
     endpoint: '/select-prompt',
-    outputFiles: []
+    outputFiles: ['05-summary-longChapters-quotes-prompt.md']
   },
   {
     data: {
@@ -82,7 +84,7 @@ const step4Requests = [
       }
     },
     endpoint: '/select-prompt',
-    outputFiles: []
+    outputFiles: ['06-custom-prompt.md']
   }
 ]
 
@@ -97,8 +99,32 @@ const step5Requests = [
       }
     },
     endpoint: '/run-llm',
-    outputFiles: ['audio-prompt-chatgpt-shownotes.md']
-  }
+    outputFiles: ['07-gpt-4o-mini.md'],
+  },
+  {
+    data: {
+      filePath: 'content/examples/audio-prompt.md',
+      llmServices: 'claude',
+      options: {
+        claude: 'claude-3-opus-latest',
+        anthropicApiKey: ANTHROPIC_API_KEY
+      }
+    },
+    endpoint: '/run-llm',
+    outputFiles: ['08-claude-3-opus-latest.md'],
+  },
+  {
+    data: {
+      filePath: 'content/examples/audio-prompt.md',
+      llmServices: 'gemini',
+      options: {
+        gemini: 'gemini-1.5-flash-8b',
+        geminiApiKey: GEMINI_API_KEY
+      }
+    },
+    endpoint: '/run-llm',
+    outputFiles: ['09-gemini-1.5-flash-8b.md'],
+  },
 ]
 
 describe('Step 2 - Download Audio', () => {

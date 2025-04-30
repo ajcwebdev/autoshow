@@ -3,9 +3,6 @@
 # Ignore node_modules (should be installed inside the container)
 node_modules
 
-# Ignore content directory (will be mounted as a volume)
-content
-
 # Ignore whisper.cpp directory (not needed for autoshow build)
 whisper.cpp
 

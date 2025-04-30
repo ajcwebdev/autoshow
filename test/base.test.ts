@@ -3,7 +3,7 @@
 import { describe, it, before, after } from 'node:test'
 import { strict as assert } from 'node:assert'
 import { buildFastify } from '../src/fastify.ts'
-import { l } from '../src/logging.ts'
+import { l } from '../src/utils.ts'
 import { readdir, rename, join } from '../src/utils.ts'
 
 export function runTestsForRequests(requests, label) {

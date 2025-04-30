@@ -7,43 +7,36 @@ import { fileTypeFromBuffer } from "file-type"
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner"
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3"
 import { dbService } from "../../../../src/db.ts"
-import { execPromise, readFile, access, rename, execFilePromise, env, mkdirSync } from "../../../../src/utils.ts"
+import { execPromise, readFile, access, rename, execFilePromise, env, mkdirSync, existsSync } from "../../../../src/utils.ts"
 
 export const POST: APIRoute = async ({ request }) => {
   console.log("[api/download-audio] POST request started")
   try {
     const body = await request.json()
     console.log(`[api/download-audio] Raw request body: ${JSON.stringify(body, null, 2)}`)
-    
     const type = body?.type
     const url = body?.url
     const filePath = body?.filePath
     const options = body?.options || {}
-    
     console.log(`[api/download-audio] type: ${type}`)
-    
     if (!type || !['video', 'file'].includes(type)) {
       console.error("[api/download-audio] Invalid type")
       return new Response(JSON.stringify({ error: 'Valid type is required' }), { status: 400 })
     }
-    
     if (type === 'video' && !url) {
       console.error("[api/download-audio] URL is required for video")
       return new Response(JSON.stringify({ error: 'URL is required for video' }), { status: 400 })
     }
-    
     if (type === 'file' && !filePath) {
       console.error("[api/download-audio] File path is required for file")
       return new Response(JSON.stringify({ error: 'File path is required for file' }), { status: 400 })
     }
-    
     if (type === 'video') options.video = url
     else options.file = filePath
-    
     const __filename = fileURLToPath(import.meta.url)
     const __dirname = path.dirname(__filename)
     const projectRoot = path.resolve(__dirname, '../../../../')
-    
+    console.log(`[api/download-audio] Project root directory: ${projectRoot}`)
     function sanitizeTitle(title: string) {
       return title
         .replace(/[^\w\s-]/g, '')
@@ -53,7 +46,6 @@ export const POST: APIRoute = async ({ request }) => {
         .toLowerCase()
         .slice(0, 200)
     }
-    
     function buildFrontMatter(metadata: { showLink: string, channel: string, channelURL: string, title: string, description: string, publishDate: string, coverImage: string }) {
       return [
         '---',
@@ -67,7 +59,6 @@ export const POST: APIRoute = async ({ request }) => {
         '---\n',
       ]
     }
-    
     let filename = ''
     let metadata = {
       showLink: '',
@@ -80,7 +71,6 @@ export const POST: APIRoute = async ({ request }) => {
       walletAddress: '',
       mnemonic: ''
     }
-    
     if (options.video) {
       const { stdout } = await execFilePromise('yt-dlp', [
         '--restrict-filenames',
@@ -92,7 +82,6 @@ export const POST: APIRoute = async ({ request }) => {
         '--print', '%(thumbnail)s',
         url
       ])
-      
       const [
         showLink = '',
         videoChannel = '',
@@ -101,7 +90,6 @@ export const POST: APIRoute = async ({ request }) => {
         formattedDate = '',
         thumbnail = ''
       ] = stdout.trim().split('\n')
-      
       filename = `${formattedDate}-${sanitizeTitle(videoTitle)}`
       metadata = {
         showLink,
@@ -130,15 +118,16 @@ export const POST: APIRoute = async ({ request }) => {
         mnemonic: ''
       }
     }
-    
     const finalPath = `content/${filename}`
     const outputPath = `${finalPath}.wav`
-    
+    const absoluteOutputPath = path.resolve(projectRoot, outputPath)
+    console.log(`[api/download-audio] Final filename: ${filename}`)
+    console.log(`[api/download-audio] Output path: ${outputPath}`)
+    console.log(`[api/download-audio] Absolute output path: ${absoluteOutputPath}`)
     // Ensure the content directory exists
     const contentDir = path.dirname(path.resolve(projectRoot, outputPath))
     console.log(`[api/download-audio] Ensuring directory exists: ${contentDir}`)
     mkdirSync(contentDir, { recursive: true })
-    
     const frontMatter = buildFrontMatter({
       showLink: metadata.showLink || '',
       channel: metadata.channel || '',
@@ -148,21 +137,26 @@ export const POST: APIRoute = async ({ request }) => {
       publishDate: metadata.publishDate || '',
       coverImage: metadata.coverImage || ''
     }).join('\n')
-    
     try {
       await access(outputPath)
       const renamedPath = `${finalPath}-renamed.wav`
+      console.log(`[api/download-audio] File exists, renaming to: ${renamedPath}`)
       await rename(outputPath, renamedPath)
-    } catch { }
-    
+    } catch (error) {
+      console.log(`[api/download-audio] File doesn't exist yet or error renaming: ${error}`)
+    }
     async function executeWithRetry(command: string, args: string[]) {
       const maxRetries = 7
       for (let attempt = 1; attempt <= maxRetries; attempt++) {
         try {
+          console.log(`[api/download-audio] Executing command (attempt ${attempt}): ${command} ${args.join(' ')}`)
           const { stderr } = await execFilePromise(command, args)
-          if (stderr) { }
+          if (stderr) {
+            console.log(`[api/download-audio] Command stderr: ${stderr}`)
+          }
           return
         } catch (error) {
+          console.error(`[api/download-audio] Command error (attempt ${attempt}): ${error}`)
           if (attempt === maxRetries) {
             throw error
           }
@@ -171,7 +165,6 @@ export const POST: APIRoute = async ({ request }) => {
         }
       }
     }
-    
     if (options.video) {
       await executeWithRetry('yt-dlp', [
         '--no-warnings',
@@ -180,38 +173,41 @@ export const POST: APIRoute = async ({ request }) => {
         '--audio-format', 'wav',
         '--postprocessor-args', 'ffmpeg:-ar 16000 -ac 1',
         '--no-playlist',
-        '-o', outputPath,
+        '-o', absoluteOutputPath,
         url
       ])
     } else if (options.file) {
       const supportedFormats = new Set([
         'wav', 'mp3', 'm4a', 'aac', 'ogg', 'flac', 'mp4', 'mkv', 'avi', 'mov', 'webm'
       ])
-      
       const resolvedFilePath = path.resolve(projectRoot, filePath)
       await access(resolvedFilePath)
       const buffer = await readFile(resolvedFilePath)
-      // Convert Node.js Buffer to Uint8Array
       const uint8Array = new Uint8Array(buffer.buffer, buffer.byteOffset, buffer.byteLength);
       const fileType = await fileTypeFromBuffer(uint8Array)
-      
       if (!fileType || !supportedFormats.has(fileType.ext)) {
         throw new Error(fileType ? `Unsupported file type: ${fileType.ext}` : 'Unable to determine file type')
       }
-      
-      await execPromise(`ffmpeg -i "${resolvedFilePath}" -ar 16000 -ac 1 -c:a pcm_s16le "${outputPath}"`, { maxBuffer: 10000 * 1024 })
+      console.log(`[api/download-audio] Converting file from ${resolvedFilePath} to ${absoluteOutputPath}`)
+      await execPromise(`ffmpeg -i "${resolvedFilePath}" -ar 16000 -ac 1 -c:a pcm_s16le "${absoluteOutputPath}"`, { maxBuffer: 10000 * 1024 })
     } else {
       throw new Error('Invalid option for audio download/processing.')
+    }
+    
+    // Check if the file was actually created
+    if (existsSync(absoluteOutputPath)) {
+      console.log(`[api/download-audio] File successfully created at: ${absoluteOutputPath}`)
+    } else {
+      console.error(`[api/download-audio] File was NOT created at: ${absoluteOutputPath}`)
     }
     
     const region = env['AWS_REGION'] || 'us-east-2'
     const bucket = env['S3_BUCKET_NAME'] || 'autoshow-test'
     const key = outputPath.split('/').pop() || ''
-    const fileBuffer = await readFile(outputPath)
+    const fileBuffer = await readFile(absoluteOutputPath)
     const client = new S3Client({ region })
     const command = new PutObjectCommand({ Bucket: bucket, Key: key })
     const signedUrl = await getSignedUrl(client, command, { expiresIn: 3600 })
-    
     await fetch(signedUrl, {
       method: 'PUT',
       body: fileBuffer,
@@ -220,9 +216,7 @@ export const POST: APIRoute = async ({ request }) => {
         'Content-Length': fileBuffer.length.toString()
       }
     })
-    
     const s3Url = `https://${bucket}.s3.${region}.amazonaws.com/${key}`
-    
     const record = await dbService.insertShowNote({
       title: metadata.title,
       publishDate: metadata.publishDate,
@@ -236,14 +230,13 @@ export const POST: APIRoute = async ({ request }) => {
       description: metadata.description || '',
       coverImage: metadata.coverImage || '',
     })
-    
     console.log("[api/download-audio] Successfully processed audio")
     return new Response(JSON.stringify({
       id: record.id,
       frontMatter,
       finalPath,
       metadata,
-      outputPath,
+      outputPath: absoluteOutputPath, // Return the absolute path
       s3Url
     }), { status: 200 })
   } catch (error) {

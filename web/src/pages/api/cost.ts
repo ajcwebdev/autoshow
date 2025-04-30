@@ -5,15 +5,27 @@ import path from "path"
 import { fileURLToPath } from "url"
 import fs from "fs"
 import { execPromise } from "../../../../src/utils.ts"
-import { T_CONFIG, L_CONFIG } from "../../../../shared/constants.ts"
+import { T_CONFIG, L_CONFIG } from '../../constants.ts'
 
 async function getAudioDurationInSeconds(filePath: string) {
   console.log(`getAudioDurationInSeconds called with filePath: ${filePath}`)
-  
   if (!fs.existsSync(filePath)) {
+    console.error(`File not found: ${filePath}`)
+    // List the directory contents to help with debugging
+    try {
+      const dirPath = path.dirname(filePath)
+      console.log(`Listing contents of directory: ${dirPath}`)
+      if (fs.existsSync(dirPath)) {
+        const files = fs.readdirSync(dirPath)
+        console.log(`Directory contents: ${JSON.stringify(files)}`)
+      } else {
+        console.log(`Directory doesn't exist: ${dirPath}`)
+      }
+    } catch (error) {
+      console.error(`Error listing directory: ${error}`)
+    }
     throw new Error(`File not found: ${filePath}`)
   }
-  
   const cmd = `ffprobe -v error -show_entries format=duration -of csv=p=0 "${filePath}"`
   console.log(`Executing command: ${cmd}`)
   const { stdout } = await execPromise(cmd)
@@ -32,7 +44,6 @@ async function computeAllTranscriptCosts(filePath: string) {
   const minutes = seconds / 60
   console.log(`Total minutes: ${minutes}`)
   const result: Record<string, Array<{ modelId: string, cost: number }>> = {}
-  
   for (const [serviceName, config] of Object.entries(T_CONFIG)) {
     console.log(`Processing service: ${serviceName}`)
     result[serviceName] = []
@@ -43,25 +54,21 @@ async function computeAllTranscriptCosts(filePath: string) {
       result[serviceName].push({ modelId: model.modelId, cost: finalCost })
     }
   }
-  
   console.log(`Final transcriptCost result: ${JSON.stringify(result)}`)
   return result
 }
 
 async function computeAllLLMCosts(filePath: string) {
   console.log(`computeAllLLMCosts called with filePath: ${filePath}`)
-  
   if (!fs.existsSync(filePath)) {
     throw new Error(`File not found: ${filePath}`)
   }
-  
   const content = await fs.promises.readFile(filePath, 'utf8')
   console.log(`Read file content length: ${content.length}`)
   const tokenCount = Math.max(1, content.trim().split(/\s+/).length)
   console.log(`Calculated token count: ${tokenCount}`)
   const estimatedOutputTokens = 4000
   const result: Record<string, Array<{ modelId: string, cost: number }>> = {}
-  
   for (const [serviceName, config] of Object.entries(L_CONFIG)) {
     if (!config.models || config.models.length === 0) {
       console.log(`Skipping service: ${serviceName}, no models found`)
@@ -79,7 +86,6 @@ async function computeAllLLMCosts(filePath: string) {
       result[serviceName].push({ modelId: model.modelId, cost: totalCost })
     }
   }
-  
   console.log(`Final llmCost result: ${JSON.stringify(result)}`)
   return result
 }
@@ -93,50 +99,73 @@ export const POST: APIRoute = async ({ request }) => {
     const filePath = body?.filePath
     console.log(`[api/cost] type: ${type}`)
     console.log(`[api/cost] filePath: ${filePath}`)
-    
     if (!['transcriptCost','llmCost'].includes(type)) {
       console.error("[api/cost] Invalid cost type")
       return new Response(JSON.stringify({ error: 'Valid cost type is required (transcriptCost or llmCost)' }), { status: 400 })
     }
-    
     if (!filePath) {
       console.error("[api/cost] No filePath provided")
       return new Response(JSON.stringify({ error: 'File path (or URL for audio) is required' }), { status: 400 })
     }
-    
     const __filename = fileURLToPath(import.meta.url)
     const __dirname = path.dirname(__filename)
     const projectRoot = path.resolve(__dirname, '../../../../')
+    console.log(`[api/cost] Project root: ${projectRoot}`)
     
-    // Try a few different path resolutions to find the file
-    let resolvedPath = path.resolve(projectRoot, filePath)
+    // Check if the filePath is already an absolute path
+    const isAbsolutePath = path.isAbsolute(filePath)
+    console.log(`[api/cost] Is filePath absolute? ${isAbsolutePath}`)
+    
+    let resolvedPath = isAbsolutePath ? filePath : path.resolve(projectRoot, filePath)
     console.log(`[api/cost] First resolved path attempt: ${resolvedPath}`)
     
-    // If file doesn't exist at first path, try alternate paths
-    if (!fs.existsSync(resolvedPath)) {
-      // Try with just filename (no directory)
+    // Check if this path exists
+    const originalPathExists = fs.existsSync(resolvedPath)
+    console.log(`[api/cost] Does original path exist? ${originalPathExists}`)
+    
+    if (!originalPathExists) {
+      // Try various alternative paths
       const filename = path.basename(filePath)
+      console.log(`[api/cost] Extracted filename: ${filename}`)
+      
       const altPath1 = path.resolve(projectRoot, filename)
       console.log(`[api/cost] Trying alternate path 1: ${altPath1}`)
+      const altPath1Exists = fs.existsSync(altPath1)
+      console.log(`[api/cost] Does alt path 1 exist? ${altPath1Exists}`)
       
-      if (fs.existsSync(altPath1)) {
+      if (altPath1Exists) {
         resolvedPath = altPath1
       } else {
-        // Try with content directory
-        const altPath2 = path.resolve(projectRoot, 'content', filename)
-        console.log(`[api/cost] Trying alternate path 2: ${altPath2}`)
+        const contentDir = path.resolve(projectRoot, 'content')
+        console.log(`[api/cost] Content directory: ${contentDir}`)
         
-        if (fs.existsSync(altPath2)) {
+        // List content directory if it exists
+        if (fs.existsSync(contentDir)) {
+          console.log(`[api/cost] Listing content directory: ${contentDir}`)
+          const contentFiles = fs.readdirSync(contentDir)
+          console.log(`[api/cost] Content directory files: ${JSON.stringify(contentFiles)}`)
+        } else {
+          console.log(`[api/cost] Content directory doesn't exist: ${contentDir}`)
+        }
+        
+        const altPath2 = path.resolve(contentDir, filename)
+        console.log(`[api/cost] Trying alternate path 2: ${altPath2}`)
+        const altPath2Exists = fs.existsSync(altPath2)
+        console.log(`[api/cost] Does alt path 2 exist? ${altPath2Exists}`)
+        
+        if (altPath2Exists) {
           resolvedPath = altPath2
         }
       }
     }
     
     console.log(`[api/cost] Final resolved path: ${resolvedPath}`)
+    const finalPathExists = fs.existsSync(resolvedPath)
+    console.log(`[api/cost] Does final path exist? ${finalPathExists}`)
     
-    if (!fs.existsSync(resolvedPath)) {
-      return new Response(JSON.stringify({ 
-        error: `File not found. Tried: ${resolvedPath}` 
+    if (!finalPathExists) {
+      return new Response(JSON.stringify({
+        error: `File not found. Tried: ${resolvedPath}`
       }), { status: 404 })
     }
     

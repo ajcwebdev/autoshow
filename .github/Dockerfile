@@ -17,7 +17,7 @@ RUN npm ci --production --legacy-peer-deps && npm cache clean --force
 
 COPY prisma ./prisma
 COPY src ./src
-COPY shared ./shared
+COPY web ./web
 COPY content ./content
 COPY web/content ./web/content
 

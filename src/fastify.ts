@@ -1,19 +1,56 @@
 // src/fastify.ts
 
+import Dash from 'dash'
 import Fastify from 'fastify'
 import cors from '@fastify/cors'
-import { l } from './logging.ts'
+import { l } from './utils.ts'
 import { env } from './utils.ts'
 import { ENV_VARS_MAP } from '../shared/constants.ts'
-import { getShowNote } from './server/show-note.ts'
-import { getShowNotes } from './server/show-notes.ts'
-import { handleCostRequest } from './server/cost.ts'
-// import { handleDashBalance } from './server/01-dash-balance.ts'
-import { handleDownloadAudio, handleGetAudioUrl } from './server/02-download-audio.ts'
-import { handleRunTranscription } from './server/03-run-transcription.ts'
-import { handleSelectPrompt } from './server/04-select-prompt.ts'
-import { handleRunLLM } from './server/05-run-llm.ts'
-import { handleSaveMarkdown } from './server/save-markdown.ts'
+import { dbService } from './db.ts'
+import type { FastifyRequest, FastifyReply } from 'fastify'
+
+export const getShowNotes = async (_request: FastifyRequest, reply: FastifyReply) => {
+  try {
+    const showNotes = await dbService.getShowNotes()
+    reply.send({ showNotes })
+  } catch (error) {
+    console.error('Error fetching show notes:', error)
+    reply.status(500).send({ error: 'An error occurred while fetching show notes' })
+  }
+}
+
+export const getShowNote = async (request: FastifyRequest, reply: FastifyReply) => {
+  try {
+    const { id } = request.params as { id: string }
+    const showNote = await dbService.getShowNote(Number(id))
+    if (showNote) {
+      reply.send({ showNote })
+    } else {
+      reply.status(404).send({ error: 'Show note not found' })
+    }
+  } catch (error) {
+    console.error('Error fetching show note:', error)
+    reply.status(500).send({ error: 'An error occurred while fetching the show note' })
+  }
+}
+
+export async function handleDashBalance(request: FastifyRequest, reply: FastifyReply) {
+  const { mnemonic, walletAddress } = request.body as { mnemonic?: string, walletAddress?: string }
+  if (!mnemonic || !walletAddress) {
+    reply.status(400).send({ error: 'mnemonic and walletAddress are required' })
+    return
+  }
+  const client = new Dash.Client({ network: 'testnet', wallet: { mnemonic, unsafeOptions: { skipSynchronizationBeforeHeight: 1000000 } } })
+  try {
+    const account = await client.getWalletAccount()
+    const totalBalance = account.getTotalBalance()
+    reply.send({ address: walletAddress, balance: totalBalance })
+  } catch (error) {
+    reply.status(500).send({ error: (error as Error).message })
+  } finally {
+    client.disconnect()
+  }
+}
 
 export function buildFastify() {
   const fastify = Fastify({ logger: true })
@@ -35,14 +72,7 @@ export function buildFastify() {
 
   fastify.get('/show-notes',getShowNotes)
   fastify.get('/show-notes/:id',getShowNote)
-  // fastify.post('/dash-balance',handleDashBalance)
-  fastify.post('/cost',handleCostRequest)
-  fastify.post('/download-audio',handleDownloadAudio)
-  fastify.post('/get-audio-url',handleGetAudioUrl)
-  fastify.post('/run-transcription',handleRunTranscription)
-  fastify.post('/select-prompt',handleSelectPrompt)
-  fastify.post('/run-llm',handleRunLLM)
-  fastify.post('/save-markdown',handleSaveMarkdown)
+  fastify.post('/dash-balance',handleDashBalance)
 
   return fastify
 }

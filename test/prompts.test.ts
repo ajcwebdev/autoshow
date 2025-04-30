@@ -16,7 +16,7 @@ export const requests = [
         prompt: ['titles']
       }
     },
-    endpoint: 'http://localhost:3000/select-prompt',
+    endpoint: 'http://localhost:4321/api/select-prompt',
     outputFiles: ['01-titles-prompt.md'],
   },
   {
@@ -28,7 +28,7 @@ export const requests = [
         openaiApiKey: OPENAI_API_KEY
       }
     },
-    endpoint: 'http://localhost:3000/run-llm',
+    endpoint: 'http://localhost:4321/api/run-llm',
     outputFiles: ['01-titles.md', '01-titles.json'],
   },
   {
@@ -37,7 +37,7 @@ export const requests = [
         prompt: ['summary']
       }
     },
-    endpoint: 'http://localhost:3000/select-prompt',
+    endpoint: 'http://localhost:4321/api/select-prompt',
     outputFiles: ['02-summary-prompt.md'],
   },
   {
@@ -49,7 +49,7 @@ export const requests = [
         openaiApiKey: OPENAI_API_KEY
       }
     },
-    endpoint: 'http://localhost:3000/run-llm',
+    endpoint: 'http://localhost:4321/api/run-llm',
     outputFiles: ['02-summary.md', '02-summary.json'],
   },
   {
@@ -58,7 +58,7 @@ export const requests = [
         prompt: ['shortSummary']
       }
     },
-    endpoint: 'http://localhost:3000/select-prompt',
+    endpoint: 'http://localhost:4321/api/select-prompt',
     outputFiles: ['03-short-summary-prompt.md'],
   },
   {
@@ -70,7 +70,7 @@ export const requests = [
         openaiApiKey: OPENAI_API_KEY
       }
     },
-    endpoint: 'http://localhost:3000/run-llm',
+    endpoint: 'http://localhost:4321/api/run-llm',
     outputFiles: ['03-short-summary.md', '03-short-summary.json'],
   },
   {
@@ -79,7 +79,7 @@ export const requests = [
         prompt: ['longSummary']
       }
     },
-    endpoint: 'http://localhost:3000/select-prompt',
+    endpoint: 'http://localhost:4321/api/select-prompt',
     outputFiles: ['04-long-summary-prompt.md'],
   },
   {
@@ -91,7 +91,7 @@ export const requests = [
         openaiApiKey: OPENAI_API_KEY
       }
     },
-    endpoint: 'http://localhost:3000/run-llm',
+    endpoint: 'http://localhost:4321/api/run-llm',
     outputFiles: ['04-long-summary.md', '04-long-summary.json'],
   },
   {
@@ -100,7 +100,7 @@ export const requests = [
         prompt: ['bulletPoints']
       }
     },
-    endpoint: 'http://localhost:3000/select-prompt',
+    endpoint: 'http://localhost:4321/api/select-prompt',
     outputFiles: ['05-bullet-points-prompt.md'],
   },
   {
@@ -112,7 +112,7 @@ export const requests = [
         openaiApiKey: OPENAI_API_KEY
       }
     },
-    endpoint: 'http://localhost:3000/run-llm',
+    endpoint: 'http://localhost:4321/api/run-llm',
     outputFiles: ['05-bullet-points.md', '05-bullet-points.json'],
   },
   {
@@ -121,7 +121,7 @@ export const requests = [
         prompt: ['quotes']
       }
     },
-    endpoint: 'http://localhost:3000/select-prompt',
+    endpoint: 'http://localhost:4321/api/select-prompt',
     outputFiles: ['06-quotes-prompt.md'],
   },
   {
@@ -133,7 +133,7 @@ export const requests = [
         openaiApiKey: OPENAI_API_KEY
       }
     },
-    endpoint: 'http://localhost:3000/run-llm',
+    endpoint: 'http://localhost:4321/api/run-llm',
     outputFiles: ['06-quotes.md', '06-quotes.json'],
   },
   {
@@ -142,7 +142,7 @@ export const requests = [
         prompt: ['chapterTitlesAndQuotes']
       }
     },
-    endpoint: 'http://localhost:3000/select-prompt',
+    endpoint: 'http://localhost:4321/api/select-prompt',
     outputFiles: ['07-chapter-titles-quotes-prompt.md'],
   },
   {
@@ -154,7 +154,7 @@ export const requests = [
         openaiApiKey: OPENAI_API_KEY
       }
     },
-    endpoint: 'http://localhost:3000/run-llm',
+    endpoint: 'http://localhost:4321/api/run-llm',
     outputFiles: ['07-chapter-titles-quotes.md', '07-chapter-titles-quotes.json'],
   },
   {
@@ -163,7 +163,7 @@ export const requests = [
         prompt: ['x']
       }
     },
-    endpoint: 'http://localhost:3000/select-prompt',
+    endpoint: 'http://localhost:4321/api/select-prompt',
     outputFiles: ['08-social-x-prompt.md'],
   },
   {
@@ -175,7 +175,7 @@ export const requests = [
         openaiApiKey: OPENAI_API_KEY
       }
     },
-    endpoint: 'http://localhost:3000/run-llm',
+    endpoint: 'http://localhost:4321/api/run-llm',
     outputFiles: ['08-social-x.md', '08-social-x.json'],
   },
   {
@@ -184,7 +184,7 @@ export const requests = [
         prompt: ['facebook']
       }
     },
-    endpoint: 'http://localhost:3000/select-prompt',
+    endpoint: 'http://localhost:4321/api/select-prompt',
     outputFiles: ['09-social-facebook-prompt.md'],
   },
   {
@@ -196,7 +196,7 @@ export const requests = [
         openaiApiKey: OPENAI_API_KEY
       }
     },
-    endpoint: 'http://localhost:3000/run-llm',
+    endpoint: 'http://localhost:4321/api/run-llm',
     outputFiles: ['09-social-facebook.md', '09-social-facebook.json'],
   },
   {
@@ -205,7 +205,7 @@ export const requests = [
         prompt: ['linkedin']
       }
     },
-    endpoint: 'http://localhost:3000/select-prompt',
+    endpoint: 'http://localhost:4321/api/select-prompt',
     outputFiles: ['10-social-linkedin-prompt.md'],
   },
   {
@@ -217,7 +217,7 @@ export const requests = [
         openaiApiKey: OPENAI_API_KEY
       }
     },
-    endpoint: 'http://localhost:3000/run-llm',
+    endpoint: 'http://localhost:4321/api/run-llm',
     outputFiles: ['10-social-linkedin.md', '10-social-linkedin.json'],
   },
   {
@@ -226,7 +226,7 @@ export const requests = [
         prompt: ['chapterTitles']
       }
     },
-    endpoint: 'http://localhost:3000/select-prompt',
+    endpoint: 'http://localhost:4321/api/select-prompt',
     outputFiles: ['11-chapter-titles-prompt.md'],
   },
   {
@@ -238,7 +238,7 @@ export const requests = [
         openaiApiKey: OPENAI_API_KEY
       }
     },
-    endpoint: 'http://localhost:3000/run-llm',
+    endpoint: 'http://localhost:4321/api/run-llm',
     outputFiles: ['11-chapter-titles.md', '11-chapter-titles.json'],
   },
   {
@@ -247,7 +247,7 @@ export const requests = [
         prompt: ['shortChapters']
       }
     },
-    endpoint: 'http://localhost:3000/select-prompt',
+    endpoint: 'http://localhost:4321/api/select-prompt',
     outputFiles: ['12-short-chapters-prompt.md'],
   },
   {
@@ -259,7 +259,7 @@ export const requests = [
         openaiApiKey: OPENAI_API_KEY
       }
     },
-    endpoint: 'http://localhost:3000/run-llm',
+    endpoint: 'http://localhost:4321/api/run-llm',
     outputFiles: ['12-short-chapters.md', '12-short-chapters.json'],
   },
   {
@@ -268,7 +268,7 @@ export const requests = [
         prompt: ['mediumChapters']
       }
     },
-    endpoint: 'http://localhost:3000/select-prompt',
+    endpoint: 'http://localhost:4321/api/select-prompt',
     outputFiles: ['13-medium-chapters-prompt.md'],
   },
   {
@@ -280,7 +280,7 @@ export const requests = [
         openaiApiKey: OPENAI_API_KEY
       }
     },
-    endpoint: 'http://localhost:3000/run-llm',
+    endpoint: 'http://localhost:4321/api/run-llm',
     outputFiles: ['13-medium-chapters.md', '13-medium-chapters.json'],
   },
   {
@@ -289,7 +289,7 @@ export const requests = [
         prompt: ['longChapters']
       }
     },
-    endpoint: 'http://localhost:3000/select-prompt',
+    endpoint: 'http://localhost:4321/api/select-prompt',
     outputFiles: ['14-long-chapters-prompt.md'],
   },
   {
@@ -301,7 +301,7 @@ export const requests = [
         openaiApiKey: OPENAI_API_KEY
       }
     },
-    endpoint: 'http://localhost:3000/run-llm',
+    endpoint: 'http://localhost:4321/api/run-llm',
     outputFiles: ['14-long-chapters.md', '14-long-chapters.json'],
   },
   {
@@ -310,7 +310,7 @@ export const requests = [
         prompt: ['takeaways']
       }
     },
-    endpoint: 'http://localhost:3000/select-prompt',
+    endpoint: 'http://localhost:4321/api/select-prompt',
     outputFiles: ['15-takeaways-prompt.md'],
   },
   {
@@ -322,7 +322,7 @@ export const requests = [
         openaiApiKey: OPENAI_API_KEY
       }
     },
-    endpoint: 'http://localhost:3000/run-llm',
+    endpoint: 'http://localhost:4321/api/run-llm',
     outputFiles: ['15-takeaways.md', '15-takeaways.json'],
   },
   {
@@ -331,7 +331,7 @@ export const requests = [
         prompt: ['questions']
       }
     },
-    endpoint: 'http://localhost:3000/select-prompt',
+    endpoint: 'http://localhost:4321/api/select-prompt',
     outputFiles: ['16-questions-prompt.md'],
   },
   {
@@ -343,7 +343,7 @@ export const requests = [
         openaiApiKey: OPENAI_API_KEY
       }
     },
-    endpoint: 'http://localhost:3000/run-llm',
+    endpoint: 'http://localhost:4321/api/run-llm',
     outputFiles: ['16-questions.md', '16-questions.json'],
   },
   {
@@ -352,7 +352,7 @@ export const requests = [
         prompt: ['faq']
       }
     },
-    endpoint: 'http://localhost:3000/select-prompt',
+    endpoint: 'http://localhost:4321/api/select-prompt',
     outputFiles: ['17-faq-prompt.md'],
   },
   {
@@ -364,7 +364,7 @@ export const requests = [
         openaiApiKey: OPENAI_API_KEY
       }
     },
-    endpoint: 'http://localhost:3000/run-llm',
+    endpoint: 'http://localhost:4321/api/run-llm',
     outputFiles: ['17-faq.md', '17-faq.json'],
   },
   {
@@ -373,7 +373,7 @@ export const requests = [
         prompt: ['blog']
       }
     },
-    endpoint: 'http://localhost:3000/select-prompt',
+    endpoint: 'http://localhost:4321/api/select-prompt',
     outputFiles: ['18-blog-prompt.md'],
   },
   {
@@ -385,7 +385,7 @@ export const requests = [
         openaiApiKey: OPENAI_API_KEY
       }
     },
-    endpoint: 'http://localhost:3000/run-llm',
+    endpoint: 'http://localhost:4321/api/run-llm',
     outputFiles: ['18-blog.md', '18-blog.json'],
   },
   {
@@ -394,7 +394,7 @@ export const requests = [
         prompt: ['rapSong']
       }
     },
-    endpoint: 'http://localhost:3000/select-prompt',
+    endpoint: 'http://localhost:4321/api/select-prompt',
     outputFiles: ['19-rap-song-prompt.md'],
   },
   {
@@ -406,7 +406,7 @@ export const requests = [
         openaiApiKey: OPENAI_API_KEY
       }
     },
-    endpoint: 'http://localhost:3000/run-llm',
+    endpoint: 'http://localhost:4321/api/run-llm',
     outputFiles: ['19-rap-song.md', '19-rap-song.json'],
   },
   {
@@ -415,7 +415,7 @@ export const requests = [
         prompt: ['rockSong']
       }
     },
-    endpoint: 'http://localhost:3000/select-prompt',
+    endpoint: 'http://localhost:4321/api/select-prompt',
     outputFiles: ['20-rock-song-prompt.md'],
   },
   {
@@ -427,7 +427,7 @@ export const requests = [
         openaiApiKey: OPENAI_API_KEY
       }
     },
-    endpoint: 'http://localhost:3000/run-llm',
+    endpoint: 'http://localhost:4321/api/run-llm',
     outputFiles: ['20-rock-song.md', '20-rock-song.json'],
   },
   {
@@ -436,7 +436,7 @@ export const requests = [
         prompt: ['countrySong']
       }
     },
-    endpoint: 'http://localhost:3000/select-prompt',
+    endpoint: 'http://localhost:4321/api/select-prompt',
     outputFiles: ['21-country-song-prompt.md'],
   },
   {
@@ -448,7 +448,7 @@ export const requests = [
         openaiApiKey: OPENAI_API_KEY
       }
     },
-    endpoint: 'http://localhost:3000/run-llm',
+    endpoint: 'http://localhost:4321/api/run-llm',
     outputFiles: ['21-country-song.md', '21-country-song.json'],
   },
 ]

@@ -2,9 +2,8 @@
 
 import { For, Show } from 'solid-js'
 import type { Setter } from 'solid-js'
-import { PROCESS_TYPES } from '../../../../shared/constants.ts'
-import type { ProcessTypeEnum, ShowNoteMetadata, TranscriptionCosts } from '../../../../shared/types.ts'
-
+import { PROCESS_TYPES } from '../../constants.ts'
+import type { ProcessTypeEnum, ShowNoteMetadata, TranscriptionCosts } from '../../types.ts'
 export const ProcessTypeStep = (props: {
   isLoading: boolean
   setIsLoading: Setter<boolean>
@@ -34,15 +33,22 @@ export const ProcessTypeStep = (props: {
         body.filePath = props.filePath
         body.options.file = props.filePath
       }
-      
+      console.log("Sending download request:", JSON.stringify(body))
       const res = await fetch('http://localhost:4321/api/download-audio', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body)
       })
       
-      if (!res.ok) throw new Error('Error downloading audio and metadata')
+      if (!res.ok) {
+        const errorData = await res.json()
+        console.error("Download audio error:", errorData)
+        throw new Error(`Error downloading audio: ${errorData.error || res.statusText}`)
+      }
+      
       const resData = await res.json()
+      console.log("Download audio response:", JSON.stringify(resData))
+      
       props.setFrontMatter(resData.frontMatter || '')
       props.setMetadata(resData.metadata || {})
       props.setFinalPath(resData.finalPath || '')
@@ -52,6 +58,8 @@ export const ProcessTypeStep = (props: {
       console.log(`Using output path from download-audio: ${localFilePath}`)
       
       const costBody = { type: 'transcriptCost', filePath: localFilePath }
+      console.log("Sending cost request:", JSON.stringify(costBody))
+      
       const response = await fetch('http://localhost:4321/api/cost', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -60,20 +68,23 @@ export const ProcessTypeStep = (props: {
       
       if (!response.ok) {
         const errorData = await response.json()
+        console.error("Cost calculation error:", errorData)
         throw new Error(`Failed to get transcription cost: ${errorData.error || response.statusText}`)
       }
       
       const data = await response.json() as { transcriptCost: TranscriptionCosts }
+      console.log("Cost calculation response:", JSON.stringify(data))
+      
       props.setTranscriptionCosts(data.transcriptCost)
       props.setCurrentStep(2)
     } catch (err) {
+      console.error("Step One Error:", err)
       if (err instanceof Error) props.setError(err.message)
       else props.setError('An unknown error occurred.')
     } finally {
       props.setIsLoading(false)
     }
   }
-
   return (
     <>
       <div class="form-group">

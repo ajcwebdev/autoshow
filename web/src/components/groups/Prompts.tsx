@@ -2,7 +2,7 @@
 
 import { For } from 'solid-js'
 import type { Setter } from 'solid-js'
-import { PROMPT_CHOICES } from '../../../../shared/constants.ts'
+import { PROMPT_CHOICES } from '../../constants.ts'
 
 export const PromptsStep = (props: {
   isLoading: boolean

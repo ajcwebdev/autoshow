@@ -4,7 +4,7 @@ import type { APIRoute } from "astro"
 import path from "path"
 import { fileURLToPath } from "url"
 import { writeFile, join } from "../../../../src/utils.ts"
-import type { SaveMarkdownRequest } from "../../../../shared/types.ts"
+import type { SaveMarkdownRequest } from '../../types.ts'
 
 export const POST: APIRoute = async ({ request }) => {
   console.log("[api/save-markdown] POST request started")

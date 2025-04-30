@@ -5,9 +5,9 @@ import path from "path"
 import { fileURLToPath } from "url"
 import { OpenAI } from "openai"
 import { GoogleGenerativeAI } from "@google/generative-ai"
-import { readFile, writeFile, env } from "../../../../src/utils.ts"
+import { readFile, writeFile } from "../../../../src/utils.ts"
 import { dbService } from "../../../../src/db.ts"
-import { L_CONFIG, ENV_VARS_MAP } from "../../../../shared/constants.ts"
+import { L_CONFIG, ENV_VARS_MAP } from '../../constants.ts'
 import type {
   ProcessingOptions,
   ShowNoteMetadata,
@@ -16,7 +16,7 @@ import type {
   ClaudeModelValue,
   GeminiModelValue,
   GroqModelValue
-} from "../../../../shared/types.ts"
+} from '../../types.ts'
 
 export const POST: APIRoute = async ({ request }) => {
   console.log("[api/run-llm] POST request started")

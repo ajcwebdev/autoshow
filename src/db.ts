@@ -1,6 +1,6 @@
 // src/db.ts
 
-import { l } from './logging.ts'
+import { l } from './utils.ts'
 import { env } from './utils.ts'
 import type { ShowNoteType } from '../shared/types.ts'
 

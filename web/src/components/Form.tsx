@@ -7,7 +7,7 @@ import { TranscriptionStep } from './groups/TranscriptionService'
 import { PromptsStep } from './groups/Prompts'
 import { LLMServiceStep } from './groups/LLMService'
 import '../styles/global.css'
-import type { AlertProps, FormProps, ProcessTypeEnum, LLMServiceKey, ShowNoteMetadata, TranscriptionCosts } from "../../../shared/types.ts"
+import type { AlertProps, FormProps, ProcessTypeEnum, LLMServiceKey, ShowNoteMetadata, TranscriptionCosts } from '../types.ts'
 
 export const Alert = (props: AlertProps) => (
   <div class={`alert ${props.variant}`}>

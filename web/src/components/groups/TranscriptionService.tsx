@@ -2,7 +2,7 @@
 
 import { For, Show } from 'solid-js'
 import type { Setter } from 'solid-js'
-import type { TranscriptionCosts } from '../../../../shared/types.ts'
+import type { TranscriptionCosts } from '../../types.ts'
 
 export const TranscriptionStep = (props: {
   isLoading: boolean

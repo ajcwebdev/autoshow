@@ -1,7 +1,7 @@
 // web/src/components/ShowNote.tsx
 
 import { createSignal, onMount } from 'solid-js'
-import type { ShowNoteType } from '../../../shared/types.ts'
+import type { ShowNoteType } from '../types.ts'
 
 export function ShowNote() {
   const [showNote, setShowNote] = createSignal<ShowNoteType | null>(null)

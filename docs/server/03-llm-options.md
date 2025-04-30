@@ -17,7 +17,7 @@ Fastify endpoint:
 curl --json '{
   "type": "llmCost",
   "filePath": "content/examples/audio-prompt.md"
-}' http://localhost:3000/cost -s | json_pp
+}' http://localhost:4321/api/cost -s | json_pp
 ```
 
 Astro endpoint:
@@ -40,7 +40,7 @@ curl --json '{
   "options": {
     "openaiApiKey": ""
   }
-}' http://localhost:3000/run-llm -s | json_pp
+}' http://localhost:4321/api/run-llm -s | json_pp
 ```
 
 ```bash
@@ -51,7 +51,7 @@ curl --json '{
     "chatgpt": "gpt-4o-mini",
     "openaiApiKey": ""
   }
-}' http://localhost:3000/run-llm -s | json_pp
+}' http://localhost:4321/api/run-llm -s | json_pp
 ```
 
 ```bash
@@ -62,7 +62,7 @@ curl --json '{
     "chatgpt": "gpt-4o",
     "openaiApiKey": ""
   }
-}' http://localhost:3000/run-llm -s | json_pp
+}' http://localhost:4321/api/run-llm -s | json_pp
 ```
 
 ```bash
@@ -73,7 +73,7 @@ curl --json '{
     "chatgpt": "o1-mini",
     "openaiApiKey": ""
   }
-}' http://localhost:3000/run-llm -s | json_pp
+}' http://localhost:4321/api/run-llm -s | json_pp
 ```
 
 ```bash
@@ -84,7 +84,7 @@ curl --json '{
     "chatgpt": "o1",
     "openaiApiKey": ""
   }
-}' http://localhost:3000/run-llm -s | json_pp
+}' http://localhost:4321/api/run-llm -s | json_pp
 ```
 
 ```bash
@@ -95,7 +95,7 @@ curl --json '{
     "chatgpt": "o3",
     "openaiApiKey": ""
   }
-}' http://localhost:3000/run-llm -s | json_pp
+}' http://localhost:4321/api/run-llm -s | json_pp
 ```
 
 ```bash
@@ -106,7 +106,7 @@ curl --json '{
     "chatgpt": "o3-mini",
     "openaiApiKey": ""
   }
-}' http://localhost:3000/run-llm -s | json_pp
+}' http://localhost:4321/api/run-llm -s | json_pp
 ```
 
 ```bash
@@ -117,7 +117,7 @@ curl --json '{
     "chatgpt": "o4-mini",
     "openaiApiKey": ""
   }
-}' http://localhost:3000/run-llm -s | json_pp
+}' http://localhost:4321/api/run-llm -s | json_pp
 ```
 
 ```bash
@@ -128,7 +128,7 @@ curl --json '{
     "chatgpt": "gpt-4.1",
     "openaiApiKey": ""
   }
-}' http://localhost:3000/run-llm -s | json_pp
+}' http://localhost:4321/api/run-llm -s | json_pp
 ```
 
 ```bash
@@ -139,7 +139,7 @@ curl --json '{
     "chatgpt": "gpt-4.1-mini",
     "openaiApiKey": ""
   }
-}' http://localhost:3000/run-llm -s | json_pp
+}' http://localhost:4321/api/run-llm -s | json_pp
 ```
 
 ```bash
@@ -150,7 +150,7 @@ curl --json '{
     "chatgpt": "gpt-4.1-nano",
     "openaiApiKey": ""
   }
-}' http://localhost:3000/run-llm -s | json_pp
+}' http://localhost:4321/api/run-llm -s | json_pp
 ```
 
 ### Claude
@@ -162,7 +162,7 @@ curl --json '{
   "options": {
     "anthropicApiKey": ""
   }
-}' http://localhost:3000/run-llm -s | json_pp
+}' http://localhost:4321/api/run-llm -s | json_pp
 ```
 
 ```bash
@@ -173,7 +173,7 @@ curl --json '{
     "claude": "claude-3-7-sonnet-latest",
     "anthropicApiKey": ""
   }
-}' http://localhost:3000/run-llm -s | json_pp
+}' http://localhost:4321/api/run-llm -s | json_pp
 ```
 
 ```bash
@@ -184,7 +184,7 @@ curl --json '{
     "claude": "claude-3-5-haiku-latest",
     "anthropicApiKey": ""
   }
-}' http://localhost:3000/run-llm -s | json_pp
+}' http://localhost:4321/api/run-llm -s | json_pp
 ```
 
 ```bash
@@ -195,7 +195,7 @@ curl --json '{
     "claude": "claude-3-opus-latest",
     "anthropicApiKey": ""
   }
-}' http://localhost:3000/run-llm -s | json_pp
+}' http://localhost:4321/api/run-llm -s | json_pp
 ```
 
 ### Gemini
@@ -207,7 +207,7 @@ curl --json '{
   "options": {
     "geminiApiKey": ""
   }
-}' http://localhost:3000/run-llm -s | json_pp
+}' http://localhost:4321/api/run-llm -s | json_pp
 ```
 
 ```bash
@@ -218,7 +218,7 @@ curl --json '{
     "gemini": "gemini-1.5-flash",
     "geminiApiKey": ""
   }
-}' http://localhost:3000/run-llm -s | json_pp
+}' http://localhost:4321/api/run-llm -s | json_pp
 ```
 
 ```bash
@@ -229,7 +229,7 @@ curl --json '{
     "gemini": "gemini-1.5-pro",
     "geminiApiKey": ""
   }
-}' http://localhost:3000/run-llm -s | json_pp
+}' http://localhost:4321/api/run-llm -s | json_pp
 ```
 
 ```bash
@@ -240,7 +240,7 @@ curl --json '{
     "gemini": "gemini-1.5-flash-8b",
     "geminiApiKey": ""
   }
-}' http://localhost:3000/run-llm -s | json_pp
+}' http://localhost:4321/api/run-llm -s | json_pp
 ```
 
 ```bash
@@ -251,7 +251,7 @@ curl --json '{
     "gemini": "gemini-2.0-flash-lite",
     "geminiApiKey": ""
   }
-}' http://localhost:3000/run-llm -s | json_pp
+}' http://localhost:4321/api/run-llm -s | json_pp
 ```
 
 ```bash
@@ -262,7 +262,7 @@ curl --json '{
     "gemini": "gemini-2.0-flash",
     "geminiApiKey": ""
   }
-}' http://localhost:3000/run-llm -s | json_pp
+}' http://localhost:4321/api/run-llm -s | json_pp
 ```
 
 ```bash
@@ -273,7 +273,7 @@ curl --json '{
     "gemini": "gemini-2.5-pro-preview-03-25",
     "geminiApiKey": ""
   }
-}' http://localhost:3000/run-llm -s | json_pp
+}' http://localhost:4321/api/run-llm -s | json_pp
 ```
 
 ```bash
@@ -284,7 +284,7 @@ curl --json '{
     "gemini": "gemini-2.5-flash-preview-04-17",
     "geminiApiKey": ""
   }
-}' http://localhost:3000/run-llm -s | json_pp
+}' http://localhost:4321/api/run-llm -s | json_pp
 ```
 
 ### Groq
@@ -296,7 +296,7 @@ curl --json '{
   "options": {
     "groqApiKey": ""
   }
-}' http://localhost:3000/run-llm -s | json_pp
+}' http://localhost:4321/api/run-llm -s | json_pp
 ```
 
 ```bash
@@ -307,7 +307,7 @@ curl --json '{
     "groq": "llama-3.3-70b-versatile",
     "groqApiKey": ""
   }
-}' http://localhost:3000/run-llm -s | json_pp
+}' http://localhost:4321/api/run-llm -s | json_pp
 ```
 
 ```bash
@@ -318,7 +318,7 @@ curl --json '{
     "groq": "llama-3.1-8b-instant",
     "groqApiKey": ""
   }
-}' http://localhost:3000/run-llm -s | json_pp
+}' http://localhost:4321/api/run-llm -s | json_pp
 ```
 
 ```bash
@@ -329,7 +329,7 @@ curl --json '{
     "groq": "llama3-70b-8192",
     "groqApiKey": ""
   }
-}' http://localhost:3000/run-llm -s | json_pp
+}' http://localhost:4321/api/run-llm -s | json_pp
 ```
 
 ```bash
@@ -340,7 +340,7 @@ curl --json '{
     "groq": "llama3-8b-8192",
     "groqApiKey": ""
   }
-}' http://localhost:3000/run-llm -s | json_pp
+}' http://localhost:4321/api/run-llm -s | json_pp
 ```
 
 ```bash
@@ -351,5 +351,5 @@ curl --json '{
     "groq": "gemma2-9b-it",
     "groqApiKey": ""
   }
-}' http://localhost:3000/run-llm -s | json_pp
+}' http://localhost:4321/api/run-llm -s | json_pp
 ```

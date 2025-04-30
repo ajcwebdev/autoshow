@@ -118,26 +118,6 @@ docker pull ghcr.io/ajcwebdev/autoshow:latest
 docker run --rm -p 3000:3000 ghcr.io/ajcwebdev/autoshow:latest serve
 ```
 
-```bash
-curl -X POST http://localhost:3000/api/process \
-  -H "Content-Type: application/json" \
-  -d '{
-    "type": "video",
-    "url": "https://www.youtube.com/watch?v=MORMZXEaONk"
-  }'
-```
-
-```bash
-curl -X POST http://localhost:3000/api/process \
-  -H "Content-Type: application/json" \
-  -d '{
-    "type": "video",
-    "url": "https://www.youtube.com/watch?v=MORMZXEaONk",
-    "transcriptServices": "whisper",
-    "whisperModel": "base"
-  }'
-```
-
 ## Database
 
 ### Get Database Content

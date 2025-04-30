@@ -17,12 +17,13 @@ await app.register(fastifyMiddie)
 
 const clientRoot = join(__dirname, './dist/client')
 app.register(fastifyStatic, {
-  root: clientRoot,
-  prefix: '/',
+  root: clientRoot,
+  prefix: '/',
 })
 
-app.post('/api/dash-balance', async (request, reply) => {
-  app.log.info('[Fastify Route] Handling /api/dash-balance directly.')
+// Register the custom Fastify route handler with a path that won't conflict with Astro
+app.post('/api/_fastify/dash-balance', async (request, reply) => {
+  app.log.info('[Fastify Route] Handling /api/_fastify/dash-balance directly.')
   let client = null
   try {
     const { mnemonic, walletAddress } = request.body
@@ -50,17 +51,18 @@ app.post('/api/dash-balance', async (request, reply) => {
   }
 })
 
+// Register the Astro handler for all other routes
 app.use(astroHandler)
 
 const start = async () => {
-  try {
+  try {
     const port = Number(process.env.PORT) || 4321
-    await app.listen({ port: port, host: '0.0.0.0' })
-    app.log.info(`Fastify server listening on port ${port}`)
-  } catch (err) {
-    app.log.error(err)
-    process.exit(1)
-  }
+    await app.listen({ port: port, host: '0.0.0.0' })
+    app.log.info(`Fastify server listening on port ${port}`)
+  } catch (err) {
+    app.log.error(err)
+    process.exit(1)
+  }
 }
 
 start()

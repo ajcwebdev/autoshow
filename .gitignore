@@ -6,6 +6,7 @@ build
 out
 dist
 /content
+web/content
 
 whisper.cpp
 ollama.log

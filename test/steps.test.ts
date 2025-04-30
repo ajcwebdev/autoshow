@@ -22,7 +22,7 @@ const step2Requests = [
         video: 'https://www.youtube.com/watch?v=MORMZXEaONk'
       }
     },
-    endpoint: 'http://localhost:4321/api/download-audio',
+    endpoint: 'http://localhost:3000/download-audio',
     outputFiles: ['01-ep0-fsjam-podcast.wav']
   },
   {
@@ -34,7 +34,7 @@ const step2Requests = [
         file: 'content/examples/audio.mp3'
       }
     },
-    endpoint: 'http://localhost:4321/api/download-audio',
+    endpoint: 'http://localhost:3000/download-audio',
     outputFiles: ['02-audio.wav']
   }
 ]
@@ -49,7 +49,7 @@ const step3Requests = [
         assemblyApiKey: ASSEMBLY_API_KEY
       }
     },
-    endpoint: 'http://localhost:4321/api/run-transcription',
+    endpoint: 'http://localhost:3000/run-transcription',
     outputFiles: ['03-assembly-best.md']
   },
   {
@@ -62,7 +62,7 @@ const step3Requests = [
         speakerLabels: true
       }
     },
-    endpoint: 'http://localhost:4321/api/run-transcription',
+    endpoint: 'http://localhost:3000/run-transcription',
     outputFiles: ['04-deepgram-nova-2.md']
   }
 ]
@@ -74,7 +74,7 @@ const step4Requests = [
         prompt: ['summary','longChapters','quotes']
       }
     },
-    endpoint: 'http://localhost:4321/api/select-prompt',
+    endpoint: 'http://localhost:3000/select-prompt',
     outputFiles: ['05-summary-longChapters-quotes-prompt.md']
   },
   {
@@ -83,7 +83,7 @@ const step4Requests = [
         customPrompt: 'content/examples/custom-prompt.md'
       }
     },
-    endpoint: 'http://localhost:4321/api/select-prompt',
+    endpoint: 'http://localhost:3000/select-prompt',
     outputFiles: ['06-custom-prompt.md']
   }
 ]
@@ -98,7 +98,7 @@ const step5Requests = [
         openaiApiKey: OPENAI_API_KEY
       }
     },
-    endpoint: 'http://localhost:4321/api/run-llm',
+    endpoint: 'http://localhost:3000/run-llm',
     outputFiles: ['07-gpt-4o-mini.md'],
   },
   {
@@ -110,7 +110,7 @@ const step5Requests = [
         anthropicApiKey: ANTHROPIC_API_KEY
       }
     },
-    endpoint: 'http://localhost:4321/api/run-llm',
+    endpoint: 'http://localhost:3000/run-llm',
     outputFiles: ['08-claude-3-opus-latest.md'],
   },
   {
@@ -122,7 +122,7 @@ const step5Requests = [
         geminiApiKey: GEMINI_API_KEY
       }
     },
-    endpoint: 'http://localhost:4321/api/run-llm',
+    endpoint: 'http://localhost:3000/run-llm',
     outputFiles: ['09-gemini-1.5-flash-8b.md'],
   },
 ]

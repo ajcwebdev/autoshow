@@ -21,9 +21,9 @@ curl --json '{
 ```bash
 curl --json '{
   "type": "file",
-  "filePath": "content/examples/audio",
+  "filePath": "content/examples/audio.mp3",
   "options": {
-    "file": "content/examples/audio"
+    "file": "content/examples/audio.mp3"
   }
 }' http://localhost:4321/api/download-audio \
   -s | json_pp

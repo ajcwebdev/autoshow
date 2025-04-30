@@ -7,7 +7,6 @@ import sitemap from "@astrojs/sitemap"
 import node from "@astrojs/node"
 
 export default defineConfig({
-  output: "server",
   site: "https://autoshow.sh/",
   integrations: [
     sitemap(),
@@ -16,6 +15,6 @@ export default defineConfig({
   ],
   prefetch: true,
   adapter: node({
-    mode: "standalone",
+    mode: "middleware",
   }),
 })

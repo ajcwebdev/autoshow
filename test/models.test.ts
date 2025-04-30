@@ -6,6 +6,9 @@ import { env } from '../src/utils.ts'
 
 const FILE_EXAMPLE = 'autoshow/content/examples/audio-prompt.md'
 const AUDIO_FILE = 'autoshow/content/examples/audio'
+const RUN_TRANSCRIPTION = 'http://localhost:4321/api/run-transcription'
+const RUN_LLM = 'http://localhost:4321/api/run-llm'
+
 const {
   DEEPGRAM_API_KEY,
   ASSEMBLY_API_KEY,
@@ -25,7 +28,7 @@ export const requests = [
         assemblyApiKey: ASSEMBLY_API_KEY
       }
     },
-    endpoint: 'http://localhost:4321/api/run-transcription',
+    endpoint: RUN_TRANSCRIPTION,
     outputFiles: ['01-assembly-best.md', '01-assembly-best.json'],
   },
   {
@@ -37,7 +40,7 @@ export const requests = [
         assemblyApiKey: ASSEMBLY_API_KEY
       }
     },
-    endpoint: 'http://localhost:4321/api/run-transcription',
+    endpoint: RUN_TRANSCRIPTION,
     outputFiles: ['02-assembly-nano.md', '02-assembly-nano.json'],
   },
   {
@@ -49,7 +52,7 @@ export const requests = [
         deepgramApiKey: DEEPGRAM_API_KEY
       }
     },
-    endpoint: 'http://localhost:4321/api/run-transcription',
+    endpoint: RUN_TRANSCRIPTION,
     outputFiles: ['03-deepgram-nova-2.md', '03-deepgram-nova-2.json'],
   },
   {
@@ -61,7 +64,7 @@ export const requests = [
         deepgramApiKey: DEEPGRAM_API_KEY
       }
     },
-    endpoint: 'http://localhost:4321/api/run-transcription',
+    endpoint: RUN_TRANSCRIPTION,
     outputFiles: ['04-deepgram-base.md', '04-deepgram-base.json'],
   },
   {
@@ -73,7 +76,7 @@ export const requests = [
         deepgramApiKey: DEEPGRAM_API_KEY
       }
     },
-    endpoint: 'http://localhost:4321/api/run-transcription',
+    endpoint: RUN_TRANSCRIPTION,
     outputFiles: ['05-deepgram-enhanced.md', '05-deepgram-enhanced.json'],
   },
   {
@@ -85,7 +88,7 @@ export const requests = [
         openaiApiKey: OPENAI_API_KEY
       }
     },
-    endpoint: 'http://localhost:4321/api/run-llm',
+    endpoint: RUN_LLM,
     outputFiles: ['07-chatgpt-gpt-4o.md', '07-chatgpt-gpt-4o.json'],
   },
   {
@@ -97,7 +100,7 @@ export const requests = [
         openaiApiKey: OPENAI_API_KEY
       }
     },
-    endpoint: 'http://localhost:4321/api/run-llm',
+    endpoint: RUN_LLM,
     outputFiles: ['08-chatgpt-gpt-4o-mini.md', '08-chatgpt-gpt-4o-mini.json'],
   },
   {
@@ -109,7 +112,7 @@ export const requests = [
         openaiApiKey: OPENAI_API_KEY
       }
     },
-    endpoint: 'http://localhost:4321/api/run-llm',
+    endpoint: RUN_LLM,
     outputFiles: ['09-chatgpt-o1-mini.md', '09-chatgpt-o1-mini.json'],
   },
   {
@@ -121,7 +124,7 @@ export const requests = [
         anthropicApiKey: ANTHROPIC_API_KEY
       }
     },
-    endpoint: 'http://localhost:4321/api/run-llm',
+    endpoint: RUN_LLM,
     outputFiles: ['10-claude-3-7-sonnet-latest.md', '10-claude-3-7-sonnet-latest.json'],
   },
   {
@@ -133,7 +136,7 @@ export const requests = [
         anthropicApiKey: ANTHROPIC_API_KEY
       }
     },
-    endpoint: 'http://localhost:4321/api/run-llm',
+    endpoint: RUN_LLM,
     outputFiles: ['11-claude-3-5-haiku-latest.md', '11-claude-3-5-haiku-latest.json'],
   },
   {
@@ -145,7 +148,7 @@ export const requests = [
         anthropicApiKey: ANTHROPIC_API_KEY
       }
     },
-    endpoint: 'http://localhost:4321/api/run-llm',
+    endpoint: RUN_LLM,
     outputFiles: ['12-claude-3-opus-latest.md', '12-claude-3-opus-latest.json'],
   },
   {
@@ -157,7 +160,7 @@ export const requests = [
         geminiApiKey: GEMINI_API_KEY
       }
     },
-    endpoint: 'http://localhost:4321/api/run-llm',
+    endpoint: RUN_LLM,
     outputFiles: ['15-gemini-1.5-pro.md', '15-gemini-1.5-pro.json'],
   },
   {
@@ -169,7 +172,7 @@ export const requests = [
         geminiApiKey: GEMINI_API_KEY
       }
     },
-    endpoint: 'http://localhost:4321/api/run-llm',
+    endpoint: RUN_LLM,
     outputFiles: ['16-gemini-1.5-flash-8b.md', '16-gemini-1.5-flash-8b.json'],
   },
   {
@@ -181,7 +184,7 @@ export const requests = [
         geminiApiKey: GEMINI_API_KEY
       }
     },
-    endpoint: 'http://localhost:4321/api/run-llm',
+    endpoint: RUN_LLM,
     outputFiles: ['17-gemini-1.5-flash.md', '17-gemini-1.5-flash.json'],
   },
   {
@@ -193,7 +196,7 @@ export const requests = [
         geminiApiKey: GEMINI_API_KEY
       }
     },
-    endpoint: 'http://localhost:4321/api/run-llm',
+    endpoint: RUN_LLM,
     outputFiles: ['18-gemini-2.0-flash-lite.md', '18-gemini-2.0-flash-lite.json'],
   },
   {
@@ -205,7 +208,7 @@ export const requests = [
         geminiApiKey: GEMINI_API_KEY
       }
     },
-    endpoint: 'http://localhost:4321/api/run-llm',
+    endpoint: RUN_LLM,
     outputFiles: ['19-gemini-2.0-flash.md', '19-gemini-2.0-flash.json'],
   },
   {
@@ -217,7 +220,7 @@ export const requests = [
         groqApiKey: GROQ_API_KEY
       }
     },
-    endpoint: 'http://localhost:4321/api/run-llm',
+    endpoint: RUN_LLM,
     outputFiles: ['20-groq-llama-3.3-70b-versatile.md', '20-groq-llama-3.3-70b-versatile.json'],
   },
   {
@@ -229,7 +232,7 @@ export const requests = [
         groqApiKey: GROQ_API_KEY
       }
     },
-    endpoint: 'http://localhost:4321/api/run-llm',
+    endpoint: RUN_LLM,
     outputFiles: ['21-groq-llama-3.1-8b-instant.md', '21-groq-llama-3.1-8b-instant.json'],
   },
   {
@@ -241,7 +244,7 @@ export const requests = [
         groqApiKey: GROQ_API_KEY
       }
     },
-    endpoint: 'http://localhost:4321/api/run-llm',
+    endpoint: RUN_LLM,
     outputFiles: ['22-groq-llama3-70b-8192.md', '22-groq-llama3-70b-8192.json'],
   },
   {
@@ -253,7 +256,7 @@ export const requests = [
         groqApiKey: GROQ_API_KEY
       }
     },
-    endpoint: 'http://localhost:4321/api/run-llm',
+    endpoint: RUN_LLM,
     outputFiles: ['23-groq-llama3-8b-8192.md', '23-groq-llama3-8b-8192.json'],
   },
   {
@@ -265,7 +268,7 @@ export const requests = [
         groqApiKey: GROQ_API_KEY
       }
     },
-    endpoint: 'http://localhost:4321/api/run-llm',
+    endpoint: RUN_LLM,
     outputFiles: ['24-groq-gemma2-9b-it.md', '24-groq-gemma2-9b-it.json'],
   }
 ]

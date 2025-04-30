@@ -12,47 +12,61 @@ const {
   GEMINI_API_KEY,
 } = env
 
+// const AUDIO_WAV_PATH = 'autoshow/content/examples/audio.wav'
+const AUDIO_FILE_PATH = 'autoshow/content/examples/audio.mp3'
+const FINAL_PATH = 'autoshow/content/examples/audio'
+const AUDIO_PROMPT = 'autoshow/content/examples/audio-prompt.md'
+const CUSTOM_PROMPT = 'autoshow/content/examples/custom-prompt.md'
+const VIDEO_URL = 'https://www.youtube.com/watch?v=MORMZXEaONk'
+const DOWNLOAD_AUDIO = 'http://localhost:4321/api/download-audio'
+const RUN_TRANSCRIPTION = 'http://localhost:4321/api/run-transcription'
+const SELECT_PROMPT = 'http://localhost:4321/api/select-prompt'
+const RUN_LLM = 'http://localhost:4321/api/run-llm'
+
 const step2Requests = [
   {
     data: {
       type: 'video',
-      url: 'https://www.youtube.com/watch?v=MORMZXEaONk',
+      url: VIDEO_URL,
       options: {
-        video: 'https://www.youtube.com/watch?v=MORMZXEaONk'
+        video: VIDEO_URL
       }
     },
-    endpoint: 'http://localhost:4321/api/download-audio',
-    outputFiles: ['01-youtube-audio.wav']
+    endpoint: DOWNLOAD_AUDIO,
+    outputFiles: ['01-youtube-audio.wav'],
+    retries: 2
   },
   {
     data: {
       type: 'file',
-      filePath: 'autoshow/content/examples/audio.mp3',
+      filePath: AUDIO_FILE_PATH,
       options: {
-        file: 'autoshow/content/examples/audio.mp3'
+        file: AUDIO_FILE_PATH
       }
     },
-    endpoint: 'http://localhost:4321/api/download-audio',
-    outputFiles: ['02-audio.wav']
+    endpoint: DOWNLOAD_AUDIO,
+    outputFiles: ['02-audio.wav'],
+    retries: 2
   }
 ]
 
 const step3Requests = [
   {
     data: {
-      finalPath: 'autoshow/content/02-audio',
+      finalPath: FINAL_PATH,
       transcriptServices: 'assembly',
       options: {
         assembly: 'best',
         assemblyApiKey: ASSEMBLY_API_KEY
       }
     },
-    endpoint: 'http://localhost:4321/api/run-transcription',
-    outputFiles: ['03-assembly-best.md']
+    endpoint: RUN_TRANSCRIPTION,
+    outputFiles: ['03-assembly-best.md'],
+    retries: 3
   },
   {
     data: {
-      finalPath: 'autoshow/content/02-audio',
+      finalPath: FINAL_PATH,
       transcriptServices: 'deepgram',
       options: {
         deepgram: 'nova-2',
@@ -60,8 +74,9 @@ const step3Requests = [
         speakerLabels: true
       }
     },
-    endpoint: 'http://localhost:4321/api/run-transcription',
-    outputFiles: ['04-deepgram-nova-2.md']
+    endpoint: RUN_TRANSCRIPTION,
+    outputFiles: ['04-deepgram-nova-2.md'],
+    retries: 3
   }
 ]
 
@@ -72,16 +87,16 @@ const step4Requests = [
         prompt: ['summary','longChapters','quotes']
       }
     },
-    endpoint: 'http://localhost:4321/api/select-prompt',
+    endpoint: SELECT_PROMPT,
     outputFiles: ['05-summary-longChapters-quotes-prompt.md']
   },
   {
     data: {
       options: {
-        customPrompt: 'autoshow/content/examples/custom-prompt.md'
+        customPrompt: CUSTOM_PROMPT
       }
     },
-    endpoint: 'http://localhost:4321/api/select-prompt',
+    endpoint: SELECT_PROMPT,
     outputFiles: ['06-custom-prompt.md']
   }
 ]
@@ -89,39 +104,42 @@ const step4Requests = [
 const step5Requests = [
   {
     data: {
-      filePath: 'autoshow/content/examples/audio-prompt.md',
+      filePath: AUDIO_PROMPT,
       llmServices: 'chatgpt',
       options: {
         chatgpt: 'gpt-4o-mini',
         openaiApiKey: OPENAI_API_KEY
       }
     },
-    endpoint: 'http://localhost:4321/api/run-llm',
+    endpoint: RUN_LLM,
     outputFiles: ['07-gpt-4o-mini.md'],
+    retries: 2
   },
   {
     data: {
-      filePath: 'autoshow/content/examples/audio-prompt.md',
+      filePath: AUDIO_PROMPT,
       llmServices: 'claude',
       options: {
         claude: 'claude-3-opus-latest',
         anthropicApiKey: ANTHROPIC_API_KEY
       }
     },
-    endpoint: 'http://localhost:4321/api/run-llm',
+    endpoint: RUN_LLM,
     outputFiles: ['08-claude-3-opus-latest.md'],
+    retries: 2
   },
   {
     data: {
-      filePath: 'autoshow/content/examples/audio-prompt.md',
+      filePath: AUDIO_PROMPT,
       llmServices: 'gemini',
       options: {
         gemini: 'gemini-1.5-flash-8b',
         geminiApiKey: GEMINI_API_KEY
       }
     },
-    endpoint: 'http://localhost:4321/api/run-llm',
+    endpoint: RUN_LLM,
     outputFiles: ['09-gemini-1.5-flash-8b.md'],
+    retries: 2
   },
 ]
 

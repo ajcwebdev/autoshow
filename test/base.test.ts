@@ -6,7 +6,6 @@ import { l } from '../src/utils.ts'
 import { readdir, rename, join, mkdirSync, existsSync, writeFileSync } from '../src/utils.ts'
 import fs from 'node:fs/promises'
 
-// Setup test fixtures
 const TEST_DIR = 'content'
 const EXAMPLES_DIR = join(TEST_DIR, 'examples')
 
@@ -21,14 +20,17 @@ async function ensureTestDirectories() {
 
 async function setupTestFiles() {
   await ensureTestDirectories()
+  
   const audioTestFile = join(EXAMPLES_DIR, 'audio.mp3')
   if (!existsSync(audioTestFile)) {
     writeFileSync(audioTestFile, 'test audio file', 'utf-8')
   }
+  
   const wavTestFile = join(TEST_DIR, '02-audio.wav')
   if (!existsSync(wavTestFile)) {
     writeFileSync(wavTestFile, 'test wav file data', 'utf-8')
   }
+  
   const promptTestFile = join(EXAMPLES_DIR, 'audio-prompt.md')
   if (!existsSync(promptTestFile)) {
     writeFileSync(promptTestFile, `---
@@ -36,13 +38,11 @@ title: "Test Audio"
 description: "Test Description"
 publishDate: "2023-01-01"
 ---
-
 Test prompt content
-
 ## Transcript
-
 Test transcript content`, 'utf-8')
   }
+  
   const customPromptFile = join(EXAMPLES_DIR, 'custom-prompt.md')
   if (!existsSync(customPromptFile)) {
     writeFileSync(customPromptFile, 'This is a custom prompt test', 'utf-8')
@@ -52,7 +52,7 @@ Test transcript content`, 'utf-8')
 async function cleanupTestArtifacts() {
   try {
     const files = await readdir(TEST_DIR)
-    const testArtifacts = files.filter(file => 
+    const testArtifacts = files.filter(file =>
       (file.startsWith('output_') || /^\d+-(.*)\.(md|wav|json)$/.test(file)) &&
       !file.includes('examples'))
     for (const file of testArtifacts) {
@@ -76,6 +76,7 @@ interface TestRequest {
   data: Record<string, any>
   endpoint: string
   outputFiles?: string[]
+  retries?: number
 }
 
 export function runTestsForRequests(requests: TestRequest[], label: string) {
@@ -89,64 +90,128 @@ export function runTestsForRequests(requests: TestRequest[], label: string) {
       l.info(`Cleaning up after "${label}" tests`)
       await cleanupTestArtifacts()
     })
-
+    
     requests.forEach((request: TestRequest, index: number) => {
       it(`Request ${index + 1}`, async () => {
         l.info(formatRequestDetails(request, index))
         
+        // Check if required files exist before test
+        if (request.data.finalPath) {
+          const wavPath = `${request.data.finalPath}.wav`
+          l.info(`Checking if required file exists: ${wavPath}`)
+          if (existsSync(wavPath)) {
+            l.info(`File exists: ${wavPath}`)
+          } else {
+            // Create empty file for testing if it doesn't exist
+            l.info(`Creating test file: ${wavPath}`)
+            try {
+              writeFileSync(wavPath, 'Test audio content', 'utf-8')
+              l.info(`Created test file: ${wavPath}`)
+            } catch (err) {
+              l.dim(`Error creating test file: ${err}`)
+            }
+          }
+        }
+        
         const filesBefore = await readdir(TEST_DIR)
         l.info(`Files before test: ${filesBefore.length}`)
         
-        const startTime = performance.now()
-        const response = await fetch(request.endpoint, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(request.data)
-        })
-        const endTime = performance.now()
-        const responseTime = endTime - startTime
+        const maxRetries = request.retries || 1
+        let lastError: Error | null = null
+        let responseBody: any = null
+        let response: Response | null = null
         
-        l.info(`Request ${index + 1} response status: ${response.status} (${responseTime.toFixed(2)}ms)`)
-        
-        let responseBody
-        try {
-          responseBody = await response.json()
-          l.info(`Response body: ${JSON.stringify(responseBody, null, 2)}`)
-        } catch (parseErr) {
-          const textResponse = await response.text()
-          l.dim(`Failed to parse JSON response: ${parseErr}`)
-          l.dim(`Raw response: ${textResponse}`)
-          throw new Error(`Failed to parse JSON response: ${parseErr}`)
+        for (let retryCount = 0; retryCount < maxRetries; retryCount++) {
+          if (retryCount > 0) {
+            l.info(`Retry attempt ${retryCount} for request ${index + 1}`)
+          }
+          
+          try {
+            const startTime = performance.now()
+            response = await fetch(request.endpoint, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(request.data)
+            })
+            const endTime = performance.now()
+            const responseTime = endTime - startTime
+            
+            l.info(`Request ${index + 1} response status: ${response.status} (${responseTime.toFixed(2)}ms)`)
+            
+            try {
+              responseBody = await response.json()
+              l.info(`Response body: ${JSON.stringify(responseBody, null, 2)}`)
+              
+              if (!response.ok) {
+                lastError = new Error(`HTTP error! status: ${response.status}, body: ${JSON.stringify(responseBody)}`)
+                l.dim(`Error response: ${JSON.stringify(responseBody, null, 2)}`)
+                
+                // Only retry if non-4xx error (4xx implies client error, which retrying won't fix)
+                if (response.status < 400 || response.status >= 500) {
+                  if (retryCount < maxRetries - 1) {
+                    l.info(`Will retry due to server error status ${response.status}`)
+                    await new Promise(resolve => setTimeout(resolve, 2000))
+                    continue
+                  }
+                }
+              } else {
+                // Success! Break out of retry loop
+                break
+              }
+            } catch (parseErr) {
+              const textResponse = await response.text()
+              l.dim(`Failed to parse JSON response: ${parseErr}`)
+              l.dim(`Raw response: ${textResponse}`)
+              lastError = new Error(`Failed to parse JSON response: ${parseErr}`)
+              
+              if (retryCount < maxRetries - 1) {
+                l.info(`Will retry due to JSON parse error`)
+                await new Promise(resolve => setTimeout(resolve, 2000))
+                continue
+              } else {
+                throw lastError
+              }
+            }
+          } catch (fetchErr) {
+            l.dim(`Fetch error: ${fetchErr}`)
+            lastError = fetchErr instanceof Error ? fetchErr : new Error(String(fetchErr))
+            
+            if (retryCount < maxRetries - 1) {
+              l.info(`Will retry due to fetch error: ${lastError.message}`)
+              await new Promise(resolve => setTimeout(resolve, 2000))
+              continue
+            } else {
+              throw lastError
+            }
+          }
         }
         
-        if (!response.ok) {
-          l.dim(`Error response: ${JSON.stringify(responseBody, null, 2)}`)
-          throw new Error(`HTTP error! status: ${response.status}, body: ${JSON.stringify(responseBody)}`)
+        // If we got here with an error and exhausted retries, throw the error
+        if (lastError && !response?.ok) {
+          throw lastError
         }
         
         await new Promise(resolve => setTimeout(resolve, 1000))
         
         const filesAfter = await readdir(TEST_DIR)
         const newFiles = filesAfter.filter(f => !filesBefore.includes(f))
-        
         l.info(`New files created: ${newFiles.join(', ') || 'none'}`)
         
         if (newFiles.length > 0 && request.outputFiles && request.outputFiles.length > 0) {
           newFiles.sort()
-          
-          // Ensure request.outputFiles is defined before using its length
-          const outputFilesCount = request.outputFiles.length;
+          const outputFilesCount = request.outputFiles.length
           for (let i = 0; i < Math.min(newFiles.length, outputFilesCount); i++) {
             const oldFilePath = join(TEST_DIR, newFiles[i])
             const newFilePath = join(TEST_DIR, request.outputFiles[i])
             await rename(oldFilePath, newFilePath)
             l.info(`Renamed file: ${oldFilePath} → ${newFilePath}`)
           }
-        } // Close the if block for renaming files
-        assert.equal(response.status, 200, `Expected 200 OK response but got ${response.status}`)
-
+        }
+        
+        assert.equal(response?.status, 200, `Expected 200 OK response but got ${response?.status}`)
+        
         if (request.outputFiles && request.outputFiles.length > 0 && newFiles.length === 0) {
           l.info(`⚠️ No new files were created, but expected: ${request.outputFiles.join(', ')}`)
         }

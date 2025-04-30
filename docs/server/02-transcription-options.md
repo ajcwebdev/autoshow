@@ -15,7 +15,7 @@ Fastify endpoint:
 curl --json '{
   "type": "transcriptCost",
   "filePath": "content/examples/audio.mp3"
-}' http://localhost:3000/cost
+}' http://localhost:3000/cost -s | json_pp
 ```
 
 Astro endpoint:
@@ -24,7 +24,7 @@ Astro endpoint:
 curl --json '{
   "type": "transcriptCost",
   "filePath": "content/examples/audio.mp3"
-}' http://localhost:4321/api/cost
+}' http://localhost:4321/api/cost -s | json_pp
 ```
 
 ## Transcription Service and Model Options
@@ -38,7 +38,7 @@ curl --json '{
   "options": {
     "deepgramApiKey": ""
   }
-}' http://localhost:3000/run-transcription
+}' http://localhost:3000/run-transcription -s | json_pp
 ```
 
 ```bash
@@ -49,7 +49,7 @@ curl --json '{
     "deepgram": "base",
     "deepgramApiKey": ""
   }
-}' http://localhost:3000/run-transcription
+}' http://localhost:3000/run-transcription -s | json_pp
 ```
 
 ```bash
@@ -60,7 +60,7 @@ curl --json '{
     "deepgram": "nova-2",
     "deepgramApiKey": ""
   }
-}' http://localhost:3000/run-transcription
+}' http://localhost:3000/run-transcription -s | json_pp
 ```
 
 ```bash
@@ -71,7 +71,7 @@ curl --json '{
     "deepgram": "enhanced",
     "deepgramApiKey": ""
   }
-}' http://localhost:3000/run-transcription
+}' http://localhost:3000/run-transcription -s | json_pp
 ```
 
 ### Assembly
@@ -83,7 +83,7 @@ curl --json '{
   "options": {
     "assemblyApiKey": ""
   }
-}' http://localhost:3000/run-transcription
+}' http://localhost:3000/run-transcription -s | json_pp
 ```
 
 ```bash
@@ -94,7 +94,7 @@ curl --json '{
     "assembly": "best",
     "assemblyApiKey": ""
   }
-}' http://localhost:3000/run-transcription
+}' http://localhost:3000/run-transcription -s | json_pp
 ```
 
 ```bash
@@ -105,7 +105,7 @@ curl --json '{
     "assembly": "nano",
     "assemblyApiKey": ""
   }
-}' http://localhost:3000/run-transcription
+}' http://localhost:3000/run-transcription -s | json_pp
 ```
 
 ```bash
@@ -116,7 +116,7 @@ curl --json '{
     "speakerLabels": true,
     "assemblyApiKey": ""
   }
-}' http://localhost:3000/run-transcription
+}' http://localhost:3000/run-transcription -s | json_pp
 ```
 
 ### Groq
@@ -129,5 +129,5 @@ curl --json '{
     "groq": "whisper-large-v3",
     "groqApiKey": ""
   }
-}' http://localhost:3000/run-transcription
+}' http://localhost:3000/run-transcription -s | json_pp
 ```

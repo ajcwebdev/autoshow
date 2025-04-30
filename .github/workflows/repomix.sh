@@ -10,9 +10,9 @@ repomix \
   --style markdown \
   --remove-comments \
   --remove-empty-lines \
-  --top-files-len 5 \
+  --top-files-len 10 \
   --token-count-encoding "o200k_base" \
-  --ignore ".astro,src/prisma/migrations,src/components,.env.example,.gitignore,.npmrc,astro.config.ts,LICENSE,railway.json,tsconfig.json,.github/repomix-instruction.md"
+  --ignore "src/pages/api/embeddings.ts,README.md,src/prompts.ts,.github/FUNDING.yml,docs,test,.github/workflows,.astro,src/prisma/migrations,.env.example,.gitignore,.npmrc,astro.config.ts,LICENSE,railway.json,tsconfig.json,.github/repomix-instruction.md"
 
 # Check if command was successful
 if [ $? -eq 0 ]; then

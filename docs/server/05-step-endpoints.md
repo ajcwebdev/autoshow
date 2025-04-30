@@ -71,19 +71,6 @@ curl --json '{
   -s | json_pp
 ```
 
-```bash
-curl --json '{
-  "finalPath": "autoshow/content/examples/audio",
-  "transcriptServices": "deepgram",
-  "options": {
-    "deepgram": "nova-2",
-    "deepgramApiKey": "",
-    "speakerLabels": true
-  }
-}' http://localhost:4321/api/run-transcription \
-  -s | json_pp
-```
-
 ## Step 4 - Select Prompt
 
 Use this endpoint to generate a final prompt string from various prompt section choices, or a custom prompt file.

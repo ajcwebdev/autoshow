@@ -108,17 +108,6 @@ curl --json '{
 }' http://localhost:4321/api/run-transcription -s | json_pp
 ```
 
-```bash
-curl --json '{
-  "finalPath": "content/examples/audio",
-  "transcriptServices": "assembly",
-  "options": {
-    "speakerLabels": true,
-    "assemblyApiKey": ""
-  }
-}' http://localhost:4321/api/run-transcription -s | json_pp
-```
-
 ### Groq
 
 ```bash

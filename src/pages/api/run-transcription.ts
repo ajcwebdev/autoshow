@@ -5,67 +5,48 @@ import path from "path"
 import { fileURLToPath } from "url"
 import { execPromise, readFile } from "../../utils.ts"
 import { T_CONFIG } from '../../constants.ts'
-import type { ProcessingOptions, DeepgramWord } from '../../types.ts'
+import type { ProcessingOptions } from '../../types.ts'
 
-export function formatAssemblyTranscript(transcript: any, speakerLabels: boolean) {
-  const inlineFormatTime = (timestamp: number): string => {
-    const totalSeconds = Math.floor(timestamp / 1000)
-    const minutes = Math.floor(totalSeconds / 60).toString().padStart(2, '0')
-    const seconds = (totalSeconds % 60).toString().padStart(2, '0')
-    return `${minutes}:${seconds}`
-  }
+interface DeepgramSentence {
+  text: string;
+  start: number;
+}
 
+interface DeepgramParagraph {
+  sentences: DeepgramSentence[];
+}
+
+export function formatAssemblyTranscript(paragraphs: any[]): string {
   let txtContent = ''
-  if (transcript.utterances && transcript.utterances.length > 0) {
-    txtContent = transcript.utterances.map((utt: any) =>
-      `${speakerLabels ? `Speaker ${utt.speaker} ` : ''}(${inlineFormatTime(utt.start)}): ${utt.text}`
-    ).join('\n')
-  } else if (transcript.words && transcript.words.length > 0) {
-    const firstWord = transcript.words[0]
-    if (!firstWord) {
-      throw new Error('No words found in transcript')
-    }
-    let currentLine = ''
-    let currentTimestamp = inlineFormatTime(firstWord.start)
-    transcript.words.forEach((word: any) => {
-      if (currentLine.length + word.text.length > 80) {
-        txtContent += `[${currentTimestamp}] ${currentLine.trim()}\n`
-        currentLine = ''
-        currentTimestamp = inlineFormatTime(word.start)
-      }
-      currentLine += `${word.text} `
-    })
-    if (currentLine.length > 0) {
-      txtContent += `[${currentTimestamp}] ${currentLine.trim()}\n`
-    }
-  } else {
-    txtContent = transcript.text || 'No transcription available.'
-  }
+  
+  paragraphs.forEach(para => {
+    const timestamp = formatTimestamp(para.start / 1000)
+    txtContent += `[${timestamp}] ${para.text}\n\n`
+  })
+  
   return txtContent
 }
 
-export function formatDeepgramTranscript(
-  words: DeepgramWord[],
-  speakerLabels: boolean
-): string {
-  if (!speakerLabels) {
-    return words.map(w => w.word).join(' ')
-  }
-  let transcript = ''
-  let currentSpeaker = words.length > 0 && words[0] ? words[0].speaker ?? undefined : undefined
-  let speakerWords: string[] = []
-  for (const w of words) {
-    if (w.speaker !== currentSpeaker) {
-      transcript += `Speaker ${currentSpeaker}: ${speakerWords.join(' ')}\n\n`
-      currentSpeaker = w.speaker
-      speakerWords = []
-    }
-    speakerWords.push(w.word)
-  }
-  if (speakerWords.length > 0) {
-    transcript += `Speaker ${currentSpeaker}: ${speakerWords.join(' ')}`
-  }
-  return transcript
+export function formatDeepgramTranscript(result: any): string {
+  const paragraphs = result?.results?.channels?.[0]?.alternatives?.[0]?.paragraphs?.paragraphs || []
+  let txtContent = ''
+  
+  paragraphs.forEach((para: DeepgramParagraph) => {
+    para.sentences.forEach((sentence: DeepgramSentence) => {
+      const timestamp: string = formatTimestamp(sentence.start);
+      txtContent += `[${timestamp}] ${sentence.text}\n`;
+    });
+    txtContent += '\n';
+  });
+  
+  return txtContent
+}
+
+function formatTimestamp(seconds: number): string {
+  const hours = Math.floor(seconds / 3600)
+  const minutes = Math.floor((seconds % 3600) / 60)
+  const secs = Math.floor(seconds % 60)
+  return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
 }
 
 export const POST: APIRoute = async ({ request }) => {
@@ -97,7 +78,6 @@ export const POST: APIRoute = async ({ request }) => {
       console.log("[api/run-transcription] Set ASSEMBLY_API_KEY from options")
     }
     
-    // Validate API keys are actually set
     if (transcriptServices === 'deepgram' && !process.env.DEEPGRAM_API_KEY) {
       console.error("[api/run-transcription] DEEPGRAM_API_KEY is not set")
       return new Response(JSON.stringify({ error: 'DEEPGRAM_API_KEY is not set or invalid' }), { status: 400 })
@@ -106,6 +86,16 @@ export const POST: APIRoute = async ({ request }) => {
     if (transcriptServices === 'assembly' && !process.env.ASSEMBLY_API_KEY) {
       console.error("[api/run-transcription] ASSEMBLY_API_KEY is not set")
       return new Response(JSON.stringify({ error: 'ASSEMBLY_API_KEY is not set or invalid' }), { status: 400 })
+    }
+    
+    if (transcriptServices === 'deepgram' && !options.deepgram) {
+      console.error("[api/run-transcription] Deepgram model must be specified")
+      return new Response(JSON.stringify({ error: 'Deepgram model must be specified' }), { status: 400 })
+    }
+    
+    if (transcriptServices === 'assembly' && !options.assembly) {
+      console.error("[api/run-transcription] Assembly model must be specified")
+      return new Response(JSON.stringify({ error: 'Assembly model must be specified' }), { status: 400 })
     }
     
     const __filename = fileURLToPath(import.meta.url)
@@ -150,7 +140,7 @@ export const POST: APIRoute = async ({ request }) => {
         }
       }
       
-      const errorMessage = lastError instanceof Error ? lastError.message : String(lastError ?? 'Unknown error');
+      const errorMessage = lastError instanceof Error ? lastError.message : String(lastError ?? 'Unknown error')
       throw new Error(`Transcription call failed after maximum retries. Last error: ${errorMessage}`)
     }
     
@@ -161,14 +151,15 @@ export const POST: APIRoute = async ({ request }) => {
         throw new Error('DEEPGRAM_API_KEY environment variable is not set.')
       }
       
-      const defaultDeepgramModel = T_CONFIG.deepgram.models.find(m => m.modelId === 'nova-2')?.modelId || 'nova-2'
-      const deepgramModel = typeof options.deepgram === 'string'
-        ? options.deepgram
-        : defaultDeepgramModel
+      const deepgramModel = typeof options.deepgram === 'string' 
+        ? options.deepgram 
+        : null
+        
+      if (!deepgramModel) {
+        throw new Error('Deepgram model must be specified')
+      }
       
-      const modelInfo =
-        T_CONFIG.deepgram.models.find(m => m.modelId.toLowerCase() === deepgramModel.toLowerCase())
-        || T_CONFIG.deepgram.models.find(m => m.modelId === 'nova-2')
+      const modelInfo = T_CONFIG.deepgram.models.find(m => m.modelId.toLowerCase() === deepgramModel.toLowerCase())
       
       if (!modelInfo) {
         throw new Error(`Model information for model ${deepgramModel} is not defined.`)
@@ -176,7 +167,6 @@ export const POST: APIRoute = async ({ request }) => {
       
       const { modelId, costPerMinuteCents } = modelInfo
       
-      // Check if the audio file exists
       try {
         const audioBuffer = await readFile(`${resolvedPath}.wav`)
         console.log(`[api/run-transcription] Successfully loaded audio file: ${resolvedPath}.wav (size: ${audioBuffer.length} bytes)`)
@@ -189,7 +179,6 @@ export const POST: APIRoute = async ({ request }) => {
       apiUrl.searchParams.append('model', modelId)
       apiUrl.searchParams.append('smart_format', 'true')
       apiUrl.searchParams.append('punctuate', 'true')
-      apiUrl.searchParams.append('diarize', options.speakerLabels ? 'true' : 'false')
       apiUrl.searchParams.append('paragraphs', 'true')
       
       console.log(`[api/run-transcription] Deepgram API URL: ${apiUrl.toString()}`)
@@ -242,15 +231,7 @@ export const POST: APIRoute = async ({ request }) => {
       
       console.log(`[api/run-transcription] Parsed Deepgram response: ${JSON.stringify(result, null, 2).substring(0, 500)}...`)
       
-      const channel = result.results?.channels?.[0]
-      const alternative = channel?.alternatives?.[0]
-      
-      if (!alternative?.words || !Array.isArray(alternative.words) || alternative.words.length === 0) {
-        console.error(`[api/run-transcription] No words found in Deepgram response: ${JSON.stringify(result, null, 2)}`)
-        throw new Error('No transcription results found in Deepgram response')
-      }
-      
-      const txtContent = formatDeepgramTranscript(alternative.words, options.speakerLabels || false)
+      const txtContent = formatDeepgramTranscript(result)
       
       console.log(`[api/run-transcription] Generated transcript text (first 200 chars): ${txtContent.substring(0, 200)}...`)
       
@@ -278,10 +259,8 @@ export const POST: APIRoute = async ({ request }) => {
         'Content-Type': headers['Content-Type'],
       })}`)
       
-      const { speakerLabels } = options
       const audioFilePath = `${resolvedPath}.wav`
       
-      // Check if the audio file exists
       try {
         const stats = await execPromise(`ls -la "${audioFilePath}"`)
         console.log(`[api/run-transcription] Audio file exists: ${stats.stdout}`)
@@ -290,14 +269,15 @@ export const POST: APIRoute = async ({ request }) => {
         throw new Error(`Audio file does not exist or is not accessible at ${audioFilePath}: ${error instanceof Error ? error.message : String(error)}`)
       }
       
-      const defaultAssemblyModel = T_CONFIG.assembly.models.find(m => m.modelId === 'best')?.modelId || 'best'
-      const assemblyModel = typeof options.assembly === 'string'
-        ? options.assembly
-        : defaultAssemblyModel
+      const assemblyModel = typeof options.assembly === 'string' 
+        ? options.assembly 
+        : null
       
-      const modelInfo =
-        T_CONFIG.assembly.models.find(m => m.modelId.toLowerCase() === assemblyModel.toLowerCase())
-        || T_CONFIG.assembly.models.find(m => m.modelId === 'best')
+      if (!assemblyModel) {
+        throw new Error('Assembly model must be specified')
+      }
+      
+      const modelInfo = T_CONFIG.assembly.models.find(m => m.modelId.toLowerCase() === assemblyModel.toLowerCase())
       
       if (!modelInfo) {
         throw new Error(`Model information for model ${assemblyModel} is not available.`)
@@ -307,7 +287,6 @@ export const POST: APIRoute = async ({ request }) => {
       
       console.log(`[api/run-transcription] Using Assembly model: ${modelId}`)
       
-      // Load the file
       let fileBuffer
       try {
         fileBuffer = await readFile(audioFilePath)
@@ -317,7 +296,6 @@ export const POST: APIRoute = async ({ request }) => {
         throw new Error(`Failed to load audio file: ${error instanceof Error ? error.message : String(error)}`)
       }
       
-      // Upload the file
       console.log(`[api/run-transcription] Uploading file to AssemblyAI...`)
       
       let uploadResponseText
@@ -362,11 +340,9 @@ export const POST: APIRoute = async ({ request }) => {
       
       console.log(`[api/run-transcription] Got upload URL: ${upload_url}`)
       
-      // Request transcription
       const transcriptionOptions = {
         audio_url: upload_url,
-        speech_model: modelId as 'default' | 'nano',
-        speaker_labels: speakerLabels || false
+        speech_model: modelId as 'default' | 'nano'
       }
       
       console.log(`[api/run-transcription] Requesting transcription with options: ${JSON.stringify(transcriptionOptions, null, 2)}`)
@@ -408,12 +384,11 @@ export const POST: APIRoute = async ({ request }) => {
       
       console.log(`[api/run-transcription] Got transcription ID: ${transcriptData.id}`)
       
-      // Poll for results
       console.log(`[api/run-transcription] Polling for transcription results...`)
       
       let transcript
       let pollingAttempts = 0
-      const maxPollingAttempts = 60 // 3 minutes maximum (with 3s interval)
+      const maxPollingAttempts = 60
       
       while (true) {
         pollingAttempts++
@@ -464,7 +439,27 @@ export const POST: APIRoute = async ({ request }) => {
       
       console.log(`[api/run-transcription] Transcription completed successfully`)
       
-      const txtContent = formatAssemblyTranscript(transcript, speakerLabels || false)
+      let paragraphsResponse
+      let paragraphsData
+      
+      try {
+        paragraphsResponse = await fetch(`https://api.assemblyai.com/v2/transcript/${transcriptData.id}/paragraphs`, { headers })
+        const paragraphsResponseText = await paragraphsResponse.text()
+        
+        console.log(`[api/run-transcription] Paragraphs response status: ${paragraphsResponse.status}`)
+        console.log(`[api/run-transcription] Paragraphs response text (first 200 chars): ${paragraphsResponseText.substring(0, 200)}...`)
+        
+        if (!paragraphsResponse.ok) {
+          throw new Error(`Paragraphs request failed with status ${paragraphsResponse.status}: ${paragraphsResponseText}`)
+        }
+        
+        paragraphsData = JSON.parse(paragraphsResponseText)
+      } catch (error) {
+        console.error(`[api/run-transcription] Error fetching paragraphs: ${error}`)
+        throw new Error(`Paragraphs request failed: ${error instanceof Error ? error.message : String(error)}`)
+      }
+      
+      const txtContent = formatAssemblyTranscript(paragraphsData.paragraphs)
       
       console.log(`[api/run-transcription] Generated transcript text (first 200 chars): ${txtContent.substring(0, 200)}...`)
       

@@ -62,20 +62,6 @@ const step3Requests = [
     endpoint: RUN_TRANSCRIPTION,
     outputFiles: ['03-assembly-best.md'],
     retries: 3
-  },
-  {
-    data: {
-      finalPath: FINAL_PATH,
-      transcriptServices: 'deepgram',
-      options: {
-        deepgram: 'nova-2',
-        deepgramApiKey: DEEPGRAM_API_KEY,
-        speakerLabels: true
-      }
-    },
-    endpoint: RUN_TRANSCRIPTION,
-    outputFiles: ['04-deepgram-nova-2.md'],
-    retries: 3
   }
 ]
 

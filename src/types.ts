@@ -46,7 +46,6 @@ export type ProcessingOptions = {
   groq?: boolean | string
   deepgram?: boolean | string
   assembly?: boolean | string
-  speakerLabels?: boolean
   transcriptCost?: string
   llmCost?: string
   runLLM?: string

@@ -19,9 +19,11 @@ COPY prisma ./prisma
 COPY src ./src
 COPY shared ./shared
 COPY content ./content
+COPY web/content ./web/content
 
 # Add a quick check to verify 'content' folder is actually present
 RUN ls -la && ls -la content
+RUN ls -la && ls -la web/content
 
 RUN npx prisma generate --schema=/usr/src/app/prisma/schema.prisma \
  && chown -R node:node /usr/src/app \

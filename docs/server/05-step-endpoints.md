@@ -12,7 +12,7 @@ curl --json '{
   "options": {
     "video": "https://www.youtube.com/watch?v=MORMZXEaONk"
   }
-}' http://localhost:3000/download-audio \
+}' http://localhost:4321/api/download-audio \
   -s | json_pp
 ```
 
@@ -21,11 +21,11 @@ curl --json '{
 ```bash
 curl --json '{
   "type": "file",
-  "filePath": "content/examples/audio.mp3",
+  "filePath": "content/examples/audio",
   "options": {
-    "file": "content/examples/audio.mp3"
+    "file": "content/examples/audio"
   }
-}' http://localhost:3000/download-audio \
+}' http://localhost:4321/api/download-audio \
   -s | json_pp
 ```
 
@@ -37,13 +37,13 @@ Use this endpoint to run the transcription step on a `.wav` file. You must provi
 
 ```bash
 curl --json '{
-  "finalPath": "content/audio",
+  "finalPath": "content/examples/audio",
   "transcriptServices": "assembly",
   "options": {
     "assembly": "nano",
     "assemblyApiKey": ""
   }
-}' http://localhost:3000/run-transcription \
+}' http://localhost:4321/api/run-transcription \
   -s | json_pp
 ```
 
@@ -51,26 +51,26 @@ curl --json '{
 
 ```bash
 curl --json '{
-  "finalPath": "content/audio",
+  "finalPath": "content/examples/audio",
   "transcriptServices": "deepgram",
   "options": {
     "deepgram": "nova-2",
     "deepgramApiKey": ""
   }
-}' http://localhost:3000/run-transcription \
+}' http://localhost:4321/api/run-transcription \
   -s | json_pp
 ```
 
 ```bash
 curl --json '{
-  "finalPath": "content/audio",
+  "finalPath": "content/examples/audio",
   "transcriptServices": "deepgram",
   "options": {
     "deepgram": "nova-2",
     "deepgramApiKey": "",
     "speakerLabels": true
   }
-}' http://localhost:3000/run-transcription \
+}' http://localhost:4321/api/run-transcription \
   -s | json_pp
 ```
 
@@ -85,7 +85,7 @@ curl --json '{
   "options": {
     "prompt": ["summary", "longChapters", "quotes"]
   }
-}' http://localhost:3000/select-prompt \
+}' http://localhost:4321/api/select-prompt \
   -s | json_pp
 ```
 
@@ -96,7 +96,7 @@ curl --json '{
   "options": {
     "customPrompt": "content/custom-prompt.md"
   }
-}' http://localhost:3000/select-prompt \
+}' http://localhost:4321/api/select-prompt \
   -s | json_pp
 ```
 
@@ -112,6 +112,6 @@ curl --json '{
     "chatgpt": "gpt-4o-mini",
     "openaiApiKey": ""
   }
-}' http://localhost:3000/run-llm \
+}' http://localhost:4321/api/run-llm \
   -s | json_pp
 ```

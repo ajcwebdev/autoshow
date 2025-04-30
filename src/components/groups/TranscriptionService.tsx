@@ -85,7 +85,8 @@ export const TranscriptionStep = (props: {
                     }}
                   />
                   <label>{m.modelId}</label>
-                  <div>{(m.cost * 500).toFixed(1)} credits ({m.cost}¢)</div>
+                  <div>{(m.cost * 1000).toFixed(1)} Credits</div>
+                  <div>¢{(m.cost).toFixed(3)}</div>
                 </div>
               )}
             </For>

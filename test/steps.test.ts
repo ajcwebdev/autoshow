@@ -12,7 +12,6 @@ const {
   GEMINI_API_KEY,
 } = env
 
-// const AUDIO_WAV_PATH = 'autoshow/content/examples/audio.wav'
 const AUDIO_FILE_PATH = 'autoshow/content/examples/audio.mp3'
 const FINAL_PATH = 'autoshow/content/examples/audio'
 const AUDIO_PROMPT = 'autoshow/content/examples/audio-prompt.md'

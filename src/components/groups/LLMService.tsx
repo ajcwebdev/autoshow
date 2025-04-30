@@ -43,6 +43,7 @@ export const LLMServiceStep = (props: {
       if (props.llmService === 'chatgpt') runLLMBody.options.openaiApiKey = props.llmApiKey
       if (props.llmService === 'claude') runLLMBody.options.anthropicApiKey = props.llmApiKey
       if (props.llmService === 'gemini') runLLMBody.options.geminiApiKey = props.llmApiKey
+      if (props.llmService === 'groq') runLLMBody.options.groqApiKey = props.llmApiKey
       runLLMBody.options[props.llmService] = props.llmModel
       runLLMBody.options.transcriptionServices = props.transcriptionService
       runLLMBody.options.transcriptionModel = props.transcriptionModelUsed
@@ -102,7 +103,8 @@ export const LLMServiceStep = (props: {
                         }}
                       />
                       <label>{m.modelName}</label>
-                      <div>{(modelCost * 500).toFixed(1)} credits ({modelCost}¢)</div>
+                      <div>{(modelCost * 1000).toFixed(1)} Credits</div>
+                      <div>¢{(modelCost).toFixed(3)}</div>
                     </div>
                   )
                 }}

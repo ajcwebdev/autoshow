@@ -7,6 +7,7 @@
   - [ChatGPT](#chatgpt)
   - [Claude](#claude)
   - [Gemini](#gemini)
+  - [Groq](#groq)
 
 ## Estimate LLM Cost
 
@@ -282,6 +283,73 @@ curl --json '{
   "options": {
     "gemini": "gemini-2.5-flash-preview-04-17",
     "geminiApiKey": ""
+  }
+}' http://localhost:3000/run-llm -s | json_pp
+```
+
+### Groq
+
+```bash
+curl --json '{
+  "filePath": "content/examples/audio-prompt.md",
+  "llmServices": "groq",
+  "options": {
+    "groqApiKey": ""
+  }
+}' http://localhost:3000/run-llm -s | json_pp
+```
+
+```bash
+curl --json '{
+  "filePath": "content/examples/audio-prompt.md",
+  "llmServices": "groq",
+  "options": {
+    "groq": "llama-3.3-70b-versatile",
+    "groqApiKey": ""
+  }
+}' http://localhost:3000/run-llm -s | json_pp
+```
+
+```bash
+curl --json '{
+  "filePath": "content/examples/audio-prompt.md",
+  "llmServices": "groq",
+  "options": {
+    "groq": "llama-3.1-8b-instant",
+    "groqApiKey": ""
+  }
+}' http://localhost:3000/run-llm -s | json_pp
+```
+
+```bash
+curl --json '{
+  "filePath": "content/examples/audio-prompt.md",
+  "llmServices": "groq",
+  "options": {
+    "groq": "llama3-70b-8192",
+    "groqApiKey": ""
+  }
+}' http://localhost:3000/run-llm -s | json_pp
+```
+
+```bash
+curl --json '{
+  "filePath": "content/examples/audio-prompt.md",
+  "llmServices": "groq",
+  "options": {
+    "groq": "llama3-8b-8192",
+    "groqApiKey": ""
+  }
+}' http://localhost:3000/run-llm -s | json_pp
+```
+
+```bash
+curl --json '{
+  "filePath": "content/examples/audio-prompt.md",
+  "llmServices": "groq",
+  "options": {
+    "groq": "gemma2-9b-it",
+    "groqApiKey": ""
   }
 }' http://localhost:3000/run-llm -s | json_pp
 ```

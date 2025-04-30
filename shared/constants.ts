@@ -8,12 +8,10 @@ export const ENV_VARS_MAP = {
   anthropicApiKey: 'ANTHROPIC_API_KEY',
   geminiApiKey: 'GEMINI_API_KEY',
 }
-
 export const PROCESS_TYPES = [
   { value: 'video', label: 'Video' },
   { value: 'file', label: 'File' },
 ]
-
 export const PROMPT_CHOICES = [
   { name: 'Titles', value: 'titles' },
   { name: 'Summary', value: 'summary' },
@@ -37,7 +35,6 @@ export const PROMPT_CHOICES = [
   { name: 'Social Post (Facebook)', value: 'facebook' },
   { name: 'Social Post (LinkedIn)', value: 'linkedin' },
 ]
-
 export const T_CONFIG = {
   deepgram: {
     serviceName: 'Deepgram',
@@ -69,7 +66,6 @@ export const T_CONFIG = {
     ]
   },
 }
-
 export const L_CONFIG = {
   skip: {
     serviceName: 'Skip LLM Processing',
@@ -119,6 +115,19 @@ export const L_CONFIG = {
       { modelName: 'Gemini 1.5 Flash', modelId: 'gemini-1.5-flash', inputCostC: 15, outputCostC: 60 },
       { modelName: 'Gemini 2.0 Flash-Lite', modelId: 'gemini-2.0-flash-lite', inputCostC: 7.5, outputCostC: 30 },
       { modelName: 'Gemini 1.5 Flash-8B', modelId: 'gemini-1.5-flash-8b', inputCostC: 7.5, outputCostC: 30 },
+    ]
+  },
+  groq: {
+    serviceName: 'Groq LLMs',
+    value: 'groq',
+    label: 'Groq',
+    apiKeyPropName: 'groqApiKey',
+    models: [
+      { modelName: 'LLaMA 3.3 70B Versatile', modelId: 'llama-3.3-70b-versatile', inputCostC: 100, outputCostC: 300 },
+      { modelName: 'LLaMA 3.1 8B Instant', modelId: 'llama-3.1-8b-instant', inputCostC: 10, outputCostC: 30 },
+      { modelName: 'LLaMA 3 70B', modelId: 'llama3-70b-8192', inputCostC: 70, outputCostC: 90 },
+      { modelName: 'LLaMA 3 8B', modelId: 'llama3-8b-8192', inputCostC: 5, outputCostC: 15 },
+      { modelName: 'Gemma 2 9B', modelId: 'gemma2-9b-it', inputCostC: 5, outputCostC: 15 },
     ]
   }
 }

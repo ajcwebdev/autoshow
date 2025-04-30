@@ -11,7 +11,8 @@ const {
   ASSEMBLY_API_KEY,
   OPENAI_API_KEY,
   ANTHROPIC_API_KEY,
-  GEMINI_API_KEY
+  GEMINI_API_KEY,
+  GROQ_API_KEY
 } = env
 
 export const requests = [
@@ -206,6 +207,66 @@ export const requests = [
     },
     endpoint: '/run-llm',
     outputFiles: ['19-gemini-2.0-flash.md', '19-gemini-2.0-flash.json'],
+  },
+  {
+    data: {
+      filePath: FILE_EXAMPLE,
+      llmServices: 'groq',
+      options: {
+        groq: 'llama-3.3-70b-versatile',
+        groqApiKey: GROQ_API_KEY
+      }
+    },
+    endpoint: '/run-llm',
+    outputFiles: ['20-groq-llama-3.3-70b-versatile.md', '20-groq-llama-3.3-70b-versatile.json'],
+  },
+  {
+    data: {
+      filePath: FILE_EXAMPLE,
+      llmServices: 'groq',
+      options: {
+        groq: 'llama-3.1-8b-instant',
+        groqApiKey: GROQ_API_KEY
+      }
+    },
+    endpoint: '/run-llm',
+    outputFiles: ['21-groq-llama-3.1-8b-instant.md', '21-groq-llama-3.1-8b-instant.json'],
+  },
+  {
+    data: {
+      filePath: FILE_EXAMPLE,
+      llmServices: 'groq',
+      options: {
+        groq: 'llama3-70b-8192',
+        groqApiKey: GROQ_API_KEY
+      }
+    },
+    endpoint: '/run-llm',
+    outputFiles: ['22-groq-llama3-70b-8192.md', '22-groq-llama3-70b-8192.json'],
+  },
+  {
+    data: {
+      filePath: FILE_EXAMPLE,
+      llmServices: 'groq',
+      options: {
+        groq: 'llama3-8b-8192',
+        groqApiKey: GROQ_API_KEY
+      }
+    },
+    endpoint: '/run-llm',
+    outputFiles: ['23-groq-llama3-8b-8192.md', '23-groq-llama3-8b-8192.json'],
+  },
+  {
+    data: {
+      filePath: FILE_EXAMPLE,
+      llmServices: 'groq',
+      options: {
+        groq: 'gemma2-9b-it',
+        groqApiKey: GROQ_API_KEY
+      }
+    },
+    endpoint: '/run-llm',
+    outputFiles: ['24-groq-gemma2-9b-it.md', '24-groq-gemma2-9b-it.json'],
   }
 ]
 

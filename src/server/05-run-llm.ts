@@ -7,7 +7,7 @@ import { l, err, logInitialFunctionCall } from '../logging.ts'
 import { readFile, writeFile, env } from '../utils.ts'
 import { L_CONFIG } from '../../shared/constants.ts'
 import type { FastifyRequest, FastifyReply } from 'fastify'
-import type { ProcessingOptions, ShowNoteMetadata, LLMResult, RunLLMBody, ChatGPTModelValue, ClaudeModelValue, GeminiModelValue } from '../../shared/types.ts'
+import type { ProcessingOptions, ShowNoteMetadata, LLMResult, RunLLMBody, ChatGPTModelValue, ClaudeModelValue, GeminiModelValue, GroqModelValue } from '../../shared/types.ts'
 
 export async function callChatGPT(prompt: string, transcript: string, modelValue: ChatGPTModelValue) {
   if (!env['OPENAI_API_KEY']) throw new Error('Missing OPENAI_API_KEY')
@@ -21,6 +21,22 @@ export async function callChatGPT(prompt: string, transcript: string, modelValue
     return { content, usage: { stopReason: firstChoice.finish_reason ?? 'unknown', input: response.usage?.prompt_tokens, output: response.usage?.completion_tokens, total: response.usage?.total_tokens } }
   } catch (error) {
     err(`Error in callChatGPT: ${(error as Error).message}`)
+    throw error
+  }
+}
+
+export async function callGroq(prompt: string, transcript: string, modelValue: GroqModelValue) {
+  if (!env['GROQ_API_KEY']) throw new Error('Missing GROQ_API_KEY environment variable.')
+  const groq = new OpenAI({ apiKey: env['GROQ_API_KEY'], baseURL: 'https://api.groq.com/openai/v1' })
+  const combinedPrompt = `${prompt}\n${transcript}`
+  try {
+    const response = await groq.chat.completions.create({ model: modelValue, max_completion_tokens: 4000, messages: [{ role: 'user', content: combinedPrompt }] })
+    const firstChoice = response.choices[0]
+    if (!firstChoice?.message?.content) throw new Error('No valid response from the API')
+    const content = firstChoice.message.content
+    return { content, usage: { stopReason: firstChoice.finish_reason ?? 'unknown', input: response.usage?.prompt_tokens, output: response.usage?.completion_tokens, total: response.usage?.total_tokens } }
+  } catch (error) {
+    err(`Error in callGroq: ${(error as Error).message}`)
     throw error
   }
 }
@@ -138,12 +154,10 @@ export async function handleRunLLM(request: FastifyRequest, reply: FastifyReply)
       }
     })
     if (metaFromBody) Object.assign(metadata, metaFromBody)
-
     l.step(`\nStep 5 - Run Language Model\n`)
     logInitialFunctionCall('handleRunLLM', { llmServices, metadata })
     metadata.walletAddress = options['walletAddress'] || metadata.walletAddress
     metadata.mnemonic = options['mnemonic'] || metadata.mnemonic
-
     const finalPath = filePath.replace(/\.[^/.]+$/, '')
     let showNotesResult = ''
     let userModel = ''
@@ -166,6 +180,9 @@ export async function handleRunLLM(request: FastifyRequest, reply: FastifyReply)
         case 'gemini':
           showNotesData = await retryLLMCall(() => callGemini(prompt, transcript, userModel as GeminiModelValue))
           break
+        case 'groq':
+          showNotesData = await retryLLMCall(() => callGroq(prompt, transcript, userModel as GroqModelValue))
+          break
         default:
           throw new Error(`Unknown LLM service: ${llmServices}`)
       }
@@ -180,7 +197,6 @@ export async function handleRunLLM(request: FastifyRequest, reply: FastifyReply)
       l.dim(`\n  Writing front matter + prompt + transcript to file:\n    - ${noLLMFile}`)
       await writeFile(noLLMFile, `${frontMatter}\n${prompt}\n## Transcript\n\n${transcript}`)
     }
-
     const finalCost = (transcriptionCost || 0) + numericLLMCost
     const insertedNote = {
       showLink: metadata.showLink ?? '',

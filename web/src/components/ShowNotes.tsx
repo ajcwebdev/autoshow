@@ -8,7 +8,7 @@ export function ShowNotes(props: { refreshCount: number }) {
   
   const fetchShowNotes = async () => {
     try {
-      const response = await fetch('http://localhost:3000/show-notes')
+      const response = await fetch('http://localhost:4321/api/show-notes')
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`)
       }

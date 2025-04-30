@@ -28,7 +28,7 @@ export const PromptsStep = (props: {
     props.setError(null)
     props.setFinalMarkdownFile('')
     try {
-      const promptRes = await fetch('http://localhost:3000/select-prompt', {
+      const promptRes = await fetch('http://localhost:4321/api/select-prompt', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ options: { prompt: props.selectedPrompts } })
@@ -42,7 +42,7 @@ export const PromptsStep = (props: {
         prompt: combinedPrompt,
         finalPath: props.finalPath
       }
-      const saveRes = await fetch('http://localhost:3000/save-markdown', {
+      const saveRes = await fetch('http://localhost:4321/api/save-markdown', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(saveBody)

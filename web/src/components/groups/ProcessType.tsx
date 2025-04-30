@@ -34,24 +34,35 @@ export const ProcessTypeStep = (props: {
         body.filePath = props.filePath
         body.options.file = props.filePath
       }
-      const res = await fetch('http://localhost:3000/download-audio', {
+      
+      const res = await fetch('http://localhost:4321/api/download-audio', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body)
       })
+      
       if (!res.ok) throw new Error('Error downloading audio and metadata')
       const resData = await res.json()
       props.setFrontMatter(resData.frontMatter || '')
       props.setMetadata(resData.metadata || {})
       props.setFinalPath(resData.finalPath || '')
+      
+      // Use the outputPath from download-audio response directly
       const localFilePath = resData.outputPath
+      console.log(`Using output path from download-audio: ${localFilePath}`)
+      
       const costBody = { type: 'transcriptCost', filePath: localFilePath }
       const response = await fetch('http://localhost:4321/api/cost', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(costBody)
       })
-      if (!response.ok) throw new Error('Failed to get transcription cost')
+      
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(`Failed to get transcription cost: ${errorData.error || response.statusText}`)
+      }
+      
       const data = await response.json() as { transcriptCost: TranscriptionCosts }
       props.setTranscriptionCosts(data.transcriptCost)
       props.setCurrentStep(2)

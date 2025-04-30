@@ -19,7 +19,7 @@ export const WalletStep = (props: {
     props.setError(null)
     try {
       if (!props.walletAddress || !props.mnemonic) throw new Error('Please enter wallet address and mnemonic')
-      const balanceRes = await fetch('http://localhost:3000/dash-balance', {
+      const balanceRes = await fetch('http://localhost:4321/api/dash-balance', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ mnemonic: props.mnemonic, walletAddress: props.walletAddress })

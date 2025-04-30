@@ -7,15 +7,15 @@ import { OpenAI } from "openai"
 import { GoogleGenerativeAI } from "@google/generative-ai"
 import { readFile, writeFile, env } from "../../../../src/utils.ts"
 import { dbService } from "../../../../src/db.ts"
-import { L_CONFIG } from "../../../../shared/constants.ts"
-import type { 
-  ProcessingOptions, 
-  ShowNoteMetadata, 
-  LLMResult, 
-  ChatGPTModelValue, 
-  ClaudeModelValue, 
-  GeminiModelValue, 
-  GroqModelValue 
+import { L_CONFIG, ENV_VARS_MAP } from "../../../../shared/constants.ts"
+import type {
+  ProcessingOptions,
+  ShowNoteMetadata,
+  LLMResult,
+  ChatGPTModelValue,
+  ClaudeModelValue,
+  GeminiModelValue,
+  GroqModelValue
 } from "../../../../shared/types.ts"
 
 export const POST: APIRoute = async ({ request }) => {
@@ -23,12 +23,18 @@ export const POST: APIRoute = async ({ request }) => {
   try {
     const body = await request.json()
     console.log(`[api/run-llm] Raw request body: ${JSON.stringify(body, null, 2)}`)
-    
     const filePath = body?.filePath
     const llmServices = body?.llmServices
     const options: ProcessingOptions = body?.options || {}
-    
     console.log(`[api/run-llm] filePath: ${filePath}, llmServices: ${llmServices}`)
+    
+    // Set environment variables from options
+    if (options) {
+      Object.entries(ENV_VARS_MAP).forEach(([bodyKey, envKey]) => {
+        const value = options[bodyKey]
+        if (value) process.env[envKey] = value
+      })
+    }
     
     if (!filePath) {
       console.error("[api/run-llm] Missing filePath")
@@ -49,7 +55,6 @@ export const POST: APIRoute = async ({ request }) => {
     const lines = raw.split('\n')
     let frontMatterLines: string[] = []
     let i = 0
-    
     if (lines[0]?.trim() === '---') {
       i = 1
       while (i < lines.length && lines[i]?.trim() !== '---') {
@@ -63,25 +68,23 @@ export const POST: APIRoute = async ({ request }) => {
     const rest = lines.slice(i).join('\n')
     const restLines = rest.split('\n')
     const transcriptIndex = restLines.findIndex(l => l.trim() === '## Transcript')
-    
     let prompt = ''
     let transcript = ''
-    
     if (transcriptIndex > -1) {
       prompt = restLines.slice(0, transcriptIndex).join('\n').trim()
       transcript = restLines.slice(transcriptIndex + 1).join('\n').trim()
     }
     
-    const metadata: ShowNoteMetadata = { 
-      showLink: '', 
-      channel: '', 
-      channelURL: '', 
-      title: '', 
-      description: '', 
-      publishDate: '', 
-      coverImage: '', 
-      walletAddress: '', 
-      mnemonic: '' 
+    const metadata: ShowNoteMetadata = {
+      showLink: '',
+      channel: '',
+      channelURL: '',
+      title: '',
+      description: '',
+      publishDate: '',
+      coverImage: '',
+      walletAddress: '',
+      mnemonic: ''
     }
     
     frontMatterLines.forEach(line => {
@@ -98,10 +101,8 @@ export const POST: APIRoute = async ({ request }) => {
     if (metaFromBody) Object.assign(metadata, metaFromBody)
     
     console.log("[api/run-llm] Processing with Language Model")
-    
     metadata.walletAddress = options['walletAddress'] || metadata.walletAddress
     metadata.mnemonic = options['mnemonic'] || metadata.mnemonic
-    
     const finalPath = filePath.replace(/\.[^/.]+$/, '')
     let showNotesResult = ''
     let userModel = ''
@@ -132,30 +133,26 @@ export const POST: APIRoute = async ({ request }) => {
     }
     
     async function callChatGPT(modelValue: ChatGPTModelValue): Promise<LLMResult> {
-      if (!env['OPENAI_API_KEY']) throw new Error('Missing OPENAI_API_KEY')
-      
-      const openai = new OpenAI({ apiKey: env['OPENAI_API_KEY'] })
+      if (!process.env.OPENAI_API_KEY) throw new Error('Missing OPENAI_API_KEY')
+      const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
       const combinedPrompt = `${prompt}\n${transcript}`
-      
       try {
-        const response = await openai.chat.completions.create({ 
-          model: modelValue, 
-          max_completion_tokens: 4000, 
-          messages: [{ role: 'user', content: combinedPrompt }] 
+        const response = await openai.chat.completions.create({
+          model: modelValue,
+          max_completion_tokens: 4000,
+          messages: [{ role: 'user', content: combinedPrompt }]
         })
-        
         const firstChoice = response.choices[0]
         if (!firstChoice?.message?.content) throw new Error('No valid response from the API')
-        
         const content = firstChoice.message.content
-        return { 
-          content, 
-          usage: { 
-            stopReason: firstChoice.finish_reason ?? 'unknown', 
-            input: response.usage?.prompt_tokens, 
-            output: response.usage?.completion_tokens, 
-            total: response.usage?.total_tokens 
-          } 
+        return {
+          content,
+          usage: {
+            stopReason: firstChoice.finish_reason ?? 'unknown',
+            input: response.usage?.prompt_tokens,
+            output: response.usage?.completion_tokens,
+            total: response.usage?.total_tokens
+          }
         }
       } catch (error) {
         console.error(`[api/run-llm] Error in callChatGPT: ${error}`)
@@ -164,34 +161,29 @@ export const POST: APIRoute = async ({ request }) => {
     }
     
     async function callGroq(modelValue: GroqModelValue): Promise<LLMResult> {
-      if (!env['GROQ_API_KEY']) throw new Error('Missing GROQ_API_KEY environment variable.')
-      
-      const groq = new OpenAI({ 
-        apiKey: env['GROQ_API_KEY'], 
-        baseURL: 'https://api.groq.com/openai/v1' 
+      if (!process.env.GROQ_API_KEY) throw new Error('Missing GROQ_API_KEY environment variable.')
+      const groq = new OpenAI({
+        apiKey: process.env.GROQ_API_KEY,
+        baseURL: 'https://api.groq.com/openai/v1'
       })
-      
       const combinedPrompt = `${prompt}\n${transcript}`
-      
       try {
-        const response = await groq.chat.completions.create({ 
-          model: modelValue, 
-          max_completion_tokens: 4000, 
-          messages: [{ role: 'user', content: combinedPrompt }] 
+        const response = await groq.chat.completions.create({
+          model: modelValue,
+          max_completion_tokens: 4000,
+          messages: [{ role: 'user', content: combinedPrompt }]
         })
-        
         const firstChoice = response.choices[0]
         if (!firstChoice?.message?.content) throw new Error('No valid response from the API')
-        
         const content = firstChoice.message.content
-        return { 
-          content, 
-          usage: { 
-            stopReason: firstChoice.finish_reason ?? 'unknown', 
-            input: response.usage?.prompt_tokens, 
-            output: response.usage?.completion_tokens, 
-            total: response.usage?.total_tokens 
-          } 
+        return {
+          content,
+          usage: {
+            stopReason: firstChoice.finish_reason ?? 'unknown',
+            input: response.usage?.prompt_tokens,
+            output: response.usage?.completion_tokens,
+            total: response.usage?.total_tokens
+          }
         }
       } catch (error) {
         console.error(`[api/run-llm] Error in callGroq: ${error}`)
@@ -200,34 +192,29 @@ export const POST: APIRoute = async ({ request }) => {
     }
     
     async function callClaude(modelValue: ClaudeModelValue): Promise<LLMResult> {
-      if (!env['ANTHROPIC_API_KEY']) throw new Error('Missing ANTHROPIC_API_KEY environment variable.')
-      
-      const openai = new OpenAI({ 
-        apiKey: env['ANTHROPIC_API_KEY'], 
-        baseURL: 'https://api.anthropic.com/v1/' 
+      if (!process.env.ANTHROPIC_API_KEY) throw new Error('Missing ANTHROPIC_API_KEY environment variable.')
+      const openai = new OpenAI({
+        apiKey: process.env.ANTHROPIC_API_KEY,
+        baseURL: 'https://api.anthropic.com/v1/'
       })
-      
       const combinedPrompt = `${prompt}\n${transcript}`
-      
       try {
-        const response = await openai.chat.completions.create({ 
-          model: modelValue, 
-          max_completion_tokens: 4000, 
-          messages: [{ role: 'user', content: combinedPrompt }] 
+        const response = await openai.chat.completions.create({
+          model: modelValue,
+          max_completion_tokens: 4000,
+          messages: [{ role: 'user', content: combinedPrompt }]
         })
-        
         const firstChoice = response.choices[0]
         if (!firstChoice?.message?.content) throw new Error('No valid text content generated by Claude.')
-        
         const content = firstChoice.message.content
-        return { 
-          content, 
-          usage: { 
-            stopReason: firstChoice.finish_reason ?? 'unknown', 
-            input: response.usage?.prompt_tokens, 
-            output: response.usage?.completion_tokens, 
-            total: response.usage?.total_tokens 
-          } 
+        return {
+          content,
+          usage: {
+            stopReason: firstChoice.finish_reason ?? 'unknown',
+            input: response.usage?.prompt_tokens,
+            output: response.usage?.completion_tokens,
+            total: response.usage?.total_tokens
+          }
         }
       } catch (error) {
         console.error(`[api/run-llm] Error in callClaude: ${error}`)
@@ -240,30 +227,26 @@ export const POST: APIRoute = async ({ request }) => {
     }
     
     async function callGemini(modelValue: GeminiModelValue): Promise<LLMResult> {
-      if (!env['GEMINI_API_KEY']) throw new Error('Missing GEMINI_API_KEY environment variable.')
-      
-      const genAI = new GoogleGenerativeAI(env['GEMINI_API_KEY'])
+      if (!process.env.GEMINI_API_KEY) throw new Error('Missing GEMINI_API_KEY environment variable.')
+      const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY)
       const geminiModel = genAI.getGenerativeModel({ model: modelValue })
       const combinedPrompt = `${prompt}\n${transcript}`
-      
       const maxRetries = 3
       for (let attempt = 1; attempt <= maxRetries; attempt++) {
         try {
           const result = await geminiModel.generateContent(combinedPrompt)
           const response = await result.response
           const text = response.text()
-          
           const { usageMetadata } = response
           const { promptTokenCount, candidatesTokenCount, totalTokenCount } = usageMetadata ?? {}
-          
-          return { 
-            content: text, 
-            usage: { 
-              stopReason: 'complete', 
-              input: promptTokenCount, 
-              output: candidatesTokenCount, 
-              total: totalTokenCount 
-            } 
+          return {
+            content: text,
+            usage: {
+              stopReason: 'complete',
+              input: promptTokenCount,
+              output: candidatesTokenCount,
+              total: totalTokenCount
+            }
           }
         } catch (error) {
           console.error(`[api/run-llm] Error in callGemini (attempt ${attempt}/${maxRetries}): ${error}`)
@@ -271,24 +254,19 @@ export const POST: APIRoute = async ({ request }) => {
           await delay(2 ** attempt * 1000)
         }
       }
-      
       throw new Error('Exhausted all Gemini API call retries without success.')
     }
     
     if (llmServices) {
       console.log(`[api/run-llm] Processing with '${llmServices}' Language Model`)
-      
       const config = L_CONFIG[llmServices as keyof typeof L_CONFIG]
       if (!config) throw new Error(`Unknown LLM service: ${llmServices}`)
-      
       const optionValue = options[llmServices as keyof ProcessingOptions]
       const defaultModelId = config.models[0]?.modelId ?? ''
-      userModel = typeof optionValue === 'string' && optionValue !== 'true' && optionValue.trim() !== '' 
-        ? optionValue 
+      userModel = typeof optionValue === 'string' && optionValue !== 'true' && optionValue.trim() !== ''
+        ? optionValue
         : defaultModelId
-      
       let showNotesData: LLMResult
-      
       switch (llmServices) {
         case 'chatgpt':
           showNotesData = await retryLLMCall(() => callChatGPT(userModel as ChatGPTModelValue))
@@ -305,29 +283,21 @@ export const POST: APIRoute = async ({ request }) => {
         default:
           throw new Error(`Unknown LLM service: ${llmServices}`)
       }
-      
       const showNotes = showNotesData.content
       const outputFilename = `${finalPath}-${llmServices}-shownotes.md`
-      
-      // Get full output path
       const fullOutputPath = path.join(projectRoot, outputFilename)
-      
       await writeFile(fullOutputPath, `${frontMatter}\n${showNotes}\n\n## Transcript\n\n${transcript}`)
-      
       console.log(`[api/run-llm] LLM processing completed, output written to: ${outputFilename}`)
       showNotesResult = showNotes
     } else {
       console.log('[api/run-llm] No LLM selected, skipping processing')
-      
       const noLLMFile = `${finalPath}-prompt.md`
       const fullNoLLMPath = path.join(projectRoot, noLLMFile)
-      
       console.log(`[api/run-llm] Writing front matter + prompt + transcript to: ${noLLMFile}`)
       await writeFile(fullNoLLMPath, `${frontMatter}\n${prompt}\n## Transcript\n\n${transcript}`)
     }
     
     const finalCost = (parseFloat(transcriptionCost as string) || 0) + numericLLMCost
-    
     const insertedNote = {
       showLink: metadata.showLink ?? '',
       channel: metadata.channel ?? '',
@@ -352,11 +322,10 @@ export const POST: APIRoute = async ({ request }) => {
     }
     
     const newRecord = await dbService.insertShowNote(insertedNote)
-    
     console.log("[api/run-llm] Successfully processed LLM request")
-    return new Response(JSON.stringify({ 
-      showNote: newRecord, 
-      showNotesResult 
+    return new Response(JSON.stringify({
+      showNote: newRecord,
+      showNotesResult
     }), { status: 200 })
   } catch (error) {
     console.error(`[api/run-llm] Caught error: ${error}`)

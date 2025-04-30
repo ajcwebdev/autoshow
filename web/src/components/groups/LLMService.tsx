@@ -49,7 +49,7 @@ export const LLMServiceStep = (props: {
       runLLMBody.options.transcriptionCost = props.transcriptionCostUsed
       runLLMBody.options.metadata = props.metadata
       runLLMBody.options.llmCost = cost
-      const runLLMRes = await fetch('http://localhost:3000/run-llm', {
+      const runLLMRes = await fetch('http://localhost:4321/api/run-llm', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(runLLMBody)

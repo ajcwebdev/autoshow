@@ -38,7 +38,7 @@ export const TranscriptionStep = (props: {
       rtBody.options[props.transcriptionService] = props.transcriptionModel
       if (props.transcriptionService === 'assembly') rtBody.options.assemblyApiKey = props.transcriptionApiKey
       if (props.transcriptionService === 'deepgram') rtBody.options.deepgramApiKey = props.transcriptionApiKey
-      const rtRes = await fetch('http://localhost:3000/run-transcription', {
+      const rtRes = await fetch('http://localhost:4321/api/run-transcription', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(rtBody)

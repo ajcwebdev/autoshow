@@ -8,7 +8,7 @@ export function ShowNote() {
   
   onMount(() => {
     const id = window.location.pathname.split('/').pop()
-    fetch(`http://localhost:3000/show-notes/${id}`)
+    fetch(`http://localhost:4321/api/show-notes/${id}`)
       .then((response) => response.json())
       .then((data) => {
         setShowNote(data.showNote)

@@ -1,4 +1,4 @@
-// web/src/components/Form.tsx
+// src/components/Form.tsx
 
 import { createSignal } from 'solid-js'
 import { WalletStep } from './groups/Wallet'

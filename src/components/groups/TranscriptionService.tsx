@@ -1,4 +1,4 @@
-// web/src/components/groups/TranscriptionService.tsx
+// src/components/groups/TranscriptionService.tsx
 
 import { For, Show } from 'solid-js'
 import type { Setter } from 'solid-js'

@@ -1,4 +1,4 @@
-// web/src/components/groups/Prompts.tsx
+// src/components/groups/Prompts.tsx
 
 import { For } from 'solid-js'
 import type { Setter } from 'solid-js'

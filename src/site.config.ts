@@ -1,4 +1,4 @@
-// web/src/site.config.ts
+// src/site.config.ts
 
 import type { SiteConfig } from "./types.ts"
 

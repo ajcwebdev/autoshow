@@ -1,4 +1,4 @@
-// web/src/components/groups/LLMService.tsx
+// src/components/groups/LLMService.tsx
 
 import { createSignal, For, Show } from 'solid-js'
 import { L_CONFIG } from '../../constants.ts'

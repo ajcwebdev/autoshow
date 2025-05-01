@@ -1,4 +1,4 @@
-// web/src/pages/api/dash-balance.ts
+// src/pages/api/dash-balance.ts
 
 import type { APIRoute, APIContext } from "astro"
 import Dash from "dash"

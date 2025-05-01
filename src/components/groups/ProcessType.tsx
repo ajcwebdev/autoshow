@@ -1,4 +1,4 @@
-// web/src/components/groups/ProcessType.tsx
+// src/components/groups/ProcessType.tsx
 
 import { For, Show } from 'solid-js'
 import type { Setter } from 'solid-js'

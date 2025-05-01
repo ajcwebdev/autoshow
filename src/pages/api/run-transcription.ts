@@ -1,4 +1,4 @@
-// web/src/pages/api/run-transcription.ts
+// src/pages/api/run-transcription.ts
 
 import type { APIRoute } from "astro"
 import path from "path"

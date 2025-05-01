@@ -1,4 +1,4 @@
-// web/src/components/groups/Wallet.tsx
+// src/components/groups/Wallet.tsx
 
 import type { Setter } from 'solid-js'
 

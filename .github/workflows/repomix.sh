@@ -10,6 +10,7 @@ repomix \
   --style markdown \
   --remove-comments \
   --remove-empty-lines \
+  --no-git-sort-by-changes \
   --top-files-len 20 \
   --token-count-encoding "o200k_base" \
   --include "src,server.mjs,package.json" \

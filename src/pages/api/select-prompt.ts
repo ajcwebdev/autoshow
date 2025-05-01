@@ -1,4 +1,4 @@
-// web/src/pages/api/select-prompt.ts
+// src/pages/api/select-prompt.ts
 
 import type { APIRoute } from "astro"
 import { readFile } from "../../utils.ts"

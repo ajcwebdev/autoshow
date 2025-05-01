@@ -1,4 +1,4 @@
-// web/src/components/ShowNotes.tsx
+// src/components/ShowNotes.tsx
 
 import { createSignal, onMount, createEffect } from 'solid-js'
 import type { ShowNoteType } from '../types.ts'

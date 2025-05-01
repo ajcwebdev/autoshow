@@ -1,4 +1,4 @@
-// web/src/pages/api/save-markdown.ts
+// src/pages/api/save-markdown.ts
 
 import type { APIRoute } from "astro"
 import path from "path"

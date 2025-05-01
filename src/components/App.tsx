@@ -1,4 +1,4 @@
-// web/src/components/App.tsx
+// src/components/App.tsx
 
 import { createSignal } from 'solid-js'
 import Form from './Form'

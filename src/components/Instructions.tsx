@@ -1,4 +1,4 @@
-// web/src/components/Instructions.tsx
+// src/components/Instructions.tsx
 
 import type { Component } from 'solid-js'
 

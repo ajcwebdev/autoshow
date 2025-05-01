@@ -1,4 +1,4 @@
-// web/src/pages/api/cost.ts
+// src/pages/api/cost.ts
 
 import type { APIRoute } from "astro"
 import path from "path"

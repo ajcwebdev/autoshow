@@ -1,8 +1,9 @@
 // src/db.ts
 
-import { l } from './utils.ts'
-import { env } from './utils.ts'
-import type { ShowNoteType } from './types.ts'
+import { l } from './utils'
+import { env } from './utils'
+import { db, ShowNotes, eq } from 'astro:db'
+import type { ShowNoteType } from './types'
 
 export interface DatabaseService {
   insertShowNote: (showNote: ShowNoteType) => Promise<any>
@@ -13,131 +14,209 @@ export interface DatabaseService {
 export class NoOpDatabaseService implements DatabaseService {
   async insertShowNote(_showNote: ShowNoteType) {
     l.dim('\n  CLI mode: Database operations disabled - skipping show note insertion')
+    console.log(`[NoOpDatabaseService] insertShowNote called with title: ${_showNote.title}`)
+    console.log(`[NoOpDatabaseService] Returning mock show note object`)
     return Promise.resolve({ ..._showNote })
   }
+  
   async getShowNote(_id: number) {
     l.dim('\n  CLI mode: Database operations disabled - cannot retrieve show notes')
+    console.log(`[NoOpDatabaseService] getShowNote called with ID: ${_id}`)
+    console.log(`[NoOpDatabaseService] Returning null`)
     return Promise.resolve(null)
   }
+  
   async getShowNotes() {
     l.dim('\n  CLI mode: Database operations disabled - cannot retrieve show notes')
+    console.log(`[NoOpDatabaseService] getShowNotes called`)
+    console.log(`[NoOpDatabaseService] Returning empty array`)
     return Promise.resolve([])
   }
 }
 
-export class PrismaDatabaseService implements DatabaseService {
-  private prismaClient: any | null = null
+export class AstroDbDatabaseService implements DatabaseService {
   private initialized = false
-
+  
   constructor() {
-    this.prismaClient = null
+    console.log('[AstroDbDatabaseService] Constructor called')
   }
-
+  
   async init() {
-    if (this.initialized) return this
-    try {
-      const { PrismaClient } = await import('@prisma/client')
-      this.prismaClient = new PrismaClient()
-      this.initialized = true
-    } catch (error) {
-      l.dim('\n  Warning: Could not initialize PrismaClient. Using NoOp database service instead.\n')
+    if (this.initialized) {
+      console.log('[AstroDbDatabaseService] Already initialized')
+      return this
     }
+    
+    try {
+      console.log('[AstroDbDatabaseService] Initializing...')
+      this.initialized = true
+      console.log('[AstroDbDatabaseService] Initialized successfully')
+    } catch (error) {
+      console.error('[AstroDbDatabaseService] Failed to initialize:', error)
+      throw error
+    }
+    
     return this
   }
-
+  
   async insertShowNote(showNote: ShowNoteType) {
-    if (!this.initialized) await this.init()
-    if (!this.prismaClient) {
-      l.dim('\n  Database unavailable - skipping show note insertion')
-      return Promise.resolve({ ...showNote })
+    if (!this.initialized) {
+      console.log('[AstroDbDatabaseService] Initializing before insert')
+      await this.init()
     }
+    
     l.dim('\n  Inserting show note into the database...')
-    l.dim(`  * walletAddress: ${showNote.walletAddress}`)
-    l.dim(`  * mnemonic: ${showNote.mnemonic}`)
-
+    console.log(`[AstroDbDatabaseService] insertShowNote called with:`)
+    console.log(`  * id: ${showNote.id}`)
+    console.log(`  * title: ${showNote.title}`)
+    console.log(`  * walletAddress: ${showNote.walletAddress}`)
+    console.log(`  * mnemonic: ${showNote.mnemonic}`)
+    
     const {
       showLink, channel, channelURL, title, description, publishDate, coverImage,
-      frontmatter, prompt, transcript, llmOutput, walletAddress, mnemonic
+      frontmatter, prompt, transcript, llmOutput, walletAddress, mnemonic,
+      llmService, llmModel, llmCost, transcriptionService, transcriptionModel,
+      transcriptionCost, finalCost
     } = showNote
-
+    
     try {
-      const newRecord = await this.prismaClient.show_notes.create({
-        data: {
-          showLink: showLink ?? null,
-          channel: channel ?? null,
-          channelURL: channelURL ?? null,
-          title,
-          description: description ?? null,
-          publishDate,
-          coverImage: coverImage ?? null,
-          frontmatter: frontmatter ?? null,
-          prompt: prompt ?? null,
-          transcript: transcript ?? null,
-          llmOutput: llmOutput ?? null,
-          walletAddress: walletAddress ?? null,
-          mnemonic: mnemonic ?? null,
-          llmService: showNote.llmService ?? null,
-          llmModel: showNote.llmModel ?? null,
-          llmCost: showNote.llmCost ?? null,
-          transcriptionService: showNote.transcriptionService ?? null,
-          transcriptionModel: showNote.transcriptionModel ?? null,
-          transcriptionCost: showNote.transcriptionCost ?? null,
-          finalCost: showNote.finalCost ?? null
-        }
-      })
+      console.log('[AstroDbDatabaseService] Attempting to insert into ShowNotes table')
+      
+      const insertData = {
+        showLink: showLink ?? null,
+        channel: channel ?? null,
+        channelURL: channelURL ?? null,
+        title,
+        description: description ?? null,
+        publishDate,
+        coverImage: coverImage ?? null,
+        frontmatter: frontmatter ?? null,
+        prompt: prompt ?? null,
+        transcript: transcript ?? null,
+        llmOutput: llmOutput ?? null,
+        walletAddress: walletAddress ?? null,
+        mnemonic: mnemonic ?? null,
+        llmService: llmService ?? null,
+        llmModel: llmModel ?? null,
+        llmCost: llmCost ?? null,
+        transcriptionService: transcriptionService ?? null,
+        transcriptionModel: transcriptionModel ?? null,
+        transcriptionCost: transcriptionCost ?? null,
+        finalCost: finalCost ?? null
+      }
+      
+      console.log('[AstroDbDatabaseService] Insert data prepared:', Object.keys(insertData))
+      
+      const newRecord = await db.insert(ShowNotes).values(insertData).returning()
+      
+      console.log('[AstroDbDatabaseService] Record inserted successfully:', newRecord)
       l.dim('    - Show note inserted successfully.\n')
-      return newRecord
+      
+      return newRecord[0]
     } catch (error) {
-      l.dim(`    - Failed to insert show note: ${(error as Error).message}\n`)
+      console.error('[AstroDbDatabaseService] Insert failed:', error)
+      
+      if (error instanceof Error) {
+        console.error('[AstroDbDatabaseService] Database error details:', error.message)
+      }
+      
+      l.dim(`    - Failed to insert show note: ${error instanceof Error ? error.message : String(error)}\n`)
       return { ...showNote }
     }
   }
-
+  
   async getShowNote(id: number) {
-    if (!this.initialized) await this.init()
-    if (!this.prismaClient) return null
-
+    if (!this.initialized) {
+      console.log('[AstroDbDatabaseService] Initializing before get')
+      await this.init()
+    }
+    
+    console.log(`[AstroDbDatabaseService] getShowNote called with ID: ${id}`)
+    
     try {
-      return await this.prismaClient.show_notes.findUnique({
-        where: {
-          id: id
-        }
-      })
+      console.log('[AstroDbDatabaseService] Querying ShowNotes table')
+      
+      const records = await db
+        .select()
+        .from(ShowNotes)
+        .where(eq(ShowNotes.id, id))
+        .limit(1)
+      
+      console.log(`[AstroDbDatabaseService] Query returned ${records.length} records`)
+      
+      if (records.length === 0) {
+        console.log(`[AstroDbDatabaseService] No record found for ID: ${id}`)
+        return null
+      }
+      
+      console.log(`[AstroDbDatabaseService] Found record: ${records[0].title}`)
+      return records[0]
     } catch (error) {
-      l.dim(`    - Failed to get show note: ${(error as Error).message}\n`)
+      console.error('[AstroDbDatabaseService] Get failed:', error)
+      
+      if (error instanceof Error) {
+        console.error('[AstroDbDatabaseService] Database error details:', error.message)
+      }
+      
+      l.dim(`    - Failed to get show note: ${error instanceof Error ? error.message : String(error)}\n`)
       return null
     }
   }
-
+  
   async getShowNotes() {
-    if (!this.initialized) await this.init()
-    if (!this.prismaClient) return []
-
+    if (!this.initialized) {
+      console.log('[AstroDbDatabaseService] Initializing before getAll')
+      await this.init()
+    }
+    
+    console.log('[AstroDbDatabaseService] getShowNotes called')
+    
     try {
-      return await this.prismaClient.show_notes.findMany({
-        orderBy: {
-          publishDate: 'desc'
-        }
-      })
+      console.log('[AstroDbDatabaseService] Querying all ShowNotes')
+      
+      const records = await db
+        .select()
+        .from(ShowNotes)
+        .orderBy(ShowNotes.publishDate)
+      
+      console.log(`[AstroDbDatabaseService] Found ${records.length} records`)
+      
+      return records
     } catch (error) {
-      l.dim(`    - Failed to get show notes: ${(error as Error).message}\n`)
+      console.error('[AstroDbDatabaseService] GetAll failed:', error)
+      
+      if (error instanceof Error) {
+        console.error('[AstroDbDatabaseService] Database error details:', error.message)
+      }
+      
+      l.dim(`    - Failed to get show notes: ${error instanceof Error ? error.message : String(error)}\n`)
       return []
     }
   }
 }
 
 function isServerMode() {
-  return env['DATABASE_URL'] !== undefined ||
+  console.log('[dbService] Checking server mode...')
+  console.log('[dbService] DATABASE_URL:', env['DATABASE_URL'] ? 'set' : 'not set')
+  console.log('[dbService] PGHOST:', env['PGHOST'] ? 'set' : 'not set')
+  console.log('[dbService] SERVER_MODE:', env['SERVER_MODE'])
+  
+  const isServer = env['DATABASE_URL'] !== undefined ||
          env['PGHOST'] !== undefined ||
          env['SERVER_MODE'] === 'true'
+  
+  console.log('[dbService] Server mode result:', isServer)
+  return isServer
 }
 
 let dbServiceInstance: DatabaseService | null = null
 
 if (isServerMode()) {
+  console.log('[dbService] Server mode detected - initializing AstroDbDatabaseService')
   l.dim('  Server mode detected - initializing database service')
-  dbServiceInstance = new PrismaDatabaseService()
+  dbServiceInstance = new AstroDbDatabaseService()
 } else {
+  console.log('[dbService] CLI mode detected - using NoOpDatabaseService')
   l.dim('  CLI mode detected - using no-op database service')
   dbServiceInstance = new NoOpDatabaseService()
 }

@@ -2,157 +2,121 @@
 
 ## Outline
 
-- [Setup and Configuration](#setup-and-configuration)
-  - [Project Setup](#project-setup)
-  - [Environment Management](#environment-management)
-- [Schema Management](#schema-management)
-  - [Database Verification](#database-verification)
-  - [Migrations](#migrations)
-  - [Schema Synchronization](#schema-synchronization)
-- [Local Development](#local-development)
-- [Deployment](#deployment)
-- [Database Lifecycle Management](#database-lifecycle-management)
-  - [Data Operations](#data-operations)
-  - [Testing](#testing)
-  - [Maintenance and Troubleshooting](#maintenance-and-troubleshooting)
-  - [Database Branching](#database-branching)
+- [Database Setup Process](#database-setup-process)
+  - [Link to Remote Project](#link-to-remote-project)
+  - [Start Local Development](#start-local-development)
+  - [Create Migration](#create-migration)
+  - [Apply Migrations Locally](#apply-migrations-locally)
+  - [Push Migration to Remote](#push-migration-to-remote)
+  - [Seed the Database](#seed-the-database)
+- [Database Integration Commands](#database-integration-commands)
+  - [Push Astro DB Schema to Supabase](#push-astro-db-schema-to-supabase)
+  - [Run Database Seed](#run-database-seed)
+- [Database Verification](#database-verification)
   - [CI/CD Integration](#cicd-integration)
 
-## Setup and Configuration
+## Database Setup Process
 
-### Project Setup
+### Link to Remote Project
 
 ```bash
-# Login to Supabase
 npx supabase login
-
-# Link existing project
-npx supabase link --project-ref your-project-ref
+npx supabase link --project-ref YOUR_PROJECT_REF
 ```
 
-### Environment Management
+### Start Local Development
 
 ```bash
-# Start local Supabase instance
 npx supabase start
+```
 
-# Check status of local Supabase stack
+Verify services are running:
+
+```bash
 npx supabase status
 ```
 
-## Schema Management
-
-### Database Verification
+### Create Migration
 
 ```bash
-# Verify database schemas
-npx supabase db diff
-npx supabase db diff --schema public
-
-# Compare local to remote (after linking project)
-npx supabase db diff --target-db-url postgresql://postgres:postgres@127.0.0.1:54322/postgres
+npx supabase migration new initial_schema
 ```
 
-### Migrations
+### Apply Migrations Locally
 
 ```bash
-# Create and manage migrations
-npx supabase migration new schema_update
-npx supabase migration list
 npx supabase migration up
-npx supabase migration squash
-
-# Fix migration issues
-npx supabase migration repair 20230222032233 --status applied
 ```
 
-### Schema Synchronization
+Verify migration applied:
 
 ```bash
-# Pull schema from remote
-npx supabase db pull
-
-# Push local migrations to remote
-npx supabase db push --db-url postgresql://postgres:postgres@127.0.0.1:54322/postgres
+npx supabase db dump
 ```
 
-## Local Development
+### Push Migration to Remote
 
 ```bash
-# Start environment with your JWT secret and keys
-npx supabase start --jwt-secret super-secret-jwt-token-with-at-least-32-characters-long
-
-# Reset local database
-npx supabase db reset --db-url postgresql://postgres:postgres@127.0.0.1:54322/postgres
-```
-
-## Deployment
-
-```bash
-# Verify deployment prerequisites
-tsx --env-file=.env scripts/verify-deployment.ts
-
-# Deploy to production
 npx supabase db push
-
-# Generate types from database schema
-npx supabase gen types typescript --db-url postgresql://postgres:postgres@127.0.0.1:54322/postgres > types/supabase.ts
 ```
 
-## Database Lifecycle Management
-
-### Data Operations
+Verify remote changes:
 
 ```bash
-# Manual backup
-npx supabase db dump -f backups/schema_$(date +%Y%m%d).sql --db-url postgresql://postgres:postgres@127.0.0.1:54322/postgres
-ls -la backups/
-
-# Export schema/data
-npx supabase db dump -f schema.sql --db-url postgresql://postgres:postgres@127.0.0.1:54322/postgres
-npx supabase db dump --data-only -f data.sql --db-url postgresql://postgres:postgres@127.0.0.1:54322/postgres
+npx supabase db remote commit
 ```
 
-### Testing
+### Seed the Database
 
 ```bash
-# Database verification using your connection string
-npx supabase db lint --db-url postgresql://postgres:postgres@127.0.0.1:54322/postgres
-
-# Test database connectivity
-psql postgresql://postgres:postgres@127.0.0.1:54322/postgres -c "SELECT version()"
+npx tsx --env-file=.env db/seed.ts
 ```
 
-### Maintenance and Troubleshooting
+Verify seeded data:
 
 ```bash
-# Database health and metrics
-npx supabase inspect db bloat --db-url postgresql://postgres:postgres@127.0.0.1:54322/postgres
-npx supabase inspect db cache-hit --db-url postgresql://postgres:postgres@127.0.0.1:54322/postgres
-npx supabase inspect db table-sizes --db-url postgresql://postgres:postgres@127.0.0.1:54322/postgres
-npx supabase inspect db long-running-queries --db-url postgresql://postgres:postgres@127.0.0.1:54322/postgres
-
-# Regular health checks
-npx supabase inspect db vacuum-stats --db-url postgresql://postgres:postgres@127.0.0.1:54322/postgres
-npx supabase inspect db unused-indexes --db-url postgresql://postgres:postgres@127.0.0.1:54322/postgres
-
-# Run in Supabase SQL editor at http://127.0.0.1:54323
-# VACUUM FULL ANALYZE your_bloated_table;
-
-# Generate comprehensive report
-npx supabase inspect report --output-dir ./db-report --db-url postgresql://postgres:postgres@127.0.0.1:54322/postgres
-
-# Use S3 storage commands with your keys
-npx supabase storage ls --access-key 625729a08b95bf1b7ff351a663f3a23c --secret-key 850181e4652dd023b7a98c58ae0d2d34bd487ee0cc3254aed6eda37307425907
+npx supabase db query 'SELECT * FROM show_notes LIMIT 5'
 ```
 
-### Database Branching
+## Database Integration Commands
+
+### Push Astro DB Schema to Supabase
 
 ```bash
-# Preview environments (experimental)
-npx supabase branches create feature-branch --experimental
-npx supabase branches list --experimental
-npx supabase branches delete feature-branch --experimental
+npx astro db push
+```
+
+Verify tables:
+
+```bash
+npx supabase db query 'SELECT table_name FROM information_schema.tables WHERE table_schema = '\''public'\'';'
+```
+
+### Run Database Seed
+
+```bash
+npx astro db seed
+```
+
+Verify seeded data:
+
+```bash
+npx astro db query 'SELECT * FROM show_notes'
+```
+
+## Database Verification
+
+If you encounter issues:
+
+```bash
+# Reset local database
+npx supabase db reset
+
+# View detailed migration status
+npx supabase migration repair
+
+# Force apply migrations
+npx supabase db push --db-only
 ```
 
 ### CI/CD Integration

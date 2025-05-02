@@ -75,4 +75,4 @@ echo "All required Homebrew packages have been installed."
 
 echo "Setup completed successfully!"
 echo "You can now run your CLI commands or start your server:"
-echo "  npm run up"
+echo "  npm run dev"

@@ -48,3 +48,4 @@ pnpm-debug.log*
 *.pem
 .cache
 .astro
+supabase

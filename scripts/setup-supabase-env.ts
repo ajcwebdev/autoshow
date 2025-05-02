@@ -1,6 +1,6 @@
 // scripts/setup-supabase-env.ts
 
-import { writeFileSync } from 'fs'
+import { writeFileSync } from '../src/utils'
 
 const setupSupabaseEnvironment = async (): Promise<void> => {
   console.log('[setup-supabase] Creating Supabase environment configuration...')

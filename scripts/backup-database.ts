@@ -1,9 +1,6 @@
 // scripts/backup-database.ts
 
-import { execPromise } from '../src/utils'
-import { env } from '../src/utils'
-import { join } from 'path'
-import { writeFileSync } from 'fs'
+import { execPromise, env, join, writeFileSync } from '../src/utils'
 
 const createDatabaseBackup = async (): Promise<void> => {
   console.log('[backup-database] Starting database backup process...')

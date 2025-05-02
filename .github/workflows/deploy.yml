@@ -6,35 +6,44 @@ on:
     branches: [ main ]
 
 jobs:
-  deploy:
+  test:
     runs-on: ubuntu-latest
-    
     steps:
-    - uses: actions/checkout@v3
-    
-    - name: Setup Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '20'
-    
-    - name: Install dependencies
-      run: npm ci
-    
-    - name: Verify database schema
-      run: npm run db:verify:remote
-      env:
-        ASTRO_DB_APP_TOKEN: ${{ secrets.ASTRO_DB_APP_TOKEN }}
-    
-    - name: Build project
-      run: npm run build
-    
-    - name: Push database schema to production
-      run: npm run db:push:remote
-      env:
-        ASTRO_DB_APP_TOKEN: ${{ secrets.ASTRO_DB_APP_TOKEN }}
-    
-    - name: Deploy to Railway
-      run: |
-        npx @railway/cli up
-      env:
-        RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '22'
+      - run: npm ci
+      - name: Run local tests
+        run: npm run test-local
+  
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '22'
+      - run: npm ci
+      
+      - name: Verify deployment config
+        run: npx tsx scripts/verify-deployment.ts
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          SERVER_MODE: true
+          ASTRO_DB_REMOTE_URL: ${{ secrets.ASTRO_DB_REMOTE_URL }}
+          ASTRO_DB_APP_TOKEN: ${{ secrets.ASTRO_DB_APP_TOKEN }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          S3_BUCKET_NAME: ${{ secrets.S3_BUCKET_NAME }}
+      
+      - name: Push database schema
+        run: npm run db:push:remote
+        env:
+          ASTRO_DB_APP_TOKEN: ${{ secrets.ASTRO_DB_APP_TOKEN }}
+      
+      - name: Deploy to Railway
+        run: |
+          npx @railway/cli up
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}

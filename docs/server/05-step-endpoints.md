@@ -1,8 +1,6 @@
 # Step Endpoints
 
-## Step 1 - Dash Balance
-
-### Get Wallet Balance
+## Get Dash Wallet Balance
 
 ```bash
 curl --json '{
@@ -11,7 +9,7 @@ curl --json '{
 }' http://localhost:4321/api/dash-balance -s | json_pp
 ```
 
-## Step 2 - Download Audio
+## Step 1 - Download Audio
 
 ### Download Audio from YouTube URL
 
@@ -39,7 +37,7 @@ curl --json '{
   -s | json_pp
 ```
 
-## Step 3 - Run Transcription
+## Step 2 - Run Transcription
 
 Use this endpoint to run the transcription step on a `.wav` file. You must provide the `finalPath` (without extension) and specify which transcription service to use.
 
@@ -71,33 +69,7 @@ curl --json '{
   -s | json_pp
 ```
 
-## Step 4 - Select Prompt
-
-Use this endpoint to generate a final prompt string from various prompt section choices, or a custom prompt file.
-
-### Choose Multiple Prompts
-
-```bash
-curl --json '{
-  "options": {
-    "prompt": ["summary", "longChapters", "quotes"]
-  }
-}' http://localhost:4321/api/select-prompt \
-  -s | json_pp
-```
-
-### Use Custom Prompt File
-
-```bash
-curl --json '{
-  "options": {
-    "customPrompt": "autoshow/content/custom-prompt.md"
-  }
-}' http://localhost:4321/api/select-prompt \
-  -s | json_pp
-```
-
-## Step 5 - Run LLM
+## Step 3 - Run LLM
 
 Use this endpoint to run the final LLM step.
 

@@ -63,7 +63,7 @@ npx supabase db push
 Verify remote changes:
 
 ```bash
-npx supabase db remote commit
+npx supabase db pull
 ```
 
 ### Seed the Database

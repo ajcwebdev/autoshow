@@ -13,8 +13,8 @@ repomix \
   --no-git-sort-by-changes \
   --top-files-len 20 \
   --token-count-encoding "o200k_base" \
-  --include "scripts,db,src,server.mjs,package.json" \
-  --ignore "src/prompts.ts,src/pages/api/embeddings.ts,src/styles/global.css,src/layouts/Base.astro,src/prisma/migrations"
+  --include "docs,scripts,db,src,server.mjs,package.json" \
+  --ignore "src/components,src/prompts.ts,src/pages/api/embeddings.ts,src/styles/global.css,src/layouts/Base.astro,src/prisma/migrations"
   # --ignore "src/pages/api/embeddings.ts,README.md,src/prompts.ts,.github/FUNDING.yml,docs,test,.github/workflows,.astro,src/prisma/migrations,.env.example,.gitignore,.npmrc,astro.config.ts,LICENSE,railway.json,tsconfig.json,.github/repomix-instruction.md"
 
 # Check if command was successful

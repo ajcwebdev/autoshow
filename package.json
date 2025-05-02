@@ -65,6 +65,7 @@
   "devDependencies": {
     "@types/node": "22.15.3",
     "repomix": "0.3.3",
+    "supabase": "2.22.6",
     "tsx": "4.19.4",
     "typescript": "5.8.3"
   }

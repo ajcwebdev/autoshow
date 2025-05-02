@@ -13,8 +13,8 @@ repomix \
   --no-git-sort-by-changes \
   --top-files-len 20 \
   --token-count-encoding "o200k_base" \
-  --include "docs,scripts,db,src,server.mjs,package.json" \
-  --ignore "src/components,src/prompts.ts,src/pages/api/embeddings.ts,src/styles/global.css,src/layouts/Base.astro,src/prisma/migrations"
+  --include "docs/server/08-database.md,docs/server/05-step-endpoints.md,scripts,db,src,server.mjs,package.json" \
+  --ignore "src/prompts.ts,src/pages/api/embeddings.ts,src/styles/global.css,src/layouts/Base.astro,src/prisma/migrations"
 
 # Check if command was successful
 if [ $? -eq 0 ]; then

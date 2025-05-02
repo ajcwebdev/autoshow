@@ -9,9 +9,6 @@
   - [Apply Migrations Locally](#apply-migrations-locally)
   - [Push Migration to Remote](#push-migration-to-remote)
   - [Seed the Database](#seed-the-database)
-- [Database Integration Commands](#database-integration-commands)
-  - [Push Astro DB Schema to Supabase](#push-astro-db-schema-to-supabase)
-  - [Run Database Seed](#run-database-seed)
 - [Database Verification](#database-verification)
   - [CI/CD Integration](#cicd-integration)
 
@@ -70,38 +67,6 @@ npx supabase db pull
 
 ```bash
 npx tsx --env-file=.env db/seed.ts
-```
-
-Verify seeded data:
-
-```bash
-npx supabase db query 'SELECT * FROM show_notes LIMIT 5'
-```
-
-## Database Integration Commands
-
-### Push Astro DB Schema to Supabase
-
-```bash
-npx astro db push
-```
-
-Verify tables:
-
-```bash
-npx supabase db query 'SELECT table_name FROM information_schema.tables WHERE table_schema = '\''public'\'';'
-```
-
-### Run Database Seed
-
-```bash
-npx astro db seed
-```
-
-Verify seeded data:
-
-```bash
-npx astro db query 'SELECT * FROM show_notes'
 ```
 
 ## Database Verification

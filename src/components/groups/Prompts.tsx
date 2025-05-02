@@ -3,106 +3,95 @@
 import { For } from 'solid-js'
 import type { Setter } from 'solid-js'
 import { PROMPT_CHOICES } from '../../constants.ts'
-
 export const PromptsStep = (props: {
-  isLoading: boolean
-  setIsLoading: Setter<boolean>
-  setError: Setter<string | null>
-  transcriptContent: string
-  selectedPrompts: string[]
-  setSelectedPrompts: Setter<string[]>
-  finalPath: string
-  frontMatter: string
-  setFinalMarkdownFile: Setter<string>
-  setCurrentStep: Setter<number>
-  setLlmCosts: Setter<Record<string, any>>
+  isLoading: boolean
+  setIsLoading: Setter<boolean>
+  setError: Setter<string | null>
+  transcriptContent: string
+  selectedPrompts: string[]
+  setSelectedPrompts: Setter<string[]>
+  finalPath: string // Kept for context / potential future use
+  frontMatter: string // Kept for context / potential future use
+  // setFinalMarkdownFile removed
+  setCurrentStep: Setter<number>
 }) => {
-  const formatContent = (text: string) => text.split('\n').map((line, _index) => (
-    <>
-      {line}
-      <br />
-    </>
-  ))
-  const handleStepThree = async () => {
-    props.setIsLoading(true)
-    props.setError(null)
-    props.setFinalMarkdownFile('')
-    try {
-      const promptRes = await fetch('http://localhost:4321/api/select-prompt', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ options: { prompt: props.selectedPrompts } })
-      })
-      if (!promptRes.ok) throw new Error('Error generating combined prompt')
-      const promptData = await promptRes.json()
-      const combinedPrompt = promptData.prompt
-      const saveBody = {
-        frontMatter: props.frontMatter,
-        transcript: props.transcriptContent,
-        prompt: combinedPrompt,
-        finalPath: props.finalPath
-      }
-      const saveRes = await fetch('http://localhost:4321/api/save-markdown', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(saveBody)
-      })
-      if (!saveRes.ok) throw new Error('Error saving final markdown')
-      const saveData = await saveRes.json()
-      props.setFinalMarkdownFile(saveData.markdownFilePath)
-      const costBody = { type: 'llmCost', filePath: saveData.markdownFilePath }
-      const costRes = await fetch('http://localhost:4321/api/cost', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(costBody)
-      })
-      if (!costRes.ok) throw new Error('Failed to get LLM cost')
-      const costData = await costRes.json()
-      props.setLlmCosts(costData.llmCost)
-      props.setCurrentStep(4)
-    } catch (err) {
-      if (err instanceof Error) props.setError(err.message)
-      else props.setError('An unknown error occurred.')
-    } finally {
-      props.setIsLoading(false)
-    }
-  }
-
-  return (
-    <>
-      <h3>Transcript</h3>
-      <div style={{ border: '1px solid #ccc', padding: '10px', 'max-height': '200px', overflow: 'auto' }}>
-        {props.transcriptContent ? formatContent(props.transcriptContent) : 'No transcript content yet'}
-      </div>
-      <br />
-      <div class="form-group">
-        <label>Prompts</label>
-        <div class="checkbox-group">
-          <For each={PROMPT_CHOICES}>
-            {prompt => (
-              <div>
-                <input
-                  type="checkbox"
-                  id={`prompt-${prompt.value}`}
-                  value={prompt.value}
-                  checked={props.selectedPrompts.includes(prompt.value)}
-                  onInput={e => {
-                    if (e.target.checked) {
-                      props.setSelectedPrompts([...props.selectedPrompts, prompt.value])
-                    } else {
-                      props.setSelectedPrompts(props.selectedPrompts.filter(p => p !== prompt.value))
-                    }
-                  }}
-                />
-                <label for={`prompt-${prompt.value}`}>{prompt.name}</label>
-              </div>
-            )}
-          </For>
-        </div>
-      </div>
-      <button disabled={props.isLoading} onClick={handleStepThree}>
-        {props.isLoading ? 'Saving & Estimating LLM...' : 'Save & Calculate LLM Cost'}
-      </button>
-    </>
-  )
+  const logPrefix = '[PromptsStep]'
+  const formatContent = (text: string) => {
+    console.log(`${logPrefix} Formatting content (length: ${text.length})`)
+    return text.split('\n').map((line, _index) => (
+      <>
+        {line}
+        <br />
+      </>
+    ))
+  }
+  const handleStepThree = async (): Promise<void> => {
+    console.log(`${logPrefix} handleStepThree called`)
+    props.setIsLoading(true)
+    console.log(`${logPrefix} isLoading set to true (though no async call here)`)
+    props.setError(null)
+    console.log(`${logPrefix} error set to null`)
+    try {
+      // No API calls needed here. Just advance the step.
+      console.log(`${logPrefix} Selected prompts confirmed: ${props.selectedPrompts.join(', ')}`)
+      console.log(`${logPrefix} Final path context: ${props.finalPath}`)
+      // finalMarkdownFile state is no longer set here
+      props.setCurrentStep(4)
+      console.log(`${logPrefix} Set currentStep to 4`)
+    } catch (err) {
+      console.error(`${logPrefix} Error in handleStepThree:`, err)
+      if (err instanceof Error) {
+        props.setError(err.message)
+        console.log(`${logPrefix} Set error state to: ${err.message}`)
+      } else {
+        props.setError('An unknown error occurred.')
+        console.log(`${logPrefix} Set error state to: An unknown error occurred.`)
+      }
+    } finally {
+      props.setIsLoading(false)
+      console.log(`${logPrefix} isLoading set to false in finally block`)
+    }
+  }
+  return (
+    <>
+      <h3>Transcript</h3>
+      <div style={{ border: '1px solid #ccc', padding: '10px', 'max-height': '200px', overflow: 'auto' }}>
+        {props.transcriptContent ? formatContent(props.transcriptContent) : 'No transcript content yet'}
+      </div>
+      <br />
+      <div class="form-group">
+        <label>Prompts</label>
+        <div class="checkbox-group">
+          <For each={PROMPT_CHOICES}>
+            {prompt => (
+              <div>
+                <input
+                  type="checkbox"
+                  id={`prompt-${prompt.value}`}
+                  value={prompt.value}
+                  checked={props.selectedPrompts.includes(prompt.value)}
+                  onInput={e => {
+                    const isChecked = e.target.checked
+                    console.log(`<span class="math-inline">\{logPrefix\} Prompt checkbox '</span>{prompt.value}' changed: ${isChecked}`)
+                    if (isChecked) {
+                      props.setSelectedPrompts([...props.selectedPrompts, prompt.value])
+                      console.log(`<span class="math-inline">\{logPrefix\} Added '</span>{prompt.value}' to selectedPrompts`)
+                    } else {
+                      props.setSelectedPrompts(props.selectedPrompts.filter(p => p !== prompt.value))
+                      console.log(`<span class="math-inline">\{logPrefix\} Removed '</span>{prompt.value}' from selectedPrompts`)
+                    }
+                    console.log(`${logPrefix} Current selectedPrompts: ${props.selectedPrompts.join(', ')}`)
+                  }}
+                />
+                <label for={`prompt-${prompt.value}`}>{prompt.name}</label>
+              </div>
+            )}
+          </For>
+        </div>
+      </div>
+      <button disabled={props.isLoading} onClick={handleStepThree}>
+        {props.isLoading ? 'Processing...' : 'Confirm Prompts & Proceed'}
+      </button>
+    </>
+  )
 }

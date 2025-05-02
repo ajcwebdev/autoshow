@@ -6,8 +6,8 @@
 # Run repomix command
 repomix \
   --instruction-file-path ".github/repomix-instruction.md" \
-  --output "new-llm.xml" \
-  --style xml \
+  --output "new-llm.md" \
+  --style markdown \
   --remove-comments \
   --remove-empty-lines \
   --no-git-sort-by-changes \

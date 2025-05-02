@@ -46,8 +46,11 @@ npx supabase status
 
 ```bash
 # Verify database schemas
-npx astro db verify        # Local
-npx astro db verify --remote  # Remote
+npx supabase db diff
+npx supabase db diff --schema public
+
+# Compare local to remote (after linking project)
+npx supabase db diff --target-db-url postgresql://postgres:postgres@127.0.0.1:54322/postgres
 ```
 
 ### Migrations
@@ -66,23 +69,21 @@ npx supabase migration repair 20230222032233 --status applied
 ### Schema Synchronization
 
 ```bash
-# Push schema changes
-npx astro db push          # Local
-npx astro db push --remote # To production
-
 # Pull schema from remote
 npx supabase db pull
+
+# Push local migrations to remote
+npx supabase db push --db-url postgresql://postgres:postgres@127.0.0.1:54322/postgres
 ```
 
 ## Local Development
 
 ```bash
-# Start environment
-npx supabase start
-npm run dev
+# Start environment with your JWT secret and keys
+npx supabase start --jwt-secret super-secret-jwt-token-with-at-least-32-characters-long
 
 # Reset local database
-npx supabase db reset
+npx supabase db reset --db-url postgresql://postgres:postgres@127.0.0.1:54322/postgres
 ```
 
 ## Deployment
@@ -92,11 +93,10 @@ npx supabase db reset
 tsx --env-file=.env scripts/verify-deployment.ts
 
 # Deploy to production
-npx astro build && npx astro db push --remote
+npx supabase db push
 
-# Alternative manual steps
-npm run build
-npx astro db push --remote
+# Generate types from database schema
+npx supabase gen types typescript --db-url postgresql://postgres:postgres@127.0.0.1:54322/postgres > types/supabase.ts
 ```
 
 ## Database Lifecycle Management
@@ -105,59 +105,45 @@ npx astro db push --remote
 
 ```bash
 # Manual backup
-tsx --env-file=.env scripts/backup-database.ts
+npx supabase db dump -f backups/schema_$(date +%Y%m%d).sql --db-url postgresql://postgres:postgres@127.0.0.1:54322/postgres
 ls -la backups/
 
 # Export schema/data
-npx supabase db dump -f schema.sql
-npx supabase db dump --data-only -f data.sql
+npx supabase db dump -f schema.sql --db-url postgresql://postgres:postgres@127.0.0.1:54322/postgres
+npx supabase db dump --data-only -f data.sql --db-url postgresql://postgres:postgres@127.0.0.1:54322/postgres
 ```
 
 ### Testing
 
 ```bash
-# Database verification
-tsx --env-file=.env scripts/test-db-operations.ts
-tsx --env-file=.env scripts/verify-supabase.ts
+# Database verification using your connection string
+npx supabase db lint --db-url postgresql://postgres:postgres@127.0.0.1:54322/postgres
 
-# Lint database
-npx supabase db lint --db-url "postgres://username:password@host:port/database"
+# Test database connectivity
+psql postgresql://postgres:postgres@127.0.0.1:54322/postgres -c "SELECT version()"
 ```
 
 ### Maintenance and Troubleshooting
 
 ```bash
 # Database health and metrics
-npx supabase inspect db bloat
-npx supabase inspect db cache-hit
-npx supabase inspect db table-sizes
-npx supabase inspect db long-running-queries
+npx supabase inspect db bloat --db-url postgresql://postgres:postgres@127.0.0.1:54322/postgres
+npx supabase inspect db cache-hit --db-url postgresql://postgres:postgres@127.0.0.1:54322/postgres
+npx supabase inspect db table-sizes --db-url postgresql://postgres:postgres@127.0.0.1:54322/postgres
+npx supabase inspect db long-running-queries --db-url postgresql://postgres:postgres@127.0.0.1:54322/postgres
 
 # Regular health checks
-npx supabase inspect db vacuum-stats
-npx supabase inspect db unused-indexes
+npx supabase inspect db vacuum-stats --db-url postgresql://postgres:postgres@127.0.0.1:54322/postgres
+npx supabase inspect db unused-indexes --db-url postgresql://postgres:postgres@127.0.0.1:54322/postgres
 
-# Run in Supabase SQL editor
+# Run in Supabase SQL editor at http://127.0.0.1:54323
 # VACUUM FULL ANALYZE your_bloated_table;
 
-# Performance optimization
-npx supabase inspect db outliers
-npx supabase inspect db seq-scans
-npx supabase inspect db long-running-queries
-npx supabase inspect db cache-hit
-npx supabase inspect db unused-indexes
-
 # Generate comprehensive report
-npx supabase inspect report --output-dir ./db-report
+npx supabase inspect report --output-dir ./db-report --db-url postgresql://postgres:postgres@127.0.0.1:54322/postgres
 
-# Verify connections
-tsx --env-file=.env scripts/verify-supabase.ts
-
-# Check network restrictions
-npx supabase network-restrictions get
-
-# List available backups
-ls -la backups/
+# Use S3 storage commands with your keys
+npx supabase storage ls --access-key 625729a08b95bf1b7ff351a663f3a23c --secret-key 850181e4652dd023b7a98c58ae0d2d34bd487ee0cc3254aed6eda37307425907
 ```
 
 ### Database Branching
@@ -201,7 +187,7 @@ jobs:
           supabase link --project-ref ${{ secrets.PROJECT_REF }}
         
       - name: Deploy database changes
-        run: npx astro build && npx astro db push --remote
+        run: npx supabase db push
         
       - name: Verify deployment
         run: npx tsx scripts/verify-deployment.ts

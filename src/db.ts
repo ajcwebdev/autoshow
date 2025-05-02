@@ -1,7 +1,6 @@
 // src/db.ts
 
 import { l } from './utils'
-import { env } from './utils'
 import { db, ShowNotes, eq } from 'astro:db'
 import type { ShowNoteType } from './types'
 
@@ -11,48 +10,32 @@ export interface DatabaseService {
   getShowNotes: () => Promise<any[]>
 }
 
-export class NoOpDatabaseService implements DatabaseService {
-  async insertShowNote(_showNote: ShowNoteType) {
-    l.dim('\n  CLI mode: Database operations disabled - skipping show note insertion')
-    console.log(`[NoOpDatabaseService] insertShowNote called with title: ${_showNote.title}`)
-    console.log(`[NoOpDatabaseService] Returning mock show note object`)
-    return Promise.resolve({ ..._showNote })
-  }
-  
-  async getShowNote(_id: number) {
-    l.dim('\n  CLI mode: Database operations disabled - cannot retrieve show notes')
-    console.log(`[NoOpDatabaseService] getShowNote called with ID: ${_id}`)
-    console.log(`[NoOpDatabaseService] Returning null`)
-    return Promise.resolve(null)
-  }
-  
-  async getShowNotes() {
-    l.dim('\n  CLI mode: Database operations disabled - cannot retrieve show notes')
-    console.log(`[NoOpDatabaseService] getShowNotes called`)
-    console.log(`[NoOpDatabaseService] Returning empty array`)
-    return Promise.resolve([])
-  }
-}
-
 export class AstroDbDatabaseService implements DatabaseService {
   private initialized = false
+  private readonly logPrefix = '[AstroDbDatabaseService]'
   
   constructor() {
-    console.log('[AstroDbDatabaseService] Constructor called')
+    console.log(`${this.logPrefix} Constructor called`)
+    console.log(`${this.logPrefix} Database service created`)
   }
   
   async init() {
+    console.log(`${this.logPrefix} init() called, initialized=${this.initialized}`)
+    
     if (this.initialized) {
-      console.log('[AstroDbDatabaseService] Already initialized')
+      console.log(`${this.logPrefix} Already initialized, returning early`)
       return this
     }
     
     try {
-      console.log('[AstroDbDatabaseService] Initializing...')
+      console.log(`${this.logPrefix} Initializing database service...`)
       this.initialized = true
-      console.log('[AstroDbDatabaseService] Initialized successfully')
+      console.log(`${this.logPrefix} Set initialized flag to true`)
+      console.log(`${this.logPrefix} Initialized successfully`)
     } catch (error) {
-      console.error('[AstroDbDatabaseService] Failed to initialize:', error)
+      console.error(`${this.logPrefix} Failed to initialize:`, error)
+      console.error(`${this.logPrefix} Error details:`, error instanceof Error ? error.message : String(error))
+      console.error(`${this.logPrefix} Error stack:`, error instanceof Error ? error.stack : 'No stack trace')
       throw error
     }
     
@@ -60,17 +43,20 @@ export class AstroDbDatabaseService implements DatabaseService {
   }
   
   async insertShowNote(showNote: ShowNoteType) {
+    console.log(`${this.logPrefix} insertShowNote() called`)
+    
     if (!this.initialized) {
-      console.log('[AstroDbDatabaseService] Initializing before insert')
+      console.log(`${this.logPrefix} Database not initialized, calling init() before insert`)
       await this.init()
+      console.log(`${this.logPrefix} Database initialization complete`)
     }
     
     l.dim('\n  Inserting show note into the database...')
-    console.log(`[AstroDbDatabaseService] insertShowNote called with:`)
-    console.log(`  * id: ${showNote.id}`)
-    console.log(`  * title: ${showNote.title}`)
-    console.log(`  * walletAddress: ${showNote.walletAddress}`)
-    console.log(`  * mnemonic: ${showNote.mnemonic}`)
+    console.log(`${this.logPrefix} insertShowNote called with:`)
+    console.log(`${this.logPrefix} * id: ${showNote.id}`)
+    console.log(`${this.logPrefix} * title: ${showNote.title}`)
+    console.log(`${this.logPrefix} * walletAddress: ${showNote.walletAddress}`)
+    console.log(`${this.logPrefix} * mnemonic: ${showNote.mnemonic ? '[REDACTED]' : 'null'}`)
     
     const {
       showLink, channel, channelURL, title, description, publishDate, coverImage,
@@ -79,8 +65,10 @@ export class AstroDbDatabaseService implements DatabaseService {
       transcriptionCost, finalCost
     } = showNote
     
+    console.log(`${this.logPrefix} Destructured show note properties`)
+    
     try {
-      console.log('[AstroDbDatabaseService] Attempting to insert into ShowNotes table')
+      console.log(`${this.logPrefix} Preparing insert data object`)
       
       const insertData = {
         showLink: showLink ?? null,
@@ -105,36 +93,43 @@ export class AstroDbDatabaseService implements DatabaseService {
         finalCost: finalCost ?? null
       }
       
-      console.log('[AstroDbDatabaseService] Insert data prepared:', Object.keys(insertData))
+      console.log(`${this.logPrefix} Insert data prepared with these fields:`, Object.keys(insertData))
+      console.log(`${this.logPrefix} Calling db.insert() with ShowNotes table`)
       
       const newRecord = await db.insert(ShowNotes).values(insertData).returning()
       
-      console.log('[AstroDbDatabaseService] Record inserted successfully:', newRecord)
+      console.log(`${this.logPrefix} db.insert() completed successfully`)
+      console.log(`${this.logPrefix} Record inserted with ID:`, newRecord[0]?.id)
+      console.log(`${this.logPrefix} Full record:`, newRecord[0])
       l.dim('    - Show note inserted successfully.\n')
       
       return newRecord[0]
     } catch (error) {
-      console.error('[AstroDbDatabaseService] Insert failed:', error)
+      console.error(`${this.logPrefix} Insert operation failed:`, error)
       
       if (error instanceof Error) {
-        console.error('[AstroDbDatabaseService] Database error details:', error.message)
+        console.error(`${this.logPrefix} Database error details:`, error.message)
+        console.error(`${this.logPrefix} Error stack:`, error.stack)
       }
       
       l.dim(`    - Failed to insert show note: ${error instanceof Error ? error.message : String(error)}\n`)
+      console.log(`${this.logPrefix} Returning fallback object with original show note data`)
       return { ...showNote }
     }
   }
   
   async getShowNote(id: number) {
+    console.log(`${this.logPrefix} getShowNote() called with ID: ${id}`)
+    
     if (!this.initialized) {
-      console.log('[AstroDbDatabaseService] Initializing before get')
+      console.log(`${this.logPrefix} Database not initialized, calling init() before query`)
       await this.init()
+      console.log(`${this.logPrefix} Database initialization complete`)
     }
     
-    console.log(`[AstroDbDatabaseService] getShowNote called with ID: ${id}`)
-    
     try {
-      console.log('[AstroDbDatabaseService] Querying ShowNotes table')
+      console.log(`${this.logPrefix} Building query to fetch show note with ID ${id}`)
+      console.log(`${this.logPrefix} Executing db.select() with where clause for ID ${id}`)
       
       const records = await db
         .select()
@@ -142,83 +137,78 @@ export class AstroDbDatabaseService implements DatabaseService {
         .where(eq(ShowNotes.id, id))
         .limit(1)
       
-      console.log(`[AstroDbDatabaseService] Query returned ${records.length} records`)
+      console.log(`${this.logPrefix} Query execution complete`)
+      console.log(`${this.logPrefix} Query returned ${records.length} records`)
       
       if (records.length === 0) {
-        console.log(`[AstroDbDatabaseService] No record found for ID: ${id}`)
+        console.log(`${this.logPrefix} No record found for ID: ${id}`)
+        console.log(`${this.logPrefix} Returning null as result`)
         return null
       }
       
-      console.log(`[AstroDbDatabaseService] Found record: ${records[0].title}`)
+      console.log(`${this.logPrefix} Found record with title: ${records[0].title}`)
+      console.log(`${this.logPrefix} Returning found record`)
       return records[0]
     } catch (error) {
-      console.error('[AstroDbDatabaseService] Get failed:', error)
+      console.error(`${this.logPrefix} Get operation failed:`, error)
       
       if (error instanceof Error) {
-        console.error('[AstroDbDatabaseService] Database error details:', error.message)
+        console.error(`${this.logPrefix} Database error details:`, error.message)
+        console.error(`${this.logPrefix} Error stack:`, error.stack)
       }
       
       l.dim(`    - Failed to get show note: ${error instanceof Error ? error.message : String(error)}\n`)
+      console.log(`${this.logPrefix} Returning null due to error`)
       return null
     }
   }
   
   async getShowNotes() {
+    console.log(`${this.logPrefix} getShowNotes() called to fetch all show notes`)
+    
     if (!this.initialized) {
-      console.log('[AstroDbDatabaseService] Initializing before getAll')
+      console.log(`${this.logPrefix} Database not initialized, calling init() before query`)
       await this.init()
+      console.log(`${this.logPrefix} Database initialization complete`)
     }
     
-    console.log('[AstroDbDatabaseService] getShowNotes called')
-    
     try {
-      console.log('[AstroDbDatabaseService] Querying all ShowNotes')
+      console.log(`${this.logPrefix} Building query to fetch all show notes`)
+      console.log(`${this.logPrefix} Executing db.select() with orderBy on publishDate`)
       
       const records = await db
         .select()
         .from(ShowNotes)
         .orderBy(ShowNotes.publishDate)
       
-      console.log(`[AstroDbDatabaseService] Found ${records.length} records`)
+      console.log(`${this.logPrefix} Query execution complete`)
+      console.log(`${this.logPrefix} Found ${records.length} records in total`)
       
+      if (records.length > 0) {
+        console.log(`${this.logPrefix} First record title: ${records[0].title}`)
+        console.log(`${this.logPrefix} Last record title: ${records[records.length - 1].title}`)
+      }
+      
+      console.log(`${this.logPrefix} Returning ${records.length} records`)
       return records
     } catch (error) {
-      console.error('[AstroDbDatabaseService] GetAll failed:', error)
+      console.error(`${this.logPrefix} GetAll operation failed:`, error)
       
       if (error instanceof Error) {
-        console.error('[AstroDbDatabaseService] Database error details:', error.message)
+        console.error(`${this.logPrefix} Database error details:`, error.message)
+        console.error(`${this.logPrefix} Error stack:`, error.stack)
       }
       
       l.dim(`    - Failed to get show notes: ${error instanceof Error ? error.message : String(error)}\n`)
+      console.log(`${this.logPrefix} Returning empty array due to error`)
       return []
     }
   }
 }
 
-function isServerMode() {
-  console.log('[dbService] Checking server mode...')
-  console.log('[dbService] DATABASE_URL:', env['DATABASE_URL'] ? 'set' : 'not set')
-  console.log('[dbService] PGHOST:', env['PGHOST'] ? 'set' : 'not set')
-  console.log('[dbService] SERVER_MODE:', env['SERVER_MODE'])
-  
-  const isServer = env['DATABASE_URL'] !== undefined ||
-         env['PGHOST'] !== undefined ||
-         env['SERVER_MODE'] === 'true'
-  
-  console.log('[dbService] Server mode result:', isServer)
-  return isServer
-}
-
-let dbServiceInstance: DatabaseService | null = null
-
-if (isServerMode()) {
-  console.log('[dbService] Server mode detected - initializing AstroDbDatabaseService')
-  l.dim('  Server mode detected - initializing database service')
-  dbServiceInstance = new AstroDbDatabaseService()
-} else {
-  console.log('[dbService] CLI mode detected - using NoOpDatabaseService')
-  l.dim('  CLI mode detected - using no-op database service')
-  dbServiceInstance = new NoOpDatabaseService()
-}
+console.log('[db.ts] Creating new AstroDbDatabaseService instance')
+const dbServiceInstance = new AstroDbDatabaseService()
+console.log('[db.ts] AstroDbDatabaseService instance created successfully')
 
 export const dbService = dbServiceInstance
+console.log('[db.ts] Exported dbService instance')

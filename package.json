@@ -11,12 +11,6 @@
   ],
   "type": "module",
   "scripts": {
-    "db:push": "astro db push",
-    "db:push:remote": "astro db push --remote",
-    "db:verify": "astro db verify",
-    "db:verify:remote": "astro db verify --remote",
-    "db:shell": "astro db shell",
-    "deploy": "astro build && astro db push --remote",
     "dev": "astro dev",
     "start": "astro dev",
     "server": "node --env-file=.env server.mjs",

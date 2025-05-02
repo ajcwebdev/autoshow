@@ -14,9 +14,7 @@ ollama.log
 embeddings.db
 embeddings.json
 
-new-llm.md
-new-llm-*.md
-new-llm*.md
+new-*.*
 test.md
 spec.log
 

@@ -4,7 +4,6 @@ import { createSignal, For, Show } from 'solid-js'
 import type { Setter } from 'solid-js'
 import { PROMPT_CHOICES } from '../../types.ts'
 import type { TranscriptionCosts } from '../../types.ts'
-
 export const TranscriptionStep = (props: {
   isLoading: boolean
   setIsLoading: Setter<boolean>
@@ -16,6 +15,7 @@ export const TranscriptionStep = (props: {
   transcriptionApiKey: string
   setTranscriptionApiKey: Setter<string>
   finalPath: string
+  s3Url: string
   setTranscriptContent: Setter<string>
   setTranscriptionModelUsed: Setter<string>
   setTranscriptionCostUsed: Setter<number | null>
@@ -28,7 +28,6 @@ export const TranscriptionStep = (props: {
 }) => {
   const [showTranscript, setShowTranscript] = createSignal(false)
   const [transcriptData, setTranscriptData] = createSignal('')
-  
   const formatContent = (text: string) => {
     return text.split('\n').map((line, _index) => (
       <>
@@ -37,50 +36,44 @@ export const TranscriptionStep = (props: {
       </>
     ))
   }
-  
   const handleStepTwo = async (): Promise<void> => {
     console.log(`[TranscriptionStep] Starting transcription with ${props.transcriptionService}/${props.transcriptionModel}`)
     props.setIsLoading(true)
     props.setError(null)
     props.setTranscriptContent('')
     props.setPromptText('')
-    
     try {
       const rtBody = {
         finalPath: props.finalPath,
+        s3Url: props.s3Url,
         transcriptServices: props.transcriptionService,
         options: {
           prompt: props.selectedPrompts
         }
       } as {
         finalPath: string
+        s3Url: string
         transcriptServices: string
         options: Record<string, unknown>
       }
-      
       rtBody.options[props.transcriptionService] = props.transcriptionModel
-      
       if (props.transcriptionService === 'assembly') {
         rtBody.options.assemblyApiKey = props.transcriptionApiKey
       }
       if (props.transcriptionService === 'deepgram') {
         rtBody.options.deepgramApiKey = props.transcriptionApiKey
       }
-      
-      console.log(`[TranscriptionStep] Sending request to run-transcription API`)
-      
+      console.log(`[TranscriptionStep] Sending request to run-transcription API with S3 URL: ${props.s3Url}`)
       const rtRes = await fetch('http://localhost:4321/api/run-transcription', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(rtBody)
       })
-      
       if (!rtRes.ok) {
         const errorData = await rtRes.json()
         console.error(`[TranscriptionStep] Transcription API error:`, errorData)
         throw new Error(`Error running transcription: ${errorData.error || rtRes.statusText}`)
       }
-      
       const rtData = await rtRes.json() as {
         transcript?: string
         prompt?: string
@@ -88,28 +81,22 @@ export const TranscriptionStep = (props: {
         transcriptionCost?: number
         allLLMCosts?: Record<string, any>
       }
-      
       props.setTranscriptContent(rtData.transcript || '')
       setTranscriptData(rtData.transcript || '')
       props.setPromptText(rtData.prompt || '')
-      
       if (rtData.modelId) {
         props.setTranscriptionModelUsed(rtData.modelId)
       }
-      
       if (rtData.transcriptionCost != null) {
         props.setTranscriptionCostUsed(rtData.transcriptionCost)
       }
-      
       if (rtData.allLLMCosts) {
         props.setLlmCosts(rtData.allLLMCosts)
       } else {
         console.warn(`[TranscriptionStep] No allLLMCosts found in response`)
         props.setLlmCosts({})
       }
-      
       setShowTranscript(true)
-      
       console.log(`[TranscriptionStep] Successfully completed transcription, moving to step 3`)
       props.setCurrentStep(3)
     } catch (err) {
@@ -123,7 +110,6 @@ export const TranscriptionStep = (props: {
       props.setIsLoading(false)
     }
   }
-  
   return (
     <>
       <h2>Select a Transcription Service and Prompts</h2>

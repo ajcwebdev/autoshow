@@ -280,6 +280,7 @@ export type DownloadAudioBody = {
 }
 export type RunTranscriptionBody = {
   finalPath?: string
+  s3Url?: string
   transcriptServices?: string
   options?: ProcessingOptions
 }

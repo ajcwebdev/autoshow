@@ -95,6 +95,11 @@ export async function retryTranscriptionCall(fn: () => Promise<any>) {
 export async function getAudioDurationInSeconds(filePath: string): Promise<number> {
   console.log(`${logPrefix}:getAudioDurationInSeconds Getting duration for file: ${filePath}`)
   
+  if (filePath.startsWith('http')) {
+    console.log(`${logPrefix}:getAudioDurationInSeconds Using estimation for S3 URL: ${filePath}`)
+    return 300
+  }
+  
   if (!existsSync(filePath)) {
     console.error(`${logPrefix}:getAudioDurationInSeconds File not found: ${filePath}`)
     throw new Error(`File not found: ${filePath}`)
@@ -161,7 +166,7 @@ export async function logTranscriptionCost(info: {
   return parseFloat(cost.toFixed(10))
 }
 
-export async function callDeepgram(resolvedPath: string, deepgramModel: string | null, deepgramApiKey: string): Promise<{
+export async function callDeepgram(audioSource: string, deepgramModel: string | null, deepgramApiKey: string): Promise<{
   transcript: string
   modelId: string
   costPerMinuteCents: number
@@ -188,12 +193,26 @@ export async function callDeepgram(resolvedPath: string, deepgramModel: string |
   const { modelId, costPerMinuteCents } = modelInfo
   console.log(`${methodLogPrefix} Using Deepgram model: ${modelId} with cost: ¢${costPerMinuteCents} per minute`)
   
-  try {
-    console.log(`${methodLogPrefix} Reading audio file at ${resolvedPath}.wav`)
-    await readFile(`${resolvedPath}.wav`)
-  } catch (error) {
-    console.error(`${methodLogPrefix} Failed to load audio file:`, error)
-    throw new Error(`Failed to load audio file at ${resolvedPath}.wav: ${error instanceof Error ? error.message : String(error)}`)
+  let audioBuffer
+  
+  if (audioSource.startsWith('http')) {
+    console.log(`${methodLogPrefix} Downloading audio from URL: ${audioSource}`)
+    const response = await fetch(audioSource)
+    if (!response.ok) {
+      throw new Error(`Failed to fetch audio from URL: ${response.status} ${response.statusText}`)
+    }
+    audioBuffer = Buffer.from(await response.arrayBuffer())
+    console.log(`${methodLogPrefix} Successfully downloaded audio, size: ${audioBuffer.length} bytes`)
+  } else {
+    const wavPath = audioSource.endsWith('.wav') ? audioSource : `${audioSource}.wav`
+    console.log(`${methodLogPrefix} Reading audio file at ${wavPath}`)
+    try {
+      audioBuffer = await readFile(wavPath)
+      console.log(`${methodLogPrefix} Successfully read audio file, size: ${audioBuffer.length} bytes`)
+    } catch (error) {
+      console.error(`${methodLogPrefix} Failed to load audio file:`, error)
+      throw new Error(`Failed to load audio file at ${wavPath}: ${error instanceof Error ? error.message : String(error)}`)
+    }
   }
   
   const apiUrl = new URL('https://api.deepgram.com/v1/listen')
@@ -205,7 +224,6 @@ export async function callDeepgram(resolvedPath: string, deepgramModel: string |
   console.log(`${methodLogPrefix} Configured Deepgram API URL with parameters:`, 
     Object.fromEntries(apiUrl.searchParams.entries()))
   
-  const audioBuffer = await readFile(`${resolvedPath}.wav`)
   console.log(`${methodLogPrefix} Sending ${audioBuffer.length} bytes to Deepgram API with model ${modelId}`)
   
   const response = await fetch(apiUrl, {
@@ -262,7 +280,7 @@ export async function callDeepgram(resolvedPath: string, deepgramModel: string |
   }
 }
 
-export async function callAssembly(resolvedPath: string, assemblyModel: string | null, assemblyApiKey: string): Promise<{
+export async function callAssembly(audioSource: string, assemblyModel: string | null, assemblyApiKey: string): Promise<{
   transcript: string
   modelId: string
   costPerMinuteCents: number
@@ -280,17 +298,6 @@ export async function callAssembly(resolvedPath: string, assemblyModel: string |
     'Content-Type': 'application/json'
   }
   
-  const audioFilePath = `${resolvedPath}.wav`
-  console.log(`${methodLogPrefix} Using audio file path: ${audioFilePath}`)
-  
-  try {
-    console.log(`${methodLogPrefix} Checking if audio file exists`)
-    await execPromise(`ls -la "${audioFilePath}"`)
-  } catch (error) {
-    console.error(`${methodLogPrefix} Audio file does not exist or is not accessible:`, error)
-    throw new Error(`Audio file does not exist or is not accessible at ${audioFilePath}: ${error instanceof Error ? error.message : String(error)}`)
-  }
-  
   if (!assemblyModel) {
     console.error(`${methodLogPrefix} Assembly model must be specified`)
     throw new Error('Assembly model must be specified')
@@ -305,61 +312,79 @@ export async function callAssembly(resolvedPath: string, assemblyModel: string |
   const { modelId, costPerMinuteCents } = modelInfo
   console.log(`${methodLogPrefix} Using Assembly model: ${modelId} with cost: ¢${costPerMinuteCents} per minute`)
   
-  let fileBuffer
-  try {
-    console.log(`${methodLogPrefix} Reading audio file`)
-    fileBuffer = await readFile(audioFilePath)
-    console.log(`${methodLogPrefix} Successfully read audio file, size: ${fileBuffer.length} bytes`)
-  } catch (error) {
-    console.error(`${methodLogPrefix} Failed to load audio file:`, error)
-    throw new Error(`Failed to load audio file: ${error instanceof Error ? error.message : String(error)}`)
-  }
+  let uploadUrl
   
-  console.log(`${methodLogPrefix} Uploading file to AssemblyAI (${fileBuffer.length} bytes)`)
-  let uploadResponse
-  let uploadResponseText
-  
-  try {
-    uploadResponse = await fetch(`https://api.assemblyai.com/v2/upload`, {
-      method: 'POST',
-      headers: {
-        'Authorization': assemblyApiKey,
-        'Content-Type': 'application/octet-stream',
-      },
-      body: fileBuffer
-    })
+  if (audioSource.startsWith('http')) {
+    console.log(`${methodLogPrefix} Using audio from URL: ${audioSource}`)
+    uploadUrl = audioSource
+  } else {
+    const audioFilePath = audioSource.endsWith('.wav') ? audioSource : `${audioSource}.wav`
+    console.log(`${methodLogPrefix} Using local audio file path: ${audioFilePath}`)
     
-    console.log(`${methodLogPrefix} Received upload response with status: ${uploadResponse.status}`)
-    uploadResponseText = await uploadResponse.text()
-  } catch (error) {
-    console.error(`${methodLogPrefix} File upload failed:`, error)
-    throw new Error(`File upload failed: ${error instanceof Error ? error.message : String(error)}`)
+    try {
+      console.log(`${methodLogPrefix} Checking if audio file exists`)
+      await execPromise(`ls -la "${audioFilePath}"`)
+    } catch (error) {
+      console.error(`${methodLogPrefix} Audio file does not exist or is not accessible:`, error)
+      throw new Error(`Audio file does not exist or is not accessible at ${audioFilePath}: ${error instanceof Error ? error.message : String(error)}`)
+    }
+    
+    let fileBuffer
+    try {
+      console.log(`${methodLogPrefix} Reading audio file`)
+      fileBuffer = await readFile(audioFilePath)
+      console.log(`${methodLogPrefix} Successfully read audio file, size: ${fileBuffer.length} bytes`)
+    } catch (error) {
+      console.error(`${methodLogPrefix} Failed to load audio file:`, error)
+      throw new Error(`Failed to load audio file: ${error instanceof Error ? error.message : String(error)}`)
+    }
+    
+    console.log(`${methodLogPrefix} Uploading file to AssemblyAI (${fileBuffer.length} bytes)`)
+    let uploadResponse
+    let uploadResponseText
+    
+    try {
+      uploadResponse = await fetch(`https://api.assemblyai.com/v2/upload`, {
+        method: 'POST',
+        headers: {
+          'Authorization': assemblyApiKey,
+          'Content-Type': 'application/octet-stream',
+        },
+        body: fileBuffer
+      })
+      
+      console.log(`${methodLogPrefix} Received upload response with status: ${uploadResponse.status}`)
+      uploadResponseText = await uploadResponse.text()
+    } catch (error) {
+      console.error(`${methodLogPrefix} File upload failed:`, error)
+      throw new Error(`File upload failed: ${error instanceof Error ? error.message : String(error)}`)
+    }
+    
+    if (!uploadResponse.ok) {
+      console.error(`${methodLogPrefix} File upload failed with status ${uploadResponse.status}: ${uploadResponseText}`)
+      throw new Error(`File upload failed with status ${uploadResponse.status}: ${uploadResponseText}`)
+    }
+    
+    let uploadData
+    try {
+      uploadData = JSON.parse(uploadResponseText)
+      console.log(`${methodLogPrefix} Successfully parsed upload response JSON`)
+    } catch (error) {
+      console.error(`${methodLogPrefix} Invalid JSON in upload response:`, error)
+      throw new Error(`Invalid JSON in upload response: ${error instanceof Error ? error.message : String(error)}. Response: ${uploadResponseText}`)
+    }
+    
+    uploadUrl = uploadData.upload_url
+    if (!uploadUrl) {
+      console.error(`${methodLogPrefix} Upload URL not returned by AssemblyAI. Response: ${JSON.stringify(uploadData, null, 2)}`)
+      throw new Error(`Upload URL not returned by AssemblyAI. Response: ${JSON.stringify(uploadData, null, 2)}`)
+    }
+    
+    console.log(`${methodLogPrefix} Successfully obtained upload URL: ${uploadUrl}`)
   }
-  
-  if (!uploadResponse.ok) {
-    console.error(`${methodLogPrefix} File upload failed with status ${uploadResponse.status}: ${uploadResponseText}`)
-    throw new Error(`File upload failed with status ${uploadResponse.status}: ${uploadResponseText}`)
-  }
-  
-  let uploadData
-  try {
-    uploadData = JSON.parse(uploadResponseText)
-    console.log(`${methodLogPrefix} Successfully parsed upload response JSON`)
-  } catch (error) {
-    console.error(`${methodLogPrefix} Invalid JSON in upload response:`, error)
-    throw new Error(`Invalid JSON in upload response: ${error instanceof Error ? error.message : String(error)}. Response: ${uploadResponseText}`)
-  }
-  
-  const { upload_url } = uploadData
-  if (!upload_url) {
-    console.error(`${methodLogPrefix} Upload URL not returned by AssemblyAI. Response: ${JSON.stringify(uploadData, null, 2)}`)
-    throw new Error(`Upload URL not returned by AssemblyAI. Response: ${JSON.stringify(uploadData, null, 2)}`)
-  }
-  
-  console.log(`${methodLogPrefix} Successfully obtained upload URL: ${upload_url}`)
   
   const transcriptionOptions = {
-    audio_url: upload_url,
+    audio_url: uploadUrl,
     speech_model: modelId as 'default' | 'nano'
   }
   

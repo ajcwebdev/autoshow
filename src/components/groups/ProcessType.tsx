@@ -4,7 +4,6 @@ import { For, Show } from 'solid-js'
 import type { Setter } from 'solid-js'
 import { PROCESS_TYPES } from '../../types.ts'
 import type { ProcessTypeEnum, ShowNoteMetadata, TranscriptionCosts } from '../../types.ts'
-
 export const ProcessTypeStep = (props: {
   isLoading: boolean
   setIsLoading: Setter<boolean>
@@ -16,6 +15,7 @@ export const ProcessTypeStep = (props: {
   filePath: string
   setFilePath: Setter<string>
   setFinalPath: Setter<string>
+  setS3Url: Setter<string>
   setFrontMatter: Setter<string>
   setMetadata: Setter<Partial<ShowNoteMetadata>>
   setTranscriptionCosts: Setter<TranscriptionCosts>
@@ -26,7 +26,6 @@ export const ProcessTypeStep = (props: {
     props.setIsLoading(true)
     props.setError(null)
     props.setTranscriptionCosts({})
-    
     try {
       const body: any = { type: props.processType, options: {} }
       if (props.processType === 'video') {
@@ -36,32 +35,27 @@ export const ProcessTypeStep = (props: {
         body.filePath = props.filePath
         body.options.file = props.filePath
       }
-      
       console.log(`[ProcessTypeStep] Sending download-audio request for ${props.processType}`)
-      
       const res = await fetch('http://localhost:4321/api/download-audio', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body)
       })
-      
       if (!res.ok) {
         const errorData = await res.json()
         console.error(`[ProcessTypeStep] Download audio error:`, errorData)
         throw new Error(`Error downloading audio: ${errorData.error || res.statusText}`)
       }
-      
       const resData = await res.json()
       props.setFrontMatter(resData.frontMatter || '')
       props.setMetadata(resData.metadata || {})
       props.setFinalPath(resData.finalPath || '')
-      
+      props.setS3Url(resData.s3Url || '')
       if (resData.transcriptionCost) {
         props.setTranscriptionCosts(resData.transcriptionCost)
       } else {
         console.warn(`[ProcessTypeStep] No transcriptionCost found in response`)
       }
-      
       console.log(`[ProcessTypeStep] Successfully processed ${props.processType}, moving to step 2`)
       props.setCurrentStep(2)
     } catch (err) {
@@ -75,7 +69,6 @@ export const ProcessTypeStep = (props: {
       props.setIsLoading(false)
     }
   }
-  
   return (
     <>
       <div class="form-group">

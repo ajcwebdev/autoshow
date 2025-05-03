@@ -15,19 +15,29 @@ export const WalletStep = (props: {
   setCurrentStep: Setter<number>
 }) => {
   const handleCheckBalance = async () => {
+    console.log(`[WalletStep] Checking balance for wallet: ${props.walletAddress}`)
     props.setIsLoading(true)
     props.setError(null)
+    
     try {
       if (!props.walletAddress || !props.mnemonic) throw new Error('Please enter wallet address and mnemonic')
+      
       const balanceRes = await fetch('http://localhost:4321/api/dash-balance', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ mnemonic: props.mnemonic, walletAddress: props.walletAddress })
       })
-      if (!balanceRes.ok) throw new Error('Error getting balance')
+      
+      if (!balanceRes.ok) {
+        console.error(`[WalletStep] Error checking balance: ${balanceRes.statusText}`)
+        throw new Error('Error getting balance')
+      }
+      
       const data = await balanceRes.json()
+      console.log(`[WalletStep] Successfully retrieved balance: ${data.balance} duff`)
       props.setDashBalance(data.balance)
     } catch (err) {
+      console.error(`[WalletStep] Error in handleCheckBalance:`, err)
       if (err instanceof Error) props.setError(err.message)
       else props.setError('An unknown error occurred.')
     } finally {

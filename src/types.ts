@@ -132,6 +132,15 @@ export const L_CONFIG = {
   }
 }
 
+export interface DeepgramSentence {
+  text: string
+  start: number
+}
+
+export interface DeepgramParagraph {
+  sentences: DeepgramSentence[]
+}
+
 export interface LocalResult {
   showNote: ShowNoteType
   llmOutput: string

@@ -14,7 +14,6 @@ INCLUDE_PATHS=(
 )
 
 IGNORE_PATHS=(
-  "src/pages"
   "src/db.ts"
   "db/seed.ts"
   "server.mjs"

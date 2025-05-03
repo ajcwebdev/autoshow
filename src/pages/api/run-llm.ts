@@ -3,9 +3,15 @@
 import type { APIRoute } from "astro"
 import path from "path"
 import { fileURLToPath } from "url"
-import { OpenAI } from "openai"
-import { GoogleGenerativeAI } from "@google/generative-ai"
 import { dbService } from "../../db"
+import { 
+  computeLLMCosts, 
+  retryLLMCall, 
+  callChatGPT, 
+  callClaude, 
+  callGemini, 
+  callGroq 
+} from "../../services/llm"
 import { L_CONFIG, ENV_VARS_MAP } from '../../types'
 import type {
   ProcessingOptions,
@@ -19,12 +25,15 @@ import type {
 
 export const POST: APIRoute = async ({ request }) => {
   const logPrefix = '[api/run-llm]'
+  console.log(`${logPrefix} Starting LLM processing request`)
+  
   try {
     const body = await request.json()
     const llmServices = body?.llmServices
     const options: ProcessingOptions = body?.options || {}
     
-    // Remove sensitive data from logs
+    console.log(`${logPrefix} Request received with LLM service: ${llmServices}`)
+    
     const loggableOptions = { ...options }
     delete loggableOptions.openaiApiKey
     delete loggableOptions.anthropicApiKey
@@ -32,6 +41,7 @@ export const POST: APIRoute = async ({ request }) => {
     delete loggableOptions.groqApiKey
     delete loggableOptions.mnemonic
     
+    console.log(`${logPrefix} Options (sanitized): ${JSON.stringify(loggableOptions)}`)
     console.log(`${logPrefix} Processing with LLM service: ${llmServices}`)
     
     const frontMatter = options?.frontMatter as string | undefined
@@ -39,9 +49,11 @@ export const POST: APIRoute = async ({ request }) => {
     const transcript = options?.transcript as string | undefined
     
     if (options) {
+      console.log(`${logPrefix} Setting environment variables from options`)
       Object.entries(ENV_VARS_MAP).forEach(([bodyKey, envKey]) => {
         const value = options[bodyKey]
         if (value) {
+          console.log(`${logPrefix} Setting ${envKey} from options`)
           process.env[envKey] = value as string
         }
       })
@@ -52,9 +64,11 @@ export const POST: APIRoute = async ({ request }) => {
     }
     
     if (!frontMatter || !prompt || !transcript) {
+      console.error(`${logPrefix} Missing required options: frontMatter, prompt, or transcript`)
       return new Response(JSON.stringify({ error: 'frontMatter, prompt, and transcript are required in options' }), { status: 400 })
     }
     
+    console.log(`${logPrefix} Parsing front matter and extracting metadata`)
     const __filename = fileURLToPath(import.meta.url)
     const __dirname = path.dirname(__filename)
     const projectRoot = path.resolve(__dirname, '../../../../')
@@ -73,8 +87,11 @@ export const POST: APIRoute = async ({ request }) => {
       }
     })
     
+    console.log(`${logPrefix} Extracted metadata: ${JSON.stringify(metadata)}`)
+    
     const metaFromBody = options['metadata'] as Partial<ShowNoteMetadata> | undefined
     if (metaFromBody) {
+      console.log(`${logPrefix} Merging metadata from body`)
       Object.assign(metadata, metaFromBody)
     }
     
@@ -90,200 +107,22 @@ export const POST: APIRoute = async ({ request }) => {
       mnemonic: options['mnemonic'] as string || metadata.mnemonic
     }
     
+    console.log(`${logPrefix} Final metadata prepared: ${JSON.stringify({ ...finalMetadata, mnemonic: '***REDACTED***' })}`)
+    
     const baseFilename = `${finalMetadata.publishDate}-${finalMetadata.title}`.replace(/[^a-z0-9\-]/gi, '_').toLowerCase()
     const finalPathBase = path.join('autoshow', 'content', baseFilename)
+    console.log(`${logPrefix} Generated base filename: ${baseFilename}`)
     
     let showNotesResult = ""
     let userModel = ""
     const numericLLMCost = Number(options.llmCost) || 0
-    
-    async function retryLLMCall(fn: () => Promise<any>): Promise<any> {
-      const maxRetries = 7
-      let attempt = 0
-      
-      while (attempt < maxRetries) {
-        try {
-          attempt++
-          if (attempt > 1) {
-            console.log(`${logPrefix} LLM retry attempt ${attempt}`)
-          }
-          const result = await fn()
-          return result
-        } catch (error) {
-          console.error(`${logPrefix} LLM call failed (attempt ${attempt}):`, error)
-          if (attempt >= maxRetries) {
-            throw error
-          }
-          const delayMs = 1000 * 2 ** (attempt - 1)
-          await new Promise(resolve => setTimeout(resolve, delayMs))
-        }
-      }
-      throw new Error('LLM call failed after maximum retries.')
-    }
-    
-    async function callChatGPT(modelValue: ChatGPTModelValue): Promise<LLMResult> {
-      if (!process.env.OPENAI_API_KEY) {
-        throw new Error('Missing OPENAI_API_KEY')
-      }
-      
-      const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
-      const combinedPrompt = `${prompt}\n\n## Transcript\n\n${transcript}`
-      
-      try {
-        const response = await openai.chat.completions.create({
-          model: modelValue,
-          messages: [{ role: 'user', content: combinedPrompt }]
-        })
-        
-        const firstChoice = response.choices[0]
-        if (!firstChoice?.message?.content) {
-          throw new Error('No valid response content from ChatGPT API')
-        }
-        
-        const content = firstChoice.message.content
-        
-        return {
-          content,
-          usage: {
-            stopReason: firstChoice.finish_reason ?? 'unknown',
-            input: response.usage?.prompt_tokens,
-            output: response.usage?.completion_tokens,
-            total: response.usage?.total_tokens
-          }
-        }
-      } catch (error) {
-        console.error(`${logPrefix} Error in callChatGPT:`, error)
-        throw error
-      }
-    }
-    
-    async function callGroq(modelValue: GroqModelValue): Promise<LLMResult> {
-      if (!process.env.GROQ_API_KEY) {
-        throw new Error('Missing GROQ_API_KEY environment variable.')
-      }
-      
-      const groq = new OpenAI({
-        apiKey: process.env.GROQ_API_KEY,
-        baseURL: 'https://api.groq.com/openai/v1'
-      })
-      
-      const combinedPrompt = `${prompt}\n\n## Transcript\n\n${transcript}`
-      
-      try {
-        const response = await groq.chat.completions.create({
-          model: modelValue,
-          messages: [{ role: 'user', content: combinedPrompt }]
-        })
-        
-        const firstChoice = response.choices[0]
-        if (!firstChoice?.message?.content) {
-          throw new Error('No valid response content from Groq API')
-        }
-        
-        const content = firstChoice.message.content
-        
-        return {
-          content,
-          usage: {
-            stopReason: firstChoice.finish_reason ?? 'unknown',
-            input: response.usage?.prompt_tokens,
-            output: response.usage?.completion_tokens,
-            total: response.usage?.total_tokens
-          }
-        }
-      } catch (error) {
-        console.error(`${logPrefix} Error in callGroq:`, error)
-        throw error
-      }
-    }
-    
-    async function callClaude(modelValue: ClaudeModelValue): Promise<LLMResult> {
-      if (!process.env.ANTHROPIC_API_KEY) {
-        throw new Error('Missing ANTHROPIC_API_KEY environment variable.')
-      }
-      
-      const anthropic = new OpenAI({
-        apiKey: process.env.ANTHROPIC_API_KEY,
-        baseURL: 'https://api.anthropic.com/v1/'
-      })
-      
-      const combinedPrompt = `${prompt}\n\n## Transcript\n\n${transcript}`
-      
-      try {
-        const response = await anthropic.chat.completions.create({
-          model: modelValue,
-          max_tokens: 4096,
-          messages: [{ role: 'user', content: combinedPrompt }]
-        })
-        
-        const firstChoice = response.choices[0]
-        if (!firstChoice?.message?.content) {
-          throw new Error('No valid text content generated by Claude.')
-        }
-        
-        const content = firstChoice.message.content
-        
-        return {
-          content,
-          usage: {
-            stopReason: firstChoice.finish_reason ?? 'unknown',
-            input: response.usage?.prompt_tokens,
-            output: response.usage?.completion_tokens,
-            total: response.usage?.total_tokens
-          }
-        }
-      } catch (error) {
-        console.error(`${logPrefix} Error in callClaude:`, error)
-        throw error
-      }
-    }
-    
-    function delay(ms: number): Promise<void> {
-      return new Promise(resolve => setTimeout(resolve, ms))
-    }
-    
-    async function callGemini(modelValue: GeminiModelValue): Promise<LLMResult> {
-      if (!process.env.GEMINI_API_KEY) {
-        throw new Error('Missing GEMINI_API_KEY environment variable.')
-      }
-      
-      const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY)
-      const geminiModel = genAI.getGenerativeModel({ model: modelValue })
-      const combinedPrompt = `${prompt}\n\n## Transcript\n\n${transcript}`
-      
-      const maxRetries = 3
-      for (let attempt = 1; attempt <= maxRetries; attempt++) {
-        try {
-          const result = await geminiModel.generateContent(combinedPrompt)
-          const response = result.response
-          const text = response.text()
-          
-          const { usageMetadata } = response
-          const { promptTokenCount, candidatesTokenCount, totalTokenCount } = usageMetadata ?? {}
-          
-          return {
-            content: text,
-            usage: {
-              stopReason: response.candidates?.[0]?.finishReason || 'unknown',
-              input: promptTokenCount,
-              output: candidatesTokenCount,
-              total: totalTokenCount
-            }
-          }
-        } catch (error) {
-          console.error(`${logPrefix} Error in callGemini (attempt ${attempt}/${maxRetries}):`, error)
-          if (attempt === maxRetries) throw error
-          await delay(2 ** attempt * 1000)
-        }
-      }
-      throw new Error('Exhausted all Gemini API call retries without success.')
-    }
     
     if (llmServices) {
       console.log(`${logPrefix} Processing with '${llmServices}' Language Model`)
       const config = L_CONFIG[llmServices as keyof typeof L_CONFIG]
       
       if (!config) {
+        console.error(`${logPrefix} Unknown LLM service: ${llmServices}`)
         throw new Error(`Unknown LLM service: ${llmServices}`)
       }
       
@@ -294,7 +133,10 @@ export const POST: APIRoute = async ({ request }) => {
         ? optionValue
         : defaultModelId
         
+      console.log(`${logPrefix} Selected model: ${userModel} for service ${llmServices}`)
+      
       if (!userModel) {
+        console.error(`${logPrefix} Could not determine a valid model for service ${llmServices}`)
         throw new Error(`Could not determine a valid model for service ${llmServices}`)
       }
       
@@ -302,29 +144,42 @@ export const POST: APIRoute = async ({ request }) => {
       
       switch (llmServices) {
         case 'chatgpt':
-          showNotesData = await retryLLMCall(() => callChatGPT(userModel as ChatGPTModelValue))
+          console.log(`${logPrefix} Calling ChatGPT with model: ${userModel}`)
+          showNotesData = await retryLLMCall(() => callChatGPT(userModel as ChatGPTModelValue, prompt, transcript))
           break
+          
         case 'claude':
-          showNotesData = await retryLLMCall(() => callClaude(userModel as ClaudeModelValue))
+          console.log(`${logPrefix} Calling Claude with model: ${userModel}`)
+          showNotesData = await retryLLMCall(() => callClaude(userModel as ClaudeModelValue, prompt, transcript))
           break
+          
         case 'gemini':
-          showNotesData = await retryLLMCall(() => callGemini(userModel as GeminiModelValue))
+          console.log(`${logPrefix} Calling Gemini with model: ${userModel}`)
+          showNotesData = await retryLLMCall(() => callGemini(userModel as GeminiModelValue, prompt, transcript))
           break
+          
         case 'groq':
-          showNotesData = await retryLLMCall(() => callGroq(userModel as GroqModelValue))
+          console.log(`${logPrefix} Calling Groq with model: ${userModel}`)
+          showNotesData = await retryLLMCall(() => callGroq(userModel as GroqModelValue, prompt, transcript))
           break
+          
         default:
+          console.error(`${logPrefix} Unknown or unhandled LLM service: ${llmServices}`)
           throw new Error(`Unknown or unhandled LLM service: ${llmServices}`)
       }
       
       console.log(`${logPrefix} LLM call successful for service ${llmServices} using model ${userModel}`)
       showNotesResult = showNotesData.content
+      console.log(`${logPrefix} Generated content length: ${showNotesResult.length}`)
     } else {
       showNotesResult = "LLM processing skipped."
+      console.log(`${logPrefix} LLM processing skipped`)
     }
     
     const numericTranscriptionCost = Number(options.transcriptionCost) || 0
     const finalCost = numericTranscriptionCost + numericLLMCost
+    
+    console.log(`${logPrefix} Costs - Transcription: ${numericTranscriptionCost}, LLM: ${numericLLMCost}, Final: ${finalCost}`)
     
     const insertedNoteData = {
       showLink: finalMetadata.showLink || undefined,
@@ -355,11 +210,14 @@ export const POST: APIRoute = async ({ request }) => {
     
     let verifiedRecord = null
     if (typeof newRecord.id === 'number') {
+      console.log(`${logPrefix} Verifying record was saved correctly, fetching ID: ${newRecord.id}`)
       verifiedRecord = await dbService.getShowNote(newRecord.id)
     }
     
     if (!verifiedRecord) {
       console.error(`${logPrefix} Verification failed - Record with ID ${newRecord.id} not found in database`)
+    } else {
+      console.log(`${logPrefix} Record verification successful`)
     }
     
     return new Response(JSON.stringify({
@@ -369,9 +227,14 @@ export const POST: APIRoute = async ({ request }) => {
   } catch (error) {
     console.error(`${logPrefix} Error:`, error)
     const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred'
+    const errorStack = error instanceof Error ? error.stack : undefined
+    
+    console.error(`${logPrefix} Error message: ${errorMessage}`)
+    if (errorStack) console.error(`${logPrefix} Error stack: ${errorStack}`)
+    
     return new Response(JSON.stringify({
       error: `An error occurred while running LLM: ${errorMessage}`,
-      stack: error instanceof Error ? error.stack : undefined
+      stack: errorStack
     }), { status: 500 })
   }
 }

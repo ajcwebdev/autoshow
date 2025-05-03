@@ -2,7 +2,7 @@
 
 import { For, Show } from 'solid-js'
 import type { Setter } from 'solid-js'
-import { PROCESS_TYPES } from '../../constants.ts'
+import { PROCESS_TYPES } from '../../types.ts'
 import type { ProcessTypeEnum, ShowNoteMetadata, TranscriptionCosts } from '../../types.ts'
 export const ProcessTypeStep = (props: {
   isLoading: boolean

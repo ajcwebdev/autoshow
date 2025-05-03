@@ -35,7 +35,7 @@ const Instructions: Component = () => {
           </tr>
           <tr class="border-b border-gray-700 hover:bg-gray-800">
             <td class="p-4" style={{ width: '5rem', 'white-space': 'nowrap' }}>File</td>
-            <td class="p-4 break-words">content/examples/audio.mp3</td>
+            <td class="p-4 break-words">autoshow/content/examples/audio.mp3</td>
             <td class="p-4">Audio file attachment for the show notes</td>
           </tr>
         </tbody>

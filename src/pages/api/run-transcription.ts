@@ -4,7 +4,7 @@ import type { APIRoute } from "astro"
 import path from "path"
 import { fileURLToPath } from "url"
 import { execPromise, readFile, existsSync } from "../../utils.ts"
-import { T_CONFIG, L_CONFIG, PROMPT_CHOICES } from '../../constants.ts'
+import { T_CONFIG, L_CONFIG, PROMPT_CHOICES } from '../../types.ts'
 import { prompts } from '../../prompts.ts'
 import type { ProcessingOptions } from '../../types.ts'
 

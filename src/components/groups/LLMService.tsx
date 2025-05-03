@@ -1,7 +1,7 @@
 // src/components/groups/LLMService.tsx
 
 import { createSignal, For, Show } from 'solid-js'
-import { L_CONFIG } from '../../constants.ts'
+import { L_CONFIG } from '../../types.ts'
 import type { LLMServiceKey, ShowNoteType, ShowNoteMetadata, LocalResult } from '../../types.ts'
 export const LLMServiceStep = (props: {
   isLoading: boolean

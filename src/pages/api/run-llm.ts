@@ -7,7 +7,7 @@ import { OpenAI } from "openai"
 import { GoogleGenerativeAI } from "@google/generative-ai"
 import { writeFile } from "../../utils" // Keep writeFile for potential debug output if needed
 import { dbService } from "../../db"
-import { L_CONFIG, ENV_VARS_MAP } from '../../constants'
+import { L_CONFIG, ENV_VARS_MAP } from '../../types'
 import type {
   ProcessingOptions,
   ShowNoteMetadata,

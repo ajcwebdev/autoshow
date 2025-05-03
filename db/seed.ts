@@ -4,7 +4,6 @@ import { exec } from 'child_process'
 import { promisify } from 'util'
 import * as fs from 'fs/promises'
 import { join } from 'path'
-import { env } from '../src/utils'
 
 const execAsync = promisify(exec)
 const logPrefix = '[db/seed]'
@@ -12,13 +11,13 @@ const logPrefix = '[db/seed]'
 async function seed(): Promise<void> {
   console.log(`${logPrefix} Starting database seed process`)
   console.log(`${logPrefix} Current environment variables:`)
-  console.log(`${logPrefix} - NODE_ENV: ${env.NODE_ENV || 'not set'}`)
-  console.log(`${logPrefix} - Has DATABASE_URL: ${Boolean(env.DATABASE_URL)}`)
-  console.log(`${logPrefix} - Has ASTRO_DB_REMOTE_URL: ${Boolean(env.ASTRO_DB_REMOTE_URL)}`)
-  console.log(`${logPrefix} - Has ASTRO_DB_APP_TOKEN: ${Boolean(env.ASTRO_DB_APP_TOKEN)}`)
+  console.log(`${logPrefix} - NODE_ENV: ${process.env.NODE_ENV || 'not set'}`)
+  console.log(`${logPrefix} - Has DATABASE_URL: ${Boolean(process.env.DATABASE_URL)}`)
+  console.log(`${logPrefix} - Has ASTRO_DB_REMOTE_URL: ${Boolean(process.env.ASTRO_DB_REMOTE_URL)}`)
+  console.log(`${logPrefix} - Has ASTRO_DB_APP_TOKEN: ${Boolean(process.env.ASTRO_DB_APP_TOKEN)}`)
   
-  if (!env.DATABASE_URL || env.DATABASE_URL.startsWith('file:')) {
-    console.log(`${logPrefix} DATABASE_URL is invalid or points to a local file: ${env.DATABASE_URL?.substring(0, 10)}...`)
+  if (!process.env.DATABASE_URL || process.env.DATABASE_URL.startsWith('file:')) {
+    console.log(`${logPrefix} DATABASE_URL is invalid or points to a local file: ${process.env.DATABASE_URL?.substring(0, 10)}...`)
     console.log(`${logPrefix} Getting Supabase connection from other environment variables`)
     
     try {

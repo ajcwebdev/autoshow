@@ -4,21 +4,24 @@
 # Creates a summary in markdown format
 
 INCLUDE_PATHS=(
-  "docs/server/06-database.md"
-  "docs/server/01-step-endpoints.md"
+  "docs/01-step-endpoints.md"
+  "docs/05-querying-show-notes.md"
+  "docs/06-database.md"
   "scripts"
   "db"
   "src"
-  "server.mjs"
   "package.json"
 )
 
 IGNORE_PATHS=(
-  "src/prompts.ts"
+  "src/pages"
+  "src/db.ts"
+  "db/seed.ts"
+  "server.mjs"
+  "src/layouts/Base.astro"
   "src/pages/api/embeddings.ts"
   "src/styles/global.css"
-  "src/layouts/Base.astro"
-  "src/prisma/migrations"
+  "src/prompts.ts"
 )
 
 INCLUDE_STRING=$(IFS=,; echo "${INCLUDE_PATHS[*]}")

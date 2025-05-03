@@ -14,6 +14,7 @@ INCLUDE_PATHS=(
 )
 
 IGNORE_PATHS=(
+  "src/services"
   "src/db.ts"
   "db/seed.ts"
   "server.mjs"
@@ -36,7 +37,7 @@ if [ ! -f "$INSTRUCTION_FILE" ]; then
   cat > "$INSTRUCTION_FILE" << 'EOF'
 I'm going to ask you to refactor my code, write a new feature, or fix a bug.
 
-- Any time you are refactoring, building a new feature, or fixing a bug, add as many new logging functions as possible to track every thing that is happening in every step of every function and line of code so there is complete and full visibility and observability into what is happening in the logs.
+- Any time you are refactoring, building a new feature, or fixing a bug, add a few logging functions to track what is happening and help debug when the application fails.
 - In your responses when you respond with code, you will respond with the entire code files with no comments.
 - Include one or two sentences before the code file explaining what has been changed, do not write the explanation as comments in the code file.
 - Do not include any comments in the code at all.

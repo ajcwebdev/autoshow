@@ -522,6 +522,6 @@ async function computeAllTranscriptCosts(filePath: string): Promise<Record<strin
     })
   })
   
-  console.log(`[api/download-audio] Final transcriptCost result: ${JSON.stringify(result)}`)
+  console.log(`[api/download-audio] Final transcriptCost result: ${JSON.stringify(result, null, 2)}`)
   return result
 }

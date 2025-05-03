@@ -15,13 +15,13 @@ export const Alert = (props: AlertProps) => (
 )
 export default function Form(props: FormProps) {
   const logPrefix = '[Form]'
-  const [currentStep, setCurrentStep] = createSignal(0)
+  const [currentStep, setCurrentStep] = createSignal(1)
   console.log(`${logPrefix} Initial currentStep: ${currentStep()}`)
   const [walletAddress, setWalletAddress] = createSignal('yhGfbjKDuTnJyx8wzje7n9wsoWC51WH7Y5')
   console.log(`${logPrefix} Initial walletAddress: ${walletAddress()}`)
   const [mnemonic, setMnemonic] = createSignal('tip punch promote click scheme guitar skirt lucky hamster clip denial ecology')
   console.log(`${logPrefix} Initial mnemonic set (redacted)`)
-  const [processType, setProcessType] = createSignal<ProcessTypeEnum>('file')
+  const [processType, setProcessType] = createSignal<ProcessTypeEnum>('video')
   console.log(`${logPrefix} Initial processType: ${processType()}`)
   const [url, setUrl] = createSignal('https://www.youtube.com/watch?v=MORMZXEaONk')
   console.log(`${logPrefix} Initial url: ${url()}`)
@@ -66,10 +66,6 @@ export default function Form(props: FormProps) {
   console.log(`${logPrefix} Initial isLoading: false`)
   const [dashBalance, setDashBalance] = createSignal<number | null>(null)
   console.log(`${logPrefix} Initial dashBalance: null`)
-  const updateCurrentStep = (step: number): void => {
-    console.log(`${logPrefix} Updating currentStep from ${currentStep()} to ${step}`)
-    setCurrentStep(step)
-  }
   return (
     <>
       {currentStep() === 0 && (

@@ -2,30 +2,9 @@
 
 ## Outline
 
-- [Estimate Transcription Cost](#estimate-transcription-cost)
 - [Transcription Service and Model Options](#transcription-service-and-model-options)
   - [Deepgram](#deepgram)
   - [Assembly](#assembly)
-
-## Estimate Transcription Cost
-
-Fastify endpoint:
-
-```bash
-curl --json '{
-  "type": "transcriptCost",
-  "filePath": "content/examples/audio.mp3"
-}' http://localhost:4321/api/cost -s | json_pp
-```
-
-Astro endpoint:
-
-```bash
-curl --json '{
-  "type": "transcriptCost",
-  "filePath": "content/examples/audio.mp3"
-}' http://localhost:4321/api/cost -s | json_pp
-```
 
 ## Transcription Service and Model Options
 

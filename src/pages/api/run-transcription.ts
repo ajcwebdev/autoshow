@@ -432,7 +432,7 @@ export const POST: APIRoute = async ({ request }) => {
           result[serviceName].push({ modelId: model.modelId, cost: finalCost })
         })
       })
-      console.log(`[api/run-transcription] Final transcriptionCost result: ${JSON.stringify(result)}`)
+      console.log(`[api/run-transcription] Final transcriptionCost result: ${JSON.stringify(result, null, 2)}`)
       return result
     }
     
@@ -478,7 +478,7 @@ export const POST: APIRoute = async ({ request }) => {
         })
       })
       
-      console.log(`[api/run-transcription] Final llmCost result: ${JSON.stringify(result)}`)
+      console.log(`[api/run-transcription] Final llmCost result: ${JSON.stringify(result, null, 2)}`)
       return result
     }
     

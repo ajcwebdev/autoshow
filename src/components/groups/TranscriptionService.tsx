@@ -4,6 +4,10 @@ import { createSignal, For, Show } from 'solid-js'
 import type { Setter } from 'solid-js'
 import { PROMPT_CHOICES } from '../../types.ts'
 import type { TranscriptionCosts } from '../../types.ts'
+
+const l = console.log
+const err = console.error
+
 export const TranscriptionStep = (props: {
   isLoading: boolean
   setIsLoading: Setter<boolean>
@@ -37,7 +41,7 @@ export const TranscriptionStep = (props: {
     ))
   }
   const handleStepTwo = async (): Promise<void> => {
-    console.log(`[TranscriptionStep] Starting transcription with ${props.transcriptionService}/${props.transcriptionModel}`)
+    l(`[TranscriptionStep] Starting transcription with ${props.transcriptionService}/${props.transcriptionModel}`)
     props.setIsLoading(true)
     props.setError(null)
     props.setTranscriptContent('')
@@ -63,7 +67,7 @@ export const TranscriptionStep = (props: {
       if (props.transcriptionService === 'deepgram') {
         rtBody.options.deepgramApiKey = props.transcriptionApiKey
       }
-      console.log(`[TranscriptionStep] Sending request to run-transcription API with S3 URL: ${props.s3Url}`)
+      l(`[TranscriptionStep] Sending request to run-transcription API with S3 URL: ${props.s3Url}`)
       const rtRes = await fetch('http://localhost:4321/api/run-transcription', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -71,7 +75,7 @@ export const TranscriptionStep = (props: {
       })
       if (!rtRes.ok) {
         const errorData = await rtRes.json()
-        console.error(`[TranscriptionStep] Transcription API error:`, errorData)
+        err(`[TranscriptionStep] Transcription API error:`, errorData)
         throw new Error(`Error running transcription: ${errorData.error || rtRes.statusText}`)
       }
       const rtData = await rtRes.json() as {
@@ -97,12 +101,12 @@ export const TranscriptionStep = (props: {
         props.setLlmCosts({})
       }
       setShowTranscript(true)
-      console.log(`[TranscriptionStep] Successfully completed transcription, moving to step 3`)
+      l(`[TranscriptionStep] Successfully completed transcription, moving to step 3`)
       props.setCurrentStep(3)
-    } catch (err) {
-      console.error(`[TranscriptionStep] Error in handleStepTwo:`, err)
-      if (err instanceof Error) {
-        props.setError(err.message)
+    } catch (error) {
+      err(`[TranscriptionStep] Error in handleStepTwo:`, error)
+      if (error instanceof Error) {
+        props.setError(error.message)
       } else {
         props.setError('An unknown error occurred.')
       }

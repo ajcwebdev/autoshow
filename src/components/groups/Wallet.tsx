@@ -2,6 +2,9 @@
 
 import type { Setter } from 'solid-js'
 
+const l = console.log
+const err = console.error
+
 export const WalletStep = (props: {
   isLoading: boolean
   setIsLoading: Setter<boolean>
@@ -15,7 +18,7 @@ export const WalletStep = (props: {
   setCurrentStep: Setter<number>
 }) => {
   const handleCheckBalance = async () => {
-    console.log(`[WalletStep] Checking balance for wallet: ${props.walletAddress}`)
+    l(`[WalletStep] Checking balance for wallet: ${props.walletAddress}`)
     props.setIsLoading(true)
     props.setError(null)
     
@@ -29,16 +32,16 @@ export const WalletStep = (props: {
       })
       
       if (!balanceRes.ok) {
-        console.error(`[WalletStep] Error checking balance: ${balanceRes.statusText}`)
+        err(`[WalletStep] Error checking balance: ${balanceRes.statusText}`)
         throw new Error('Error getting balance')
       }
       
       const data = await balanceRes.json()
-      console.log(`[WalletStep] Successfully retrieved balance: ${data.balance} duff`)
+      l(`[WalletStep] Successfully retrieved balance: ${data.balance} duff`)
       props.setDashBalance(data.balance)
-    } catch (err) {
-      console.error(`[WalletStep] Error in handleCheckBalance:`, err)
-      if (err instanceof Error) props.setError(err.message)
+    } catch (error) {
+      err(`[WalletStep] Error in handleCheckBalance:`, error)
+      if (error instanceof Error) props.setError(error.message)
       else props.setError('An unknown error occurred.')
     } finally {
       props.setIsLoading(false)

@@ -1,18 +1,16 @@
 // src/pages/api/download-audio.ts
 
 import type { APIRoute } from "astro"
-import path from "path"
-import { fileURLToPath } from "url"
 import { fileTypeFromBuffer } from "file-type"
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner"
 import { S3Client, PutObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3"
 import { dbService } from "../../db"
-import { execPromise, readFile, access, rename, execFilePromise, env, mkdirSync, existsSync, unlink } from "../../utils"
+import { fileURLToPath, execPromise, readFile, access, rename, execFilePromise, env, mkdirSync, existsSync, unlink, dirname, resolve, basename, l, err } from "../../utils"
 import { T_CONFIG } from '../../types.ts'
 
 export const POST: APIRoute = async ({ request }) => {
-  const logPrefix = "[api/download-audio]"
-  console.log(`${logPrefix} Starting audio download and processing`)
+  const pre = "[api/download-audio]"
+  l(`${pre} Starting audio download and processing`)
   try {
     const body = await request.json()
     const type = body?.type
@@ -39,8 +37,8 @@ export const POST: APIRoute = async ({ request }) => {
     }
 
     const __filename = fileURLToPath(import.meta.url)
-    const __dirname = path.dirname(__filename)
-    const projectRoot = path.resolve(__dirname, '../../../../')
+    const __dirname = dirname(__filename)
+    const projectRoot = resolve(__dirname, '../../../../')
 
     function sanitizeTitle(title: string): string {
       return title
@@ -88,7 +86,7 @@ export const POST: APIRoute = async ({ request }) => {
     }
 
     if (options.video) {
-      console.log(`${logPrefix} Processing video URL: ${url}`)
+      l(`${pre} Processing video URL: ${url}`)
       const { stdout } = await execFilePromise('yt-dlp', [
         '--restrict-filenames',
         '--print', '%(webpage_url)s',
@@ -125,7 +123,7 @@ export const POST: APIRoute = async ({ request }) => {
         mnemonic: ''
       }
     } else {
-      console.log(`${logPrefix} Processing local file: ${filePath}`)
+      l(`${pre} Processing local file: ${filePath}`)
       const originalFilename = filePath.split('/').pop() || ''
       const filenameWithoutExt = originalFilename.replace(/\.[^/.]+$/, '')
       const timestamp = new Date().getTime()
@@ -147,10 +145,10 @@ export const POST: APIRoute = async ({ request }) => {
 
     const finalPath = `autoshow/content/${filename}`
     const outputPath = `${finalPath}.wav`
-    const absoluteOutputPath = path.resolve(projectRoot, outputPath)
-    console.log(`${logPrefix} Output path: ${absoluteOutputPath}`)
+    const absoluteOutputPath = resolve(projectRoot, outputPath)
+    l(`${pre} Output path: ${absoluteOutputPath}`)
 
-    const contentDir = path.dirname(path.resolve(projectRoot, outputPath))
+    const contentDir = dirname(resolve(projectRoot, outputPath))
     mkdirSync(contentDir, { recursive: true })
 
     const frontMatter = buildFrontMatter({
@@ -175,7 +173,7 @@ export const POST: APIRoute = async ({ request }) => {
       for (let attempt = 1; attempt <= maxRetries; attempt++) {
         try {
           if (attempt > 1) {
-            console.log(`${logPrefix} Retry attempt ${attempt}/${maxRetries}`)
+            l(`${pre} Retry attempt ${attempt}/${maxRetries}`)
           }
           const { stderr } = await execFilePromise(command, args)
           return
@@ -192,7 +190,7 @@ export const POST: APIRoute = async ({ request }) => {
     let audioDurationInSeconds = 0
 
     if (options.video) {
-      console.log(`${logPrefix} Downloading video from URL`)
+      l(`${pre} Downloading video from URL`)
       await executeWithRetry('yt-dlp', [
         '--no-warnings',
         '--restrict-filenames',
@@ -203,14 +201,14 @@ export const POST: APIRoute = async ({ request }) => {
         '-o', absoluteOutputPath,
         url
       ])
-      console.log(`${logPrefix} Video download completed`)
+      l(`${pre} Video download completed`)
     } else if (options.file) {
-      console.log(`${logPrefix} Converting local file to WAV`)
+      l(`${pre} Converting local file to WAV`)
       const supportedFormats = new Set([
         'wav', 'mp3', 'm4a', 'aac', 'ogg', 'flac', 'mp4', 'mkv', 'avi', 'mov', 'webm'
       ])
 
-      const resolvedFilePath = path.resolve(projectRoot, filePath)
+      const resolvedFilePath = resolve(projectRoot, filePath)
       await access(resolvedFilePath)
 
       const buffer = await readFile(resolvedFilePath)
@@ -223,7 +221,7 @@ export const POST: APIRoute = async ({ request }) => {
       }
 
       await execPromise(`ffmpeg -i "${resolvedFilePath}" -ar 16000 -ac 1 -c:a pcm_s16le "${absoluteOutputPath}"`, { maxBuffer: 10000 * 1024 })
-      console.log(`${logPrefix} File conversion completed`)
+      l(`${pre} File conversion completed`)
     } else {
       throw new Error('Invalid option for audio download/processing.')
     }
@@ -234,16 +232,16 @@ export const POST: APIRoute = async ({ request }) => {
 
     try {
       audioDurationInSeconds = await getAudioDurationInSeconds(absoluteOutputPath)
-      console.log(`${logPrefix} Retrieved audio duration before upload: ${audioDurationInSeconds} seconds`)
+      l(`${pre} Retrieved audio duration before upload: ${audioDurationInSeconds} seconds`)
     } catch (error) {
-      console.warn(`${logPrefix} Could not get audio duration: ${error}`)
+      console.warn(`${pre} Could not get audio duration: ${error}`)
       audioDurationInSeconds = 300 // Default to 5 minutes if we can't get the actual duration
-      console.log(`${logPrefix} Using default duration estimate: ${audioDurationInSeconds} seconds`)
+      l(`${pre} Using default duration estimate: ${audioDurationInSeconds} seconds`)
     }
 
     const region = env['AWS_REGION'] || 'us-east-2'
     const bucket = env['S3_BUCKET_NAME'] || 'autoshow-test'
-    const key = path.basename(outputPath)
+    const key = basename(outputPath)
 
     const fileBuffer = await readFile(absoluteOutputPath)
     const client = new S3Client({ region })
@@ -256,20 +254,20 @@ export const POST: APIRoute = async ({ request }) => {
     })
 
     await client.send(putCommand)
-    console.log(`${logPrefix} File uploaded to S3`)
+    l(`${pre} File uploaded to S3`)
     
     try {
       await unlink(absoluteOutputPath)
-      console.log(`${logPrefix} Local WAV file deleted: ${absoluteOutputPath}`)
+      l(`${pre} Local WAV file deleted: ${absoluteOutputPath}`)
     } catch (error) {
-      console.warn(`${logPrefix} Failed to delete local WAV file: ${error}`)
+      console.warn(`${pre} Failed to delete local WAV file: ${error}`)
     }
 
     const getCommand = new GetObjectCommand({ Bucket: bucket, Key: key })
     const s3Url = await getSignedUrl(client, getCommand, { expiresIn: 86400 })
-    console.log(`${logPrefix} Generated pre-signed URL with 24-hour expiration: ${s3Url}`)
+    l(`${pre} Generated pre-signed URL with 24-hour expiration: ${s3Url}`)
 
-    console.log(`${logPrefix} Creating database entry`)
+    l(`${pre} Creating database entry`)
     const record = await dbService.insertShowNote({
       title: metadata.title,
       publishDate: metadata.publishDate,
@@ -284,7 +282,7 @@ export const POST: APIRoute = async ({ request }) => {
       coverImage: metadata.coverImage || '',
     })
 
-    console.log(`${logPrefix} Computing transcription costs using duration: ${audioDurationInSeconds} seconds`)
+    l(`${pre} Computing transcription costs using duration: ${audioDurationInSeconds} seconds`)
     const transcriptionCosts = computeAllTranscriptCosts(audioDurationInSeconds)
 
     return new Response(JSON.stringify({
@@ -298,7 +296,7 @@ export const POST: APIRoute = async ({ request }) => {
       audioDuration: audioDurationInSeconds
     }), { status: 200 })
   } catch (error) {
-    console.error(`${logPrefix} Error:`, error)
+    err(`${pre} Error:`, error)
     const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred'
     return new Response(JSON.stringify({
       error: `An error occurred while processing the audio: ${errorMessage}`,
@@ -308,54 +306,54 @@ export const POST: APIRoute = async ({ request }) => {
 }
 
 async function getAudioDurationInSeconds(filePath: string): Promise<number> {
-  const logPrefix = "[getAudioDurationInSeconds]"
-  console.log(`${logPrefix} Getting duration for file: ${filePath}`)
+  const pre = "[getAudioDurationInSeconds]"
+  l(`${pre} Getting duration for file: ${filePath}`)
   
   if (!existsSync(filePath)) {
-    console.error(`${logPrefix} File not found: ${filePath}`)
+    err(`${pre} File not found: ${filePath}`)
     throw new Error(`File not found: ${filePath}`)
   }
   
-  console.log(`${logPrefix} Running ffprobe to get duration`)
+  l(`${pre} Running ffprobe to get duration`)
   const cmd = `ffprobe -v error -show_entries format=duration -of csv=p=0 "${filePath}"`
   
   try {
     const { stdout } = await execPromise(cmd)
-    console.log(`${logPrefix} Raw ffprobe output: "${stdout.trim()}"`)
+    l(`${pre} Raw ffprobe output: "${stdout.trim()}"`)
     const seconds = parseFloat(stdout.trim())
     if (isNaN(seconds)) {
-      console.error(`${logPrefix} Could not parse audio duration from ffprobe output`)
+      err(`${pre} Could not parse audio duration from ffprobe output`)
       throw new Error(`Could not parse audio duration for file: ${filePath}`)
     }
-    console.log(`${logPrefix} Audio duration: ${seconds} seconds`)
+    l(`${pre} Audio duration: ${seconds} seconds`)
     return seconds
   } catch (error) {
-    console.error(`${logPrefix} Error running ffprobe:`, error)
+    err(`${pre} Error running ffprobe:`, error)
     throw error
   }
 }
 
 function computeAllTranscriptCosts(durationInSeconds: number): Record<string, Array<{ modelId: string, cost: number }>> {
-  const logPrefix = "[computeAllTranscriptCosts]"
-  console.log(`${logPrefix} Computing transcription costs for duration: ${durationInSeconds} seconds`)
+  const pre = "[computeAllTranscriptCosts]"
+  l(`${pre} Computing transcription costs for duration: ${durationInSeconds} seconds`)
   
   const minutes = durationInSeconds / 60
-  console.log(`${logPrefix} Audio duration: ${durationInSeconds.toFixed(2)} seconds (${minutes.toFixed(2)} minutes)`)
+  l(`${pre} Audio duration: ${durationInSeconds.toFixed(2)} seconds (${minutes.toFixed(2)} minutes)`)
   
   const result: Record<string, Array<{ modelId: string, cost: number }>> = {}
   
   Object.entries(T_CONFIG).forEach(([serviceName, config]) => {
-    console.log(`${logPrefix} Calculating costs for service: ${serviceName}`)
+    l(`${pre} Calculating costs for service: ${serviceName}`)
     result[serviceName] = []
     
     config.models.forEach(model => {
       const cost = model.costPerMinuteCents * minutes
       const finalCost = parseFloat(cost.toFixed(10))
-      console.log(`${logPrefix} ${serviceName}/${model.modelId}: ${minutes.toFixed(2)} minutes at ¢${model.costPerMinuteCents} = ¢${finalCost}`)
+      l(`${pre} ${serviceName}/${model.modelId}: ${minutes.toFixed(2)} minutes at ¢${model.costPerMinuteCents} = ¢${finalCost}`)
       result[serviceName].push({ modelId: model.modelId, cost: finalCost })
     })
   })
   
-  console.log(`${logPrefix} Completed cost calculations`)
+  l(`${pre} Completed cost calculations`)
   return result
 }

@@ -1,8 +1,9 @@
 // src/utils.ts
 
 import { promisify } from 'node:util'
-import { argv, env, exit } from 'node:process'
 import { fileURLToPath } from 'node:url'
+import { Buffer } from 'node:buffer'
+import { argv, env, exit } from 'node:process'
 import { existsSync, writeFileSync, readFileSync, mkdirSync } from 'node:fs'
 import { exec, execFile, spawn } from 'node:child_process'
 import { readFile, readdir, writeFile, access, unlink, rename } from 'node:fs/promises'
@@ -36,6 +37,7 @@ export {
   env,
   exit,
   fileURLToPath,
+  Buffer,
   readFile,
   readdir,
   access,

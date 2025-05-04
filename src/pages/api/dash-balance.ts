@@ -2,18 +2,19 @@
 
 import type { APIRoute, APIContext } from "astro"
 import Dash from "dash"
-import { Buffer } from 'node:buffer'
+import { l, err, Buffer } from '../../utils'
 
 export const POST: APIRoute = async ({ request }: APIContext) => {
-  console.log("[api/dash-balance] POST request handler started (Fastify Mimic).")
+  const pre = "[api/dash-balance]"
+  l(`${pre} POST request handler started (Fastify Mimic).`)
   let client = null
   try {
-    console.log("[api/dash-balance] Parsing request body...")
+    l(`${pre} Parsing request body...`)
     const body = await request.json()
     const { mnemonic, walletAddress } = body as { mnemonic?: string, walletAddress?: string }
 
     if (!mnemonic || !walletAddress) {
-      console.error("[api/dash-balance] Error: Missing required parameters 'mnemonic' or 'walletAddress'.")
+      err(`${pre} Error: Missing required parameters 'mnemonic' or 'walletAddress'.`)
       const errorPayload = JSON.stringify({ error: 'mnemonic and walletAddress are required' })
       return new Response(Buffer.from(errorPayload), {
         status: 400,
@@ -21,7 +22,7 @@ export const POST: APIRoute = async ({ request }: APIContext) => {
       })
     }
 
-    console.log(`[api/dash-balance] Attempting to connect to Dash client for wallet: ${walletAddress}`)
+    l(`${pre} Attempting to connect to Dash client for wallet: ${walletAddress}`)
     client = new Dash.Client({
       network: 'testnet',
       wallet: {
@@ -30,11 +31,11 @@ export const POST: APIRoute = async ({ request }: APIContext) => {
       }
     })
 
-    console.log("[api/dash-balance] Getting wallet account...")
+    l(`${pre} Getting wallet account...`)
     const account = await client.getWalletAccount()
-    console.log("[api/dash-balance] Retrieving total balance...")
+    l(`${pre} Retrieving total balance...`)
     const totalBalance = account.getTotalBalance()
-    console.log(`[api/dash-balance] Balance retrieved: ${totalBalance}. Preparing success response.`)
+    l(`${pre} Balance retrieved: ${totalBalance}. Preparing success response.`)
 
     const successPayload = JSON.stringify({ address: walletAddress, balance: totalBalance })
     const successBuffer = Buffer.from(successPayload)
@@ -48,7 +49,7 @@ export const POST: APIRoute = async ({ request }: APIContext) => {
     })
 
   } catch (error) {
-    console.error(`[api/dash-balance] Error during processing: ${error instanceof Error ? error.stack : String(error)}`)
+    err(`${pre} Error during processing: ${error instanceof Error ? error.stack : String(error)}`)
     const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred'
     const errorPayload = JSON.stringify({ error: `Failed to retrieve balance: ${errorMessage}` })
     const errorBuffer = Buffer.from(errorPayload)
@@ -62,12 +63,12 @@ export const POST: APIRoute = async ({ request }: APIContext) => {
     })
   } finally {
     if (client) {
-      console.log("[api/dash-balance] Entering finally block. Disconnecting client...")
+      l(`${pre} Entering finally block. Disconnecting client...`)
       client.disconnect().catch(disconnectError => {
-        console.error(`[api/dash-balance] Non-blocking disconnect error: ${disconnectError instanceof Error ? disconnectError.stack : String(disconnectError)}`)
+        err(`${pre} Non-blocking disconnect error: ${disconnectError instanceof Error ? disconnectError.stack : String(disconnectError)}`)
       })
-      console.log("[api/dash-balance] Disconnect initiated (non-blocking).")
+      l(`${pre} Disconnect initiated (non-blocking).`)
     }
-    console.log("[api/dash-balance] Exiting finally block. POST request handler finished.")
+    l(`${pre} Exiting finally block. POST request handler finished.`)
   }
 }

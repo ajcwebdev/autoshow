@@ -3,22 +3,23 @@
 import { OpenAI } from "openai"
 import { GoogleGenerativeAI } from "@google/generative-ai"
 import { L_CONFIG } from '../types'
+import { l, err } from '../utils'
 import type { LLMResult, ChatGPTModelValue, ClaudeModelValue, GeminiModelValue, GroqModelValue } from '../types'
 
 export async function retryLLMCall(fn: () => Promise<any>): Promise<any> {
-  const logPrefix = "[llm.service]"
+  const pre = "[llm.service]"
   const maxRetries = 7
   let attempt = 0
   while (attempt < maxRetries) {
     try {
       attempt++
       if (attempt > 1) {
-        console.log(`${logPrefix} LLM retry attempt ${attempt}`)
+        l(`${pre} LLM retry attempt ${attempt}`)
       }
       const result = await fn()
       return result
     } catch (error) {
-      console.error(`${logPrefix} LLM call failed (attempt ${attempt}):`, error)
+      err(`${pre} LLM call failed (attempt ${attempt}):`, error)
       if (attempt >= maxRetries) {
         throw error
       }
@@ -30,36 +31,36 @@ export async function retryLLMCall(fn: () => Promise<any>): Promise<any> {
 }
 
 export async function callChatGPT(modelValue: ChatGPTModelValue, prompt: string, transcript: string): Promise<LLMResult> {
-  const logPrefix = "[llm.service:callChatGPT]"
-  console.log(`${logPrefix} Starting ChatGPT call with model: ${modelValue}`)
+  const pre = "[llm.service:callChatGPT]"
+  l(`${pre} Starting ChatGPT call with model: ${modelValue}`)
   
   if (!process.env.OPENAI_API_KEY) {
-    console.error(`${logPrefix} Missing OPENAI_API_KEY`)
+    err(`${pre} Missing OPENAI_API_KEY`)
     throw new Error('Missing OPENAI_API_KEY')
   }
   
   const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
   const combinedPrompt = `${prompt}\n\n## Transcript\n\n${transcript}`
   
-  console.log(`${logPrefix} Preparing request with combined prompt length: ${combinedPrompt.length}`)
+  l(`${pre} Preparing request with combined prompt length: ${combinedPrompt.length}`)
   
   try {
-    console.log(`${logPrefix} Sending request to OpenAI API`)
+    l(`${pre} Sending request to OpenAI API`)
     const response = await openai.chat.completions.create({
       model: modelValue,
       messages: [{ role: 'user', content: combinedPrompt }]
     })
     
-    console.log(`${logPrefix} Received response from OpenAI API`)
+    l(`${pre} Received response from OpenAI API`)
     
     const firstChoice = response.choices[0]
     if (!firstChoice?.message?.content) {
-      console.error(`${logPrefix} No valid response content from ChatGPT API`)
+      err(`${pre} No valid response content from ChatGPT API`)
       throw new Error('No valid response content from ChatGPT API')
     }
     
     const content = firstChoice.message.content
-    console.log(`${logPrefix} Successfully processed response, content length: ${content.length}`)
+    l(`${pre} Successfully processed response, content length: ${content.length}`)
     
     return {
       content,
@@ -71,17 +72,17 @@ export async function callChatGPT(modelValue: ChatGPTModelValue, prompt: string,
       }
     }
   } catch (error) {
-    console.error(`${logPrefix} Error calling ChatGPT:`, error)
+    err(`${pre} Error calling ChatGPT:`, error)
     throw error
   }
 }
 
 export async function callGroq(modelValue: GroqModelValue, prompt: string, transcript: string): Promise<LLMResult> {
-  const logPrefix = "[llm.service:callGroq]"
-  console.log(`${logPrefix} Starting Groq call with model: ${modelValue}`)
+  const pre = "[llm.service:callGroq]"
+  l(`${pre} Starting Groq call with model: ${modelValue}`)
   
   if (!process.env.GROQ_API_KEY) {
-    console.error(`${logPrefix} Missing GROQ_API_KEY environment variable`)
+    err(`${pre} Missing GROQ_API_KEY environment variable`)
     throw new Error('Missing GROQ_API_KEY environment variable.')
   }
   
@@ -91,25 +92,25 @@ export async function callGroq(modelValue: GroqModelValue, prompt: string, trans
   })
   
   const combinedPrompt = `${prompt}\n\n## Transcript\n\n${transcript}`
-  console.log(`${logPrefix} Preparing request with combined prompt length: ${combinedPrompt.length}`)
+  l(`${pre} Preparing request with combined prompt length: ${combinedPrompt.length}`)
   
   try {
-    console.log(`${logPrefix} Sending request to Groq API`)
+    l(`${pre} Sending request to Groq API`)
     const response = await groq.chat.completions.create({
       model: modelValue,
       messages: [{ role: 'user', content: combinedPrompt }]
     })
     
-    console.log(`${logPrefix} Received response from Groq API`)
+    l(`${pre} Received response from Groq API`)
     
     const firstChoice = response.choices[0]
     if (!firstChoice?.message?.content) {
-      console.error(`${logPrefix} No valid response content from Groq API`)
+      err(`${pre} No valid response content from Groq API`)
       throw new Error('No valid response content from Groq API')
     }
     
     const content = firstChoice.message.content
-    console.log(`${logPrefix} Successfully processed response, content length: ${content.length}`)
+    l(`${pre} Successfully processed response, content length: ${content.length}`)
     
     return {
       content,
@@ -121,17 +122,17 @@ export async function callGroq(modelValue: GroqModelValue, prompt: string, trans
       }
     }
   } catch (error) {
-    console.error(`${logPrefix} Error calling Groq:`, error)
+    err(`${pre} Error calling Groq:`, error)
     throw error
   }
 }
 
 export async function callClaude(modelValue: ClaudeModelValue, prompt: string, transcript: string): Promise<LLMResult> {
-  const logPrefix = "[llm.service:callClaude]"
-  console.log(`${logPrefix} Starting Claude call with model: ${modelValue}`)
+  const pre = "[llm.service:callClaude]"
+  l(`${pre} Starting Claude call with model: ${modelValue}`)
   
   if (!process.env.ANTHROPIC_API_KEY) {
-    console.error(`${logPrefix} Missing ANTHROPIC_API_KEY environment variable`)
+    err(`${pre} Missing ANTHROPIC_API_KEY environment variable`)
     throw new Error('Missing ANTHROPIC_API_KEY environment variable.')
   }
   
@@ -141,26 +142,26 @@ export async function callClaude(modelValue: ClaudeModelValue, prompt: string, t
   })
   
   const combinedPrompt = `${prompt}\n\n## Transcript\n\n${transcript}`
-  console.log(`${logPrefix} Preparing request with combined prompt length: ${combinedPrompt.length}`)
+  l(`${pre} Preparing request with combined prompt length: ${combinedPrompt.length}`)
   
   try {
-    console.log(`${logPrefix} Sending request to Anthropic API`)
+    l(`${pre} Sending request to Anthropic API`)
     const response = await anthropic.chat.completions.create({
       model: modelValue,
       max_tokens: 4096,
       messages: [{ role: 'user', content: combinedPrompt }]
     })
     
-    console.log(`${logPrefix} Received response from Anthropic API`)
+    l(`${pre} Received response from Anthropic API`)
     
     const firstChoice = response.choices[0]
     if (!firstChoice?.message?.content) {
-      console.error(`${logPrefix} No valid text content generated by Claude`)
+      err(`${pre} No valid text content generated by Claude`)
       throw new Error('No valid text content generated by Claude.')
     }
     
     const content = firstChoice.message.content
-    console.log(`${logPrefix} Successfully processed response, content length: ${content.length}`)
+    l(`${pre} Successfully processed response, content length: ${content.length}`)
     
     return {
       content,
@@ -172,7 +173,7 @@ export async function callClaude(modelValue: ClaudeModelValue, prompt: string, t
       }
     }
   } catch (error) {
-    console.error(`${logPrefix} Error calling Claude:`, error)
+    err(`${pre} Error calling Claude:`, error)
     throw error
   }
 }
@@ -182,11 +183,11 @@ function delay(ms: number): Promise<void> {
 }
 
 export async function callGemini(modelValue: GeminiModelValue, prompt: string, transcript: string): Promise<LLMResult> {
-  const logPrefix = "[llm.service:callGemini]"
-  console.log(`${logPrefix} Starting Gemini call with model: ${modelValue}`)
+  const pre = "[llm.service:callGemini]"
+  l(`${pre} Starting Gemini call with model: ${modelValue}`)
   
   if (!process.env.GEMINI_API_KEY) {
-    console.error(`${logPrefix} Missing GEMINI_API_KEY environment variable`)
+    err(`${pre} Missing GEMINI_API_KEY environment variable`)
     throw new Error('Missing GEMINI_API_KEY environment variable.')
   }
   
@@ -194,20 +195,20 @@ export async function callGemini(modelValue: GeminiModelValue, prompt: string, t
   const geminiModel = genAI.getGenerativeModel({ model: modelValue })
   
   const combinedPrompt = `${prompt}\n\n## Transcript\n\n${transcript}`
-  console.log(`${logPrefix} Preparing request with combined prompt length: ${combinedPrompt.length}`)
+  l(`${pre} Preparing request with combined prompt length: ${combinedPrompt.length}`)
   
   const maxRetries = 3
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
-      console.log(`${logPrefix} Sending request to Gemini API (attempt ${attempt}/${maxRetries})`)
+      l(`${pre} Sending request to Gemini API (attempt ${attempt}/${maxRetries})`)
       const result = await geminiModel.generateContent(combinedPrompt)
       
-      console.log(`${logPrefix} Received response from Gemini API`)
+      l(`${pre} Received response from Gemini API`)
       
       const response = result.response
       const text = response.text()
       
-      console.log(`${logPrefix} Successfully processed response, content length: ${text.length}`)
+      l(`${pre} Successfully processed response, content length: ${text.length}`)
       
       const { usageMetadata } = response
       const { promptTokenCount, candidatesTokenCount, totalTokenCount } = usageMetadata ?? {}
@@ -222,11 +223,11 @@ export async function callGemini(modelValue: GeminiModelValue, prompt: string, t
         }
       }
     } catch (error) {
-      console.error(`${logPrefix} Error in callGemini (attempt ${attempt}/${maxRetries}):`, error)
+      err(`${pre} Error in callGemini (attempt ${attempt}/${maxRetries}):`, error)
       if (attempt === maxRetries) throw error
       
       const backoffMs = 2 ** attempt * 1000
-      console.log(`${logPrefix} Retrying after ${backoffMs}ms delay`)
+      l(`${pre} Retrying after ${backoffMs}ms delay`)
       await delay(backoffMs)
     }
   }
@@ -235,28 +236,28 @@ export async function callGemini(modelValue: GeminiModelValue, prompt: string, t
 }
 
 export async function computeLLMCosts(transcriptLength: number, promptLength: number): Promise<Record<string, Array<{ modelId: string, modelName: string, cost: number }>>> {
-  const logPrefix = "[llm.service:computeLLMCosts]"
-  console.log(`${logPrefix} Computing LLM costs for transcript length: ${transcriptLength}, prompt length: ${promptLength}`)
+  const pre = "[llm.service:computeLLMCosts]"
+  l(`${pre} Computing LLM costs for transcript length: ${transcriptLength}, prompt length: ${promptLength}`)
   
   const totalInputTokens = Math.max(1, Math.ceil((transcriptLength + promptLength) / 4))
   const estimatedOutputTokens = 4000
   
-  console.log(`${logPrefix} Estimated input tokens: ${totalInputTokens}, estimated output tokens: ${estimatedOutputTokens}`)
+  l(`${pre} Estimated input tokens: ${totalInputTokens}, estimated output tokens: ${estimatedOutputTokens}`)
   
   const result: Record<string, Array<{ modelId: string, modelName: string, cost: number }>> = {}
   
   Object.entries(L_CONFIG).forEach(([serviceName, config]) => {
     if (serviceName === 'skip') {
-      console.log(`${logPrefix} Skipping 'skip' service for cost calculation`)
+      l(`${pre} Skipping 'skip' service for cost calculation`)
       return
     }
     
     if (!config.models || config.models.length === 0) {
-      console.log(`${logPrefix} No models found for service: ${serviceName}`)
+      l(`${pre} No models found for service: ${serviceName}`)
       return
     }
     
-    console.log(`${logPrefix} Calculating costs for service: ${serviceName}`)
+    l(`${pre} Calculating costs for service: ${serviceName}`)
     result[serviceName] = []
     
     config.models.forEach(model => {
@@ -267,7 +268,7 @@ export async function computeLLMCosts(transcriptLength: number, promptLength: nu
       const outputCost = (estimatedOutputTokens / 1_000_000) * outputCostRate
       const totalCost = parseFloat((inputCost + outputCost).toFixed(10))
       
-      console.log(`${logPrefix} Model: ${model.modelId}, Input cost: ${inputCost}, Output cost: ${outputCost}, Total cost: ${totalCost}`)
+      l(`${pre} Model: ${model.modelId}, Input cost: ${inputCost}, Output cost: ${outputCost}, Total cost: ${totalCost}`)
       
       result[serviceName].push({
         modelId: model.modelId,
@@ -277,6 +278,6 @@ export async function computeLLMCosts(transcriptLength: number, promptLength: nu
     })
   })
   
-  console.log(`${logPrefix} Completed cost calculations`)
+  l(`${pre} Completed cost calculations`)
   return result
 }

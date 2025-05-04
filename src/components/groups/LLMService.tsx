@@ -4,6 +4,9 @@ import { createSignal, For, Show } from 'solid-js'
 import { L_CONFIG } from '../../types.ts'
 import type { LLMServiceKey, ShowNoteType, ShowNoteMetadata, LocalResult } from '../../types.ts'
 
+const l = console.log
+const err = console.error
+
 export const LLMServiceStep = (props: {
   isLoading: boolean
   setIsLoading: (value: boolean) => void
@@ -29,7 +32,7 @@ export const LLMServiceStep = (props: {
   const allServices = () => Object.values(L_CONFIG).filter(s => s.value)
   
   const handleSelectLLM = async (): Promise<void> => {
-    console.log('[LLMServiceStep] Starting LLM generation process')
+    l('[LLMServiceStep] Starting LLM generation process')
     props.setIsLoading(true)
     props.setError(null)
     setLocalResult(null)
@@ -69,7 +72,7 @@ export const LLMServiceStep = (props: {
         }
       })
 
-      console.log(`[LLMServiceStep] Sending API request to run-llm with ${props.llmService}/${props.llmModel}`)
+      l(`[LLMServiceStep] Sending API request to run-llm with ${props.llmService}/${props.llmModel}`)
       
       const runLLMRes = await fetch('http://localhost:4321/api/run-llm', {
         method: 'POST',
@@ -79,7 +82,7 @@ export const LLMServiceStep = (props: {
       
       if (!runLLMRes.ok) {
         const errorData = await runLLMRes.json()
-        console.error(`[LLMServiceStep] API error: ${errorData.error || runLLMRes.statusText}`)
+        err(`[LLMServiceStep] API error: ${errorData.error || runLLMRes.statusText}`)
         throw new Error(`Error running LLM: ${errorData.error || runLLMRes.statusText}`)
       }
       
@@ -88,14 +91,14 @@ export const LLMServiceStep = (props: {
         showNotesResult: string
       }
       
-      console.log(`[LLMServiceStep] Successfully generated show note with ID: ${data.showNote?.id}`)
+      l(`[LLMServiceStep] Successfully generated show note with ID: ${data.showNote?.id}`)
       
       setLocalResult({ showNote: data.showNote, llmOutput: data.showNotesResult })
       props.onNewShowNote()
-    } catch (err) {
-      console.error(`[LLMServiceStep] Error in handleSelectLLM:`, err)
-      if (err instanceof Error) {
-        props.setError(err.message)
+    } catch (error) {
+      err(`[LLMServiceStep] Error in handleSelectLLM:`, error)
+      if (error instanceof Error) {
+        props.setError(error.message)
       } else {
         props.setError('An unknown error occurred.')
       }

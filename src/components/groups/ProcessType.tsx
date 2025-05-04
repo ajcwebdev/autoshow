@@ -4,6 +4,10 @@ import { For, Show } from 'solid-js'
 import type { Setter } from 'solid-js'
 import { PROCESS_TYPES } from '../../types.ts'
 import type { ProcessTypeEnum, ShowNoteMetadata, TranscriptionCosts } from '../../types.ts'
+
+const l = console.log
+const err = console.error
+
 export const ProcessTypeStep = (props: {
   isLoading: boolean
   setIsLoading: Setter<boolean>
@@ -22,7 +26,7 @@ export const ProcessTypeStep = (props: {
   setCurrentStep: Setter<number>
 }) => {
   const handleStepOne = async (): Promise<void> => {
-    console.log(`[ProcessTypeStep] Starting audio processing for ${props.processType} type`)
+    l(`[ProcessTypeStep] Starting audio processing for ${props.processType} type`)
     props.setIsLoading(true)
     props.setError(null)
     props.setTranscriptionCosts({})
@@ -35,7 +39,7 @@ export const ProcessTypeStep = (props: {
         body.filePath = props.filePath
         body.options.file = props.filePath
       }
-      console.log(`[ProcessTypeStep] Sending download-audio request for ${props.processType}`)
+      l(`[ProcessTypeStep] Sending download-audio request for ${props.processType}`)
       const res = await fetch('http://localhost:4321/api/download-audio', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -43,7 +47,7 @@ export const ProcessTypeStep = (props: {
       })
       if (!res.ok) {
         const errorData = await res.json()
-        console.error(`[ProcessTypeStep] Download audio error:`, errorData)
+        err(`[ProcessTypeStep] Download audio error:`, errorData)
         throw new Error(`Error downloading audio: ${errorData.error || res.statusText}`)
       }
       const resData = await res.json()
@@ -56,12 +60,12 @@ export const ProcessTypeStep = (props: {
       } else {
         console.warn(`[ProcessTypeStep] No transcriptionCost found in response`)
       }
-      console.log(`[ProcessTypeStep] Successfully processed ${props.processType}, moving to step 2`)
+      l(`[ProcessTypeStep] Successfully processed ${props.processType}, moving to step 2`)
       props.setCurrentStep(2)
-    } catch (err) {
-      console.error(`[ProcessTypeStep] Error in handleStepOne:`, err)
-      if (err instanceof Error) {
-        props.setError(err.message)
+    } catch (error) {
+      err(`[ProcessTypeStep] Error in handleStepOne:`, error)
+      if (error instanceof Error) {
+        props.setError(error.message)
       } else {
         props.setError('An unknown error occurred.')
       }

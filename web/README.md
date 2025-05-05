@@ -1,3 +1,0 @@
-# Astro AutoShow
-
-TODO

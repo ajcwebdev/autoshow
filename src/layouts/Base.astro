@@ -1,0 +1,96 @@
+---
+// src/layouts/Base.astro
+
+import { siteConfig } from "../site.config"
+import "../styles/global.css"
+
+import type { SiteMeta } from "../types.ts"
+
+interface Props {
+	meta: SiteMeta
+}
+
+const {
+	meta: { articleDate, description = siteConfig.description, ogImage, title },
+} = Astro.props
+
+const titleSeparator = "•"
+const siteTitle = `${title} ${titleSeparator} ${siteConfig.title}`
+const canonicalURL = new URL(Astro.url.pathname, Astro.site)
+const socialImageURL = new URL(ogImage ? ogImage : "/social-card.png", Astro.url).href
+
+const year = new Date().getFullYear()
+const url = new URL(Astro.request.url)
+---
+
+<html color-mode="user" lang={siteConfig.lang}>
+	<head>
+		<meta charset="utf-8" />
+		<meta content="width=device-width, initial-scale=1.0, shrink-to-fit=no" name="viewport" />
+		<meta content="IE=edge" http-equiv="X-UA-Compatible" />
+		<link rel="stylesheet" href="https://fonts.xz.style/serve/inter.css">
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@exampledev/new.css@1.1.2/new.min.css">
+		<title>{siteTitle}</title>
+
+		{/* Icons / Favicon */}
+		<link href="/favicon.ico" rel="icon" sizes="any" />
+		<link href="/icon.svg" rel="icon" type="image/svg+xml" />
+		<link href="/apple-touch-icon.png" rel="apple-touch-icon" />
+		<link href="/manifest.webmanifest" rel="manifest" />
+		<link href={canonicalURL} rel="canonical" />
+
+		{/* Primary Meta Tags */}
+		<meta content={siteTitle} name="title" />
+		<meta content={description} name="description" />
+		<meta content={siteConfig.author} name="author" />
+
+		{/* Theme Colour */}
+		<meta content="" name="theme-color" />
+
+		{/* Open Graph / Facebook */}
+		<meta content={articleDate ? "article" : "website"} property="og:type" />
+		<meta content={title} property="og:title" />
+		<meta content={description} property="og:description" />
+		<meta content={canonicalURL} property="og:url" />
+		<meta content={siteConfig.title} property="og:site_name" />
+		<meta content={siteConfig.ogLocale} property="og:locale" />
+		<meta content={socialImageURL} property="og:image" />
+		<meta content="1200" property="og:image:width" />
+		<meta content="630" property="og:image:height" />
+		{
+			articleDate && (
+				<>
+					<meta content={siteConfig.author} property="article:author" />
+					<meta content={articleDate} property="article:published_time" />
+				</>
+			)
+		}
+
+		{/* Twitter */}
+		<meta content="summary_large_image" property="twitter:card" />
+		<meta content={canonicalURL} property="twitter:url" />
+		<meta content={title} property="twitter:title" />
+		<meta content={description} property="twitter:description" />
+		<meta content={socialImageURL} property="twitter:image" />
+
+		{/* Sitemap */}
+		<link href="/sitemap-index.xml" rel="sitemap" />
+
+		<meta content={Astro.generator} name="generator" />
+	</head>
+	<body>
+		<header id="main-header">
+          <div>
+            <a aria-current={url.pathname === "/" ? "page" : false} href="/">autoshow.sh</a>
+          </div>
+       </header>
+		<main id="main">
+			<slot />
+		</main>
+		<footer>
+			<div>
+				&copy; {siteConfig.author} {year}<br><span>Astro AutoShow</span>
+			</div>
+		</footer>
+	</body>
+</html>

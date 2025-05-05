@@ -1,179 +1,214 @@
 // src/db.ts
 
-/**
- * Database service abstraction layer
- * Provides conditional database operations based on environment
- *
- * Added new fields to the create call inside insertShowNote to store LLM and transcription details and costs.
- */
+import { l, err } from './utils'
+import { db, ShowNotes, eq } from 'astro:db'
+import type { ShowNoteType } from './types'
 
-import { l } from './utils/logging.ts'
-import { env } from './utils/node-utils.ts'
-
-import type { ShowNote } from '../shared/types.ts'
-
-/**
- * Interface for database operations
- */
 export interface DatabaseService {
-  /**
-   * Inserts a show note into the database
-   * @param showNote The show note to insert
-   */
-  insertShowNote: (showNote: ShowNote) => Promise<void>
-  
-  /**
-   * Gets a show note by ID
-   * @param id The ID of the show note to retrieve
-   */
+  insertShowNote: (showNote: ShowNoteType) => Promise<any>
   getShowNote: (id: number) => Promise<any>
-  
-  /**
-   * Gets all show notes
-   */
   getShowNotes: () => Promise<any[]>
 }
 
-/**
- * No-op database service implementation for CLI usage
- * All methods are implemented but have no effect
- */
-export class NoOpDatabaseService implements DatabaseService {
-  async insertShowNote(_showNote: ShowNote) {
-    l.dim('\n  CLI mode: Database operations disabled - skipping show note insertion')
-    return Promise.resolve()
-  }
-  
-  async getShowNote(_id: number) {
-    l.dim('\n  CLI mode: Database operations disabled - cannot retrieve show notes')
-    return Promise.resolve(null)
-  }
-  
-  async getShowNotes() {
-    l.dim('\n  CLI mode: Database operations disabled - cannot retrieve show notes')
-    return Promise.resolve([])
-  }
-}
-
-/**
- * Prisma database service implementation for server usage
- * Performs actual database operations using Prisma client
- */
-export class PrismaDatabaseService implements DatabaseService {
-  private prismaClient: any | null = null
+export class AstroDbDatabaseService implements DatabaseService {
   private initialized = false
+  private readonly logPrefix = '[AstroDbDatabaseService]'
   
   constructor() {
-    this.prismaClient = null
+    l(`${this.logPrefix} Constructor called`)
+    l(`${this.logPrefix} Database service created`)
   }
   
   async init() {
-    if (this.initialized) return this
+    l(`${this.logPrefix} init() called, initialized=${this.initialized}`)
+    
+    if (this.initialized) {
+      l(`${this.logPrefix} Already initialized, returning early`)
+      return this
+    }
     
     try {
-      const { PrismaClient } = await import('@prisma/client')
-      this.prismaClient = new PrismaClient()
+      l(`${this.logPrefix} Initializing database service...`)
       this.initialized = true
+      l(`${this.logPrefix} Set initialized flag to true`)
+      l(`${this.logPrefix} Initialized successfully`)
     } catch (error) {
-      l.dim('\n  Warning: Could not initialize PrismaClient. Using NoOp database service instead.\n')
+      err(`${this.logPrefix} Failed to initialize:`, error)
+      err(`${this.logPrefix} Error details:`, error instanceof Error ? error.message : String(error))
+      err(`${this.logPrefix} Error stack:`, error instanceof Error ? error.stack : 'No stack trace')
+      throw error
     }
     
     return this
   }
-
-  async insertShowNote(showNote: ShowNote) {
-    if (!this.initialized) await this.init()
-    if (!this.prismaClient) {
-      l.dim('\n  Database unavailable - skipping show note insertion')
-      return Promise.resolve()
+  
+  async insertShowNote(showNote: ShowNoteType) {
+    l(`${this.logPrefix} insertShowNote() called`)
+    
+    if (!this.initialized) {
+      l(`${this.logPrefix} Database not initialized, calling init() before insert`)
+      await this.init()
+      l(`${this.logPrefix} Database initialization complete`)
     }
+    
     l.dim('\n  Inserting show note into the database...')
-    l.dim(`  * walletAddress: ${showNote.walletAddress}`)
-    l.dim(`  * mnemonic: ${showNote.mnemonic}`)
+    l(`${this.logPrefix} insertShowNote called with:`)
+    l(`${this.logPrefix} * id: ${showNote.id}`)
+    l(`${this.logPrefix} * title: ${showNote.title}`)
+    l(`${this.logPrefix} * walletAddress: ${showNote.walletAddress}`)
+    l(`${this.logPrefix} * mnemonic: ${showNote.mnemonic ? '[REDACTED]' : 'null'}`)
+    
     const {
       showLink, channel, channelURL, title, description, publishDate, coverImage,
-      frontmatter, prompt, transcript, llmOutput, walletAddress, mnemonic
+      frontmatter, prompt, transcript, llmOutput, walletAddress, mnemonic,
+      llmService, llmModel, llmCost, transcriptionService, transcriptionModel,
+      transcriptionCost, finalCost
     } = showNote
-
+    
+    l(`${this.logPrefix} Destructured show note properties`)
+    
     try {
-      await this.prismaClient.show_notes.create({
-        data: {
-          showLink: showLink ?? null,
-          channel: channel ?? null,
-          channelURL: channelURL ?? null,
-          title,
-          description: description ?? null,
-          publishDate,
-          coverImage: coverImage ?? null,
-          frontmatter: frontmatter ?? null,
-          prompt: prompt ?? null,
-          transcript: transcript ?? null,
-          llmOutput: llmOutput ?? null,
-          walletAddress: walletAddress ?? null,
-          mnemonic: mnemonic ?? null,
-          llmService: showNote.llmService ?? null,
-          llmModel: showNote.llmModel ?? null,
-          llmCost: showNote.llmCost ?? null,
-          transcriptionService: showNote.transcriptionService ?? null,
-          transcriptionModel: showNote.transcriptionModel ?? null,
-          transcriptionCost: showNote.transcriptionCost ?? null,
-          finalCost: showNote.finalCost ?? null
-        }
-      })
+      l(`${this.logPrefix} Preparing insert data object`)
+      
+      const insertData = {
+        showLink: showLink ?? null,
+        channel: channel ?? null,
+        channelURL: channelURL ?? null,
+        title,
+        description: description ?? null,
+        publishDate,
+        coverImage: coverImage ?? null,
+        frontmatter: frontmatter ?? null,
+        prompt: prompt ?? null,
+        transcript: transcript ?? null,
+        llmOutput: llmOutput ?? null,
+        walletAddress: walletAddress ?? null,
+        mnemonic: mnemonic ?? null,
+        llmService: llmService ?? null,
+        llmModel: llmModel ?? null,
+        llmCost: llmCost ?? null,
+        transcriptionService: transcriptionService ?? null,
+        transcriptionModel: transcriptionModel ?? null,
+        transcriptionCost: transcriptionCost ?? null,
+        finalCost: finalCost ?? null
+      }
+      
+      l(`${this.logPrefix} Insert data prepared with these fields:`, Object.keys(insertData))
+      l(`${this.logPrefix} Calling db.insert() with ShowNotes table`)
+      
+      const newRecord = await db.insert(ShowNotes).values(insertData).returning()
+      
+      l(`${this.logPrefix} db.insert() completed successfully`)
+      l(`${this.logPrefix} Record inserted with ID:`, newRecord[0]?.id)
+      l(`${this.logPrefix} Full record:`, newRecord[0])
       l.dim('    - Show note inserted successfully.\n')
+      
+      return newRecord[0]
     } catch (error) {
-      l.dim(`    - Failed to insert show note: ${(error as Error).message}\n`)
+      err(`${this.logPrefix} Insert operation failed:`, error)
+      
+      if (error instanceof Error) {
+        err(`${this.logPrefix} Database error details:`, error.message)
+        err(`${this.logPrefix} Error stack:`, error.stack)
+      }
+      
+      l.dim(`    - Failed to insert show note: ${error instanceof Error ? error.message : String(error)}\n`)
+      l(`${this.logPrefix} Returning fallback object with original show note data`)
+      return { ...showNote }
     }
   }
-
+  
   async getShowNote(id: number) {
-    if (!this.initialized) await this.init()
-    if (!this.prismaClient) return null
+    l(`${this.logPrefix} getShowNote() called with ID: ${id}`)
+    
+    if (!this.initialized) {
+      l(`${this.logPrefix} Database not initialized, calling init() before query`)
+      await this.init()
+      l(`${this.logPrefix} Database initialization complete`)
+    }
+    
     try {
-      return await this.prismaClient.show_notes.findUnique({
-        where: {
-          id: id
-        }
-      })
+      l(`${this.logPrefix} Building query to fetch show note with ID ${id}`)
+      l(`${this.logPrefix} Executing db.select() with where clause for ID ${id}`)
+      
+      const records = await db
+        .select()
+        .from(ShowNotes)
+        .where(eq(ShowNotes.id, id))
+        .limit(1)
+      
+      l(`${this.logPrefix} Query execution complete`)
+      l(`${this.logPrefix} Query returned ${records.length} records`)
+      
+      if (records.length === 0) {
+        l(`${this.logPrefix} No record found for ID: ${id}`)
+        l(`${this.logPrefix} Returning null as result`)
+        return null
+      }
+      
+      l(`${this.logPrefix} Found record with title: ${records[0].title}`)
+      l(`${this.logPrefix} Returning found record`)
+      return records[0]
     } catch (error) {
-      l.dim(`    - Failed to get show note: ${(error as Error).message}\n`)
+      err(`${this.logPrefix} Get operation failed:`, error)
+      
+      if (error instanceof Error) {
+        err(`${this.logPrefix} Database error details:`, error.message)
+        err(`${this.logPrefix} Error stack:`, error.stack)
+      }
+      
+      l.dim(`    - Failed to get show note: ${error instanceof Error ? error.message : String(error)}\n`)
+      l(`${this.logPrefix} Returning null due to error`)
       return null
     }
   }
-
+  
   async getShowNotes() {
-    if (!this.initialized) await this.init()
-    if (!this.prismaClient) return []
+    l(`${this.logPrefix} getShowNotes() called to fetch all show notes`)
+    
+    if (!this.initialized) {
+      l(`${this.logPrefix} Database not initialized, calling init() before query`)
+      await this.init()
+      l(`${this.logPrefix} Database initialization complete`)
+    }
+    
     try {
-      return await this.prismaClient.show_notes.findMany({
-        orderBy: {
-          publishDate: 'desc'
-        }
-      })
+      l(`${this.logPrefix} Building query to fetch all show notes`)
+      l(`${this.logPrefix} Executing db.select() with orderBy on publishDate`)
+      
+      const records = await db
+        .select()
+        .from(ShowNotes)
+        .orderBy(ShowNotes.publishDate)
+      
+      l(`${this.logPrefix} Query execution complete`)
+      l(`${this.logPrefix} Found ${records.length} records in total`)
+      
+      if (records.length > 0) {
+        l(`${this.logPrefix} First record title: ${records[0].title}`)
+        l(`${this.logPrefix} Last record title: ${records[records.length - 1].title}`)
+      }
+      
+      l(`${this.logPrefix} Returning ${records.length} records`)
+      return records
     } catch (error) {
-      l.dim(`    - Failed to get show notes: ${(error as Error).message}\n`)
+      err(`${this.logPrefix} GetAll operation failed:`, error)
+      
+      if (error instanceof Error) {
+        err(`${this.logPrefix} Database error details:`, error.message)
+        err(`${this.logPrefix} Error stack:`, error.stack)
+      }
+      
+      l.dim(`    - Failed to get show notes: ${error instanceof Error ? error.message : String(error)}\n`)
+      l(`${this.logPrefix} Returning empty array due to error`)
       return []
     }
   }
 }
 
-/**
- * Determines if we're running in server mode or CLI mode
- */
-function isServerMode() {
-  return env['DATABASE_URL'] !== undefined ||
-         env['PGHOST'] !== undefined ||
-         env['SERVER_MODE'] === 'true'
-}
-
-let dbServiceInstance: DatabaseService | null = null
-
-if (isServerMode()) {
-  l.dim('  Server mode detected - initializing database service')
-  dbServiceInstance = new PrismaDatabaseService()
-} else {
-  l.dim('  CLI mode detected - using no-op database service')
-  dbServiceInstance = new NoOpDatabaseService()
-}
+l('[db.ts] Creating new AstroDbDatabaseService instance')
+const dbServiceInstance = new AstroDbDatabaseService()
+l('[db.ts] AstroDbDatabaseService instance created successfully')
 
 export const dbService = dbServiceInstance
+l('[db.ts] Exported dbService instance')

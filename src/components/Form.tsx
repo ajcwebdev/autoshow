@@ -74,7 +74,7 @@ export default function Form(props: FormProps) {
   l(`${pre} Initial showNoteId: 0`)
   l(`${pre} Rendering Form for step: ${currentStep()}`)
   return (
-    <div class="max-w-[800px] mx-auto bg-card rounded-lg p-6 mb-8">
+    <div class="max-w-full bg-card rounded-lg p-6 mb-8">
       {currentStep() === 0 && (
         <WalletStep
           isLoading={isLoading()}

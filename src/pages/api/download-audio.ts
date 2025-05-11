@@ -4,42 +4,43 @@ import type { APIRoute } from "astro"
 import { fileTypeFromBuffer } from "file-type"
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner"
 import { S3Client, PutObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3"
-import { dbService } from "../../db"
+import { s3Service } from "../../services/s3"
 import { fileURLToPath, execPromise, readFile, access, rename, execFilePromise, env, mkdirSync, existsSync, unlink, dirname, resolve, basename, l, err } from "../../utils"
 import { T_CONFIG } from '../../types.ts'
 
 export const POST: APIRoute = async ({ request }) => {
   const pre = "[api/download-audio]"
   l(`${pre} Starting audio download and processing`)
+  
   try {
     const body = await request.json()
     const type = body?.type
     const url = body?.url
     const filePath = body?.filePath
     const options = body?.options || {}
-
+    
     if (!type || !['video', 'file'].includes(type)) {
       return new Response(JSON.stringify({ error: 'Valid type is required' }), { status: 400 })
     }
-
+    
     if (type === 'video' && !url) {
       return new Response(JSON.stringify({ error: 'URL is required for video' }), { status: 400 })
     }
-
+    
     if (type === 'file' && !filePath) {
       return new Response(JSON.stringify({ error: 'File path is required for file' }), { status: 400 })
     }
-
+    
     if (type === 'video') {
       options.video = url
     } else {
       options.file = filePath
     }
-
+    
     const __filename = fileURLToPath(import.meta.url)
     const __dirname = dirname(__filename)
     const projectRoot = resolve(__dirname, '../../../../')
-
+    
     function sanitizeTitle(title: string): string {
       return title
         .replace(/[^\w\s-]/g, '')
@@ -49,7 +50,7 @@ export const POST: APIRoute = async ({ request }) => {
         .toLowerCase()
         .slice(0, 200)
     }
-
+    
     function buildFrontMatter(metadata: {
       showLink: string,
       channel: string,
@@ -71,7 +72,7 @@ export const POST: APIRoute = async ({ request }) => {
         '---\n',
       ]
     }
-
+    
     let filename = ''
     let metadata = {
       showLink: '',
@@ -84,7 +85,7 @@ export const POST: APIRoute = async ({ request }) => {
       walletAddress: '',
       mnemonic: ''
     }
-
+    
     if (options.video) {
       l(`${pre} Processing video URL: ${url}`)
       const { stdout } = await execFilePromise('yt-dlp', [
@@ -97,7 +98,7 @@ export const POST: APIRoute = async ({ request }) => {
         '--print', '%(thumbnail)s',
         url
       ])
-
+      
       const [
         showLink = '',
         videoChannel = '',
@@ -106,11 +107,11 @@ export const POST: APIRoute = async ({ request }) => {
         formattedDate = '',
         thumbnail = ''
       ] = stdout.trim().split('\n')
-
+      
       const timestamp = new Date().getTime()
       const uniqueId = `${timestamp}-${Math.floor(Math.random() * 1000)}`
       filename = `${formattedDate}-${sanitizeTitle(videoTitle)}-${uniqueId}`
-
+      
       metadata = {
         showLink,
         channel: videoChannel,
@@ -129,7 +130,7 @@ export const POST: APIRoute = async ({ request }) => {
       const timestamp = new Date().getTime()
       const uniqueId = `${timestamp}-${Math.floor(Math.random() * 1000)}`
       filename = `${sanitizeTitle(filenameWithoutExt)}-${uniqueId}`
-
+      
       metadata = {
         showLink: originalFilename,
         channel: '',
@@ -142,15 +143,15 @@ export const POST: APIRoute = async ({ request }) => {
         mnemonic: ''
       }
     }
-
+    
     const finalPath = `autoshow/content/${filename}`
     const outputPath = `${finalPath}.wav`
     const absoluteOutputPath = resolve(projectRoot, outputPath)
     l(`${pre} Output path: ${absoluteOutputPath}`)
-
+    
     const contentDir = dirname(resolve(projectRoot, outputPath))
     mkdirSync(contentDir, { recursive: true })
-
+    
     const frontMatter = buildFrontMatter({
       showLink: metadata.showLink || '',
       channel: metadata.channel || '',
@@ -160,14 +161,14 @@ export const POST: APIRoute = async ({ request }) => {
       publishDate: metadata.publishDate || '',
       coverImage: metadata.coverImage || ''
     }).join('\n')
-
+    
     try {
       await access(outputPath)
       const renamedPath = `${finalPath}-renamed.wav`
       await rename(outputPath, renamedPath)
     } catch (error) {
     }
-
+    
     async function executeWithRetry(command: string, args: string[]) {
       const maxRetries = 7
       for (let attempt = 1; attempt <= maxRetries; attempt++) {
@@ -175,7 +176,7 @@ export const POST: APIRoute = async ({ request }) => {
           if (attempt > 1) {
             l(`${pre} Retry attempt ${attempt}/${maxRetries}`)
           }
-          const { stderr } = await execFilePromise(command, args)
+          const {} = await execFilePromise(command, args)
           return
         } catch (error) {
           if (attempt === maxRetries) {
@@ -186,9 +187,9 @@ export const POST: APIRoute = async ({ request }) => {
         }
       }
     }
-
+    
     let audioDurationInSeconds = 0
-
+    
     if (options.video) {
       l(`${pre} Downloading video from URL`)
       await executeWithRetry('yt-dlp', [
@@ -207,52 +208,52 @@ export const POST: APIRoute = async ({ request }) => {
       const supportedFormats = new Set([
         'wav', 'mp3', 'm4a', 'aac', 'ogg', 'flac', 'mp4', 'mkv', 'avi', 'mov', 'webm'
       ])
-
+      
       const resolvedFilePath = resolve(projectRoot, filePath)
       await access(resolvedFilePath)
-
+      
       const buffer = await readFile(resolvedFilePath)
       const uint8Array = new Uint8Array(buffer.buffer, buffer.byteOffset, buffer.byteLength)
       const fileType = await fileTypeFromBuffer(uint8Array)
-
+      
       if (!fileType || !supportedFormats.has(fileType.ext)) {
         const errorMsg = fileType ? `Unsupported file type: ${fileType.ext}` : 'Unable to determine file type'
         throw new Error(errorMsg)
       }
-
+      
       await execPromise(`ffmpeg -i "${resolvedFilePath}" -ar 16000 -ac 1 -c:a pcm_s16le "${absoluteOutputPath}"`, { maxBuffer: 10000 * 1024 })
       l(`${pre} File conversion completed`)
     } else {
       throw new Error('Invalid option for audio download/processing.')
     }
-
+    
     if (!existsSync(absoluteOutputPath)) {
       throw new Error(`File was not created at: ${absoluteOutputPath}`)
     }
-
+    
     try {
       audioDurationInSeconds = await getAudioDurationInSeconds(absoluteOutputPath)
       l(`${pre} Retrieved audio duration before upload: ${audioDurationInSeconds} seconds`)
     } catch (error) {
       console.warn(`${pre} Could not get audio duration: ${error}`)
-      audioDurationInSeconds = 300 // Default to 5 minutes if we can't get the actual duration
+      audioDurationInSeconds = 300
       l(`${pre} Using default duration estimate: ${audioDurationInSeconds} seconds`)
     }
-
+    
     const region = env['AWS_REGION'] || 'us-east-2'
     const bucket = env['S3_BUCKET_NAME'] || 'autoshow-test'
     const key = basename(outputPath)
-
+    
     const fileBuffer = await readFile(absoluteOutputPath)
     const client = new S3Client({ region })
-
+    
     const putCommand = new PutObjectCommand({
       Bucket: bucket,
       Key: key,
       Body: fileBuffer,
       ContentType: 'audio/wav'
     })
-
+    
     await client.send(putCommand)
     l(`${pre} File uploaded to S3`)
     
@@ -262,31 +263,29 @@ export const POST: APIRoute = async ({ request }) => {
     } catch (error) {
       console.warn(`${pre} Failed to delete local WAV file: ${error}`)
     }
-
+    
     const getCommand = new GetObjectCommand({ Bucket: bucket, Key: key })
     const s3Url = await getSignedUrl(client, getCommand, { expiresIn: 86400 })
     l(`${pre} Generated pre-signed URL with 24-hour expiration: ${s3Url}`)
-
-    l(`${pre} Creating database entry`)
-    const record = await dbService.insertShowNote({
+    
+    l(`${pre} Creating show note in S3`)
+    const { id } = await s3Service.createShowNote({
       title: metadata.title,
       publishDate: metadata.publishDate,
       frontmatter: frontMatter,
       walletAddress: options['walletAddress'] || '',
-      llmOutput: '',
-      transcript: '',
       showLink: metadata.showLink || '',
       channel: metadata.channel || '',
       channelURL: metadata.channelURL || '',
       description: metadata.description || '',
       coverImage: metadata.coverImage || '',
     })
-
+    
     l(`${pre} Computing transcription costs using duration: ${audioDurationInSeconds} seconds`)
     const transcriptionCosts = computeAllTranscriptCosts(audioDurationInSeconds)
-
+    
     return new Response(JSON.stringify({
-      id: record.id,
+      id: parseInt(id),
       frontMatter,
       finalPath,
       metadata,
@@ -320,11 +319,13 @@ async function getAudioDurationInSeconds(filePath: string): Promise<number> {
   try {
     const { stdout } = await execPromise(cmd)
     l(`${pre} Raw ffprobe output: "${stdout.trim()}"`)
+    
     const seconds = parseFloat(stdout.trim())
     if (isNaN(seconds)) {
       err(`${pre} Could not parse audio duration from ffprobe output`)
       throw new Error(`Could not parse audio duration for file: ${filePath}`)
     }
+    
     l(`${pre} Audio duration: ${seconds} seconds`)
     return seconds
   } catch (error) {

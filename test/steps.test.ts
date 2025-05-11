@@ -5,7 +5,7 @@ import { runTestsForRequests } from './base.test.ts'
 import { env } from '../src/utils.ts'
 
 const {
-  DEEPGRAM_API_KEY,
+  // DEEPGRAM_API_KEY,
   ASSEMBLY_API_KEY,
   OPENAI_API_KEY,
   ANTHROPIC_API_KEY,

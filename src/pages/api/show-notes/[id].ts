@@ -1,7 +1,7 @@
 // src/pages/api/show-notes/[id].ts
 
 import type { APIRoute } from "astro"
-import { dbService } from "../../../db"
+import { s3Service } from "../../../services/s3"
 import { l, err } from '../../../utils'
 
 export const GET: APIRoute = async ({ params, request }) => {
@@ -21,22 +21,11 @@ export const GET: APIRoute = async ({ params, request }) => {
       })
     }
     
-    const numericId = Number(id)
-    l(`${pre} Parsed ID: ${numericId}`)
-    
-    if (isNaN(numericId)) {
-      err(`${pre} Invalid ID format: ${id}`)
-      return new Response(JSON.stringify({ error: 'id must be a valid number' }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' }
-      })
-    }
-    
-    l(`${pre} Fetching show note with ID: ${numericId}`)
-    const showNote = await dbService.getShowNote(numericId)
+    l(`${pre} Fetching show note with ID: ${id}`)
+    const showNote = await s3Service.getShowNote(id)
     
     if (showNote) {
-      l(`${pre} Successfully retrieved show note: ${numericId}`)
+      l(`${pre} Successfully retrieved show note: ${id}`)
       l(`${pre} Show note title: ${showNote.title}`)
       
       return new Response(JSON.stringify({ showNote }), {
@@ -44,7 +33,7 @@ export const GET: APIRoute = async ({ params, request }) => {
         headers: { 'Content-Type': 'application/json' }
       })
     } else {
-      l(`${pre} Show note not found: ${numericId}`)
+      l(`${pre} Show note not found: ${id}`)
       return new Response(JSON.stringify({ error: 'Show note not found' }), {
         status: 404,
         headers: { 'Content-Type': 'application/json' }
@@ -55,7 +44,7 @@ export const GET: APIRoute = async ({ params, request }) => {
     err(`${pre} Error stack:`, error instanceof Error ? error.stack : 'No stack trace')
     
     const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred'
-    return new Response(JSON.stringify({ 
+    return new Response(JSON.stringify({
       error: `An error occurred while fetching the show note: ${errorMessage}`,
       details: error instanceof Error ? error.stack : undefined
     }), {

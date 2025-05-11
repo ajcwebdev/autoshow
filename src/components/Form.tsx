@@ -18,58 +18,88 @@ export const Alert = (props: AlertProps) => (
 
 export default function Form(props: FormProps) {
   const pre = '[Form]'
+  
   const [currentStep, setCurrentStep] = createSignal(1)
   l(`${pre} Initial currentStep: ${currentStep()}`)
+  
   const [walletAddress, setWalletAddress] = createSignal('yhGfbjKDuTnJyx8wzje7n9wsoWC51WH7Y5')
   l(`${pre} Initial walletAddress: ${walletAddress()}`)
+  
   const [mnemonic, setMnemonic] = createSignal('tip punch promote click scheme guitar skirt lucky hamster clip denial ecology')
   l(`${pre} Initial mnemonic set (redacted)`)
+  
   const [processType, setProcessType] = createSignal<ProcessTypeEnum>('video')
   l(`${pre} Initial processType: ${processType()}`)
+  
   const [url, setUrl] = createSignal('https://www.youtube.com/watch?v=MORMZXEaONk')
   l(`${pre} Initial url: ${url()}`)
+  
   const [filePath, setFilePath] = createSignal('autoshow/content/examples/audio.mp3')
   l(`${pre} Initial filePath: ${filePath()}`)
+  
   const [finalPath, setFinalPath] = createSignal('')
   l(`${pre} Initial finalPath: ${finalPath()}`)
+  
   const [s3Url, setS3Url] = createSignal('')
   l(`${pre} Initial s3Url: ${s3Url()}`)
+  
   const [metadata, setMetadata] = createSignal<Partial<ShowNoteMetadata>>({})
   l(`${pre} Initial metadata: {}`)
+  
   const [frontMatter, setFrontMatter] = createSignal('')
   l(`${pre} Initial frontMatter: ""`)
+  
   const [transcriptionService, setTranscriptionService] = createSignal('deepgram')
   l(`${pre} Initial transcriptionService: ${transcriptionService()}`)
+  
   const [transcriptionModel, setTranscriptionModel] = createSignal('nova-2')
   l(`${pre} Initial transcriptionModel: ${transcriptionModel()}`)
+  
   const [transcriptionModelUsed, setTranscriptionModelUsed] = createSignal('')
   l(`${pre} Initial transcriptionModelUsed: ""`)
+  
   const [transcriptionApiKey, setTranscriptionApiKey] = createSignal('')
   l(`${pre} Initial transcriptionApiKey set (empty)`)
+  
   const [transcriptionCosts, setTranscriptionCosts] = createSignal<TranscriptionCosts>({})
   l(`${pre} Initial transcriptionCosts: {}`)
+  
   const [transcriptionCostUsed, setTranscriptionCostUsed] = createSignal<number | null>(null)
   l(`${pre} Initial transcriptionCostUsed: null`)
+  
   const [transcriptContent, setTranscriptContent] = createSignal('')
   l(`${pre} Initial transcriptContent: ""`)
+  
   const [selectedPrompts, setSelectedPrompts] = createSignal(['shortSummary'])
   l(`${pre} Initial selectedPrompts: ${selectedPrompts().join(', ')}`)
+  
   const [promptText, setPromptText] = createSignal('')
   l(`${pre} Initial promptText: ""`)
+  
   const [llmService, setLlmService] = createSignal<LLMServiceKey>('chatgpt')
   l(`${pre} Initial llmService: ${llmService()}`)
+  
   const [llmModel, setLlmModel] = createSignal('gpt-4o-mini')
   l(`${pre} Initial llmModel: ${llmModel()}`)
+  
   const [llmApiKey, setLlmApiKey] = createSignal('')
   l(`${pre} Initial llmApiKey set (empty)`)
+  
   const [llmCosts, setLlmCosts] = createSignal<Record<string, any>>({})
   l(`${pre} Initial llmCosts: {}`)
+  
   const [error, setError] = createSignal<string | null>(null)
   l(`${pre} Initial error: null`)
+  
   const [isLoading, setIsLoading] = createSignal(false)
   l(`${pre} Initial isLoading: false`)
+  
   const [dashBalance, setDashBalance] = createSignal<number | null>(null)
   l(`${pre} Initial dashBalance: null`)
+  
+  const [showNoteId, setShowNoteId] = createSignal<number>(0)
+  l(`${pre} Initial showNoteId: 0`)
+  
   return (
     <>
       {currentStep() === 0 && (
@@ -86,6 +116,7 @@ export default function Form(props: FormProps) {
           setCurrentStep={setCurrentStep}
         />
       )}
+      
       {currentStep() === 1 && (
         <ProcessTypeStep
           isLoading={isLoading()}
@@ -103,8 +134,10 @@ export default function Form(props: FormProps) {
           setMetadata={setMetadata}
           setTranscriptionCosts={setTranscriptionCosts}
           setCurrentStep={setCurrentStep}
+          setShowNoteId={setShowNoteId}
         />
       )}
+      
       {currentStep() === 2 && (
         <TranscriptionStep
           isLoading={isLoading()}
@@ -127,8 +160,10 @@ export default function Form(props: FormProps) {
           setLlmCosts={setLlmCosts}
           setPromptText={setPromptText}
           setCurrentStep={setCurrentStep}
+          showNoteId={showNoteId()}
         />
       )}
+      
       {currentStep() === 3 && (
         <LLMServiceStep
           isLoading={isLoading()}
@@ -149,8 +184,10 @@ export default function Form(props: FormProps) {
           metadata={metadata()}
           onNewShowNote={props.onNewShowNote}
           llmCosts={llmCosts()}
+          showNoteId={showNoteId()}
         />
       )}
+      
       {error() && <Alert message={error()!} variant="error" />}
     </>
   )

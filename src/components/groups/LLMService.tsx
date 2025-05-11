@@ -26,6 +26,7 @@ export const LLMServiceStep = (props: {
   metadata: Partial<ShowNoteMetadata>
   onNewShowNote: () => void
   llmCosts: Record<string, any>
+  showNoteId: number
 }) => {
   const [localResult, setLocalResult] = createSignal<LocalResult | null>(null)
   
@@ -45,6 +46,7 @@ export const LLMServiceStep = (props: {
       const cost = modelCostData?.cost ?? 0
       
       const runLLMBody = {
+        showNoteId: props.showNoteId.toString(),
         llmServices: props.llmService,
         options: {
           frontMatter: props.frontMatter,
@@ -62,6 +64,7 @@ export const LLMServiceStep = (props: {
           llmCost: cost
         }
       } as {
+        showNoteId: string
         llmServices: string
         options: Record<string, unknown>
       }
@@ -71,9 +74,8 @@ export const LLMServiceStep = (props: {
           delete runLLMBody.options[key]
         }
       })
-
-      l(`[LLMServiceStep] Sending API request to run-llm with ${props.llmService}/${props.llmModel}`)
       
+      l(`[LLMServiceStep] Sending API request to run-llm with showNoteId: ${props.showNoteId}`)
       const runLLMRes = await fetch('http://localhost:4321/api/run-llm', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -92,7 +94,6 @@ export const LLMServiceStep = (props: {
       }
       
       l(`[LLMServiceStep] Successfully generated show note with ID: ${data.showNote?.id}`)
-      
       setLocalResult({ showNote: data.showNote, llmOutput: data.showNotesResult })
       props.onNewShowNote()
     } catch (error) {
@@ -112,9 +113,11 @@ export const LLMServiceStep = (props: {
       <Show when={!Object.keys(L_CONFIG).length}>
         <p>No LLM config available</p>
       </Show>
+      
       <Show when={allServices().length === 0}>
         <p>No services found</p>
       </Show>
+      
       <Show when={allServices().length > 0}>
         <h2>Select an LLM Model</h2>
         <For each={allServices()}>
@@ -131,6 +134,7 @@ export const LLMServiceStep = (props: {
                     ? serviceCosts.find((x: any) => x.modelId === m.modelId)
                     : null
                   const modelCost = modelCostData?.cost ?? 0
+                  
                   return (
                     <div>
                       <input
@@ -154,6 +158,7 @@ export const LLMServiceStep = (props: {
           )}
         </For>
       </Show>
+      
       <br /><br />
       <div class="form-group">
         <label for="llmApiKey">LLM API Key</label>
@@ -164,9 +169,11 @@ export const LLMServiceStep = (props: {
           onInput={e => props.setLlmApiKey(e.target.value)}
         />
       </div>
+      
       <button disabled={props.isLoading} onClick={handleSelectLLM}>
         {props.isLoading ? 'Generating Show Notes...' : 'Generate Show Notes'}
       </button>
+      
       <Show when={localResult()}>
         <div class="result">
           <h3>Show Note Result</h3>

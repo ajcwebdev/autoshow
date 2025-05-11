@@ -4,9 +4,7 @@
 # Creates a summary in markdown format
 
 INCLUDE_PATHS=(
-  "docs/01-step-endpoints.md"
-  "docs/05-querying-show-notes.md"
-  "docs/06-database.md"
+  "docs"
   "scripts"
   "db"
   "src"
@@ -14,9 +12,6 @@ INCLUDE_PATHS=(
 )
 
 IGNORE_PATHS=(
-  "src/db.ts"
-  "db/seed.ts"
-  "server.mjs"
   "src/layouts/Base.astro"
   "src/pages/api/embeddings.ts"
   "src/styles/global.css"

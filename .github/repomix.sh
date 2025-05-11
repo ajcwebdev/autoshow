@@ -4,17 +4,24 @@
 # Creates a summary in markdown format
 
 INCLUDE_PATHS=(
-  "docs"
-  "scripts"
-  "db"
-  "src"
+  "src/components"
+  "src/pages/show-notes"
+  "src/pages/index.astro"
+  "src/layouts"
+  "src/styles"
+  "src/site.config.ts"
+  "src/types.ts"
+  "astro.config.ts"
   "package.json"
+  # "docs"
+  # "scripts"
+  # "db"
+  # "src"
+  # "package.json"
 )
 
 IGNORE_PATHS=(
-  "src/layouts/Base.astro"
   "src/pages/api/embeddings.ts"
-  "src/styles/global.css"
   "src/prompts.ts"
 )
 

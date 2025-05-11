@@ -3,10 +3,8 @@
 import { createSignal, For, Show } from 'solid-js'
 import { L_CONFIG } from '../../types.ts'
 import type { LLMServiceKey, ShowNoteType, ShowNoteMetadata, LocalResult } from '../../types.ts'
-
 const l = console.log
 const err = console.error
-
 export const LLMServiceStep = (props: {
   isLoading: boolean
   setIsLoading: (value: boolean) => void
@@ -29,22 +27,18 @@ export const LLMServiceStep = (props: {
   showNoteId: number
 }) => {
   const [localResult, setLocalResult] = createSignal<LocalResult | null>(null)
-  
   const allServices = () => Object.values(L_CONFIG).filter(s => s.value)
-  
   const handleSelectLLM = async (): Promise<void> => {
     l('[LLMServiceStep] Starting LLM generation process')
     props.setIsLoading(true)
     props.setError(null)
     setLocalResult(null)
-    
     try {
       const serviceCosts = props.llmCosts[props.llmService as string]
       const modelCostData = Array.isArray(serviceCosts)
         ? serviceCosts.find((x: any) => x.modelId === props.llmModel)
         : null
       const cost = modelCostData?.cost ?? 0
-      
       const runLLMBody = {
         showNoteId: props.showNoteId.toString(),
         llmServices: props.llmService,
@@ -68,31 +62,26 @@ export const LLMServiceStep = (props: {
         llmServices: string
         options: Record<string, unknown>
       }
-      
       Object.keys(runLLMBody.options).forEach(key => {
         if (runLLMBody.options[key] === undefined) {
           delete runLLMBody.options[key]
         }
       })
-      
       l(`[LLMServiceStep] Sending API request to run-llm with showNoteId: ${props.showNoteId}`)
       const runLLMRes = await fetch('http://localhost:4321/api/run-llm', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(runLLMBody)
       })
-      
       if (!runLLMRes.ok) {
         const errorData = await runLLMRes.json()
         err(`[LLMServiceStep] API error: ${errorData.error || runLLMRes.statusText}`)
         throw new Error(`Error running LLM: ${errorData.error || runLLMRes.statusText}`)
       }
-      
       const data = await runLLMRes.json() as {
         showNote: ShowNoteType
         showNotesResult: string
       }
-      
       l(`[LLMServiceStep] Successfully generated show note with ID: ${data.showNote?.id}`)
       setLocalResult({ showNote: data.showNote, llmOutput: data.showNotesResult })
       props.onNewShowNote()
@@ -107,81 +96,95 @@ export const LLMServiceStep = (props: {
       props.setIsLoading(false)
     }
   }
-  
+  l(`[LLMServiceStep] Rendering LLM service step, current service: ${props.llmService}`)
   return (
-    <>
+    <div class="space-y-6">
       <Show when={!Object.keys(L_CONFIG).length}>
-        <p>No LLM config available</p>
+        <p class="text-muted-foreground">No LLM config available</p>
       </Show>
-      
       <Show when={allServices().length === 0}>
-        <p>No services found</p>
+        <p class="text-muted-foreground">No services found</p>
       </Show>
-      
       <Show when={allServices().length > 0}>
-        <h2>Select an LLM Model</h2>
-        <For each={allServices()}>
-          {service => (
-            <div>
-              <h3>{service.label}</h3>
-              <Show when={!service.models || service.models.length === 0}>
-                <p>No models for {service.label}</p>
-              </Show>
-              <For each={service.models || []}>
-                {m => {
-                  const serviceCosts = props.llmCosts[service.value as string]
-                  const modelCostData = Array.isArray(serviceCosts)
-                    ? serviceCosts.find((x: any) => x.modelId === m.modelId)
-                    : null
-                  const modelCost = modelCostData?.cost ?? 0
-                  
-                  return (
-                    <div>
-                      <input
-                        type="radio"
-                        name="llmChoice"
-                        value={`${service.value}:${m.modelId}`}
-                        checked={props.llmService === service.value && props.llmModel === m.modelId}
-                        onInput={() => {
-                          props.setLlmService(service.value as LLMServiceKey)
-                          props.setLlmModel(m.modelId)
-                        }}
-                      />
-                      <label>{m.modelName}</label>
-                      <div>{(modelCost * 1000).toFixed(1)} Credits</div>
-                      <div>¢{(modelCost).toFixed(3)}</div>
-                    </div>
-                  )
-                }}
-              </For>
-            </div>
-          )}
-        </For>
+        <h2 class="h2">Select an LLM Model</h2>
+        <div class="grid gap-6">
+          <For each={allServices()}>
+            {service => (
+              <div class="bg-base-800 p-4 rounded-md">
+                <h3 class="h3 text-primary-400 mb-4">{service.label}</h3>
+                <Show when={!service.models || service.models.length === 0}>
+                  <p class="text-muted-foreground">No models for {service.label}</p>
+                </Show>
+                <div class="grid gap-2">
+                  <For each={service.models || []}>
+                    {m => {
+                      const serviceCosts = props.llmCosts[service.value as string]
+                      const modelCostData = Array.isArray(serviceCosts)
+                        ? serviceCosts.find((x: any) => x.modelId === m.modelId)
+                        : null
+                      const modelCost = modelCostData?.cost ?? 0
+                      return (
+                        <div class="flex items-center space-x-3">
+                          <input
+                            type="radio"
+                            name="llmChoice"
+                            value={`${service.value}:${m.modelId}`}
+                            checked={props.llmService === service.value && props.llmModel === m.modelId}
+                            onInput={() => {
+                              props.setLlmService(service.value as LLMServiceKey)
+                              props.setLlmModel(m.modelId)
+                            }}
+                            class="text-primary-500 focus:ring-primary-500"
+                          />
+                          <div class="flex-1">
+                            <label class="text-sm font-medium">{m.modelName}</label>
+                            <div class="text-sm text-muted-foreground">
+                              {(modelCost * 1000).toFixed(1)} Credits (¢{(modelCost).toFixed(3)})
+                            </div>
+                          </div>
+                        </div>
+                      )
+                    }}
+                  </For>
+                </div>
+              </div>
+            )}
+          </For>
+        </div>
       </Show>
-      
-      <br /><br />
-      <div class="form-group">
-        <label for="llmApiKey">LLM API Key</label>
+      <div class="space-y-2">
+        <label for="llmApiKey" class="block text-sm font-medium text-foreground">LLM API Key</label>
         <input
           type="password"
           id="llmApiKey"
           value={props.llmApiKey}
           onInput={e => props.setLlmApiKey(e.target.value)}
+          class="form__input w-full py-2"
         />
       </div>
-      
-      <button disabled={props.isLoading} onClick={handleSelectLLM}>
+      <button 
+        disabled={props.isLoading} 
+        onClick={handleSelectLLM}
+        class="button button--primary"
+      >
         {props.isLoading ? 'Generating Show Notes...' : 'Generate Show Notes'}
       </button>
-      
       <Show when={localResult()}>
-        <div class="result">
-          <h3>Show Note Result</h3>
-          <pre>{JSON.stringify(localResult()!.showNote, null, 2)}</pre>
-          <h3>LLM Output Text</h3>
-          <p>{localResult()!.llmOutput}</p>
+        <div class="space-y-4">
+          <div>
+            <h3 class="h3 mb-3">Show Note Result</h3>
+            <pre class="bg-base-800 p-4 rounded-md overflow-auto text-sm">
+              {JSON.stringify(localResult()!.showNote, null, 2)}
+            </pre>
+          </div>
+          <div>
+            <h3 class="h3 mb-3">LLM Output Text</h3>
+            <div class="bg-base-800 p-4 rounded-md whitespace-pre-wrap">
+              {localResult()!.llmOutput}
+            </div>
+          </div>
         </div>
       </Show>
-    </>
+    </div>
   )
 }

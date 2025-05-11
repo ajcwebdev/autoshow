@@ -28,8 +28,6 @@ const url = new URL(Astro.request.url)
 		<meta charset="utf-8" />
 		<meta content="width=device-width, initial-scale=1.0, shrink-to-fit=no" name="viewport" />
 		<meta content="IE=edge" http-equiv="X-UA-Compatible" />
-		<link rel="stylesheet" href="https://fonts.xz.style/serve/inter.css">
-		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@exampledev/new.css@1.1.2/new.min.css">
 		<title>{siteTitle}</title>
 
 		{/* Icons / Favicon */}
@@ -79,16 +77,16 @@ const url = new URL(Astro.request.url)
 		<meta content={Astro.generator} name="generator" />
 	</head>
 	<body>
-		<header id="main-header">
+		<header id="main-header" class="site-container py-4">
           <div>
-            <a aria-current={url.pathname === "/" ? "page" : false} href="/">autoshow.sh</a>
+            <a href="/" aria-current={url.pathname === "/" ? "page" : false} class="nav__link--base h2">autoshow.sh</a>
           </div>
        </header>
-		<main id="main">
+		<main id="main" class="site-container">
 			<slot />
 		</main>
-		<footer>
-			<div>
+		<footer class="site-container py-8 mt-8 border-t border-border">
+			<div class="text-muted-foreground text-sm">
 				&copy; {siteConfig.author} {year}<br><span>Astro AutoShow</span>
 			</div>
 		</footer>

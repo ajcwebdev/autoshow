@@ -4,10 +4,8 @@ import { For, Show } from 'solid-js'
 import type { Setter } from 'solid-js'
 import { PROCESS_TYPES } from '../../types.ts'
 import type { ProcessTypeEnum, ShowNoteMetadata, TranscriptionCosts } from '../../types.ts'
-
 const l = console.log
 const err = console.error
-
 export const ProcessTypeStep = (props: {
   isLoading: boolean
   setIsLoading: Setter<boolean>
@@ -31,10 +29,8 @@ export const ProcessTypeStep = (props: {
     props.setIsLoading(true)
     props.setError(null)
     props.setTranscriptionCosts({})
-    
     try {
       const body: any = { type: props.processType, options: {} }
-      
       if (props.processType === 'video') {
         body.url = props.url
         body.options.video = props.url
@@ -42,34 +38,28 @@ export const ProcessTypeStep = (props: {
         body.filePath = props.filePath
         body.options.file = props.filePath
       }
-      
       l(`[ProcessTypeStep] Sending download-audio request for ${props.processType}`)
       const res = await fetch('http://localhost:4321/api/download-audio', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body)
       })
-      
       if (!res.ok) {
         const errorData = await res.json()
         err(`[ProcessTypeStep] Download audio error:`, errorData)
         throw new Error(`Error downloading audio: ${errorData.error || res.statusText}`)
       }
-      
       const resData = await res.json()
-      
       props.setFrontMatter(resData.frontMatter || '')
       props.setMetadata(resData.metadata || {})
       props.setFinalPath(resData.finalPath || '')
       props.setS3Url(resData.s3Url || '')
       props.setShowNoteId(resData.id)
-      
       if (resData.transcriptionCost) {
         props.setTranscriptionCosts(resData.transcriptionCost)
       } else {
         console.warn(`[ProcessTypeStep] No transcriptionCost found in response`)
       }
-      
       l(`[ProcessTypeStep] Successfully processed ${props.processType}, received showNoteId: ${resData.id}, moving to step 2`)
       props.setCurrentStep(2)
     } catch (error) {
@@ -83,11 +73,11 @@ export const ProcessTypeStep = (props: {
       props.setIsLoading(false)
     }
   }
-  
+  l(`[ProcessTypeStep] Rendering process type step for: ${props.processType}`)
   return (
-    <>
-      <div class="form-group">
-        <label for="processType">Process Type</label>
+    <div class="space-y-4">
+      <div class="space-y-2">
+        <label for="processType" class="block text-sm font-medium text-foreground">Process Type</label>
         <select
           id="processType"
           value={props.processType}
@@ -95,6 +85,7 @@ export const ProcessTypeStep = (props: {
             const value = e.target.value as ProcessTypeEnum
             props.setProcessType(value)
           }}
+          class="form__input w-full py-2"
         >
           <For each={PROCESS_TYPES}>
             {type => (
@@ -105,10 +96,9 @@ export const ProcessTypeStep = (props: {
           </For>
         </select>
       </div>
-      
       <Show when={props.processType === 'video'}>
-        <div class="form-group">
-          <label for="url">
+        <div class="space-y-2">
+          <label for="url" class="block text-sm font-medium text-foreground">
             YouTube URL
           </label>
           <input
@@ -116,27 +106,31 @@ export const ProcessTypeStep = (props: {
             id="url"
             value={props.url}
             onInput={e => props.setUrl(e.target.value)}
+            class="form__input w-full py-2"
             required
           />
         </div>
       </Show>
-      
       <Show when={props.processType === 'file'}>
-        <div class="form-group">
-          <label for="filePath">File Path</label>
+        <div class="space-y-2">
+          <label for="filePath" class="block text-sm font-medium text-foreground">File Path</label>
           <input
             type="text"
             id="filePath"
             value={props.filePath}
             onInput={e => props.setFilePath(e.target.value)}
+            class="form__input w-full py-2"
             required
           />
         </div>
       </Show>
-      
-      <button disabled={props.isLoading} onClick={handleStepOne}>
+      <button 
+        disabled={props.isLoading} 
+        onClick={handleStepOne}
+        class="button button--primary"
+      >
         {props.isLoading ? 'Processing...' : 'Start Processing & Calculate Costs'}
       </button>
-    </>
+    </div>
   )
 }

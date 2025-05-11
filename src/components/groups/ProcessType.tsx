@@ -24,14 +24,17 @@ export const ProcessTypeStep = (props: {
   setMetadata: Setter<Partial<ShowNoteMetadata>>
   setTranscriptionCosts: Setter<TranscriptionCosts>
   setCurrentStep: Setter<number>
+  setShowNoteId: Setter<number>
 }) => {
   const handleStepOne = async (): Promise<void> => {
     l(`[ProcessTypeStep] Starting audio processing for ${props.processType} type`)
     props.setIsLoading(true)
     props.setError(null)
     props.setTranscriptionCosts({})
+    
     try {
       const body: any = { type: props.processType, options: {} }
+      
       if (props.processType === 'video') {
         body.url = props.url
         body.options.video = props.url
@@ -39,28 +42,35 @@ export const ProcessTypeStep = (props: {
         body.filePath = props.filePath
         body.options.file = props.filePath
       }
+      
       l(`[ProcessTypeStep] Sending download-audio request for ${props.processType}`)
       const res = await fetch('http://localhost:4321/api/download-audio', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body)
       })
+      
       if (!res.ok) {
         const errorData = await res.json()
         err(`[ProcessTypeStep] Download audio error:`, errorData)
         throw new Error(`Error downloading audio: ${errorData.error || res.statusText}`)
       }
+      
       const resData = await res.json()
+      
       props.setFrontMatter(resData.frontMatter || '')
       props.setMetadata(resData.metadata || {})
       props.setFinalPath(resData.finalPath || '')
       props.setS3Url(resData.s3Url || '')
+      props.setShowNoteId(resData.id)
+      
       if (resData.transcriptionCost) {
         props.setTranscriptionCosts(resData.transcriptionCost)
       } else {
         console.warn(`[ProcessTypeStep] No transcriptionCost found in response`)
       }
-      l(`[ProcessTypeStep] Successfully processed ${props.processType}, moving to step 2`)
+      
+      l(`[ProcessTypeStep] Successfully processed ${props.processType}, received showNoteId: ${resData.id}, moving to step 2`)
       props.setCurrentStep(2)
     } catch (error) {
       err(`[ProcessTypeStep] Error in handleStepOne:`, error)
@@ -73,6 +83,7 @@ export const ProcessTypeStep = (props: {
       props.setIsLoading(false)
     }
   }
+  
   return (
     <>
       <div class="form-group">
@@ -94,6 +105,7 @@ export const ProcessTypeStep = (props: {
           </For>
         </select>
       </div>
+      
       <Show when={props.processType === 'video'}>
         <div class="form-group">
           <label for="url">
@@ -108,6 +120,7 @@ export const ProcessTypeStep = (props: {
           />
         </div>
       </Show>
+      
       <Show when={props.processType === 'file'}>
         <div class="form-group">
           <label for="filePath">File Path</label>
@@ -120,6 +133,7 @@ export const ProcessTypeStep = (props: {
           />
         </div>
       </Show>
+      
       <button disabled={props.isLoading} onClick={handleStepOne}>
         {props.isLoading ? 'Processing...' : 'Start Processing & Calculate Costs'}
       </button>

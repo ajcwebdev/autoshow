@@ -1,7 +1,7 @@
 // src/pages/api/show-notes.ts
 
 import type { APIRoute } from "astro"
-import { dbService } from "../../db"
+import { s3Service } from "../../services/s3"
 import { l, err } from '../../utils'
 
 export const GET: APIRoute = async ({ request }) => {
@@ -10,18 +10,8 @@ export const GET: APIRoute = async ({ request }) => {
   l(`${pre} GET request started: ${url.pathname}`)
   
   try {
-    l(`${pre} Fetching all show notes`)
-    
-    if (!dbService) {
-      err(`${pre} Database service is not available`)
-      return new Response(JSON.stringify({ error: 'Database service is not available' }), {
-        status: 500,
-        headers: { 'Content-Type': 'application/json' }
-      })
-    }
-    
-    l(`${pre} Calling dbService.getShowNotes()...`)
-    const showNotes = await dbService.getShowNotes()
+    l(`${pre} Fetching all show notes from S3`)
+    const showNotes = await s3Service.getAllShowNotes()
     
     l(`${pre} Successfully retrieved ${showNotes.length} show notes`)
     l(`${pre} First few titles:`, showNotes.slice(0, 3).map(n => n.title))
@@ -35,7 +25,7 @@ export const GET: APIRoute = async ({ request }) => {
     err(`${pre} Error stack:`, error instanceof Error ? error.stack : 'No stack trace')
     
     const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred'
-    return new Response(JSON.stringify({ 
+    return new Response(JSON.stringify({
       error: `An error occurred while fetching show notes: ${errorMessage}`,
       details: error instanceof Error ? error.stack : undefined
     }), {

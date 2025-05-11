@@ -1,7 +1,7 @@
 // src/pages/api/run-llm.ts
 
 import type { APIRoute } from "astro"
-import { dbService } from "../../db"
+import { s3Service } from "../../services/s3"
 import { retryLLMCall, callChatGPT, callClaude, callGemini, callGroq } from "../../services/llm"
 import { l, err } from '../../utils'
 import { L_CONFIG, ENV_VARS_MAP } from '../../types'
@@ -23,8 +23,9 @@ export const POST: APIRoute = async ({ request }) => {
     const body = await request.json()
     const llmServices = body?.llmServices
     const options: ProcessingOptions = body?.options || {}
+    const showNoteId = body?.showNoteId
     
-    l(`${pre} Request received with LLM service: ${llmServices}`)
+    l(`${pre} Request received with LLM service: ${llmServices}, showNoteId: ${showNoteId}`)
     
     const loggableOptions = { ...options }
     delete loggableOptions.openaiApiKey
@@ -32,8 +33,20 @@ export const POST: APIRoute = async ({ request }) => {
     delete loggableOptions.geminiApiKey
     delete loggableOptions.groqApiKey
     delete loggableOptions.mnemonic
-    
     l(`${pre} Options (sanitized): ${JSON.stringify(loggableOptions)}`)
+    
+    if (!showNoteId) {
+      err(`${pre} Missing showNoteId`)
+      return new Response(JSON.stringify({ error: 'showNoteId is required' }), { status: 400 })
+    }
+    
+    l(`${pre} Fetching existing show note from S3`)
+    const existingShowNote = await s3Service.getShowNote(showNoteId)
+    if (!existingShowNote) {
+      err(`${pre} Show note not found: ${showNoteId}`)
+      return new Response(JSON.stringify({ error: 'Show note not found' }), { status: 404 })
+    }
+    
     l(`${pre} Processing with LLM service: ${llmServices}`)
     
     const frontMatter = options?.frontMatter as string | undefined
@@ -61,7 +74,6 @@ export const POST: APIRoute = async ({ request }) => {
     }
     
     l(`${pre} Parsing front matter and extracting metadata`)
-    
     const frontMatterLines = frontMatter.split('\n').slice(1, -1)
     const metadata: Partial<ShowNoteMetadata> = {}
     
@@ -116,11 +128,10 @@ export const POST: APIRoute = async ({ request }) => {
       
       const optionValue = options[llmServices as keyof ProcessingOptions]
       const defaultModelId = config.models[0]?.modelId ?? ''
-      
       userModel = typeof optionValue === 'string' && optionValue !== 'true' && optionValue.trim() !== ''
         ? optionValue
         : defaultModelId
-        
+      
       l(`${pre} Selected model: ${userModel} for service ${llmServices}`)
       
       if (!userModel) {
@@ -135,22 +146,18 @@ export const POST: APIRoute = async ({ request }) => {
           l(`${pre} Calling ChatGPT with model: ${userModel}`)
           showNotesData = await retryLLMCall(() => callChatGPT(userModel as ChatGPTModelValue, prompt, transcript))
           break
-          
         case 'claude':
           l(`${pre} Calling Claude with model: ${userModel}`)
           showNotesData = await retryLLMCall(() => callClaude(userModel as ClaudeModelValue, prompt, transcript))
           break
-          
         case 'gemini':
           l(`${pre} Calling Gemini with model: ${userModel}`)
           showNotesData = await retryLLMCall(() => callGemini(userModel as GeminiModelValue, prompt, transcript))
           break
-          
         case 'groq':
           l(`${pre} Calling Groq with model: ${userModel}`)
           showNotesData = await retryLLMCall(() => callGroq(userModel as GroqModelValue, prompt, transcript))
           break
-          
         default:
           err(`${pre} Unknown or unhandled LLM service: ${llmServices}`)
           throw new Error(`Unknown or unhandled LLM service: ${llmServices}`)
@@ -166,57 +173,37 @@ export const POST: APIRoute = async ({ request }) => {
     
     const numericTranscriptionCost = Number(options.transcriptionCost) || 0
     const finalCost = numericTranscriptionCost + numericLLMCost
-    
     l(`${pre} Costs - Transcription: ${numericTranscriptionCost}, LLM: ${numericLLMCost}, Final: ${finalCost}`)
     
-    const insertedNoteData = {
-      showLink: finalMetadata.showLink || undefined,
-      channel: finalMetadata.channel || undefined,
-      channelURL: finalMetadata.channelURL || undefined,
-      title: finalMetadata.title,
-      description: finalMetadata.description || undefined,
-      publishDate: finalMetadata.publishDate,
-      coverImage: finalMetadata.coverImage || undefined,
-      frontmatter: frontMatter,
-      prompt: prompt,
-      transcript: transcript,
-      llmOutput: showNotesResult,
-      walletAddress: finalMetadata.walletAddress || undefined,
-      mnemonic: finalMetadata.mnemonic || undefined,
+    l(`${pre} Saving LLM output to S3`)
+    await s3Service.saveLLMOutput(showNoteId, showNotesResult)
+    
+    l(`${pre} Updating show note with final metadata`)
+    const updatedShowNote = await s3Service.updateShowNote(showNoteId, {
+      ...finalMetadata,
       llmService: llmServices || undefined,
       llmModel: userModel || undefined,
       llmCost: numericLLMCost,
-      transcriptionService: options.transcriptionServices as string || undefined,
-      transcriptionModel: options.transcriptionModel as string || undefined,
-      transcriptionCost: numericTranscriptionCost,
       finalCost: finalCost
-    }
+    })
     
-    l(`${pre} Saving show note to database with title: ${insertedNoteData.title}`)
-    const newRecord = await dbService.insertShowNote(insertedNoteData)
-    l(`${pre} Show note saved with ID: ${newRecord.id}`)
+    l(`${pre} Show note updated successfully`)
     
-    let verifiedRecord = null
-    if (typeof newRecord.id === 'number') {
-      l(`${pre} Verifying record was saved correctly, fetching ID: ${newRecord.id}`)
-      verifiedRecord = await dbService.getShowNote(newRecord.id)
-    }
-    
+    let verifiedRecord = await s3Service.getShowNote(showNoteId)
     if (!verifiedRecord) {
-      err(`${pre} Verification failed - Record with ID ${newRecord.id} not found in database`)
+      err(`${pre} Verification failed - Record with ID ${showNoteId} not found in S3`)
     } else {
       l(`${pre} Record verification successful`)
     }
     
     return new Response(JSON.stringify({
-      showNote: newRecord,
+      showNote: updatedShowNote,
       showNotesResult
     }), { status: 200 })
   } catch (error) {
     err(`${pre} Error:`, error)
     const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred'
     const errorStack = error instanceof Error ? error.stack : undefined
-    
     err(`${pre} Error message: ${errorMessage}`)
     if (errorStack) err(`${pre} Error stack: ${errorStack}`)
     

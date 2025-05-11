@@ -29,9 +29,11 @@ export const TranscriptionStep = (props: {
   setLlmCosts: Setter<Record<string, any>>
   setPromptText: Setter<string>
   setCurrentStep: Setter<number>
+  showNoteId: number
 }) => {
   const [showTranscript, setShowTranscript] = createSignal(false)
   const [transcriptData, setTranscriptData] = createSignal('')
+  
   const formatContent = (text: string) => {
     return text.split('\n').map((line, _index) => (
       <>
@@ -40,14 +42,17 @@ export const TranscriptionStep = (props: {
       </>
     ))
   }
+  
   const handleStepTwo = async (): Promise<void> => {
     l(`[TranscriptionStep] Starting transcription with ${props.transcriptionService}/${props.transcriptionModel}`)
     props.setIsLoading(true)
     props.setError(null)
     props.setTranscriptContent('')
     props.setPromptText('')
+    
     try {
       const rtBody = {
+        showNoteId: props.showNoteId.toString(),
         finalPath: props.finalPath,
         s3Url: props.s3Url,
         transcriptServices: props.transcriptionService,
@@ -55,29 +60,36 @@ export const TranscriptionStep = (props: {
           prompt: props.selectedPrompts
         }
       } as {
+        showNoteId: string
         finalPath: string
         s3Url: string
         transcriptServices: string
         options: Record<string, unknown>
       }
+      
       rtBody.options[props.transcriptionService] = props.transcriptionModel
+      
       if (props.transcriptionService === 'assembly') {
         rtBody.options.assemblyApiKey = props.transcriptionApiKey
       }
+      
       if (props.transcriptionService === 'deepgram') {
         rtBody.options.deepgramApiKey = props.transcriptionApiKey
       }
-      l(`[TranscriptionStep] Sending request to run-transcription API with S3 URL: ${props.s3Url}`)
+      
+      l(`[TranscriptionStep] Sending request to run-transcription API with showNoteId: ${props.showNoteId}`)
       const rtRes = await fetch('http://localhost:4321/api/run-transcription', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(rtBody)
       })
+      
       if (!rtRes.ok) {
         const errorData = await rtRes.json()
         err(`[TranscriptionStep] Transcription API error:`, errorData)
         throw new Error(`Error running transcription: ${errorData.error || rtRes.statusText}`)
       }
+      
       const rtData = await rtRes.json() as {
         transcript?: string
         prompt?: string
@@ -85,21 +97,26 @@ export const TranscriptionStep = (props: {
         transcriptionCost?: number
         allLLMCosts?: Record<string, any>
       }
+      
       props.setTranscriptContent(rtData.transcript || '')
       setTranscriptData(rtData.transcript || '')
       props.setPromptText(rtData.prompt || '')
+      
       if (rtData.modelId) {
         props.setTranscriptionModelUsed(rtData.modelId)
       }
+      
       if (rtData.transcriptionCost != null) {
         props.setTranscriptionCostUsed(rtData.transcriptionCost)
       }
+      
       if (rtData.allLLMCosts) {
         props.setLlmCosts(rtData.allLLMCosts)
       } else {
         console.warn(`[TranscriptionStep] No allLLMCosts found in response`)
         props.setLlmCosts({})
       }
+      
       setShowTranscript(true)
       l(`[TranscriptionStep] Successfully completed transcription, moving to step 3`)
       props.setCurrentStep(3)
@@ -114,6 +131,7 @@ export const TranscriptionStep = (props: {
       props.setIsLoading(false)
     }
   }
+  
   return (
     <>
       <h2>Select a Transcription Service and Prompts</h2>
@@ -150,6 +168,7 @@ export const TranscriptionStep = (props: {
             )}
           </For>
         </div>
+        
         <div class="form-group">
           <label for="transcriptionApiKey">Transcription API Key</label>
           <input
@@ -159,6 +178,7 @@ export const TranscriptionStep = (props: {
             onInput={e => props.setTranscriptionApiKey(e.target.value)}
           />
         </div>
+        
         <div class="form-group">
           <h3>Select Prompts</h3>
           <div class="checkbox-group">
@@ -186,6 +206,7 @@ export const TranscriptionStep = (props: {
           </div>
         </div>
       </div>
+      
       <button
         disabled={props.isLoading}
         onClick={handleStepTwo}
@@ -193,6 +214,7 @@ export const TranscriptionStep = (props: {
       >
         {props.isLoading ? 'Transcribing...' : 'Generate Transcription & Continue to LLM Selection'}
       </button>
+      
       <Show when={showTranscript() && transcriptData()}>
         <div style={{ 'margin-top': '20px' }}>
           <h3>Generated Transcript</h3>

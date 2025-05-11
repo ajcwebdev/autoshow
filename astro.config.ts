@@ -5,6 +5,7 @@ import solid from '@astrojs/solid-js'
 import sitemap from "@astrojs/sitemap"
 import node from "@astrojs/node"
 import tailwindcss from "@tailwindcss/vite"
+import icon from "astro-icon"
 
 export default defineConfig({
   output: 'server',
@@ -13,6 +14,7 @@ export default defineConfig({
   integrations: [
     sitemap(),
     solid(),
+    icon(),
   ],
 
   prefetch: true,

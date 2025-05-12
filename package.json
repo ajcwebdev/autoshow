@@ -28,6 +28,7 @@
     "@anthropic-ai/sdk": "0.40.1",
     "@astrojs/check": "0.9.4",
     "@astrojs/mdx": "4.2.5",
+    "@astrojs/node": "9.2.1",
     "@astrojs/sitemap": "3.3.1",
     "@astrojs/solid-js": "5.0.9",
     "@aws-sdk/client-s3": "3.799.0",
